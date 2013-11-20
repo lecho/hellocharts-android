@@ -38,12 +38,12 @@ public class MainActivity extends Activity {
 		s2.add(8f);
 		s2.add(6f);
 		s2.add(10f);
-		LineSeries l1 = new LineSeries(Color.RED, s1);
-		LineSeries l2 = new LineSeries(Color.GREEN, s2);
+		LineSeries l1 = new LineSeries(Color.parseColor("#FFBB33"), s1);
+		LineSeries l2 = new LineSeries(Color.parseColor("#99CC00"), s2);
 		data.addSeries(l1);
 		data.addSeries(l2);
 		lineChart.setData(data);
-		lineChart.setPadding(50, 50, 50, 50);
+		lineChart.setPadding(20, 20, 20, 20);
 		layout.addView(lineChart);
 	}
 
