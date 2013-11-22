@@ -17,8 +17,16 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+/**
+ * TODO nullcheck for mData
+ * 
+ * @author lecho
+ * 
+ */
 public class LineChart extends View {
 	protected LineChartData mData;
+	protected List<Float> mGeneratedX;
+	protected List<SplineInterpolator> mSplineInterpolators;
 	protected Bitmap mBitmap;
 	protected Canvas mCanvas;
 	protected Paint mLinePaint = new Paint();
@@ -48,7 +56,7 @@ public class LineChart extends View {
 		initPaint();
 	}
 
-	protected void initPaint() {
+	private void initPaint() {
 		mLinePaint.setAntiAlias(true);
 		mLinePaint.setColor(Color.BLACK);
 		mLinePaint.setStyle(Paint.Style.STROKE);
@@ -69,19 +77,19 @@ public class LineChart extends View {
 		float availableHeight = getHeight() - getPaddingTop() - getPaddingBottom();
 		mXMultiplier = availableWidth / (maxXValue - minXValue);
 		mYMultiplier = availableHeight / (maxYValue - minYValue);
+		generateXForInterpolation();
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
+		int seriesIndex = 0;
 		for (LineSeries lineSeries : mData.series) {
-			SplineInterpolator spline = SplineInterpolator.createMonotoneCubicSpline(mData.domain, lineSeries.values);
 			mLinePaint.setColor(lineSeries.color);
 			int valueIndex = 0;
-			List<Float> generatedX = generateInterpolatedX();
-			for (float valueX : generatedX) {
+			for (float valueX : mGeneratedX) {
 				float rawValueX = calculateX(valueX);
-				float rawValueY = calculateY(spline.interpolate(valueX));
+				float rawValueY = calculateY(mSplineInterpolators.get(seriesIndex).interpolate(valueX));
 				if (valueIndex == 0) {
 					mLinePath.moveTo(rawValueX, rawValueY);
 				} else {
@@ -91,8 +99,9 @@ public class LineChart extends View {
 			}
 			mCanvas.drawPath(mLinePath, mLinePaint);
 			mLinePath.reset();
+			++seriesIndex;
 		}
-
+		// TODO check if point drawing on
 		for (LineSeries lineSeries : mData.series) {
 			int valueIndex = 0;
 			for (Float valueX : mData.domain) {
@@ -116,26 +125,46 @@ public class LineChart extends View {
 		return getHeight() - getPaddingBottom() - (valueY - minYValue) * mYMultiplier;
 	}
 
-	private List<Float> generateInterpolatedX() {
-		Float step = 0.01f;
-		List<Float> generatedX = new ArrayList<Float>();
+	/**
+	 * Generates additional X values for interpolation. Should be called after any view size changes.
+	 */
+	private void generateXForInterpolation() {
+		// TODO check null mData and domain.size()>2
+		final int size = mData.domain.size();
+		final float density = getResources().getDisplayMetrics().density;
+		final float range = mData.domain.get(size - 1) - mData.domain.get(0);
+		final float step = range / mXMultiplier * density;
+		mGeneratedX = new ArrayList<Float>();
 		int i = 0;
-		for (Float value : mData.domain) {
-			generatedX.add(value);
+		for (float value : mData.domain) {
+			mGeneratedX.add(value);
 			if (i < mData.domain.size() - 1) {
-				for (Float f = value + step; f < mData.domain.get(i + 1) - step; f += step) {
-					generatedX.add(f);
+				for (float f = value + step; f < mData.domain.get(i + 1) - step; f += step) {
+					mGeneratedX.add(f);
 				}
 			}
 			++i;
 		}
-		return generatedX;
 	}
 
-	public void setData(LineChartData data) {
+	/**
+	 * Sets chart data.
+	 * 
+	 * @param data
+	 */
+	public void setData(final LineChartData data) {
 		mData = data;
 		calculateRanges();
+		// TODO check if interpolation on and series number
+		generateSplineInterpolators(data);
 		postInvalidate();
+	}
+
+	private void generateSplineInterpolators(final LineChartData data) {
+		mSplineInterpolators = new ArrayList<SplineInterpolator>();
+		for (LineSeries lineSeries : data.series) {
+			mSplineInterpolators.add(SplineInterpolator.createMonotoneCubicSpline(data.domain, lineSeries.values));
+		}
 	}
 
 	private void calculateRanges() {
