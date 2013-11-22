@@ -3,9 +3,9 @@ package lecho.lib.hellocharts;
 import java.util.ArrayList;
 import java.util.List;
 
+import lecho.lib.hellocharts.model.LineChartData;
+import lecho.lib.hellocharts.model.LineSeries;
 import lecho.lib.hellocharts.utils.SplineInterpolator;
-import lehco.lib.hellocharts.model.LineChartData;
-import lehco.lib.hellocharts.model.LineSeries;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;

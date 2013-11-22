@@ -1,4 +1,4 @@
-package lehco.lib.hellocharts.model;
+package lecho.lib.hellocharts.model;
 
 public class Point {
 	public final float x;

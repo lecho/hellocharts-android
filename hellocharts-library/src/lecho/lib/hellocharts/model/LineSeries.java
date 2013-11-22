@@ -1,4 +1,4 @@
-package lehco.lib.hellocharts.model;
+package lecho.lib.hellocharts.model;
 
 import java.util.List;
 
