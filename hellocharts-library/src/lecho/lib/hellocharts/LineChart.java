@@ -1,5 +1,9 @@
 package lecho.lib.hellocharts;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import lecho.lib.hellocharts.utils.SplineInterpolator;
 import lehco.lib.hellocharts.model.LineChartData;
 import lehco.lib.hellocharts.model.LineSeries;
 import android.content.Context;
@@ -57,7 +61,8 @@ public class LineChart extends View {
 
 		mPointPaint.setAntiAlias(true);
 		mPointPaint.setColor(Color.BLACK);
-		mPointPaint.setStyle(Paint.Style.FILL);
+		mPointPaint.setStyle(Paint.Style.STROKE);
+		mPointPaint.setStrokeWidth(mLineWidth);
 	}
 
 	@Override
@@ -76,11 +81,13 @@ public class LineChart extends View {
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
 		for (LineSeries lineSeries : mData.series) {
+			SplineInterpolator spline = SplineInterpolator.createMonotoneCubicSpline(mData.domain, lineSeries.values);
 			mLinePaint.setColor(lineSeries.color);
 			int valueIndex = 0;
-			for (Float valueX : mData.domain) {
+			List<Float> generatedX = generateInterpolatedX();
+			for (float valueX : generatedX) {
 				float rawValueX = calculateX(valueX);
-				float rawValueY = calculateY(lineSeries.values.get(valueIndex));
+				float rawValueY = calculateY(spline.interpolate(valueX));
 				if (valueIndex == 0) {
 					mLinePath.moveTo(rawValueX, rawValueY);
 				} else {
@@ -97,15 +104,15 @@ public class LineChart extends View {
 			for (Float valueX : mData.domain) {
 				float rawValueX = calculateX(valueX);
 				float rawValueY = calculateY(lineSeries.values.get(valueIndex));
-				mPointPaint.setXfermode(mXfermode);
-				mPointPaint.setColor(Color.TRANSPARENT);
-				mCanvas.drawCircle(rawValueX, rawValueY, mPointRadiusBig, mPointPaint);
+				// mPointPaint.setXfermode(mXfermode);
+				// mPointPaint.setColor(Color.TRANSPARENT);
+				// mCanvas.drawCircle(rawValueX, rawValueY, mPointRadiusBig, mPointPaint);
 				mPointPaint.setXfermode(null);
 				mPointPaint.setColor(lineSeries.color);
 				mCanvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointPaint);
-				mPointPaint.setXfermode(mXfermode);
-				mPointPaint.setColor(Color.TRANSPARENT);
-				mCanvas.drawCircle(rawValueX, rawValueY, mPointRadiusSmall, mPointPaint);
+				// mPointPaint.setXfermode(mXfermode);
+				// mPointPaint.setColor(Color.TRANSPARENT);
+				// mCanvas.drawCircle(rawValueX, rawValueY, mPointRadiusSmall, mPointPaint);
 				++valueIndex;
 			}
 		}
@@ -120,6 +127,22 @@ public class LineChart extends View {
 
 	private float calculateY(float valueY) {
 		return getHeight() - getPaddingBottom() - (valueY - minYValue) * mYMultiplier;
+	}
+
+	private List<Float> generateInterpolatedX() {
+		Float step = 0.01f;
+		List<Float> generatedX = new ArrayList<Float>();
+		int i = 0;
+		for (Float value : mData.domain) {
+			generatedX.add(value);
+			if (i < mData.domain.size() - 1) {
+				for (Float f = value + step; f < mData.domain.get(i + 1) - step; f += step) {
+					generatedX.add(f);
+				}
+			}
+			++i;
+		}
+		return generatedX;
 	}
 
 	public void setData(LineChartData data) {
