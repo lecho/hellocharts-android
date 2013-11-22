@@ -45,13 +45,11 @@ public class SplineInterpolator {
 	 * @param x
 	 *            The X component of the control points, strictly increasing.
 	 * @param y
-	 *            The Y component of the control points, monotonic.
+	 *            The Y component of the control points
 	 * @return
 	 * 
 	 * @throws IllegalArgumentException
 	 *             if the X or Y arrays are null, have different lengths or have fewer than 2 values.
-	 * @throws IllegalArgumentException
-	 *             if the control points are not monotonic.
 	 */
 	public static SplineInterpolator createMonotoneCubicSpline(List<Float> x, List<Float> y) {
 		if (x == null || y == null || x.size() != y.size() || x.size() < 2) {
