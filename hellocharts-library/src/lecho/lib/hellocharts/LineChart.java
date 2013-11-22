@@ -13,8 +13,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Xfermode;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -26,11 +24,8 @@ public class LineChart extends View {
 	protected Paint mLinePaint = new Paint();
 	protected Path mLinePath = new Path();
 	protected Paint mPointPaint = new Paint();
-	protected Xfermode mXfermode = new PorterDuffXfermode(android.graphics.PorterDuff.Mode.CLEAR);
 	protected float mLineWidth = 4.0f;
 	protected float mPointRadius = 12.0f;
-	protected float mPointRadiusBig = mPointRadius + mLineWidth;
-	protected float mPointRadiusSmall = mPointRadius - mLineWidth;
 	protected float minXValue = Float.MAX_VALUE;
 	protected float maxXValue = Float.MIN_VALUE;
 	protected float minYValue = Float.MAX_VALUE;
@@ -61,8 +56,7 @@ public class LineChart extends View {
 
 		mPointPaint.setAntiAlias(true);
 		mPointPaint.setColor(Color.BLACK);
-		mPointPaint.setStyle(Paint.Style.STROKE);
-		mPointPaint.setStrokeWidth(mLineWidth);
+		mPointPaint.setStyle(Paint.Style.FILL);
 	}
 
 	@Override
@@ -104,15 +98,8 @@ public class LineChart extends View {
 			for (Float valueX : mData.domain) {
 				float rawValueX = calculateX(valueX);
 				float rawValueY = calculateY(lineSeries.values.get(valueIndex));
-				// mPointPaint.setXfermode(mXfermode);
-				// mPointPaint.setColor(Color.TRANSPARENT);
-				// mCanvas.drawCircle(rawValueX, rawValueY, mPointRadiusBig, mPointPaint);
-				mPointPaint.setXfermode(null);
 				mPointPaint.setColor(lineSeries.color);
 				mCanvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointPaint);
-				// mPointPaint.setXfermode(mXfermode);
-				// mPointPaint.setColor(Color.TRANSPARENT);
-				// mCanvas.drawCircle(rawValueX, rawValueY, mPointRadiusSmall, mPointPaint);
 				++valueIndex;
 			}
 		}
