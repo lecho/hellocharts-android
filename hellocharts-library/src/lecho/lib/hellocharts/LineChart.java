@@ -13,6 +13,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.PorterDuffXfermode;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -58,13 +60,12 @@ public class LineChart extends View {
 
 	private void initPaint() {
 		mLinePaint.setAntiAlias(true);
-		mLinePaint.setColor(Color.BLACK);
 		mLinePaint.setStyle(Paint.Style.STROKE);
 		mLinePaint.setStrokeWidth(mLineWidth);
 
 		mPointPaint.setAntiAlias(true);
-		mPointPaint.setColor(Color.BLACK);
 		mPointPaint.setStyle(Paint.Style.FILL);
+		mPointPaint.setXfermode(new PorterDuffXfermode(Mode.DARKEN));
 	}
 
 	@Override
@@ -112,6 +113,9 @@ public class LineChart extends View {
 				++valueIndex;
 			}
 		}
+		
+		
+		
 		Log.v("TAG", "Narysowane w [ms]: " + (System.nanoTime() - time) / 1000000);
 		canvas.drawBitmap(mBitmap, 0, 0, null);
 		Log.v("TAG", "Wyświetlone w [ms]: " + (System.nanoTime() - time) / 1000000);
