@@ -13,8 +13,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PorterDuff.Mode;
-import android.graphics.PorterDuffXfermode;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -67,7 +65,6 @@ public class LineChart extends View {
 
 		mPointPaint.setAntiAlias(true);
 		mPointPaint.setStyle(Paint.Style.FILL);
-		mPointPaint.setXfermode(new PorterDuffXfermode(Mode.DARKEN));
 	}
 
 	@Override
@@ -76,8 +73,9 @@ public class LineChart extends View {
 		mBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Config.ARGB_8888);
 		mCanvas = new Canvas(mBitmap);
 
-		mAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight();
-		mAvailableHeight = getHeight() - getPaddingTop() - getPaddingBottom();
+		mAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight() - 2 * mPointRadius;
+		mAvailableHeight = getHeight() - getPaddingTop() - getPaddingBottom() - 2 * mPointRadius;
+		// TODO max-min cann chaged(setters) move it to set data or ondraw
 		mXMultiplier = mAvailableWidth / (maxXValue - minXValue);
 		mYMultiplier = mAvailableHeight / (maxYValue - minYValue);
 		generateXForInterpolation();
@@ -86,25 +84,40 @@ public class LineChart extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
-
-		// final float density = getResources().getDisplayMetrics().density;
-		// final float range = maxYValue - minYValue;
-		// final float ystep = 8 * range * density / mYMultiplier;
-		// Path p = new Path();
-		// Paint pp = new Paint();
-		// pp.setColor(Color.LTGRAY);
-		// pp.setStyle(Paint.Style.STROKE);
-		// pp.setStrokeWidth(1);
-		// for (float f = minYValue; f <= maxYValue; f += ystep) {
-		// float rawValueX = calculateX(minXValue);
-		// float rawValueY = calculateY(f);
-		// p.moveTo(rawValueX, rawValueY);
-		// rawValueX = calculateX(maxXValue);
-		// rawValueY = calculateY(f);
-		// p.lineTo(rawValueX, rawValueY);
-		// mCanvas.drawPath(p, pp);
-		// p.reset();
-		// }
+		final float scale = getResources().getDisplayMetrics().density;
+		final float yRange = maxYValue - minYValue;
+		// divider should be integer
+		int divider = Math.round((mAvailableHeight / scale) / 128.0f);
+		if (divider < 2) {
+			divider = 2;
+		}
+		final float yStep = yRange / divider;
+		Path p = new Path();
+		Paint pp = new Paint();
+		pp.setColor(Color.LTGRAY);
+		pp.setStyle(Paint.Style.STROKE);
+		pp.setStrokeWidth(1);
+		float rawMinX = calculateX(minXValue);
+		float rawMinY = calculateY(minYValue);
+		float rawMaxX = calculateX(maxXValue);
+		float rawMaxY = calculateY(maxYValue);
+		p.moveTo(rawMinX, rawMinY);
+		p.lineTo(rawMaxX, rawMinY);
+		mCanvas.drawPath(p, pp);
+		p.reset();
+		p.moveTo(rawMinX, rawMaxY);
+		p.lineTo(rawMaxX, rawMaxY);
+		mCanvas.drawPath(p, pp);
+		p.reset();
+		for (int i = 1; i < divider; ++i) {
+			float rawValueX = calculateX(minXValue);
+			float rawValueY = calculateY(minYValue + yStep * i);
+			p.moveTo(rawValueX, rawValueY);
+			rawValueX = calculateX(maxXValue);
+			p.lineTo(rawValueX, rawValueY);
+			mCanvas.drawPath(p, pp);
+			p.reset();
+		}
 
 		// lines
 		int seriesIndex = 0;
@@ -144,11 +157,11 @@ public class LineChart extends View {
 	}
 
 	private float calculateX(float valueX) {
-		return getPaddingLeft() + (valueX - minXValue) * mXMultiplier;
+		return getPaddingLeft() + mPointRadius + (valueX - minXValue) * mXMultiplier;
 	}
 
 	private float calculateY(float valueY) {
-		return getHeight() - getPaddingBottom() - (valueY - minYValue) * mYMultiplier;
+		return getHeight() - getPaddingBottom() - mPointRadius - (valueY - minYValue) * mYMultiplier;
 	}
 
 	/**
@@ -156,15 +169,15 @@ public class LineChart extends View {
 	 */
 	private void generateXForInterpolation() {
 		// TODO check null mData and domain.size()>2
-		final float density = getResources().getDisplayMetrics().density;
-		final float range = maxXValue - minXValue;
-		final float step = 4 * range * density / mAvailableWidth;
+		final float scale = getResources().getDisplayMetrics().density;
+		final float xRange = maxXValue - minXValue;
+		final float xStep = 4.0f * xRange * scale / mAvailableWidth;
 		mGeneratedX = new ArrayList<Float>();
 		int i = 0;
 		for (float value : mData.domain) {
 			mGeneratedX.add(value);
 			if (i < mData.domain.size() - 1) {
-				for (float f = value + step; f < mData.domain.get(i + 1) - step; f += step) {
+				for (float f = value + xStep; f < mData.domain.get(i + 1) - xStep; f += xStep) {
 					mGeneratedX.add(f);
 				}
 			}
