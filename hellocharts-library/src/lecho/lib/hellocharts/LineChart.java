@@ -10,7 +10,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff.Mode;
@@ -31,8 +30,8 @@ public class LineChart extends View {
 	protected List<SplineInterpolator> mSplineInterpolators;
 	protected Bitmap mBitmap;
 	protected Canvas mCanvas;
-	protected Paint mLinePaint = new Paint();
 	protected Path mLinePath = new Path();
+	protected Paint mLinePaint = new Paint();
 	protected Paint mPointPaint = new Paint();
 	protected float mLineWidth = 4.0f;
 	protected float mPointRadius = 12.0f;
@@ -85,12 +84,13 @@ public class LineChart extends View {
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
 		int seriesIndex = 0;
+		// lines
 		for (LineSeries lineSeries : mData.series) {
 			mLinePaint.setColor(lineSeries.color);
 			int valueIndex = 0;
 			for (float valueX : mGeneratedX) {
-				float rawValueX = calculateX(valueX);
-				float rawValueY = calculateY(mSplineInterpolators.get(seriesIndex).interpolate(valueX));
+				final float rawValueX = calculateX(valueX);
+				final float rawValueY = calculateY(mSplineInterpolators.get(seriesIndex).interpolate(valueX));
 				if (valueIndex == 0) {
 					mLinePath.moveTo(rawValueX, rawValueY);
 				} else {
@@ -103,19 +103,20 @@ public class LineChart extends View {
 			++seriesIndex;
 		}
 		// TODO check if point drawing on
+		// pints
 		for (LineSeries lineSeries : mData.series) {
+			mPointPaint.setColor(lineSeries.color);
 			int valueIndex = 0;
 			for (Float valueX : mData.domain) {
-				float rawValueX = calculateX(valueX);
-				float rawValueY = calculateY(lineSeries.values.get(valueIndex));
-				mPointPaint.setColor(lineSeries.color);
+				final float rawValueX = calculateX(valueX);
+				final float rawValueY = calculateY(lineSeries.values.get(valueIndex));
 				mCanvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointPaint);
 				++valueIndex;
 			}
 		}
-		
-		
-		
+
+		final float divider =
+
 		Log.v("TAG", "Narysowane w [ms]: " + (System.nanoTime() - time) / 1000000);
 		canvas.drawBitmap(mBitmap, 0, 0, null);
 		Log.v("TAG", "Wyświetlone w [ms]: " + (System.nanoTime() - time) / 1000000);
@@ -136,7 +137,7 @@ public class LineChart extends View {
 		// TODO check null mData and domain.size()>2
 		final int size = mData.domain.size();
 		final float density = getResources().getDisplayMetrics().density;
-		final float range = mData.domain.get(size - 1) - mData.domain.get(0);
+		final float range = maxXValue - minXValue;
 		final float step = range / mXMultiplier * density;
 		mGeneratedX = new ArrayList<Float>();
 		int i = 0;
