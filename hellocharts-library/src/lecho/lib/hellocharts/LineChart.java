@@ -10,6 +10,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff.Mode;
@@ -25,22 +26,24 @@ import android.view.View;
  * 
  */
 public class LineChart extends View {
-	protected LineChartData mData;
-	protected List<Float> mGeneratedX;
-	protected List<SplineInterpolator> mSplineInterpolators;
-	protected Bitmap mBitmap;
-	protected Canvas mCanvas;
-	protected Path mLinePath = new Path();
-	protected Paint mLinePaint = new Paint();
-	protected Paint mPointPaint = new Paint();
-	protected float mLineWidth = 4.0f;
-	protected float mPointRadius = 12.0f;
-	protected float minXValue = Float.MAX_VALUE;
-	protected float maxXValue = Float.MIN_VALUE;
-	protected float minYValue = Float.MAX_VALUE;
-	protected float maxYValue = Float.MIN_VALUE;
-	protected float mXMultiplier;
-	protected float mYMultiplier;
+	private LineChartData mData;
+	private List<Float> mGeneratedX;
+	private List<SplineInterpolator> mSplineInterpolators;
+	private Bitmap mBitmap;
+	private Canvas mCanvas;
+	private Path mLinePath = new Path();
+	private Paint mLinePaint = new Paint();
+	private Paint mPointPaint = new Paint();
+	private float mLineWidth = 4.0f;
+	private float mPointRadius = 12.0f;
+	private float minXValue = Float.MAX_VALUE;
+	private float maxXValue = Float.MIN_VALUE;
+	private float minYValue = Float.MAX_VALUE;
+	private float maxYValue = Float.MIN_VALUE;
+	private float mXMultiplier;
+	private float mYMultiplier;
+	private float mAvailableWidth;
+	private float mAvailableHeight;
 
 	public LineChart(Context context) {
 		super(context);
@@ -73,18 +76,38 @@ public class LineChart extends View {
 		mBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Config.ARGB_8888);
 		mCanvas = new Canvas(mBitmap);
 
-		float availableWidth = getWidth() - getPaddingLeft() - getPaddingRight();
-		float availableHeight = getHeight() - getPaddingTop() - getPaddingBottom();
-		mXMultiplier = availableWidth / (maxXValue - minXValue);
-		mYMultiplier = availableHeight / (maxYValue - minYValue);
+		mAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight();
+		mAvailableHeight = getHeight() - getPaddingTop() - getPaddingBottom();
+		mXMultiplier = mAvailableWidth / (maxXValue - minXValue);
+		mYMultiplier = mAvailableHeight / (maxYValue - minYValue);
 		generateXForInterpolation();
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
-		int seriesIndex = 0;
+
+		// final float density = getResources().getDisplayMetrics().density;
+		// final float range = maxYValue - minYValue;
+		// final float ystep = 8 * range * density / mYMultiplier;
+		// Path p = new Path();
+		// Paint pp = new Paint();
+		// pp.setColor(Color.LTGRAY);
+		// pp.setStyle(Paint.Style.STROKE);
+		// pp.setStrokeWidth(1);
+		// for (float f = minYValue; f <= maxYValue; f += ystep) {
+		// float rawValueX = calculateX(minXValue);
+		// float rawValueY = calculateY(f);
+		// p.moveTo(rawValueX, rawValueY);
+		// rawValueX = calculateX(maxXValue);
+		// rawValueY = calculateY(f);
+		// p.lineTo(rawValueX, rawValueY);
+		// mCanvas.drawPath(p, pp);
+		// p.reset();
+		// }
+
 		// lines
+		int seriesIndex = 0;
 		for (LineSeries lineSeries : mData.series) {
 			mLinePaint.setColor(lineSeries.color);
 			int valueIndex = 0;
@@ -107,15 +130,13 @@ public class LineChart extends View {
 		for (LineSeries lineSeries : mData.series) {
 			mPointPaint.setColor(lineSeries.color);
 			int valueIndex = 0;
-			for (Float valueX : mData.domain) {
+			for (float valueX : mData.domain) {
 				final float rawValueX = calculateX(valueX);
 				final float rawValueY = calculateY(lineSeries.values.get(valueIndex));
 				mCanvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointPaint);
 				++valueIndex;
 			}
 		}
-
-		final float divider =
 
 		Log.v("TAG", "Narysowane w [ms]: " + (System.nanoTime() - time) / 1000000);
 		canvas.drawBitmap(mBitmap, 0, 0, null);
@@ -135,10 +156,9 @@ public class LineChart extends View {
 	 */
 	private void generateXForInterpolation() {
 		// TODO check null mData and domain.size()>2
-		final int size = mData.domain.size();
 		final float density = getResources().getDisplayMetrics().density;
 		final float range = maxXValue - minXValue;
-		final float step = range / mXMultiplier * density;
+		final float step = 4 * range * density / mAvailableWidth;
 		mGeneratedX = new ArrayList<Float>();
 		int i = 0;
 		for (float value : mData.domain) {
