@@ -32,6 +32,7 @@ public class LineChart extends View {
 	private Path mLinePath = new Path();
 	private Paint mLinePaint = new Paint();
 	private Paint mPointPaint = new Paint();
+	private Paint mRulersPaint = new Paint();
 	private float mLineWidth = 4.0f;
 	private float mPointRadius = 12.0f;
 	private float minXValue = Float.MAX_VALUE;
@@ -42,6 +43,7 @@ public class LineChart extends View {
 	private float mYMultiplier;
 	private float mAvailableWidth;
 	private float mAvailableHeight;
+	private int mhorizontalRulersDivider;
 
 	public LineChart(Context context) {
 		super(context);
@@ -65,59 +67,35 @@ public class LineChart extends View {
 
 		mPointPaint.setAntiAlias(true);
 		mPointPaint.setStyle(Paint.Style.FILL);
+
+		mRulersPaint.setStyle(Paint.Style.STROKE);
+		mRulersPaint.setColor(Color.LTGRAY);
+		mRulersPaint.setStrokeWidth(1);
 	}
 
 	@Override
 	protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
-		mBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Config.ARGB_8888);
+		if (null == mBitmap) {
+			mBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Config.ARGB_8888);
+		} else {
+			mBitmap.eraseColor(Color.TRANSPARENT);
+		}
 		mCanvas = new Canvas(mBitmap);
 
 		mAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight() - 2 * mPointRadius;
 		mAvailableHeight = getHeight() - getPaddingTop() - getPaddingBottom() - 2 * mPointRadius;
-		// TODO max-min cann chaged(setters) move it to set data or ondraw
+		// TODO max-min can chaged(setters) move it to set data or ondraw
 		mXMultiplier = mAvailableWidth / (maxXValue - minXValue);
 		mYMultiplier = mAvailableHeight / (maxYValue - minYValue);
 		generateXForInterpolation();
+		calculateHorizontalRulersDivider();
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
-		final float scale = getResources().getDisplayMetrics().density;
-		final float yRange = maxYValue - minYValue;
-		// divider should be integer
-		int divider = Math.round((mAvailableHeight / scale) / 128.0f);
-		if (divider < 2) {
-			divider = 2;
-		}
-		final float yStep = yRange / divider;
-		Path p = new Path();
-		Paint pp = new Paint();
-		pp.setColor(Color.LTGRAY);
-		pp.setStyle(Paint.Style.STROKE);
-		pp.setStrokeWidth(1);
-		float rawMinX = calculateX(minXValue);
-		float rawMinY = calculateY(minYValue);
-		float rawMaxX = calculateX(maxXValue);
-		float rawMaxY = calculateY(maxYValue);
-		p.moveTo(rawMinX, rawMinY);
-		p.lineTo(rawMaxX, rawMinY);
-		mCanvas.drawPath(p, pp);
-		p.reset();
-		p.moveTo(rawMinX, rawMaxY);
-		p.lineTo(rawMaxX, rawMaxY);
-		mCanvas.drawPath(p, pp);
-		p.reset();
-		for (int i = 1; i < divider; ++i) {
-			float rawValueX = calculateX(minXValue);
-			float rawValueY = calculateY(minYValue + yStep * i);
-			p.moveTo(rawValueX, rawValueY);
-			rawValueX = calculateX(maxXValue);
-			p.lineTo(rawValueX, rawValueY);
-			mCanvas.drawPath(p, pp);
-			p.reset();
-		}
+		drawHorizontalRulers();
 
 		// lines
 		int seriesIndex = 0;
@@ -182,6 +160,45 @@ public class LineChart extends View {
 				}
 			}
 			++i;
+		}
+	}
+
+	/**
+	 * Calculates how many horizontal rulers will be visible on chart if user enabled rulers.
+	 */
+	private void calculateHorizontalRulersDivider() {
+		final float scale = getResources().getDisplayMetrics().density;
+		// divider should be integer
+		int divider = Math.round((mAvailableHeight / scale) / 128.0f);
+		if (divider < 2) {
+			divider = 2;
+		}
+		mhorizontalRulersDivider = divider;
+	}
+
+	/**
+	 * Draw horizontal Rulers. Number or lines is determined by chart height and screen resolution.
+	 */
+	private void drawHorizontalRulers() {
+		float rawMinX = calculateX(minXValue) - mPointRadius;
+		float rawMinY = calculateY(minYValue);
+		float rawMaxX = calculateX(maxXValue) + mPointRadius;
+		float rawMaxY = calculateY(maxYValue);
+		mLinePath.moveTo(rawMinX, rawMinY);
+		mLinePath.lineTo(rawMaxX, rawMinY);
+		mCanvas.drawPath(mLinePath, mRulersPaint);
+		mLinePath.reset();
+		mLinePath.moveTo(rawMinX, rawMaxY);
+		mLinePath.lineTo(rawMaxX, rawMaxY);
+		mCanvas.drawPath(mLinePath, mRulersPaint);
+		mLinePath.reset();
+		final float step = (maxYValue - minYValue) / mhorizontalRulersDivider;
+		for (int i = 1; i < mhorizontalRulersDivider; ++i) {
+			final float rawValueY = calculateY(minYValue + step * i);
+			mLinePath.moveTo(rawMinX, rawValueY);
+			mLinePath.lineTo(rawMaxX, rawValueY);
+			mCanvas.drawPath(mLinePath, mRulersPaint);
+			mLinePath.reset();
 		}
 	}
 
