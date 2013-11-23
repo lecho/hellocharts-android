@@ -34,8 +34,8 @@ public class LineChart extends View {
 	private Paint mLinePaint = new Paint();
 	private Paint mPointPaint = new Paint();
 	private Paint mRulersPaint = new Paint();
-	private float mLineWidth = 4.0f;
-	private float mPointRadius = 12.0f;
+	private float mLineWidth;
+	private float mPointRadius;
 	private float minXValue = Float.MAX_VALUE;
 	private float maxXValue = Float.MIN_VALUE;
 	private float minYValue = Float.MAX_VALUE;
@@ -51,20 +51,28 @@ public class LineChart extends View {
 
 	public LineChart(Context context) {
 		super(context);
-		initPaint();
+		initAttributes();
+		initPaints();
 	}
 
 	public LineChart(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		initPaint();
+		initAttributes();
+		initPaints();
 	}
 
 	public LineChart(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		initPaint();
+		initAttributes();
+		initPaints();
 	}
 
-	private void initPaint() {
+	private void initAttributes() {
+		mLineWidth = dp2px(getContext(), 2);
+		mPointRadius = dp2px(getContext(), 6);
+	}
+
+	private void initPaints() {
 		mLinePaint.setAntiAlias(true);
 		mLinePaint.setStyle(Paint.Style.STROKE);
 		mLinePaint.setStrokeWidth(mLineWidth);
@@ -75,6 +83,7 @@ public class LineChart extends View {
 		mRulersPaint.setStyle(Paint.Style.STROKE);
 		mRulersPaint.setColor(Color.LTGRAY);
 		mRulersPaint.setStrokeWidth(1);
+
 	}
 
 	@Override
@@ -89,13 +98,10 @@ public class LineChart extends View {
 		if (null == mCanvas) {
 			mCanvas = new Canvas(mBitmap);
 		}
-
 		// TODO mPointRadus can change, recalculate in setter
-		mAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight() - 2 * mPointRadius;
-		mAvailableHeight = getHeight() - getPaddingTop() - getPaddingBottom() - 2 * mPointRadius;
+		calculateAvailableDimensions();
 		// TODO max-min can chage( - recalculate in setter
-		mXMultiplier = mAvailableWidth / (maxXValue - minXValue);
-		mYMultiplier = mAvailableHeight / (maxYValue - minYValue);
+		calculateMultipliers();
 		if (mInterpolationOn) {
 			generateXForInterpolation();
 		}
@@ -103,6 +109,16 @@ public class LineChart extends View {
 			calculateHorizontalRulersDivider();
 		}
 		Log.v(TAG, "Zwymiarowane w [ms]: " + (System.nanoTime() - time) / 1000000);
+	}
+
+	private void calculateMultipliers() {
+		mXMultiplier = mAvailableWidth / (maxXValue - minXValue);
+		mYMultiplier = mAvailableHeight / (maxYValue - minYValue);
+	}
+
+	private void calculateAvailableDimensions() {
+		mAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight() - 2 * mPointRadius;
+		mAvailableHeight = getHeight() - getPaddingTop() - getPaddingBottom() - 2 * mPointRadius;
 	}
 
 	@Override
@@ -213,6 +229,8 @@ public class LineChart extends View {
 		final float scale = getResources().getDisplayMetrics().density;
 		// divider should be integer
 		int divider = Math.round((mAvailableHeight / scale) / 128.0f);
+		// if user want rulers give him at least 3 - lower, upper and one in the middle. Three rulers will divide chart
+		// into two areas that why divider will be >=2;
 		if (divider < 2) {
 			divider = 2;
 		}
@@ -282,6 +300,14 @@ public class LineChart extends View {
 				}
 			}
 		}
+	}
+
+	private static int dp2px(Context context, int dp) {
+		// Get the screen's density scale
+		final float scale = context.getResources().getDisplayMetrics().density;
+		// Convert the dps to pixels, based on density scale
+		return (int) (dp * scale + 0.5f);
+
 	}
 
 }
