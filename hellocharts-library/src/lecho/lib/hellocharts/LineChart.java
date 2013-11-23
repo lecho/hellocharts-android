@@ -24,6 +24,7 @@ import android.view.View;
  * 
  */
 public class LineChart extends View {
+	private static final String TAG = "LineChart";
 	private LineChartData mData;
 	private List<Float> mGeneratedX;
 	private List<SplineInterpolator> mSplineInterpolators;
@@ -44,6 +45,9 @@ public class LineChart extends View {
 	private float mAvailableWidth;
 	private float mAvailableHeight;
 	private int mhorizontalRulersDivider;
+	boolean mInterpolationOn = true;
+	boolean mHorizontalRulersOn = true;
+	boolean mPointsOn = true;
 
 	public LineChart(Context context) {
 		super(context);
@@ -75,49 +79,63 @@ public class LineChart extends View {
 
 	@Override
 	protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
+		long time = System.nanoTime();
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
 		if (null == mBitmap) {
 			mBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Config.ARGB_8888);
 		} else {
 			mBitmap.eraseColor(Color.TRANSPARENT);
 		}
-		mCanvas = new Canvas(mBitmap);
+		if (null == mCanvas) {
+			mCanvas = new Canvas(mBitmap);
+		}
 
+		// TODO mPointRadus can change, recalculate in setter
 		mAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight() - 2 * mPointRadius;
 		mAvailableHeight = getHeight() - getPaddingTop() - getPaddingBottom() - 2 * mPointRadius;
-		// TODO max-min can chaged(setters) move it to set data or ondraw
+		// TODO max-min can chage( - recalculate in setter
 		mXMultiplier = mAvailableWidth / (maxXValue - minXValue);
 		mYMultiplier = mAvailableHeight / (maxYValue - minYValue);
-		generateXForInterpolation();
-		calculateHorizontalRulersDivider();
+		if (mInterpolationOn) {
+			generateXForInterpolation();
+		}
+		if (mHorizontalRulersOn) {
+			calculateHorizontalRulersDivider();
+		}
+		Log.v(TAG, "Zwymiarowane w [ms]: " + (System.nanoTime() - time) / 1000000);
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
-		drawHorizontalRulers();
+		if (mHorizontalRulersOn) {
+			drawHorizontalRulers();
+		}
+		drawLines();
+		if (mPointsOn) {
+			drawPoints();
+		}
+		Log.v(TAG, "Narysowane w [ms]: " + (System.nanoTime() - time) / 1000000);
+		canvas.drawBitmap(mBitmap, 0, 0, null);
+		Log.v(TAG, "Wyświetlone w [ms]: " + (System.nanoTime() - time) / 1000000);
+	}
 
-		// lines
+	private void drawLines() {
 		int seriesIndex = 0;
 		for (LineSeries lineSeries : mData.series) {
 			mLinePaint.setColor(lineSeries.color);
-			int valueIndex = 0;
-			for (float valueX : mGeneratedX) {
-				final float rawValueX = calculateX(valueX);
-				final float rawValueY = calculateY(mSplineInterpolators.get(seriesIndex).interpolate(valueX));
-				if (valueIndex == 0) {
-					mLinePath.moveTo(rawValueX, rawValueY);
-				} else {
-					mLinePath.lineTo(rawValueX, rawValueY);
-				}
-				++valueIndex;
+			if (mInterpolationOn) {
+				drawInterpolatedLine(mSplineInterpolators.get(seriesIndex));
+			} else {
+				drawLine(lineSeries);
 			}
 			mCanvas.drawPath(mLinePath, mLinePaint);
 			mLinePath.reset();
 			++seriesIndex;
 		}
-		// TODO check if point drawing on
-		// pints
+	}
+
+	private void drawPoints() {
 		for (LineSeries lineSeries : mData.series) {
 			mPointPaint.setColor(lineSeries.color);
 			int valueIndex = 0;
@@ -128,10 +146,34 @@ public class LineChart extends View {
 				++valueIndex;
 			}
 		}
+	}
 
-		Log.v("TAG", "Narysowane w [ms]: " + (System.nanoTime() - time) / 1000000);
-		canvas.drawBitmap(mBitmap, 0, 0, null);
-		Log.v("TAG", "Wyświetlone w [ms]: " + (System.nanoTime() - time) / 1000000);
+	private void drawInterpolatedLine(final SplineInterpolator interpolator) {
+		boolean isFirstPoint = true;
+		for (float valueX : mGeneratedX) {
+			final float rawValueX = calculateX(valueX);
+			final float rawValueY = calculateY(interpolator.interpolate(valueX));
+			if (isFirstPoint) {
+				mLinePath.moveTo(rawValueX, rawValueY);
+				isFirstPoint = false;
+			} else {
+				mLinePath.lineTo(rawValueX, rawValueY);
+			}
+		}
+	}
+
+	private void drawLine(final LineSeries lineSeries) {
+		int valueIndex = 0;
+		for (float valueX : mData.domain) {
+			final float rawValueX = calculateX(valueX);
+			final float rawValueY = calculateY(lineSeries.values.get(valueIndex));
+			if (valueIndex == 0) {
+				mLinePath.moveTo(rawValueX, rawValueY);
+			} else {
+				mLinePath.lineTo(rawValueX, rawValueY);
+			}
+			++valueIndex;
+		}
 	}
 
 	private float calculateX(float valueX) {
@@ -164,7 +206,8 @@ public class LineChart extends View {
 	}
 
 	/**
-	 * Calculates how many horizontal rulers will be visible on chart if user enabled rulers.
+	 * Calculates how many horizontal rulers will be visible on chart if user enabled rulers. Should be called before
+	 * drawHorizontalRulers().
 	 */
 	private void calculateHorizontalRulersDivider() {
 		final float scale = getResources().getDisplayMetrics().density;
