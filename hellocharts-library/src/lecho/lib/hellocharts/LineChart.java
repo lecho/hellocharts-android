@@ -1,5 +1,8 @@
 package lecho.lib.hellocharts;
 
+import java.util.List;
+
+import lecho.lib.hellocharts.model.DynamicValue;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.LineSeries;
 import android.content.Context;
@@ -12,6 +15,7 @@ import android.graphics.Path;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 
 /**
  * TODO nullcheck for mData
@@ -23,8 +27,8 @@ public class LineChart extends View {
 	private static final String TAG = "LineChart";
 	private static final float LINE_SMOOTHNES = 0.16f;
 	private LineChartData mData;
-	private Bitmap mBitmap;
-	private Canvas mCanvas;
+	// private Bitmap mBitmap;
+	// private Canvas mCanvas;
 	private Path mLinePath = new Path();
 	private Paint mLinePaint = new Paint();
 	private Paint mPointPaint = new Paint();
@@ -43,6 +47,24 @@ public class LineChart extends View {
 	boolean mInterpolationOn = true;
 	boolean mHorizontalRulersOn = false;
 	boolean mPointsOn = true;
+
+	private Runnable animator = new Runnable() {
+		@Override
+		public void run() {
+			boolean needNewFrame = false;
+			long now = AnimationUtils.currentAnimationTimeMillis();
+			for (DynamicValue dynamicValue : mData.series.get(0).values) {
+				dynamicValue.update(now);
+				if (!dynamicValue.isAtRest()) {
+					needNewFrame = true;
+				}
+			}
+			if (needNewFrame) {
+				postDelayed(this, 20);
+			}
+			invalidate();
+		}
+	};
 
 	public LineChart(Context context) {
 		super(context);
@@ -85,14 +107,14 @@ public class LineChart extends View {
 	protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
 		long time = System.nanoTime();
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
-		if (null == mBitmap) {
-			mBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Config.ARGB_8888);
-		} else {
-			mBitmap.eraseColor(Color.TRANSPARENT);
-		}
-		if (null == mCanvas) {
-			mCanvas = new Canvas(mBitmap);
-		}
+		// if (null == mBitmap) {
+		// mBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Config.ARGB_8888);
+		// } else {
+		// mBitmap.eraseColor(Color.TRANSPARENT);
+		// }
+		// if (null == mCanvas) {
+		// mCanvas = new Canvas(mBitmap);
+		// }
 		// TODO mPointRadus can change, recalculate in setter
 		calculateAvailableDimensions();
 		// TODO max-min can chage( - recalculate in setter
@@ -117,18 +139,18 @@ public class LineChart extends View {
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
 		if (mHorizontalRulersOn) {
-			drawHorizontalRulers();
+			drawHorizontalRulers(canvas);
 		}
-		drawLines();
+		drawLines(canvas);
 		if (mPointsOn) {
-			drawPoints();
+			drawPoints(canvas);
 		}
 		Log.v(TAG, "Narysowane w [ms]: " + (System.nanoTime() - time) / 1000000);
-		canvas.drawBitmap(mBitmap, 0, 0, null);
+		// canvas.drawBitmap(mBitmap, 0, 0, null);
 		Log.v(TAG, "Wyświetlone w [ms]: " + (System.nanoTime() - time) / 1000000);
 	}
 
-	private void drawLines() {
+	private void drawLines(Canvas canvas) {
 		for (LineSeries lineSeries : mData.series) {
 			if (mInterpolationOn) {
 				prepareSmoothPath(lineSeries);
@@ -136,19 +158,19 @@ public class LineChart extends View {
 				preparePath(lineSeries);
 			}
 			mLinePaint.setColor(lineSeries.color);
-			mCanvas.drawPath(mLinePath, mLinePaint);
+			canvas.drawPath(mLinePath, mLinePaint);
 			mLinePath.reset();
 		}
 	}
 
-	private void drawPoints() {
+	private void drawPoints(Canvas canvas) {
 		for (LineSeries lineSeries : mData.series) {
 			mPointPaint.setColor(lineSeries.color);
 			int valueIndex = 0;
 			for (float valueX : mData.domain) {
 				final float rawValueX = calculateX(valueX);
-				final float rawValueY = calculateY(lineSeries.values.get(valueIndex));
-				mCanvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointPaint);
+				final float rawValueY = calculateY(lineSeries.values.get(valueIndex).getPosition());
+				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointPaint);
 				++valueIndex;
 			}
 		}
@@ -158,7 +180,7 @@ public class LineChart extends View {
 		int valueIndex = 0;
 		for (float valueX : mData.domain) {
 			final float rawValueX = calculateX(valueX);
-			final float rawValueY = calculateY(lineSeries.values.get(valueIndex));
+			final float rawValueY = calculateY(lineSeries.values.get(valueIndex).getPosition());
 			if (valueIndex == 0) {
 				mLinePath.moveTo(rawValueX, rawValueY);
 			} else {
@@ -171,14 +193,14 @@ public class LineChart extends View {
 	private void prepareSmoothPath(final LineSeries lineSeries) {
 		for (int pointIndex = 0; pointIndex < mData.domain.size() - 1; ++pointIndex) {
 			final float currentPointX = calculateX(mData.domain.get(pointIndex));
-			final float currentPointY = calculateY(lineSeries.values.get(pointIndex));
+			final float currentPointY = calculateY(lineSeries.values.get(pointIndex).getPosition());
 			final float nextPointX = calculateX(mData.domain.get(pointIndex + 1));
-			final float nextPointY = calculateY(lineSeries.values.get(pointIndex + 1));
+			final float nextPointY = calculateY(lineSeries.values.get(pointIndex + 1).getPosition());
 			final float previousPointX;
 			final float previousPointY;
 			if (pointIndex > 0) {
 				previousPointX = calculateX(mData.domain.get(pointIndex - 1));
-				previousPointY = calculateY(lineSeries.values.get(pointIndex - 1));
+				previousPointY = calculateY(lineSeries.values.get(pointIndex - 1).getPosition());
 			} else {
 				previousPointX = currentPointX;
 				previousPointY = currentPointY;
@@ -187,7 +209,7 @@ public class LineChart extends View {
 			final float afterNextPointY;
 			if (pointIndex < mData.domain.size() - 2) {
 				afterNextPointX = calculateX(mData.domain.get(pointIndex + 2));
-				afterNextPointY = calculateY(lineSeries.values.get(pointIndex + 2));
+				afterNextPointY = calculateY(lineSeries.values.get(pointIndex + 2).getPosition());
 			} else {
 				afterNextPointX = nextPointX;
 				afterNextPointY = nextPointY;
@@ -233,25 +255,25 @@ public class LineChart extends View {
 	/**
 	 * Draw horizontal Rulers. Number or lines is determined by chart height and screen resolution.
 	 */
-	private void drawHorizontalRulers() {
+	private void drawHorizontalRulers(Canvas canvas) {
 		float rawMinX = calculateX(minXValue) - mPointRadius;
 		float rawMinY = calculateY(minYValue);
 		float rawMaxX = calculateX(maxXValue) + mPointRadius;
 		float rawMaxY = calculateY(maxYValue);
 		mLinePath.moveTo(rawMinX, rawMinY);
 		mLinePath.lineTo(rawMaxX, rawMinY);
-		mCanvas.drawPath(mLinePath, mRulersPaint);
+		canvas.drawPath(mLinePath, mRulersPaint);
 		mLinePath.reset();
 		mLinePath.moveTo(rawMinX, rawMaxY);
 		mLinePath.lineTo(rawMaxX, rawMaxY);
-		mCanvas.drawPath(mLinePath, mRulersPaint);
+		canvas.drawPath(mLinePath, mRulersPaint);
 		mLinePath.reset();
 		final float step = (maxYValue - minYValue) / mhorizontalRulersDivider;
 		for (int i = 1; i < mhorizontalRulersDivider; ++i) {
 			final float rawValueY = calculateY(minYValue + step * i);
 			mLinePath.moveTo(rawMinX, rawValueY);
 			mLinePath.lineTo(rawMaxX, rawValueY);
-			mCanvas.drawPath(mLinePath, mRulersPaint);
+			canvas.drawPath(mLinePath, mRulersPaint);
 			mLinePath.reset();
 		}
 	}
@@ -267,6 +289,17 @@ public class LineChart extends View {
 		postInvalidate();
 	}
 
+	public void animateSeries(int index, List<Float> values) {
+		int valueIndex = 0;
+		long now = AnimationUtils.currentAnimationTimeMillis();
+		for (DynamicValue value : mData.series.get(index).values) {
+			value.setTargetPosition(values.get(valueIndex), now);
+			++valueIndex;
+		}
+		removeCallbacks(animator);
+		post(animator);
+	}
+
 	private void calculateRanges() {
 		for (Float value : mData.domain) {
 			if (value < minXValue) {
@@ -276,11 +309,11 @@ public class LineChart extends View {
 			}
 		}
 		for (LineSeries lineSeries : mData.series) {
-			for (Float value : lineSeries.values) {
-				if (value < minYValue) {
-					minYValue = value;
-				} else if (value > maxYValue) {
-					maxYValue = value;
+			for (DynamicValue value : lineSeries.values) {
+				if (value.getPosition() < minYValue) {
+					minYValue = value.getPosition();
+				} else if (value.getPosition() > maxYValue) {
+					maxYValue = value.getPosition();
 				}
 			}
 		}

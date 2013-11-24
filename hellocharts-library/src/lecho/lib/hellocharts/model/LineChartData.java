@@ -12,8 +12,8 @@ public class LineChartData {
 		this.domain = domain;
 	}
 
-	public void addSeries(LineSeries series) {
-		this.series.add(series);
+	public void addSeries(int color, List<Float> values) {
+		this.series.add(new LineSeries(color, values));
 	}
 
 }

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lecho.lib.hellocharts.model.LineChartData;
-import lecho.lib.hellocharts.model.LineSeries;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -55,10 +54,10 @@ public class MainActivity extends Activity {
 		// s2.add(3f);
 		// s2.add(10f);
 		// s2.add(5f);
-		LineSeries l1 = new LineSeries(Color.parseColor("#FFBB33"), s1);
-		LineSeries l2 = new LineSeries(Color.parseColor("#99CC00"), s2);
-		data.addSeries(l1);
-		data.addSeries(l2);
+		// LineSeries l1 = new LineSeries(Color.parseColor("#FFBB33"), s1);
+		// LineSeries l2 = new LineSeries(Color.parseColor("#99CC00"), s2);
+		data.addSeries(Color.parseColor("#FFBB33"), s1);
+		data.addSeries(Color.parseColor("#99CC00"), s2);
 		chart.setData(data);
 		layout.addView(chart);
 
@@ -74,7 +73,20 @@ public class MainActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.action_settings) {
-			chart.invalidate();
+			List<Float> s2 = new ArrayList<Float>();
+			s2.add(5f);
+			s2.add(3f);
+			s2.add(8f);
+			s2.add(6f);
+			s2.add(10f);
+			List<Float> s1 = new ArrayList<Float>();
+			s1.add(1f);
+			s1.add(5f);
+			s1.add(6f);
+			s1.add(10f);
+			s1.add(3f);
+			chart.animateSeries(0, s2);
+			chart.animateSeries(1, s1);
 		}
 		return super.onOptionsItemSelected(item);
 	}
