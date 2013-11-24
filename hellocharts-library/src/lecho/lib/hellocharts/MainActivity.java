@@ -9,16 +9,18 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.RelativeLayout;
 
 public class MainActivity extends Activity {
+	private LineChart chart;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		RelativeLayout layout = (RelativeLayout) findViewById(R.id.layout);
-		LineChart lineChart = new LineChart(this);
+		chart = new LineChart(this);
 		List<Float> domain = new ArrayList<Float>();
 		domain.add(1f);
 		domain.add(2f);
@@ -57,9 +59,9 @@ public class MainActivity extends Activity {
 		LineSeries l2 = new LineSeries(Color.parseColor("#99CC00"), s2);
 		data.addSeries(l1);
 		data.addSeries(l2);
-		lineChart.setData(data);
-		lineChart.setPadding(20, 20, 20, 20);
-		layout.addView(lineChart);
+		chart.setData(data);
+		layout.addView(chart);
+
 	}
 
 	@Override
@@ -69,4 +71,11 @@ public class MainActivity extends Activity {
 		return true;
 	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == R.id.action_settings) {
+			chart.invalidate();
+		}
+		return super.onOptionsItemSelected(item);
+	}
 }

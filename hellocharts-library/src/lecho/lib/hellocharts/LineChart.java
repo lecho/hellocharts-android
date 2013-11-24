@@ -1,11 +1,7 @@
 package lecho.lib.hellocharts;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.LineSeries;
-import lecho.lib.hellocharts.utils.SplineInterpolator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -25,9 +21,8 @@ import android.view.View;
  */
 public class LineChart extends View {
 	private static final String TAG = "LineChart";
+	private static final float LINE_SMOOTHNES = 0.16f;
 	private LineChartData mData;
-	private List<Float> mGeneratedX;
-	private List<SplineInterpolator> mSplineInterpolators;
 	private Bitmap mBitmap;
 	private Canvas mCanvas;
 	private Path mLinePath = new Path();
@@ -46,7 +41,7 @@ public class LineChart extends View {
 	private float mAvailableHeight;
 	private int mhorizontalRulersDivider;
 	boolean mInterpolationOn = true;
-	boolean mHorizontalRulersOn = true;
+	boolean mHorizontalRulersOn = false;
 	boolean mPointsOn = true;
 
 	public LineChart(Context context) {
@@ -68,8 +63,8 @@ public class LineChart extends View {
 	}
 
 	private void initAttributes() {
-		mLineWidth = dp2px(getContext(), 2);
-		mPointRadius = dp2px(getContext(), 6);
+		mLineWidth = dp2px(getContext(), 3);
+		mPointRadius = dp2px(getContext(), 8);
 	}
 
 	private void initPaints() {
@@ -102,9 +97,6 @@ public class LineChart extends View {
 		calculateAvailableDimensions();
 		// TODO max-min can chage( - recalculate in setter
 		calculateMultipliers();
-		if (mInterpolationOn) {
-			generateXForInterpolation();
-		}
 		if (mHorizontalRulersOn) {
 			calculateHorizontalRulersDivider();
 		}
@@ -137,17 +129,15 @@ public class LineChart extends View {
 	}
 
 	private void drawLines() {
-		int seriesIndex = 0;
 		for (LineSeries lineSeries : mData.series) {
-			mLinePaint.setColor(lineSeries.color);
 			if (mInterpolationOn) {
-				drawInterpolatedLine(mSplineInterpolators.get(seriesIndex));
+				prepareSmoothPath(lineSeries);
 			} else {
-				drawLine(lineSeries);
+				preparePath(lineSeries);
 			}
+			mLinePaint.setColor(lineSeries.color);
 			mCanvas.drawPath(mLinePath, mLinePaint);
 			mLinePath.reset();
-			++seriesIndex;
 		}
 	}
 
@@ -164,21 +154,7 @@ public class LineChart extends View {
 		}
 	}
 
-	private void drawInterpolatedLine(final SplineInterpolator interpolator) {
-		boolean isFirstPoint = true;
-		for (float valueX : mGeneratedX) {
-			final float rawValueX = calculateX(valueX);
-			final float rawValueY = calculateY(interpolator.interpolate(valueX));
-			if (isFirstPoint) {
-				mLinePath.moveTo(rawValueX, rawValueY);
-				isFirstPoint = false;
-			} else {
-				mLinePath.lineTo(rawValueX, rawValueY);
-			}
-		}
-	}
-
-	private void drawLine(final LineSeries lineSeries) {
+	private void preparePath(final LineSeries lineSeries) {
 		int valueIndex = 0;
 		for (float valueX : mData.domain) {
 			final float rawValueX = calculateX(valueX);
@@ -192,33 +168,50 @@ public class LineChart extends View {
 		}
 	}
 
+	private void prepareSmoothPath(final LineSeries lineSeries) {
+		for (int pointIndex = 0; pointIndex < mData.domain.size() - 1; ++pointIndex) {
+			final float currentPointX = calculateX(mData.domain.get(pointIndex));
+			final float currentPointY = calculateY(lineSeries.values.get(pointIndex));
+			final float nextPointX = calculateX(mData.domain.get(pointIndex + 1));
+			final float nextPointY = calculateY(lineSeries.values.get(pointIndex + 1));
+			final float previousPointX;
+			final float previousPointY;
+			if (pointIndex > 0) {
+				previousPointX = calculateX(mData.domain.get(pointIndex - 1));
+				previousPointY = calculateY(lineSeries.values.get(pointIndex - 1));
+			} else {
+				previousPointX = currentPointX;
+				previousPointY = currentPointY;
+			}
+			final float afterNextPointX;
+			final float afterNextPointY;
+			if (pointIndex < mData.domain.size() - 2) {
+				afterNextPointX = calculateX(mData.domain.get(pointIndex + 2));
+				afterNextPointY = calculateY(lineSeries.values.get(pointIndex + 2));
+			} else {
+				afterNextPointX = nextPointX;
+				afterNextPointY = nextPointY;
+			}
+			final float firstDiffX = (nextPointX - previousPointX);
+			final float firstDiffY = (nextPointY - previousPointY);
+			final float secondDiffX = (afterNextPointX - currentPointX);
+			final float secondDiffY = (afterNextPointY - currentPointY);
+			final float firstControlPointX = currentPointX + (LINE_SMOOTHNES * firstDiffX);
+			final float firstControlPointY = currentPointY + (LINE_SMOOTHNES * firstDiffY);
+			final float secondControlPointX = nextPointX - (LINE_SMOOTHNES * secondDiffX);
+			final float secondControlPointY = nextPointY - (LINE_SMOOTHNES * secondDiffY);
+			mLinePath.moveTo(currentPointX, currentPointY);
+			mLinePath.cubicTo(firstControlPointX, firstControlPointY, secondControlPointX, secondControlPointY,
+					nextPointX, nextPointY);
+		}
+	}
+
 	private float calculateX(float valueX) {
 		return getPaddingLeft() + mPointRadius + (valueX - minXValue) * mXMultiplier;
 	}
 
 	private float calculateY(float valueY) {
 		return getHeight() - getPaddingBottom() - mPointRadius - (valueY - minYValue) * mYMultiplier;
-	}
-
-	/**
-	 * Generates additional X values for interpolation. Should be called after any view size changes.
-	 */
-	private void generateXForInterpolation() {
-		// TODO check null mData and domain.size()>2
-		final float scale = getResources().getDisplayMetrics().density;
-		final float xRange = maxXValue - minXValue;
-		final float xStep = 4.0f * xRange * scale / mAvailableWidth;
-		mGeneratedX = new ArrayList<Float>();
-		int i = 0;
-		for (float value : mData.domain) {
-			mGeneratedX.add(value);
-			if (i < mData.domain.size() - 1) {
-				for (float f = value + xStep; f < mData.domain.get(i + 1) - xStep; f += xStep) {
-					mGeneratedX.add(f);
-				}
-			}
-			++i;
-		}
 	}
 
 	/**
@@ -271,16 +264,7 @@ public class LineChart extends View {
 	public void setData(final LineChartData data) {
 		mData = data;
 		calculateRanges();
-		// TODO check if interpolation on and series number
-		generateSplineInterpolators(data);
 		postInvalidate();
-	}
-
-	private void generateSplineInterpolators(final LineChartData data) {
-		mSplineInterpolators = new ArrayList<SplineInterpolator>();
-		for (LineSeries lineSeries : data.series) {
-			mSplineInterpolators.add(SplineInterpolator.createMonotoneCubicSpline(data.domain, lineSeries.values));
-		}
 	}
 
 	private void calculateRanges() {
