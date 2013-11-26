@@ -79,14 +79,7 @@ public class MainActivity extends Activity {
 			s2.add(8f);
 			s2.add(6f);
 			s2.add(10f);
-			List<Float> s1 = new ArrayList<Float>();
-			s1.add(1f);
-			s1.add(5f);
-			s1.add(6f);
-			s1.add(10f);
-			s1.add(3f);
 			chart.animateSeries(0, s2);
-			chart.animateSeries(1, s1);
 		}
 		return super.onOptionsItemSelected(item);
 	}

@@ -27,8 +27,6 @@ public class LineChart extends View {
 	private static final String TAG = "LineChart";
 	private static final float LINE_SMOOTHNES = 0.16f;
 	private LineChartData mData;
-	// private Bitmap mBitmap;
-	// private Canvas mCanvas;
 	private Path mLinePath = new Path();
 	private Paint mLinePaint = new Paint();
 	private Paint mPointPaint = new Paint();
@@ -107,14 +105,6 @@ public class LineChart extends View {
 	protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
 		long time = System.nanoTime();
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
-		// if (null == mBitmap) {
-		// mBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Config.ARGB_8888);
-		// } else {
-		// mBitmap.eraseColor(Color.TRANSPARENT);
-		// }
-		// if (null == mCanvas) {
-		// mCanvas = new Canvas(mBitmap);
-		// }
 		// TODO mPointRadus can change, recalculate in setter
 		calculateAvailableDimensions();
 		// TODO max-min can chage( - recalculate in setter
@@ -146,7 +136,6 @@ public class LineChart extends View {
 			drawPoints(canvas);
 		}
 		Log.v(TAG, "Narysowane w [ms]: " + (System.nanoTime() - time) / 1000000);
-		// canvas.drawBitmap(mBitmap, 0, 0, null);
 		Log.v(TAG, "Wyświetlone w [ms]: " + (System.nanoTime() - time) / 1000000);
 	}
 
