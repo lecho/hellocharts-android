@@ -5,15 +5,19 @@ import java.util.List;
 import lecho.lib.hellocharts.model.AnimatedValue;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.ValueSeries;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.AnimationUtils;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 
 /**
  * TODO nullcheck for mData
@@ -43,24 +47,7 @@ public class LineChart extends View {
 	boolean mInterpolationOn = true;
 	boolean mHorizontalRulersOn = false;
 	boolean mPointsOn = true;
-
-	private Runnable animator = new Runnable() {
-		@Override
-		public void run() {
-			boolean needNewFrame = false;
-			long now = AnimationUtils.currentAnimationTimeMillis();
-			for (AnimatedValue dynamicValue : mData.getSeries().get(0).values) {
-				dynamicValue.update(now);
-				if (!dynamicValue.isAtRest()) {
-					needNewFrame = true;
-				}
-			}
-			if (needNewFrame) {
-				postDelayed(this, 20);
-			}
-			invalidate();
-		}
-	};
+	private ObjectAnimator objAnimator;
 
 	public LineChart(Context context) {
 		super(context);
@@ -278,13 +265,39 @@ public class LineChart extends View {
 
 	public void animateSeries(int index, List<Float> values) {
 		int valueIndex = 0;
-		long now = AnimationUtils.currentAnimationTimeMillis();
 		for (AnimatedValue value : mData.getSeries().get(index).values) {
-			value.setTargetPosition(values.get(valueIndex), now);
+			value.setTargetPosition(values.get(valueIndex));
 			++valueIndex;
 		}
-		removeCallbacks(animator);
-		post(animator);
+		animateChart();
+
+	}
+
+	private void animateChart() {
+		final Handler handler = new Handler();
+		final long start = SystemClock.uptimeMillis();
+		final long duration = 1000;
+
+		final Interpolator interpolator = new LinearInterpolator();
+
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				long elapsed = SystemClock.uptimeMillis() - start;
+				float dt = Math.min(interpolator.getInterpolation((float) elapsed / duration), 1);
+				if (dt < 1.0) {
+					for (AnimatedValue value : mData.getSeries().get(0).values) {
+						value.update(dt);
+					}
+					postDelayed(this, 16);
+				} else {
+					for (AnimatedValue value : mData.getSeries().get(0).values) {
+						value.finish();
+					}
+				}
+				invalidate();
+			}
+		});
 	}
 
 	private void calculateRanges() {
