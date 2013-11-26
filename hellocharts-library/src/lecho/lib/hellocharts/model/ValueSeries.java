@@ -5,16 +5,16 @@ import java.util.List;
 
 import android.view.animation.AnimationUtils;
 
-public class LineSeries {
+public class ValueSeries {
 
 	public final int color;
-	public final List<DynamicValue> values = new ArrayList<DynamicValue>();
+	public final List<AnimatedValue> values = new ArrayList<AnimatedValue>();
 
-	public LineSeries(int color, List<Float> values) {
+	public ValueSeries(int color, List<Float> values) {
 		this.color = color;
 		long now = AnimationUtils.currentAnimationTimeMillis();
 		for (float value : values) {
-			DynamicValue dv = new DynamicValue(70f, 1.0f);
+			AnimatedValue dv = new AnimatedValue(70f, 1.0f);
 			dv.setPosition(value, now);
 			this.values.add(dv);
 		}

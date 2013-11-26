@@ -1,7 +1,7 @@
 package lecho.lib.hellocharts.model;
 
 
-public class DynamicValue {
+public class AnimatedValue {
 	/**
 	 * Used to compare floats, if the difference is smaller than this, they are considered equal
 	 */
@@ -25,7 +25,7 @@ public class DynamicValue {
 	/** The damping that the dynamics has */
 	private float damping;
 
-	public DynamicValue(float springiness, float dampingRatio) {
+	public AnimatedValue(float springiness, float dampingRatio) {
 		this.springiness = springiness;
 		this.damping = dampingRatio * 2 * (float) Math.sqrt(springiness);
 	}

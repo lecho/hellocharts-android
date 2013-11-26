@@ -2,12 +2,10 @@ package lecho.lib.hellocharts;
 
 import java.util.List;
 
-import lecho.lib.hellocharts.model.DynamicValue;
+import lecho.lib.hellocharts.model.AnimatedValue;
 import lecho.lib.hellocharts.model.LineChartData;
-import lecho.lib.hellocharts.model.LineSeries;
+import lecho.lib.hellocharts.model.ValueSeries;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -51,7 +49,7 @@ public class LineChart extends View {
 		public void run() {
 			boolean needNewFrame = false;
 			long now = AnimationUtils.currentAnimationTimeMillis();
-			for (DynamicValue dynamicValue : mData.series.get(0).values) {
+			for (AnimatedValue dynamicValue : mData.getSeries().get(0).values) {
 				dynamicValue.update(now);
 				if (!dynamicValue.isAtRest()) {
 					needNewFrame = true;
@@ -140,7 +138,7 @@ public class LineChart extends View {
 	}
 
 	private void drawLines(Canvas canvas) {
-		for (LineSeries lineSeries : mData.series) {
+		for (ValueSeries lineSeries : mData.getSeries()) {
 			if (mInterpolationOn) {
 				prepareSmoothPath(lineSeries);
 			} else {
@@ -153,10 +151,10 @@ public class LineChart extends View {
 	}
 
 	private void drawPoints(Canvas canvas) {
-		for (LineSeries lineSeries : mData.series) {
+		for (ValueSeries lineSeries : mData.getSeries()) {
 			mPointPaint.setColor(lineSeries.color);
 			int valueIndex = 0;
-			for (float valueX : mData.domain) {
+			for (float valueX : mData.getDomain()) {
 				final float rawValueX = calculateX(valueX);
 				final float rawValueY = calculateY(lineSeries.values.get(valueIndex).getPosition());
 				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointPaint);
@@ -165,9 +163,9 @@ public class LineChart extends View {
 		}
 	}
 
-	private void preparePath(final LineSeries lineSeries) {
+	private void preparePath(final ValueSeries lineSeries) {
 		int valueIndex = 0;
-		for (float valueX : mData.domain) {
+		for (float valueX : mData.getDomain()) {
 			final float rawValueX = calculateX(valueX);
 			final float rawValueY = calculateY(lineSeries.values.get(valueIndex).getPosition());
 			if (valueIndex == 0) {
@@ -179,16 +177,16 @@ public class LineChart extends View {
 		}
 	}
 
-	private void prepareSmoothPath(final LineSeries lineSeries) {
-		for (int pointIndex = 0; pointIndex < mData.domain.size() - 1; ++pointIndex) {
-			final float currentPointX = calculateX(mData.domain.get(pointIndex));
+	private void prepareSmoothPath(final ValueSeries lineSeries) {
+		for (int pointIndex = 0; pointIndex < mData.getDomain().size() - 1; ++pointIndex) {
+			final float currentPointX = calculateX(mData.getDomain().get(pointIndex));
 			final float currentPointY = calculateY(lineSeries.values.get(pointIndex).getPosition());
-			final float nextPointX = calculateX(mData.domain.get(pointIndex + 1));
+			final float nextPointX = calculateX(mData.getDomain().get(pointIndex + 1));
 			final float nextPointY = calculateY(lineSeries.values.get(pointIndex + 1).getPosition());
 			final float previousPointX;
 			final float previousPointY;
 			if (pointIndex > 0) {
-				previousPointX = calculateX(mData.domain.get(pointIndex - 1));
+				previousPointX = calculateX(mData.getDomain().get(pointIndex - 1));
 				previousPointY = calculateY(lineSeries.values.get(pointIndex - 1).getPosition());
 			} else {
 				previousPointX = currentPointX;
@@ -196,8 +194,8 @@ public class LineChart extends View {
 			}
 			final float afterNextPointX;
 			final float afterNextPointY;
-			if (pointIndex < mData.domain.size() - 2) {
-				afterNextPointX = calculateX(mData.domain.get(pointIndex + 2));
+			if (pointIndex < mData.getDomain().size() - 2) {
+				afterNextPointX = calculateX(mData.getDomain().get(pointIndex + 2));
 				afterNextPointY = calculateY(lineSeries.values.get(pointIndex + 2).getPosition());
 			} else {
 				afterNextPointX = nextPointX;
@@ -281,7 +279,7 @@ public class LineChart extends View {
 	public void animateSeries(int index, List<Float> values) {
 		int valueIndex = 0;
 		long now = AnimationUtils.currentAnimationTimeMillis();
-		for (DynamicValue value : mData.series.get(index).values) {
+		for (AnimatedValue value : mData.getSeries().get(index).values) {
 			value.setTargetPosition(values.get(valueIndex), now);
 			++valueIndex;
 		}
@@ -290,15 +288,15 @@ public class LineChart extends View {
 	}
 
 	private void calculateRanges() {
-		for (Float value : mData.domain) {
+		for (Float value : mData.getDomain()) {
 			if (value < minXValue) {
 				minXValue = value;
 			} else if (value > maxXValue) {
 				maxXValue = value;
 			}
 		}
-		for (LineSeries lineSeries : mData.series) {
-			for (DynamicValue value : lineSeries.values) {
+		for (ValueSeries lineSeries : mData.getSeries()) {
+			for (AnimatedValue value : lineSeries.values) {
 				if (value.getPosition() < minYValue) {
 					minYValue = value.getPosition();
 				} else if (value.getPosition() > maxYValue) {
