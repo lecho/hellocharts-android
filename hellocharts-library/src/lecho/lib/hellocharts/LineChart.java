@@ -5,7 +5,11 @@ import java.util.List;
 import lecho.lib.hellocharts.model.AnimatedValue;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.ValueSeries;
+import lecho.lib.hellocharts.utils.Utils;
+import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -47,7 +51,8 @@ public class LineChart extends View {
 	boolean mInterpolationOn = true;
 	boolean mHorizontalRulersOn = false;
 	boolean mPointsOn = true;
-	private ObjectAnimator objAnimator;
+	private ObjectAnimator mObjAnimator;
+	private AnimatedObject mAnimatedObject;
 
 	public LineChart(Context context) {
 		super(context);
@@ -68,8 +73,8 @@ public class LineChart extends View {
 	}
 
 	private void initAttributes() {
-		mLineWidth = dp2px(getContext(), 3);
-		mPointRadius = dp2px(getContext(), 8);
+		mLineWidth = Utils.dp2px(getContext(), 3);
+		mPointRadius = Utils.dp2px(getContext(), 8);
 	}
 
 	private void initPaints() {
@@ -269,7 +274,7 @@ public class LineChart extends View {
 			value.setTargetPosition(values.get(valueIndex));
 			++valueIndex;
 		}
-		animateChart();
+		animateChart2();
 
 	}
 
@@ -289,7 +294,7 @@ public class LineChart extends View {
 					for (AnimatedValue value : mData.getSeries().get(0).values) {
 						value.update(dt);
 					}
-					postDelayed(this, 16);
+					handler.postDelayed(this, 16);
 				} else {
 					for (AnimatedValue value : mData.getSeries().get(0).values) {
 						value.finish();
@@ -298,6 +303,56 @@ public class LineChart extends View {
 				invalidate();
 			}
 		});
+	}
+
+	@SuppressLint("NewApi")
+	private void animateChart2() {
+		mAnimatedObject = new AnimatedObject();
+		mObjAnimator = ObjectAnimator.ofFloat(mAnimatedObject, "scale", 0.0f, 1.0f);
+		mObjAnimator.setDuration(1000);
+		mObjAnimator.setInterpolator(new LinearInterpolator());
+		mObjAnimator.addListener(new Animator.AnimatorListener() {
+
+			@Override
+			public void onAnimationStart(Animator animation) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onAnimationRepeat(Animator animation) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				for (AnimatedValue value : mData.getSeries().get(0).values) {
+					value.finish();
+				}
+
+			}
+
+			@Override
+			public void onAnimationCancel(Animator animation) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+
+		mObjAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+			@Override
+			public void onAnimationUpdate(ValueAnimator animation) {
+				for (AnimatedValue value : mData.getSeries().get(0).values) {
+					value.update((Float) animation.getAnimatedValue());
+				}
+
+				invalidate();
+			}
+		});
+
+		mObjAnimator.start();
 	}
 
 	private void calculateRanges() {
@@ -319,12 +374,7 @@ public class LineChart extends View {
 		}
 	}
 
-	private static int dp2px(Context context, int dp) {
-		// Get the screen's density scale
-		final float scale = context.getResources().getDisplayMetrics().density;
-		// Convert the dps to pixels, based on density scale
-		return (int) (dp * scale + 0.5f);
-
+	private class AnimatedObject {
+		public float scale;
 	}
-
 }
