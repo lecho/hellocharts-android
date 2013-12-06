@@ -20,7 +20,6 @@ public class ChartAnimatorV8 implements ChartAnimator {
 	public void startAnimation() {
 		final Handler handler = new Handler();
 		final long start = SystemClock.uptimeMillis();
-
 		final Interpolator interpolator = new LinearInterpolator();
 
 		handler.post(new Runnable() {
@@ -29,10 +28,10 @@ public class ChartAnimatorV8 implements ChartAnimator {
 				long elapsed = SystemClock.uptimeMillis() - start;
 				float dt = Math.min(interpolator.getInterpolation((float) elapsed / mDuration), 1);
 				if (dt < 1.0) {
-					mChart.animateUpdate(dt);
+					mChart.animationUpdate(dt);
 					handler.postDelayed(this, 16);
 				} else {
-					mChart.animateUpdate(1.0f);
+					mChart.animationUpdate(1.0f);
 				}
 			}
 		});

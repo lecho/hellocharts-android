@@ -3,6 +3,7 @@ package lecho.lib.hellocharts;
 import java.util.List;
 
 import lecho.lib.hellocharts.anim.ChartAnimator;
+import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
 import lecho.lib.hellocharts.model.AnimatedValue;
 import lecho.lib.hellocharts.model.ChartData;
@@ -10,23 +11,17 @@ import lecho.lib.hellocharts.model.InternalLineChartData;
 import lecho.lib.hellocharts.model.InternalSeries;
 import lecho.lib.hellocharts.utils.Config;
 import lecho.lib.hellocharts.utils.Utils;
-import android.animation.Animator;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.os.Handler;
-import android.os.SystemClock;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.Interpolator;
-import android.view.animation.LinearInterpolator;
 
 /**
  * TODO nullcheck for mData
@@ -54,7 +49,6 @@ public class LineChart extends View {
 	boolean mPointsOn = true;
 	private ChartAnimator mAnimator;
 	private ObjectAnimator mObjAnimator;
-	private AnimatedObject mAnimatedObject;
 	private int mSelectedLineIndex = Integer.MIN_VALUE;
 	private int mSelectedValueIndex = Integer.MIN_VALUE;
 
@@ -99,7 +93,11 @@ public class LineChart extends View {
 	}
 
 	private void initAnimatiors() {
-		mAnimator = new ChartAnimatorV8(this, Config.ANIMATION_DURATION);
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			mAnimator = new ChartAnimatorV8(this, Config.ANIMATION_DURATION);
+		} else {
+			mAnimator = new ChartAnimatorV11(this, Config.ANIMATION_DURATION);
+		}
 	}
 
 	@Override
@@ -296,7 +294,7 @@ public class LineChart extends View {
 		postInvalidate();
 	}
 
-	public void animateUpdate(float scale) {
+	public void animationUpdate(float scale) {
 		for (AnimatedValue value : mData.getInternalsSeries().get(0).values) {
 			value.update(scale);
 		}
@@ -311,61 +309,4 @@ public class LineChart extends View {
 		mAnimator.startAnimation();
 	}
 
-	// @SuppressLint("NewApi")
-	// private void animateChart2() {
-	// mAnimatedObject = new AnimatedObject();
-	// mObjAnimator = ObjectAnimator.ofFloat(mAnimatedObject, "scale", 0.0f, 1.0f);
-	// mObjAnimator.setDuration(1000);
-	// mObjAnimator.setInterpolator(new LinearInterpolator());
-	// mObjAnimator.addListener(new Animator.AnimatorListener() {
-	//
-	// @Override
-	// public void onAnimationStart(Animator animation) {
-	// // TODO Auto-generated method stub
-	//
-	// }
-	//
-	// @Override
-	// public void onAnimationRepeat(Animator animation) {
-	// // TODO Auto-generated method stub
-	//
-	// }
-	//
-	// @Override
-	// public void onAnimationEnd(Animator animation) {
-	// for (AnimatedValue value : mData.getInternalsSeries().get(0).values) {
-	// value.finish();
-	// }
-	// mData.calculateRanges();
-	// calculateAvailableDimensions();
-	// calculateMultipliers();
-	// }
-	//
-	// @Override
-	// public void onAnimationCancel(Animator animation) {
-	// // TODO Auto-generated method stub
-	//
-	// }
-	// });
-	//
-	// mObjAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-	//
-	// @Override
-	// public void onAnimationUpdate(ValueAnimator animation) {
-	// for (AnimatedValue value : mData.getInternalsSeries().get(0).values) {
-	// value.update((Float) animation.getAnimatedValue());
-	// }
-	// mData.calculateRanges();
-	// calculateAvailableDimensions();
-	// calculateMultipliers();
-	// invalidate();
-	// }
-	// });
-	//
-	// mObjAnimator.start();
-	// }
-
-	private class AnimatedObject {
-		public float scale;
-	}
 }
