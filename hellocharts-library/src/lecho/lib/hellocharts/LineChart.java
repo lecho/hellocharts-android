@@ -283,11 +283,6 @@ public class LineChart extends View {
 		return true;
 	}
 
-	/**
-	 * Sets chart data.
-	 * 
-	 * @param data
-	 */
 	public void setData(final ChartData rawData) {
 		mData = InternalLineChartData.createFromRawDara(rawData);
 		mData.calculateRanges();
@@ -307,6 +302,11 @@ public class LineChart extends View {
 	public void animateSeries(int index, List<Float> values) {
 		mData.updateSeriesTargetPositions(index, values);
 		mAnimator.startAnimation();
+	}
+
+	public void updateSeries(int index, List<Float> values) {
+		mData.updateSeries(index, values);
+		invalidate();
 	}
 
 }
