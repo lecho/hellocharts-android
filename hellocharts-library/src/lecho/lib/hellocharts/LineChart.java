@@ -158,6 +158,11 @@ public class LineChart extends View {
 			for (float valueX : mData.getDomain()) {
 				final float rawValueX = calculateX(valueX);
 				final float rawValueY = calculateY(internalSeries.values.get(valueIndex).getPosition());
+				if (mSelectedValueIndex == valueIndex) {
+					mPointPaint.setColor(Color.RED);
+				} else {
+					mPointPaint.setColor(internalSeries.color);
+				}
 				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointPaint);
 				++valueIndex;
 			}
@@ -268,17 +273,27 @@ public class LineChart extends View {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		float x = event.getX();
-		float y = event.getY();
-		int lineIndex = 0;
-		for (InternalSeries series : mData.getInternalsSeries()) {
-			int valueIndex = 0;
-			for (AnimatedValue value : series.values) {
-				if (x == mData.getDomain().get(valueIndex) && y == value.getPosition()) {
+		if (event.getAction() == MotionEvent.ACTION_DOWN) {
+
+			float touchX = event.getX();
+			float touchY = event.getY();
+			int lineIndex = 0;
+			for (InternalSeries series : mData.getInternalsSeries()) {
+				int valueIndex = 0;
+				for (AnimatedValue value : series.values) {
+					float x = calculateX(mData.getDomain().get(valueIndex));
+					float y = calculateY(value.getPosition());
+					boolean isInArea = Utils.isInArea(x, y, touchX, touchY, Utils.dp2px(getContext(), 24));
+					if (isInArea) {
+						mSelectedLineIndex = lineIndex;
+						mSelectedValueIndex = valueIndex;
+						invalidate();
+						return true;
+					}
+					++valueIndex;
 				}
-				++valueIndex;
+				++lineIndex;
 			}
-			++lineIndex;
 		}
 		return true;
 	}
