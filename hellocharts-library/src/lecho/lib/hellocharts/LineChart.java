@@ -289,6 +289,10 @@ public class LineChart extends View {
 		postInvalidate();
 	}
 
+	public ChartData getData() {
+		return mData.getRawData();
+	}
+
 	public void animationUpdate(float scale) {
 		for (AnimatedValue value : mData.getInternalsSeries().get(0).values) {
 			value.update(scale);
@@ -306,7 +310,7 @@ public class LineChart extends View {
 
 	public void updateSeries(int index, List<Float> values) {
 		mData.updateSeries(index, values);
-		invalidate();
+		postInvalidate();
 	}
 
 }
