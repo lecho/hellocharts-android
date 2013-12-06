@@ -15,8 +15,4 @@ public class AnimatedValue {
 		position = position + x * scale;
 	}
 
-	public void finish() {
-		position = targetPosition;
-	}
-
 }

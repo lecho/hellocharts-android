@@ -2,10 +2,13 @@ package lecho.lib.hellocharts;
 
 import java.util.List;
 
+import lecho.lib.hellocharts.anim.ChartAnimator;
+import lecho.lib.hellocharts.anim.ChartAnimatorV8;
 import lecho.lib.hellocharts.model.AnimatedValue;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.InternalLineChartData;
 import lecho.lib.hellocharts.model.InternalSeries;
+import lecho.lib.hellocharts.utils.Config;
 import lecho.lib.hellocharts.utils.Utils;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -49,6 +52,7 @@ public class LineChart extends View {
 	boolean mInterpolationOn = true;
 	boolean mHorizontalRulersOn = false;
 	boolean mPointsOn = true;
+	private ChartAnimator mAnimator;
 	private ObjectAnimator mObjAnimator;
 	private AnimatedObject mAnimatedObject;
 	private int mSelectedLineIndex = Integer.MIN_VALUE;
@@ -58,18 +62,21 @@ public class LineChart extends View {
 		super(context);
 		initAttributes();
 		initPaints();
+		initAnimatiors();
 	}
 
 	public LineChart(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		initAttributes();
 		initPaints();
+		initAnimatiors();
 	}
 
 	public LineChart(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		initAttributes();
 		initPaints();
+		initAnimatiors();
 	}
 
 	private void initAttributes() {
@@ -89,6 +96,10 @@ public class LineChart extends View {
 		mRulersPaint.setColor(Color.LTGRAY);
 		mRulersPaint.setStrokeWidth(1);
 
+	}
+
+	private void initAnimatiors() {
+		mAnimator = new ChartAnimatorV8(this, Config.ANIMATION_DURATION);
 	}
 
 	@Override
@@ -285,94 +296,74 @@ public class LineChart extends View {
 		postInvalidate();
 	}
 
+	public void animateUpdate(float scale) {
+		for (AnimatedValue value : mData.getInternalsSeries().get(0).values) {
+			value.update(scale);
+		}
+		mData.calculateRanges();
+		calculateAvailableDimensions();
+		calculateMultipliers();
+		invalidate();
+	}
+
 	public void animateSeries(int index, List<Float> values) {
 		mData.updateSeriesTargetPositions(index, values);
-		animateChart2();
+		mAnimator.startAnimation();
 	}
 
-	private void animateChart() {
-		final Handler handler = new Handler();
-		final long start = SystemClock.uptimeMillis();
-		final long duration = 1000;
-
-		final Interpolator interpolator = new LinearInterpolator();
-
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				long elapsed = SystemClock.uptimeMillis() - start;
-				float dt = Math.min(interpolator.getInterpolation((float) elapsed / duration), 1);
-				if (dt < 1.0) {
-					for (AnimatedValue value : mData.getInternalsSeries().get(0).values) {
-						value.update(dt);
-					}
-					handler.postDelayed(this, 16);
-				} else {
-					for (AnimatedValue value : mData.getInternalsSeries().get(0).values) {
-						value.finish();
-					}
-				}
-				mData.calculateRanges();
-				calculateAvailableDimensions();
-				calculateMultipliers();
-				invalidate();
-			}
-		});
-	}
-
-	@SuppressLint("NewApi")
-	private void animateChart2() {
-		mAnimatedObject = new AnimatedObject();
-		mObjAnimator = ObjectAnimator.ofFloat(mAnimatedObject, "scale", 0.0f, 1.0f);
-		mObjAnimator.setDuration(1000);
-		mObjAnimator.setInterpolator(new LinearInterpolator());
-		mObjAnimator.addListener(new Animator.AnimatorListener() {
-
-			@Override
-			public void onAnimationStart(Animator animation) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void onAnimationRepeat(Animator animation) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void onAnimationEnd(Animator animation) {
-				for (AnimatedValue value : mData.getInternalsSeries().get(0).values) {
-					value.finish();
-				}
-				mData.calculateRanges();
-				calculateAvailableDimensions();
-				calculateMultipliers();
-			}
-
-			@Override
-			public void onAnimationCancel(Animator animation) {
-				// TODO Auto-generated method stub
-
-			}
-		});
-
-		mObjAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-
-			@Override
-			public void onAnimationUpdate(ValueAnimator animation) {
-				for (AnimatedValue value : mData.getInternalsSeries().get(0).values) {
-					value.update((Float) animation.getAnimatedValue());
-				}
-				mData.calculateRanges();
-				calculateAvailableDimensions();
-				calculateMultipliers();
-				invalidate();
-			}
-		});
-
-		mObjAnimator.start();
-	}
+	// @SuppressLint("NewApi")
+	// private void animateChart2() {
+	// mAnimatedObject = new AnimatedObject();
+	// mObjAnimator = ObjectAnimator.ofFloat(mAnimatedObject, "scale", 0.0f, 1.0f);
+	// mObjAnimator.setDuration(1000);
+	// mObjAnimator.setInterpolator(new LinearInterpolator());
+	// mObjAnimator.addListener(new Animator.AnimatorListener() {
+	//
+	// @Override
+	// public void onAnimationStart(Animator animation) {
+	// // TODO Auto-generated method stub
+	//
+	// }
+	//
+	// @Override
+	// public void onAnimationRepeat(Animator animation) {
+	// // TODO Auto-generated method stub
+	//
+	// }
+	//
+	// @Override
+	// public void onAnimationEnd(Animator animation) {
+	// for (AnimatedValue value : mData.getInternalsSeries().get(0).values) {
+	// value.finish();
+	// }
+	// mData.calculateRanges();
+	// calculateAvailableDimensions();
+	// calculateMultipliers();
+	// }
+	//
+	// @Override
+	// public void onAnimationCancel(Animator animation) {
+	// // TODO Auto-generated method stub
+	//
+	// }
+	// });
+	//
+	// mObjAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+	//
+	// @Override
+	// public void onAnimationUpdate(ValueAnimator animation) {
+	// for (AnimatedValue value : mData.getInternalsSeries().get(0).values) {
+	// value.update((Float) animation.getAnimatedValue());
+	// }
+	// mData.calculateRanges();
+	// calculateAvailableDimensions();
+	// calculateMultipliers();
+	// invalidate();
+	// }
+	// });
+	//
+	// mObjAnimator.start();
+	// }
 
 	private class AnimatedObject {
 		public float scale;
