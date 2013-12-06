@@ -157,7 +157,7 @@ public class LineChart extends View {
 			int valueIndex = 0;
 			for (float valueX : mData.getDomain()) {
 				final float rawValueX = calculateX(valueX);
-				final float rawValueY = calculateY(internalSeries.values.get(valueIndex).position);
+				final float rawValueY = calculateY(internalSeries.values.get(valueIndex).getPosition());
 				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointPaint);
 				++valueIndex;
 			}
@@ -168,7 +168,7 @@ public class LineChart extends View {
 		int valueIndex = 0;
 		for (float valueX : mData.getDomain()) {
 			final float rawValueX = calculateX(valueX);
-			final float rawValueY = calculateY(internalSeries.values.get(valueIndex).position);
+			final float rawValueY = calculateY(internalSeries.values.get(valueIndex).getPosition());
 			if (valueIndex == 0) {
 				mLinePath.moveTo(rawValueX, rawValueY);
 			} else {
@@ -181,14 +181,14 @@ public class LineChart extends View {
 	private void prepareSmoothPath(final InternalSeries internalSeries) {
 		for (int pointIndex = 0; pointIndex < mData.getDomain().size() - 1; ++pointIndex) {
 			final float currentPointX = calculateX(mData.getDomain().get(pointIndex));
-			final float currentPointY = calculateY(internalSeries.values.get(pointIndex).position);
+			final float currentPointY = calculateY(internalSeries.values.get(pointIndex).getPosition());
 			final float nextPointX = calculateX(mData.getDomain().get(pointIndex + 1));
-			final float nextPointY = calculateY(internalSeries.values.get(pointIndex + 1).position);
+			final float nextPointY = calculateY(internalSeries.values.get(pointIndex + 1).getPosition());
 			final float previousPointX;
 			final float previousPointY;
 			if (pointIndex > 0) {
 				previousPointX = calculateX(mData.getDomain().get(pointIndex - 1));
-				previousPointY = calculateY(internalSeries.values.get(pointIndex - 1).position);
+				previousPointY = calculateY(internalSeries.values.get(pointIndex - 1).getPosition());
 			} else {
 				previousPointX = currentPointX;
 				previousPointY = currentPointY;
@@ -197,7 +197,7 @@ public class LineChart extends View {
 			final float afterNextPointY;
 			if (pointIndex < mData.getDomain().size() - 2) {
 				afterNextPointX = calculateX(mData.getDomain().get(pointIndex + 2));
-				afterNextPointY = calculateY(internalSeries.values.get(pointIndex + 2).position);
+				afterNextPointY = calculateY(internalSeries.values.get(pointIndex + 2).getPosition());
 			} else {
 				afterNextPointX = nextPointX;
 				afterNextPointY = nextPointY;
@@ -274,7 +274,7 @@ public class LineChart extends View {
 		for (InternalSeries series : mData.getInternalsSeries()) {
 			int valueIndex = 0;
 			for (AnimatedValue value : series.values) {
-				if (x == mData.getDomain().get(valueIndex) && y == value.position) {
+				if (x == mData.getDomain().get(valueIndex) && y == value.getPosition()) {
 				}
 				++valueIndex;
 			}

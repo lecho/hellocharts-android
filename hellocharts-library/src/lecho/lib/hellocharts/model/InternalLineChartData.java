@@ -43,8 +43,8 @@ public class InternalLineChartData {
 		}
 		for (int i = 0; i < domainSize; ++i) {
 			AnimatedValue value = internalSeries.values.get(i);
-			value.position = newValues.get(i);
-			value.targetPosition = value.position;
+			value.setPosition(newValues.get(i));
+			value.setTargetPosition(value.getPosition());
 		}
 	}
 
@@ -58,7 +58,7 @@ public class InternalLineChartData {
 			throw new IllegalArgumentException("Series sizes differs!");
 		}
 		for (int i = 0; i < domainSize; ++i) {
-			internalSeries.values.get(i).targetPosition = newValues.get(i);
+			internalSeries.values.get(i).setTargetPosition(newValues.get(i));
 		}
 	}
 
@@ -72,10 +72,10 @@ public class InternalLineChartData {
 		}
 		for (InternalSeries internalSeries : mInternalsSeries) {
 			for (AnimatedValue value : internalSeries.values) {
-				if (value.position < mMinYValue) {
-					mMinYValue = value.position;
-				} else if (value.position > mMaxYValue) {
-					mMaxYValue = value.position;
+				if (value.getPosition() < mMinYValue) {
+					mMinYValue = value.getPosition();
+				} else if (value.getPosition() > mMaxYValue) {
+					mMaxYValue = value.getPosition();
 				}
 			}
 		}
@@ -110,7 +110,7 @@ public class InternalLineChartData {
 		for (InternalSeries internalSeries : mInternalsSeries) {
 			List<Float> values = new ArrayList<Float>(mDomain.size());
 			for (AnimatedValue value : internalSeries.values) {
-				values.add(value.position);
+				values.add(value.getPosition());
 			}
 			rawData.addSeries(new Series(internalSeries.color, values));
 		}
