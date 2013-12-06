@@ -3,7 +3,8 @@ package lecho.lib.hellocharts;
 import java.util.ArrayList;
 import java.util.List;
 
-import lecho.lib.hellocharts.model.LineChartData;
+import lecho.lib.hellocharts.model.ChartData;
+import lecho.lib.hellocharts.model.Series;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -31,7 +32,7 @@ public class MainActivity extends Activity {
 		// domain.add(8f);
 		// domain.add(9f);
 		// domain.add(10f);
-		LineChartData data = new LineChartData(domain);
+		ChartData data = new ChartData(domain);
 		List<Float> s1 = new ArrayList<Float>();
 		s1.add(100f);
 		s1.add(500f);
@@ -56,8 +57,8 @@ public class MainActivity extends Activity {
 		// s2.add(5f);
 		// LineSeries l1 = new LineSeries(Color.parseColor("#FFBB33"), s1);
 		// LineSeries l2 = new LineSeries(Color.parseColor("#99CC00"), s2);
-		data.addSeries(Color.parseColor("#FFBB33"), s1);
-		data.addSeries(Color.parseColor("#99CC00"), s2);
+		data.addSeries(new Series(Color.parseColor("#FFBB33"), s1));
+		data.addSeries(new Series(Color.parseColor("#99CC00"), s2));
 		chart.setData(data);
 		layout.addView(chart);
 
@@ -78,7 +79,7 @@ public class MainActivity extends Activity {
 			s2.add(300f);
 			s2.add(800f);
 			s2.add(600f);
-			s2.add(100f);
+			s2.add(1200f);
 			chart.animateSeries(0, s2);
 		}
 		return super.onOptionsItemSelected(item);
