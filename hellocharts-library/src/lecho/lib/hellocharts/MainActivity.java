@@ -2,7 +2,7 @@ package lecho.lib.hellocharts;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import android.graphics.PointF;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.Series;
 import android.app.Activity;
@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	private LineChart chart;
@@ -32,7 +33,7 @@ public class MainActivity extends Activity {
 		// domain.add(8f);
 		// domain.add(9f);
 		// domain.add(10f);
-		ChartData data = new ChartData(domain);
+		final ChartData data = new ChartData(domain);
 		List<Float> s1 = new ArrayList<Float>();
 		s1.add(100f);
 		s1.add(500f);
@@ -60,6 +61,17 @@ public class MainActivity extends Activity {
 		data.addSeries(new Series(Color.parseColor("#FFBB33"), s1));
 		data.addSeries(new Series(Color.parseColor("#99CC00"), s2));
 		chart.setData(data);
+		chart.setOnPointClickListener(new OnPointClickListener() {
+
+			@Override
+			public void onPointClick(int selectedSeriesIndex, int selectedValueIndex, float x, float y) {
+				Toast.makeText(
+						getApplicationContext(),
+						"Series index: " + selectedSeriesIndex + " Value index: " + selectedValueIndex
+								+ " That gives point: x=" + x + ", y=" + y, Toast.LENGTH_SHORT).show();
+
+			}
+		});
 		layout.addView(chart);
 
 	}

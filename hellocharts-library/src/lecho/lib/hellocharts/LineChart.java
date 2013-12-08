@@ -11,15 +11,17 @@ import lecho.lib.hellocharts.model.InternalLineChartData;
 import lecho.lib.hellocharts.model.InternalSeries;
 import lecho.lib.hellocharts.utils.Config;
 import lecho.lib.hellocharts.utils.Utils;
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PointF;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.Pair;
+import android.util.SparseBooleanArray;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -43,20 +45,28 @@ public class LineChart extends View {
 	private float mYMultiplier;
 	private float mAvailableWidth;
 	private float mAvailableHeight;
-	private int mhorizontalRulersDivider;
+	private final float mTouchRadius;
+	private int mHorizontalRulersDivider;
 	boolean mInterpolationOn = true;
 	boolean mHorizontalRulersOn = false;
 	boolean mPointsOn = true;
 	private ChartAnimator mAnimator;
-	private ObjectAnimator mObjAnimator;
-	private int mSelectedLineIndex = Integer.MIN_VALUE;
+	private int mSelectedSeriesIndex = Integer.MIN_VALUE;
 	private int mSelectedValueIndex = Integer.MIN_VALUE;
+	private OnPointClickListener mOnPointClickListener = new OnPointClickListener() {
+		@Override
+		public void onPointClick(int selectedSeriesIndex, int selectedValueIndex, float x, float y) {
+			// Dummy listener;
+		}
+
+	};
 
 	public LineChart(Context context) {
 		super(context);
 		initAttributes();
 		initPaints();
 		initAnimatiors();
+		mTouchRadius = Utils.dp2px(context, Config.DEFAULT_TOUCH_AREA_RADIUS_DP);
 	}
 
 	public LineChart(Context context, AttributeSet attrs) {
@@ -64,6 +74,7 @@ public class LineChart extends View {
 		initAttributes();
 		initPaints();
 		initAnimatiors();
+		mTouchRadius = Utils.dp2px(context, Config.DEFAULT_TOUCH_AREA_RADIUS_DP);
 	}
 
 	public LineChart(Context context, AttributeSet attrs, int defStyle) {
@@ -71,6 +82,7 @@ public class LineChart extends View {
 		initAttributes();
 		initPaints();
 		initAnimatiors();
+		mTouchRadius = Utils.dp2px(context, Config.DEFAULT_TOUCH_AREA_RADIUS_DP);
 	}
 
 	private void initAttributes() {
@@ -94,9 +106,9 @@ public class LineChart extends View {
 
 	private void initAnimatiors() {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-			mAnimator = new ChartAnimatorV8(this, Config.ANIMATION_DURATION);
+			mAnimator = new ChartAnimatorV8(this, Config.DEFAULT_ANIMATION_DURATION);
 		} else {
-			mAnimator = new ChartAnimatorV11(this, Config.ANIMATION_DURATION);
+			mAnimator = new ChartAnimatorV11(this, Config.DEFAULT_ANIMATION_DURATION);
 		}
 	}
 
@@ -152,20 +164,22 @@ public class LineChart extends View {
 	}
 
 	private void drawPoints(Canvas canvas) {
+		int seriesIndex = 0;
 		for (InternalSeries internalSeries : mData.getInternalsSeries()) {
 			mPointPaint.setColor(internalSeries.color);
 			int valueIndex = 0;
 			for (float valueX : mData.getDomain()) {
 				final float rawValueX = calculateX(valueX);
 				final float rawValueY = calculateY(internalSeries.values.get(valueIndex).getPosition());
-				if (mSelectedValueIndex == valueIndex) {
-					mPointPaint.setColor(Color.RED);
+				// Checks if current series-point is selected by touch.
+				if (mSelectedSeriesIndex == seriesIndex && mSelectedValueIndex == valueIndex) {
+					canvas.drawCircle(rawValueX, rawValueY, Config.DEFAULT_TOUCH_SCALE * mPointRadius, mPointPaint);
 				} else {
-					mPointPaint.setColor(internalSeries.color);
+					canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointPaint);
 				}
-				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointPaint);
 				++valueIndex;
 			}
+			++seriesIndex;
 		}
 	}
 
@@ -242,7 +256,7 @@ public class LineChart extends View {
 		if (divider < 2) {
 			divider = 2;
 		}
-		mhorizontalRulersDivider = divider;
+		mHorizontalRulersDivider = divider;
 	}
 
 	/**
@@ -261,8 +275,8 @@ public class LineChart extends View {
 		mLinePath.lineTo(rawMaxX, rawMaxY);
 		canvas.drawPath(mLinePath, mRulersPaint);
 		mLinePath.reset();
-		final float step = (mData.getMaxYValue() - mData.getMinYValue()) / mhorizontalRulersDivider;
-		for (int i = 1; i < mhorizontalRulersDivider; ++i) {
+		final float step = (mData.getMaxYValue() - mData.getMinYValue()) / mHorizontalRulersDivider;
+		for (int i = 1; i < mHorizontalRulersDivider; ++i) {
 			final float rawValueY = calculateY(mData.getMinYValue() + step * i);
 			mLinePath.moveTo(rawMinX, rawValueY);
 			mLinePath.lineTo(rawMaxX, rawValueY);
@@ -274,25 +288,33 @@ public class LineChart extends View {
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
-
-			float touchX = event.getX();
-			float touchY = event.getY();
-			int lineIndex = 0;
+			int seriesIndex = 0;
 			for (InternalSeries series : mData.getInternalsSeries()) {
 				int valueIndex = 0;
 				for (AnimatedValue value : series.values) {
 					float x = calculateX(mData.getDomain().get(valueIndex));
 					float y = calculateY(value.getPosition());
-					boolean isInArea = Utils.isInArea(x, y, touchX, touchY, Utils.dp2px(getContext(), 24));
-					if (isInArea) {
-						mSelectedLineIndex = lineIndex;
+					if (Utils.isInArea(x, y, event.getX(), event.getY(), mTouchRadius)) {
+						mSelectedSeriesIndex = seriesIndex;
 						mSelectedValueIndex = valueIndex;
-						invalidate();
-						return true;
 					}
 					++valueIndex;
 				}
-				++lineIndex;
+				++seriesIndex;
+			}
+			if (mSelectedValueIndex >= 0) {
+				invalidate();
+			}
+		}
+		if (event.getAction() == MotionEvent.ACTION_UP) {
+			if (mSelectedValueIndex >= 0) {
+				float x = mData.getDomain().get(mSelectedValueIndex);
+				float y = mData.getInternalsSeries().get(mSelectedSeriesIndex).values.get(mSelectedValueIndex)
+						.getPosition();
+				mOnPointClickListener.onPointClick(mSelectedSeriesIndex, mSelectedValueIndex, x, y);
+				mSelectedSeriesIndex = Integer.MIN_VALUE;
+				mSelectedValueIndex = Integer.MIN_VALUE;
+				invalidate();
 			}
 		}
 		return true;
@@ -312,7 +334,7 @@ public class LineChart extends View {
 		for (AnimatedValue value : mData.getInternalsSeries().get(0).values) {
 			value.update(scale);
 		}
-		mData.calculateRanges();
+		mData.calculateYRanges();
 		calculateAvailableDimensions();
 		calculateMultipliers();
 		invalidate();
@@ -326,6 +348,10 @@ public class LineChart extends View {
 	public void updateSeries(int index, List<Float> values) {
 		mData.updateSeries(index, values);
 		postInvalidate();
+	}
+
+	public void setOnPointClickListener(OnPointClickListener listener) {
+		mOnPointClickListener = listener;
 	}
 
 }

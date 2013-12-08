@@ -63,6 +63,11 @@ public class InternalLineChartData {
 	}
 
 	public void calculateRanges() {
+		calculateXRanges();
+		calculateYRanges();
+	}
+
+	public void calculateXRanges() {
 		for (Float value : mDomain) {
 			if (value < mMinXValue) {
 				mMinXValue = value;
@@ -70,6 +75,9 @@ public class InternalLineChartData {
 				mMaxXValue = value;
 			}
 		}
+	}
+
+	public void calculateYRanges() {
 		for (InternalSeries internalSeries : mInternalsSeries) {
 			for (AnimatedValue value : internalSeries.values) {
 				if (value.getPosition() < mMinYValue) {
