@@ -3,11 +3,19 @@ package lecho.lib.hellocharts.model;
 import java.util.List;
 
 public class InternalSeries {
-	public final int color;
-	public final List<AnimatedValue> values;
+	private final int mColor;
+	private final List<AnimatedValue> mValues;
 
 	public InternalSeries(int color, List<AnimatedValue> values) {
-		this.color = color;
-		this.values = values;
+		this.mColor = color;
+		this.mValues = values;
+	}
+
+	public int getColor() {
+		return mColor;
+	}
+
+	public List<AnimatedValue> getValues() {
+		return mValues;
 	}
 }

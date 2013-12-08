@@ -157,7 +157,7 @@ public class LineChart extends View {
 			} else {
 				preparePath(internalSeries);
 			}
-			mLinePaint.setColor(internalSeries.color);
+			mLinePaint.setColor(internalSeries.getColor());
 			canvas.drawPath(mLinePath, mLinePaint);
 			mLinePath.reset();
 		}
@@ -166,11 +166,11 @@ public class LineChart extends View {
 	private void drawPoints(Canvas canvas) {
 		int seriesIndex = 0;
 		for (InternalSeries internalSeries : mData.getInternalsSeries()) {
-			mPointPaint.setColor(internalSeries.color);
+			mPointPaint.setColor(internalSeries.getColor());
 			int valueIndex = 0;
 			for (float valueX : mData.getDomain()) {
 				final float rawValueX = calculateX(valueX);
-				final float rawValueY = calculateY(internalSeries.values.get(valueIndex).getPosition());
+				final float rawValueY = calculateY(internalSeries.getValues().get(valueIndex).getPosition());
 				// Checks if current series-point is selected by touch.
 				if (mSelectedSeriesIndex == seriesIndex && mSelectedValueIndex == valueIndex) {
 					canvas.drawCircle(rawValueX, rawValueY, Config.DEFAULT_TOUCH_SCALE * mPointRadius, mPointPaint);
@@ -187,7 +187,7 @@ public class LineChart extends View {
 		int valueIndex = 0;
 		for (float valueX : mData.getDomain()) {
 			final float rawValueX = calculateX(valueX);
-			final float rawValueY = calculateY(internalSeries.values.get(valueIndex).getPosition());
+			final float rawValueY = calculateY(internalSeries.getValues().get(valueIndex).getPosition());
 			if (valueIndex == 0) {
 				mLinePath.moveTo(rawValueX, rawValueY);
 			} else {
@@ -200,14 +200,14 @@ public class LineChart extends View {
 	private void prepareSmoothPath(final InternalSeries internalSeries) {
 		for (int pointIndex = 0; pointIndex < mData.getDomain().size() - 1; ++pointIndex) {
 			final float currentPointX = calculateX(mData.getDomain().get(pointIndex));
-			final float currentPointY = calculateY(internalSeries.values.get(pointIndex).getPosition());
+			final float currentPointY = calculateY(internalSeries.getValues().get(pointIndex).getPosition());
 			final float nextPointX = calculateX(mData.getDomain().get(pointIndex + 1));
-			final float nextPointY = calculateY(internalSeries.values.get(pointIndex + 1).getPosition());
+			final float nextPointY = calculateY(internalSeries.getValues().get(pointIndex + 1).getPosition());
 			final float previousPointX;
 			final float previousPointY;
 			if (pointIndex > 0) {
 				previousPointX = calculateX(mData.getDomain().get(pointIndex - 1));
-				previousPointY = calculateY(internalSeries.values.get(pointIndex - 1).getPosition());
+				previousPointY = calculateY(internalSeries.getValues().get(pointIndex - 1).getPosition());
 			} else {
 				previousPointX = currentPointX;
 				previousPointY = currentPointY;
@@ -216,7 +216,7 @@ public class LineChart extends View {
 			final float afterNextPointY;
 			if (pointIndex < mData.getDomain().size() - 2) {
 				afterNextPointX = calculateX(mData.getDomain().get(pointIndex + 2));
-				afterNextPointY = calculateY(internalSeries.values.get(pointIndex + 2).getPosition());
+				afterNextPointY = calculateY(internalSeries.getValues().get(pointIndex + 2).getPosition());
 			} else {
 				afterNextPointX = nextPointX;
 				afterNextPointY = nextPointY;
@@ -291,7 +291,7 @@ public class LineChart extends View {
 			int seriesIndex = 0;
 			for (InternalSeries series : mData.getInternalsSeries()) {
 				int valueIndex = 0;
-				for (AnimatedValue value : series.values) {
+				for (AnimatedValue value : series.getValues()) {
 					float x = calculateX(mData.getDomain().get(valueIndex));
 					float y = calculateY(value.getPosition());
 					if (Utils.isInArea(x, y, event.getX(), event.getY(), mTouchRadius)) {
@@ -309,7 +309,7 @@ public class LineChart extends View {
 		if (event.getAction() == MotionEvent.ACTION_UP) {
 			if (mSelectedValueIndex >= 0) {
 				float x = mData.getDomain().get(mSelectedValueIndex);
-				float y = mData.getInternalsSeries().get(mSelectedSeriesIndex).values.get(mSelectedValueIndex)
+				float y = mData.getInternalsSeries().get(mSelectedSeriesIndex).getValues().get(mSelectedValueIndex)
 						.getPosition();
 				mOnPointClickListener.onPointClick(mSelectedSeriesIndex, mSelectedValueIndex, x, y);
 				mSelectedSeriesIndex = Integer.MIN_VALUE;
@@ -331,7 +331,7 @@ public class LineChart extends View {
 	}
 
 	public void animationUpdate(float scale) {
-		for (AnimatedValue value : mData.getInternalsSeries().get(0).values) {
+		for (AnimatedValue value : mData.getInternalsSeries().get(0).getValues()) {
 			value.update(scale);
 		}
 		mData.calculateYRanges();
