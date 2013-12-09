@@ -61,6 +61,7 @@ public class MainActivity extends Activity {
 		data.addSeries(new Series(Color.parseColor("#FFBB33"), s1));
 		data.addSeries(new Series(Color.parseColor("#99CC00"), s2));
 		chart.setData(data);
+		chart.setBackgroundColor(Color.LTGRAY);
 		chart.setOnPointClickListener(new OnPointClickListener() {
 
 			@Override

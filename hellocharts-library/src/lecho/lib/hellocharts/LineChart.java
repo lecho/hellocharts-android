@@ -31,23 +31,26 @@ import android.view.View;
  */
 public class LineChart extends View {
 	private static final String TAG = "LineChart";
-	private static final float LINE_SMOOTHNES = 0.16f;
-	private InternalLineChartData mData;
+	private static final float LINE_SMOOTHNES = 0.15f;
+	private static final int DEFAULT_LINE_WIDTH_DP = 3;
+	private static final int DEFAULT_POINT_RADIUS_DP = 6;
+	public static final int DEFAULT_POINT_TOUCH_RADIUS_DP = 12;
 	private Path mLinePath = new Path();
 	private Paint mLinePaint = new Paint();
 	private Paint mPointPaint = new Paint();
 	private Paint mRulersPaint = new Paint();
+	private InternalLineChartData mData;
 	private float mLineWidth;
 	private float mPointRadius;
+	private float mTouchRadius;
 	private float mXMultiplier;
 	private float mYMultiplier;
 	private float mAvailableWidth;
 	private float mAvailableHeight;
-	private final float mTouchRadius;
 	private int mHorizontalRulersDivider;
-	boolean mInterpolationOn = true;
-	boolean mHorizontalRulersOn = false;
-	boolean mPointsOn = true;
+	private boolean mInterpolationOn = true;
+	private boolean mHorizontalRulersOn = false;
+	private boolean mPointsOn = true;
 	private ChartAnimator mAnimator;
 	private int mSelectedSeriesIndex = Integer.MIN_VALUE;
 	private int mSelectedValueIndex = Integer.MIN_VALUE;
@@ -64,7 +67,6 @@ public class LineChart extends View {
 		initAttributes();
 		initPaints();
 		initAnimatiors();
-		mTouchRadius = Utils.dp2px(context, Config.DEFAULT_TOUCH_AREA_RADIUS_DP);
 	}
 
 	public LineChart(Context context, AttributeSet attrs) {
@@ -72,7 +74,6 @@ public class LineChart extends View {
 		initAttributes();
 		initPaints();
 		initAnimatiors();
-		mTouchRadius = Utils.dp2px(context, Config.DEFAULT_TOUCH_AREA_RADIUS_DP);
 	}
 
 	public LineChart(Context context, AttributeSet attrs, int defStyle) {
@@ -80,12 +81,12 @@ public class LineChart extends View {
 		initAttributes();
 		initPaints();
 		initAnimatiors();
-		mTouchRadius = Utils.dp2px(context, Config.DEFAULT_TOUCH_AREA_RADIUS_DP);
 	}
 
 	private void initAttributes() {
-		mLineWidth = Utils.dp2px(getContext(), 3);
-		mPointRadius = Utils.dp2px(getContext(), 6);
+		mLineWidth = Utils.dp2px(getContext(), DEFAULT_LINE_WIDTH_DP);
+		mPointRadius = Utils.dp2px(getContext(), DEFAULT_POINT_RADIUS_DP);
+		mTouchRadius = Utils.dp2px(getContext(), DEFAULT_POINT_TOUCH_RADIUS_DP);
 	}
 
 	private void initPaints() {
@@ -126,7 +127,7 @@ public class LineChart extends View {
 	}
 
 	private void calculateAvailableDimensions() {
-		final float additionalPadding = 3 * mPointRadius;
+		final float additionalPadding = 2 * Config.DEFAULT_TOUCH_SCALE * mPointRadius;
 		mAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight() - additionalPadding;
 		mAvailableHeight = getHeight() - getPaddingTop() - getPaddingBottom() - additionalPadding;
 	}
@@ -236,12 +237,12 @@ public class LineChart extends View {
 	}
 
 	private float calculateX(float valueX) {
-		final float additionalPadding = 1.5f * mPointRadius;
+		final float additionalPadding = Config.DEFAULT_TOUCH_SCALE * mPointRadius;
 		return getPaddingLeft() + additionalPadding + (valueX - mData.getMinXValue()) * mXMultiplier;
 	}
 
 	private float calculateY(float valueY) {
-		final float additionalPadding = 1.5f * mPointRadius;
+		final float additionalPadding = Config.DEFAULT_TOUCH_SCALE * mPointRadius;
 		return getHeight() - getPaddingBottom() - additionalPadding - (valueY - mData.getMinYValue()) * mYMultiplier;
 	}
 
@@ -289,6 +290,9 @@ public class LineChart extends View {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
+		if (!mPointsOn) {
+			return true;
+		}
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			int seriesIndex = 0;
 			// TODO reverse loop.
