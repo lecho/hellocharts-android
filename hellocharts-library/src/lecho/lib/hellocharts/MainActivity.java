@@ -2,7 +2,7 @@ package lecho.lib.hellocharts;
 
 import java.util.ArrayList;
 import java.util.List;
-import android.graphics.PointF;
+
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.Series;
 import android.app.Activity;

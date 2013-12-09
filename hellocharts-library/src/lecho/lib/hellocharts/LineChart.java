@@ -15,13 +15,11 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Cap;
 import android.graphics.Path;
-import android.graphics.PointF;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.Pair;
-import android.util.SparseBooleanArray;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -87,13 +85,14 @@ public class LineChart extends View {
 
 	private void initAttributes() {
 		mLineWidth = Utils.dp2px(getContext(), 3);
-		mPointRadius = Utils.dp2px(getContext(), 8);
+		mPointRadius = Utils.dp2px(getContext(), 6);
 	}
 
 	private void initPaints() {
 		mLinePaint.setAntiAlias(true);
 		mLinePaint.setStyle(Paint.Style.STROKE);
 		mLinePaint.setStrokeWidth(mLineWidth);
+		mLinePaint.setStrokeCap(Cap.ROUND);
 
 		mPointPaint.setAntiAlias(true);
 		mPointPaint.setStyle(Paint.Style.FILL);
@@ -126,14 +125,15 @@ public class LineChart extends View {
 		Log.v(TAG, "Zwymiarowane w [ms]: " + (System.nanoTime() - time) / 1000000);
 	}
 
+	private void calculateAvailableDimensions() {
+		final float additionalPadding = 3 * mPointRadius;
+		mAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight() - additionalPadding;
+		mAvailableHeight = getHeight() - getPaddingTop() - getPaddingBottom() - additionalPadding;
+	}
+
 	private void calculateMultipliers() {
 		mXMultiplier = mAvailableWidth / (mData.getMaxXValue() - mData.getMinXValue());
 		mYMultiplier = mAvailableHeight / (mData.getMaxYValue() - mData.getMinYValue());
-	}
-
-	private void calculateAvailableDimensions() {
-		mAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight() - 2 * mPointRadius;
-		mAvailableHeight = getHeight() - getPaddingTop() - getPaddingBottom() - 2 * mPointRadius;
 	}
 
 	@Override
@@ -236,11 +236,13 @@ public class LineChart extends View {
 	}
 
 	private float calculateX(float valueX) {
-		return getPaddingLeft() + mPointRadius + (valueX - mData.getMinXValue()) * mXMultiplier;
+		final float additionalPadding = 1.5f * mPointRadius;
+		return getPaddingLeft() + additionalPadding + (valueX - mData.getMinXValue()) * mXMultiplier;
 	}
 
 	private float calculateY(float valueY) {
-		return getHeight() - getPaddingBottom() - mPointRadius - (valueY - mData.getMinYValue()) * mYMultiplier;
+		final float additionalPadding = 1.5f * mPointRadius;
+		return getHeight() - getPaddingBottom() - additionalPadding - (valueY - mData.getMinYValue()) * mYMultiplier;
 	}
 
 	/**
@@ -289,6 +291,7 @@ public class LineChart extends View {
 	public boolean onTouchEvent(MotionEvent event) {
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			int seriesIndex = 0;
+			// TODO reverse loop.
 			for (InternalSeries series : mData.getInternalsSeries()) {
 				int valueIndex = 0;
 				for (AnimatedValue value : series.getValues()) {
