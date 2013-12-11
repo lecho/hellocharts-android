@@ -40,7 +40,6 @@ public class ChartAnimatorV11 implements ChartAnimator, AnimatorListener, Animat
 
 	@Override
 	public void onAnimationUpdate(ValueAnimator animation) {
-		Log.v("TAG", "Updatign by scale " + (Float) animation.getAnimatedValue());
 		mChart.animationUpdate((Float) animation.getAnimatedValue());
 	}
 
