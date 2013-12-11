@@ -10,7 +10,9 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.RelativeLayout;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -20,7 +22,34 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		RelativeLayout layout = (RelativeLayout) findViewById(R.id.layout);
+		Button btn = (Button) findViewById(R.id.button);
+		btn.setOnClickListener(new View.OnClickListener() {
+			int counter = 0;
+
+			@Override
+			public void onClick(View v) {
+				if (++counter % 2 != 0) {
+					List<Float> s1 = new ArrayList<Float>();
+					s1.add(600f);
+					s1.add(250f);
+					s1.add(700f);
+					s1.add(600f);
+					s1.add(800f);
+					chart.animateSeries(0, s1);
+				} else {
+					List<Float> s2 = new ArrayList<Float>();
+					s2.add(300f);
+					s2.add(800f);
+					s2.add(400f);
+					s2.add(800f);
+					s2.add(100f);
+					chart.animateSeries(0, s2);
+				}
+
+			}
+		});
+
+		LinearLayout layout = (LinearLayout) findViewById(R.id.layout);
 		chart = new LineChart(this);
 		List<Float> domain = new ArrayList<Float>();
 		domain.add(1f);
@@ -28,11 +57,6 @@ public class MainActivity extends Activity {
 		domain.add(3f);
 		domain.add(4f);
 		domain.add(5f);
-		// domain.add(6f);
-		// domain.add(7f);
-		// domain.add(8f);
-		// domain.add(9f);
-		// domain.add(10f);
 		final ChartData data = new ChartData(domain);
 		List<Float> s1 = new ArrayList<Float>();
 		s1.add(100f);
@@ -40,24 +64,12 @@ public class MainActivity extends Activity {
 		s1.add(600f);
 		s1.add(100f);
 		s1.add(300f);
-		// s1.add(12f);
-		// s1.add(8f);
-		// s1.add(4f);
-		// s1.add(6f);
-		// s1.add(5f);
 		List<Float> s2 = new ArrayList<Float>();
 		s2.add(500f);
 		s2.add(300f);
 		s2.add(800f);
 		s2.add(600f);
 		s2.add(100f);
-		// s2.add(3f);
-		// s2.add(1f);
-		// s2.add(3f);
-		// s2.add(10f);
-		// s2.add(5f);
-		// LineSeries l1 = new LineSeries(Color.parseColor("#FFBB33"), s1);
-		// LineSeries l2 = new LineSeries(Color.parseColor("#99CC00"), s2);
 		data.addSeries(new Series(Color.parseColor("#FFBB33"), s1));
 		data.addSeries(new Series(Color.parseColor("#99CC00"), s2));
 		chart.setData(data);
@@ -86,15 +98,6 @@ public class MainActivity extends Activity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == R.id.action_settings) {
-			List<Float> s2 = new ArrayList<Float>();
-			s2.add(500f);
-			s2.add(300f);
-			s2.add(800f);
-			s2.add(600f);
-			s2.add(1200f);
-			chart.animateSeries(0, s2);
-		}
 		return super.onOptionsItemSelected(item);
 	}
 }

@@ -4,4 +4,6 @@ public interface ChartAnimator {
 
 	public void startAnimation();
 
+	public void cancelAnimation();
+
 }

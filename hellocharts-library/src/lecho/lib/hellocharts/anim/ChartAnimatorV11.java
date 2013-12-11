@@ -7,11 +7,12 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.annotation.SuppressLint;
+import android.util.Log;
 import android.view.animation.LinearInterpolator;
 
 @SuppressLint("NewApi")
 public class ChartAnimatorV11 implements ChartAnimator, AnimatorListener, AnimatorUpdateListener {
-	private float mScale;
+	float mScale;
 	private ObjectAnimator mObjectAnimator;
 	private final LineChart mChart;
 	private final long mDuration;
@@ -33,7 +34,13 @@ public class ChartAnimatorV11 implements ChartAnimator, AnimatorListener, Animat
 	}
 
 	@Override
+	public void cancelAnimation() {
+		mObjectAnimator.cancel();
+	}
+
+	@Override
 	public void onAnimationUpdate(ValueAnimator animation) {
+		Log.v("TAG", "Updatign by scale " + (Float) animation.getAnimatedValue());
 		mChart.animationUpdate((Float) animation.getAnimatedValue());
 	}
 
@@ -53,4 +60,5 @@ public class ChartAnimatorV11 implements ChartAnimator, AnimatorListener, Animat
 	@Override
 	public void onAnimationStart(Animator animation) {
 	}
+
 }

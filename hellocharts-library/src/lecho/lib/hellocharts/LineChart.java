@@ -348,6 +348,7 @@ public class LineChart extends View {
 	}
 
 	public void animateSeries(int index, List<Float> values) {
+		mAnimator.cancelAnimation();
 		mData.updateSeriesTargetPositions(index, values);
 		mAnimator.startAnimation();
 	}
