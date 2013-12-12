@@ -7,12 +7,12 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.annotation.SuppressLint;
-import android.util.Log;
 import android.view.animation.LinearInterpolator;
 
 @SuppressLint("NewApi")
 public class ChartAnimatorV11 implements ChartAnimator, AnimatorListener, AnimatorUpdateListener {
-	float mScale;
+	@SuppressWarnings("unused")
+	private float mScale;
 	private ObjectAnimator mObjectAnimator;
 	private final LineChart mChart;
 	private final long mDuration;

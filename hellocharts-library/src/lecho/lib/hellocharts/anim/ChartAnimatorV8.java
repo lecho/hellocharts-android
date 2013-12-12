@@ -13,7 +13,7 @@ public class ChartAnimatorV8 implements ChartAnimator {
 	final long mDuration;
 	final Handler mHandler;
 	final Interpolator mInterpolator = new LinearInterpolator();
-	final Runnable mRunnable = new Runnable() {
+	private final Runnable mRunnable = new Runnable() {
 
 		@Override
 		public void run() {

@@ -34,7 +34,7 @@ public class LineChart extends View {
 	private static final float LINE_SMOOTHNES = 0.15f;
 	private static final int DEFAULT_LINE_WIDTH_DP = 3;
 	private static final int DEFAULT_POINT_RADIUS_DP = 6;
-	private static final int DEFAULT_POINT_TOUCH_RADIUS_DP = 24;
+	private static final int DEFAULT_POINT_TOUCH_RADIUS_DP = 12;
 	private Path mLinePath = new Path();
 	private Paint mLinePaint = new Paint();
 	private Paint mPointPaint = new Paint();
@@ -123,7 +123,7 @@ public class LineChart extends View {
 		if (mHorizontalRulersOn) {
 			calculateHorizontalRulersDivider();
 		}
-		Log.v(TAG, "Zwymiarowane w [ms]: " + (System.nanoTime() - time) / 1000000);
+		Log.v(TAG, "onSizeChanged [ms]: " + (System.nanoTime() - time) / 1000000f);
 	}
 
 	private void calculateAvailableDimensions() {
@@ -147,8 +147,7 @@ public class LineChart extends View {
 		if (mPointsOn) {
 			drawPoints(canvas);
 		}
-		Log.v(TAG, "Narysowane w [ms]: " + (System.nanoTime() - time) / 1000000);
-		Log.v(TAG, "Wyświetlone w [ms]: " + (System.nanoTime() - time) / 1000000);
+		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
 	}
 
 	private void drawLines(Canvas canvas) {
@@ -164,6 +163,7 @@ public class LineChart extends View {
 		}
 	}
 
+	// Drawing points can be done in the same loop as drawing lines but it may cause problems in the future.
 	private void drawPoints(Canvas canvas) {
 		int seriesIndex = 0;
 		for (InternalSeries internalSeries : mData.getInternalsSeries()) {
@@ -199,25 +199,26 @@ public class LineChart extends View {
 	}
 
 	private void prepareSmoothPath(final InternalSeries internalSeries) {
-		for (int pointIndex = 0; pointIndex < mData.getDomain().size() - 1; ++pointIndex) {
-			final float currentPointX = calculateX(mData.getDomain().get(pointIndex));
-			final float currentPointY = calculateY(internalSeries.getValues().get(pointIndex).getPosition());
-			final float nextPointX = calculateX(mData.getDomain().get(pointIndex + 1));
-			final float nextPointY = calculateY(internalSeries.getValues().get(pointIndex + 1).getPosition());
+		final int domainSize = mData.getDomain().size();
+		for (int valueIndex = 0; valueIndex < domainSize - 1; ++valueIndex) {
+			final float currentPointX = calculateX(mData.getDomain().get(valueIndex));
+			final float currentPointY = calculateY(internalSeries.getValues().get(valueIndex).getPosition());
+			final float nextPointX = calculateX(mData.getDomain().get(valueIndex + 1));
+			final float nextPointY = calculateY(internalSeries.getValues().get(valueIndex + 1).getPosition());
 			final float previousPointX;
 			final float previousPointY;
-			if (pointIndex > 0) {
-				previousPointX = calculateX(mData.getDomain().get(pointIndex - 1));
-				previousPointY = calculateY(internalSeries.getValues().get(pointIndex - 1).getPosition());
+			if (valueIndex > 0) {
+				previousPointX = calculateX(mData.getDomain().get(valueIndex - 1));
+				previousPointY = calculateY(internalSeries.getValues().get(valueIndex - 1).getPosition());
 			} else {
 				previousPointX = currentPointX;
 				previousPointY = currentPointY;
 			}
 			final float afterNextPointX;
 			final float afterNextPointY;
-			if (pointIndex < mData.getDomain().size() - 2) {
-				afterNextPointX = calculateX(mData.getDomain().get(pointIndex + 2));
-				afterNextPointY = calculateY(internalSeries.getValues().get(pointIndex + 2).getPosition());
+			if (valueIndex < domainSize - 2) {
+				afterNextPointX = calculateX(mData.getDomain().get(valueIndex + 2));
+				afterNextPointY = calculateY(internalSeries.getValues().get(valueIndex + 2).getPosition());
 			} else {
 				afterNextPointX = nextPointX;
 				afterNextPointY = nextPointY;
