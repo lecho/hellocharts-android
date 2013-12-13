@@ -31,7 +31,7 @@ import android.view.View;
  */
 public class LineChart extends View {
 	private static final String TAG = "LineChart";
-	private static final float LINE_SMOOTHNES = 0.15f;
+	private static final float LINE_SMOOTHNES = 0.16f;
 	private static final int DEFAULT_LINE_WIDTH_DP = 3;
 	private static final int DEFAULT_POINT_RADIUS_DP = 6;
 	private static final int DEFAULT_POINT_TOUCH_RADIUS_DP = 12;
@@ -163,7 +163,8 @@ public class LineChart extends View {
 		}
 	}
 
-	// Drawing points can be done in the same loop as drawing lines but it may cause problems in the future.
+	// TODO Drawing points can be done in the same loop as drawing lines but it may cause problems in the future. Reuse
+	// calculated X/Y;
 	private void drawPoints(Canvas canvas) {
 		int seriesIndex = 0;
 		for (InternalSeries internalSeries : mData.getInternalsSeries()) {
@@ -200,20 +201,31 @@ public class LineChart extends View {
 
 	private void prepareSmoothPath(final InternalSeries internalSeries) {
 		final int domainSize = mData.getDomain().size();
+		float previousPointX = Float.NaN;
+		float previousPointY = Float.NaN;
+		float currentPointX = Float.NaN;
+		float currentPointY = Float.NaN;
+		float nextPointX = Float.NaN;
+		float nextPointY = Float.NaN;
 		for (int valueIndex = 0; valueIndex < domainSize - 1; ++valueIndex) {
-			final float currentPointX = calculateX(mData.getDomain().get(valueIndex));
-			final float currentPointY = calculateY(internalSeries.getValues().get(valueIndex).getPosition());
-			final float nextPointX = calculateX(mData.getDomain().get(valueIndex + 1));
-			final float nextPointY = calculateY(internalSeries.getValues().get(valueIndex + 1).getPosition());
-			final float previousPointX;
-			final float previousPointY;
-			if (valueIndex > 0) {
-				previousPointX = calculateX(mData.getDomain().get(valueIndex - 1));
-				previousPointY = calculateY(internalSeries.getValues().get(valueIndex - 1).getPosition());
-			} else {
-				previousPointX = currentPointX;
-				previousPointY = currentPointY;
+			if (Float.isNaN(currentPointX)) {
+				currentPointX = calculateX(mData.getDomain().get(valueIndex));
+				currentPointY = calculateY(internalSeries.getValues().get(valueIndex).getPosition());
 			}
+			if (Float.isNaN(previousPointX)) {
+				if (valueIndex > 0) {
+					previousPointX = calculateX(mData.getDomain().get(valueIndex - 1));
+					previousPointY = calculateY(internalSeries.getValues().get(valueIndex - 1).getPosition());
+				} else {
+					previousPointX = currentPointX;
+					previousPointY = currentPointY;
+				}
+			}
+			if (Float.isNaN(nextPointX)) {
+				nextPointX = calculateX(mData.getDomain().get(valueIndex + 1));
+				nextPointY = calculateY(internalSeries.getValues().get(valueIndex + 1).getPosition());
+			}
+			// afterNextPoint is always new one or it is equal to nextPoint.
 			final float afterNextPointX;
 			final float afterNextPointY;
 			if (valueIndex < domainSize - 2) {
@@ -223,6 +235,7 @@ public class LineChart extends View {
 				afterNextPointX = nextPointX;
 				afterNextPointY = nextPointY;
 			}
+			// To draw cubic curve control points are needed.
 			final float firstDiffX = (nextPointX - previousPointX);
 			final float firstDiffY = (nextPointY - previousPointY);
 			final float secondDiffX = (afterNextPointX - currentPointX);
@@ -234,6 +247,13 @@ public class LineChart extends View {
 			mLinePath.moveTo(currentPointX, currentPointY);
 			mLinePath.cubicTo(firstControlPointX, firstControlPointY, secondControlPointX, secondControlPointY,
 					nextPointX, nextPointY);
+			// Shift values to prevent recalculation of values that where already calculated.
+			previousPointX = currentPointX;
+			previousPointY = currentPointY;
+			currentPointX = nextPointX;
+			currentPointY = nextPointY;
+			nextPointX = afterNextPointX;
+			nextPointY = afterNextPointY;
 		}
 	}
 
