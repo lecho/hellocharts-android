@@ -153,12 +153,10 @@ public class LineChart extends View {
 	private void drawLines(Canvas canvas) {
 		for (InternalSeries internalSeries : mData.getInternalsSeries()) {
 			if (mInterpolationOn) {
-				prepareSmoothPath(internalSeries);
+				drawSmoothPath(canvas, internalSeries);
 			} else {
-				preparePath(internalSeries);
+				drawPath(canvas, internalSeries);
 			}
-			mLinePaint.setColor(internalSeries.getColor());
-			canvas.drawPath(mLinePath, mLinePaint);
 			mLinePath.reset();
 		}
 	}
@@ -185,7 +183,7 @@ public class LineChart extends View {
 		}
 	}
 
-	private void preparePath(final InternalSeries internalSeries) {
+	private void drawPath(Canvas canvas, final InternalSeries internalSeries) {
 		int valueIndex = 0;
 		for (float valueX : mData.getDomain()) {
 			final float rawValueX = calculateX(valueX);
@@ -197,9 +195,11 @@ public class LineChart extends View {
 			}
 			++valueIndex;
 		}
+		mLinePaint.setColor(internalSeries.getColor());
+		canvas.drawPath(mLinePath, mLinePaint);
 	}
 
-	private void prepareSmoothPath(final InternalSeries internalSeries) {
+	private void drawSmoothPath(Canvas canvas, final InternalSeries internalSeries) {
 		final int domainSize = mData.getDomain().size();
 		float previousPointX = Float.NaN;
 		float previousPointY = Float.NaN;
@@ -225,7 +225,7 @@ public class LineChart extends View {
 				nextPointX = calculateX(mData.getDomain().get(valueIndex + 1));
 				nextPointY = calculateY(internalSeries.getValues().get(valueIndex + 1).getPosition());
 			}
-			// afterNextPoint is always new one or it is equal to nextPoint.
+			// afterNextPoint is always new one or it is equal nextPoint.
 			final float afterNextPointX;
 			final float afterNextPointY;
 			if (valueIndex < domainSize - 2) {
@@ -247,6 +247,7 @@ public class LineChart extends View {
 			mLinePath.moveTo(currentPointX, currentPointY);
 			mLinePath.cubicTo(firstControlPointX, firstControlPointY, secondControlPointX, secondControlPointY,
 					nextPointX, nextPointY);
+			// drawPoint(canvas, internalSeries.getColor(), currentPointX, currentPointY);
 			// Shift values to prevent recalculation of values that where already calculated.
 			previousPointX = currentPointX;
 			previousPointY = currentPointY;
@@ -255,6 +256,9 @@ public class LineChart extends View {
 			nextPointX = afterNextPointX;
 			nextPointY = afterNextPointY;
 		}
+		mLinePaint.setColor(internalSeries.getColor());
+		canvas.drawPath(mLinePath, mLinePaint);
+		// drawPoint(canvas, internalSeries.getColor(), currentPointX, currentPointY);
 	}
 
 	private float calculateX(float valueX) {
