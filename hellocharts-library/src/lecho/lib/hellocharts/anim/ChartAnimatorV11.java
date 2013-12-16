@@ -49,7 +49,6 @@ public class ChartAnimatorV11 implements ChartAnimator, AnimatorListener, Animat
 
 	@Override
 	public void onAnimationEnd(Animator animation) {
-		mChart.animationUpdate(1.0f);
 	}
 
 	@Override

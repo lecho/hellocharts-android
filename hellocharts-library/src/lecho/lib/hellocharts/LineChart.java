@@ -17,24 +17,24 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Cap;
 import android.graphics.Path;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.Xfermode;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-/**
- * TODO nullcheck for mData
- * 
- * @author lecho
- * 
- */
 public class LineChart extends View {
 	private static final String TAG = "LineChart";
 	private static final float LINE_SMOOTHNES = 0.16f;
-	private static final int DEFAULT_LINE_WIDTH_DP = 3;
+	private static final int DEFAULT_LINE_WIDTH_DP = 2;
 	private static final int DEFAULT_POINT_RADIUS_DP = 6;
 	private static final int DEFAULT_POINT_TOUCH_RADIUS_DP = 12;
+	private static final int DEFAULT_TEXT_SIZE_DP = 16;
 	private Path mLinePath = new Path();
 	private Paint mLinePaint = new Paint();
 	private Paint mPointPaint = new Paint();
@@ -97,6 +97,7 @@ public class LineChart extends View {
 
 		mPointPaint.setAntiAlias(true);
 		mPointPaint.setStyle(Paint.Style.FILL);
+		mPointPaint.setTextSize(Utils.dp2px(getContext(), DEFAULT_TEXT_SIZE_DP));
 
 		mRulersPaint.setStyle(Paint.Style.STROKE);
 		mRulersPaint.setColor(Color.LTGRAY);
@@ -176,11 +177,28 @@ public class LineChart extends View {
 					canvas.drawCircle(rawValueX, rawValueY, Config.DEFAULT_TOUCH_SCALE * mPointRadius, mPointPaint);
 				} else {
 					canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointPaint);
+					drawValuePopup(canvas, internalSeries.getValues().get(valueIndex).getPosition(), rawValueX,
+							rawValueY);
 				}
 				++valueIndex;
 			}
 			++seriesIndex;
 		}
+	}
+
+	private void drawValuePopup(Canvas canvas, float value, float x, float y) {
+		String strValue = Float.toString(value);
+		Rect rect = new Rect();
+		mPointPaint.getTextBounds(strValue, 0, strValue.length(), rect);
+		RectF rect2 = new RectF(x + mPointRadius, y - rect.height() - mPointRadius, x + rect.width() + mPointRadius, y
+				- mPointRadius);
+		Paint p = new Paint(mPointPaint);
+		p.setColor(Color.WHITE);
+		canvas.drawRect(rect2, p);
+
+		x += mPointRadius;
+		y -= mPointRadius;
+		canvas.drawText(strValue, x, y, mPointPaint);
 	}
 
 	private void drawPath(Canvas canvas, final InternalSeries internalSeries) {
@@ -235,7 +253,7 @@ public class LineChart extends View {
 				afterNextPointX = nextPointX;
 				afterNextPointY = nextPointY;
 			}
-			// To draw cubic curve control points are needed.
+			// Calculate control points.
 			final float firstDiffX = (nextPointX - previousPointX);
 			final float firstDiffY = (nextPointY - previousPointY);
 			final float secondDiffX = (afterNextPointX - currentPointX);
@@ -247,7 +265,6 @@ public class LineChart extends View {
 			mLinePath.moveTo(currentPointX, currentPointY);
 			mLinePath.cubicTo(firstControlPointX, firstControlPointY, secondControlPointX, secondControlPointY,
 					nextPointX, nextPointY);
-			// drawPoint(canvas, internalSeries.getColor(), currentPointX, currentPointY);
 			// Shift values to prevent recalculation of values that where already calculated.
 			previousPointX = currentPointX;
 			previousPointY = currentPointY;
@@ -258,7 +275,6 @@ public class LineChart extends View {
 		}
 		mLinePaint.setColor(internalSeries.getColor());
 		canvas.drawPath(mLinePath, mLinePaint);
-		// drawPoint(canvas, internalSeries.getColor(), currentPointX, currentPointY);
 	}
 
 	private float calculateX(float valueX) {
