@@ -29,9 +29,10 @@ public class LineChart extends View {
 	private static final String TAG = "LineChart";
 	private static final float LINE_SMOOTHNES = 0.16f;
 	private static final int DEFAULT_LINE_WIDTH_DP = 2;
-	private static final int DEFAULT_POINT_RADIUS_DP = 6;
+	private static final int DEFAULT_POINT_RADIUS_DP = 10;
 	private static final int DEFAULT_POINT_TOUCH_RADIUS_DP = 12;
 	private static final int DEFAULT_TEXT_SIZE_DP = 16;
+	private static final int DEFAULT_TEXT_COLOR = Color.WHITE;
 	private Path mLinePath = new Path();
 	private Paint mLinePaint = new Paint();
 	private Paint mPointPaint = new Paint();
@@ -49,6 +50,7 @@ public class LineChart extends View {
 	private boolean mInterpolationOn = true;
 	private boolean mHorizontalRulersOn = false;
 	private boolean mPointsOn = true;
+	private int mPopups = Config.POPUPS_ON;
 	private ChartAnimator mAnimator;
 	private int mSelectedSeriesIndex = Integer.MIN_VALUE;
 	private int mSelectedValueIndex = Integer.MIN_VALUE;
@@ -96,6 +98,7 @@ public class LineChart extends View {
 
 		mPointPaint.setAntiAlias(true);
 		mPointPaint.setStyle(Paint.Style.FILL);
+		mPointPaint.setStrokeWidth(1);
 		mPointPaint.setTextSize(Utils.dp2px(getContext(), DEFAULT_TEXT_SIZE_DP));
 
 		mRulersPaint.setStyle(Paint.Style.STROKE);
@@ -127,7 +130,7 @@ public class LineChart extends View {
 	}
 
 	private void calculateAvailableDimensions() {
-		final float additionalPadding = 2 * Config.DEFAULT_TOUCH_SCALE * mPointRadius;
+		final float additionalPadding = 2 * mPointPressedRadius;
 		mAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight() - additionalPadding;
 		mAvailableHeight = getHeight() - getPaddingTop() - getPaddingBottom() - additionalPadding;
 	}
@@ -174,13 +177,18 @@ public class LineChart extends View {
 				// Checks if current series-point is selected by touch.
 				if (mSelectedSeriesIndex == seriesIndex && mSelectedValueIndex == valueIndex) {
 					canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mPointPaint);
-					drawValuePopup(canvas, mPointPressedRadius, internalSeries.getValues().get(valueIndex)
-							.getPosition(), rawValueX, rawValueY);
+					if (Config.POPUPS_ON == mPopups || Config.POPUPS_ON_PRESS == mPopups) {
+						drawValuePopup(canvas, 2 * mPointPressedRadius, internalSeries.getValues().get(valueIndex)
+								.getPosition(), rawValueX, rawValueY);
+					}
 				} else {
 					canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointPaint);
+					if (Config.POPUPS_ON == mPopups) {
+						drawValuePopup(canvas, mPointRadius, internalSeries.getValues().get(valueIndex).getPosition(),
+								rawValueX, rawValueY);
+					}
 				}
-				// drawValuePopup(canvas, internalSeries.getValues().get(valueIndex).getPosition(), rawValueX,
-				// rawValueY);
+
 				++valueIndex;
 			}
 			++seriesIndex;
@@ -188,17 +196,18 @@ public class LineChart extends View {
 	}
 
 	private void drawValuePopup(Canvas canvas, float offset, float value, float x, float y) {
-		String strValue = Float.toString(value);
-		Rect textBounds = new Rect();
+		final float margin = (float) Utils.dp2px(getContext(), 4);
+		final String strValue = Float.toString(value);
+		final Rect textBounds = new Rect();
 		mPointPaint.getTextBounds(strValue, 0, strValue.length(), textBounds);
 		x += offset;
 		y -= offset;
-		RectF popup = new RectF(x, y - textBounds.height() - offset, x + textBounds.width() + offset, y);
-		canvas.drawRoundRect(popup, Utils.dp2px(getContext(), 4), Utils.dp2px(getContext(), 4), mPointPaint);
-		int color = mPointPaint.getColor();
-		mPointPaint.setColor(Color.WHITE);
-		x += offset / 2f;
-		y -= offset / 2f;
+		final RectF popup = new RectF(x, y - textBounds.height() - margin * 2, x + textBounds.width() + margin * 2, y);
+		canvas.drawRoundRect(popup, margin, margin, mPointPaint);
+		final int color = mPointPaint.getColor();
+		mPointPaint.setColor(DEFAULT_TEXT_COLOR);
+		x += margin;
+		y -= margin;
 		canvas.drawText(strValue, x, y, mPointPaint);
 		mPointPaint.setColor(color);
 	}
@@ -280,12 +289,12 @@ public class LineChart extends View {
 	}
 
 	private float calculateX(float valueX) {
-		final float additionalPadding = Config.DEFAULT_TOUCH_SCALE * mPointRadius;
+		final float additionalPadding = mPointPressedRadius;
 		return getPaddingLeft() + additionalPadding + (valueX - mData.getMinXValue()) * mXMultiplier;
 	}
 
 	private float calculateY(float valueY) {
-		final float additionalPadding = Config.DEFAULT_TOUCH_SCALE * mPointRadius;
+		final float additionalPadding = mPointPressedRadius;
 		return getHeight() - getPaddingBottom() - additionalPadding - (valueY - mData.getMinYValue()) * mYMultiplier;
 	}
 
