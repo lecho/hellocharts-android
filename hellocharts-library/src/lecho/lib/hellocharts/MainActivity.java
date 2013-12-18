@@ -128,7 +128,7 @@ public class MainActivity extends Activity {
 		s2.add(500f);
 		s2.add(300f);
 		s2.add(800f);
-		s2.add(600f);
+		s2.add(650f);
 		s2.add(100f);
 		// s2.add(500f);
 		// s2.add(300f);
@@ -148,7 +148,7 @@ public class MainActivity extends Activity {
 		data.addSeries(new Series(Color.parseColor("#FFBB33"), s1));
 		data.addSeries(new Series(Color.parseColor("#99CC00"), s2));
 		chart.setData(data);
-		chart.setBackgroundColor(Color.WHITE);
+		// chart.setBackgroundColor(Color.WHITE);
 		chart.setOnPointClickListener(new OnPointClickListener() {
 
 			@Override

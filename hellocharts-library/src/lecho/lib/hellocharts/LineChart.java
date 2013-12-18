@@ -17,11 +17,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Cap;
 import android.graphics.Path;
-import android.graphics.PorterDuff.Mode;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Xfermode;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -42,6 +39,7 @@ public class LineChart extends View {
 	private InternalLineChartData mData;
 	private float mLineWidth;
 	private float mPointRadius;
+	private float mPointPressedRadius;
 	private float mTouchRadius;
 	private float mXMultiplier;
 	private float mYMultiplier;
@@ -86,6 +84,7 @@ public class LineChart extends View {
 	private void initAttributes() {
 		mLineWidth = Utils.dp2px(getContext(), DEFAULT_LINE_WIDTH_DP);
 		mPointRadius = Utils.dp2px(getContext(), DEFAULT_POINT_RADIUS_DP);
+		mPointPressedRadius = mPointRadius + Utils.dp2px(getContext(), 4);
 		mTouchRadius = Utils.dp2px(getContext(), DEFAULT_POINT_TOUCH_RADIUS_DP);
 	}
 
@@ -174,31 +173,34 @@ public class LineChart extends View {
 				final float rawValueY = calculateY(internalSeries.getValues().get(valueIndex).getPosition());
 				// Checks if current series-point is selected by touch.
 				if (mSelectedSeriesIndex == seriesIndex && mSelectedValueIndex == valueIndex) {
-					canvas.drawCircle(rawValueX, rawValueY, Config.DEFAULT_TOUCH_SCALE * mPointRadius, mPointPaint);
+					canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mPointPaint);
+					drawValuePopup(canvas, mPointPressedRadius, internalSeries.getValues().get(valueIndex)
+							.getPosition(), rawValueX, rawValueY);
 				} else {
 					canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointPaint);
-					drawValuePopup(canvas, internalSeries.getValues().get(valueIndex).getPosition(), rawValueX,
-							rawValueY);
 				}
+				// drawValuePopup(canvas, internalSeries.getValues().get(valueIndex).getPosition(), rawValueX,
+				// rawValueY);
 				++valueIndex;
 			}
 			++seriesIndex;
 		}
 	}
 
-	private void drawValuePopup(Canvas canvas, float value, float x, float y) {
+	private void drawValuePopup(Canvas canvas, float offset, float value, float x, float y) {
 		String strValue = Float.toString(value);
-		Rect rect = new Rect();
-		mPointPaint.getTextBounds(strValue, 0, strValue.length(), rect);
-		RectF rect2 = new RectF(x + mPointRadius, y - rect.height() - mPointRadius, x + rect.width() + mPointRadius, y
-				- mPointRadius);
-		Paint p = new Paint(mPointPaint);
-		p.setColor(Color.WHITE);
-		canvas.drawRect(rect2, p);
-
-		x += mPointRadius;
-		y -= mPointRadius;
+		Rect textBounds = new Rect();
+		mPointPaint.getTextBounds(strValue, 0, strValue.length(), textBounds);
+		x += offset;
+		y -= offset;
+		RectF popup = new RectF(x, y - textBounds.height() - offset, x + textBounds.width() + offset, y);
+		canvas.drawRoundRect(popup, Utils.dp2px(getContext(), 4), Utils.dp2px(getContext(), 4), mPointPaint);
+		int color = mPointPaint.getColor();
+		mPointPaint.setColor(Color.WHITE);
+		x += offset / 2f;
+		y -= offset / 2f;
 		canvas.drawText(strValue, x, y, mPointPaint);
+		mPointPaint.setColor(color);
 	}
 
 	private void drawPath(Canvas canvas, final InternalSeries internalSeries) {
