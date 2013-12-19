@@ -11,6 +11,7 @@ import lecho.lib.hellocharts.model.InternalLineChartData;
 import lecho.lib.hellocharts.model.InternalSeries;
 import lecho.lib.hellocharts.utils.Config;
 import lecho.lib.hellocharts.utils.Utils;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -29,9 +30,9 @@ public class LineChart extends View {
 	private static final String TAG = "LineChart";
 	private static final float LINE_SMOOTHNES = 0.16f;
 	private static final int DEFAULT_LINE_WIDTH_DP = 2;
-	private static final int DEFAULT_POINT_RADIUS_DP = 10;
+	private static final int DEFAULT_POINT_RADIUS_DP = 6;
 	private static final int DEFAULT_POINT_TOUCH_RADIUS_DP = 12;
-	private static final int DEFAULT_TEXT_SIZE_DP = 16;
+	private static final int DEFAULT_TEXT_SIZE_DP = 14;
 	private static final int DEFAULT_TEXT_COLOR = Color.WHITE;
 	private Path mLinePath = new Path();
 	private Paint mLinePaint = new Paint();
@@ -195,20 +196,29 @@ public class LineChart extends View {
 		}
 	}
 
-	private void drawValuePopup(Canvas canvas, float offset, float value, float x, float y) {
+	@SuppressLint("DefaultLocale")
+	private void drawValuePopup(Canvas canvas, float offset, float value, float rawValueX, float rawValueY) {
 		final float margin = (float) Utils.dp2px(getContext(), 4);
-		final String strValue = Float.toString(value);
+		final String strValue = String.format(Config.DEFAULT_VALUE_FORMAT, value);
 		final Rect textBounds = new Rect();
 		mPointPaint.getTextBounds(strValue, 0, strValue.length(), textBounds);
-		x += offset;
-		y -= offset;
-		final RectF popup = new RectF(x, y - textBounds.height() - margin * 2, x + textBounds.width() + margin * 2, y);
+		float left = rawValueX + offset;
+		float right = rawValueX + offset + textBounds.width() + margin * 2;
+		float top = rawValueY - offset - textBounds.height() - margin * 2;
+		float bottom = rawValueY - offset;
+		if (top < getPaddingTop() + mPointPressedRadius) {
+			top = rawValueY + offset;
+			bottom = rawValueY + offset + textBounds.height() + margin * 2;
+		}
+		if (right > getWidth() - getPaddingRight() - mPointPressedRadius) {
+			left = rawValueX - offset - textBounds.width() - margin * 2;
+			right = rawValueX - offset;
+		}
+		final RectF popup = new RectF(left, top, right, bottom);
 		canvas.drawRoundRect(popup, margin, margin, mPointPaint);
 		final int color = mPointPaint.getColor();
 		mPointPaint.setColor(DEFAULT_TEXT_COLOR);
-		x += margin;
-		y -= margin;
-		canvas.drawText(strValue, x, y, mPointPaint);
+		canvas.drawText(strValue, left + margin, bottom - margin, mPointPaint);
 		mPointPaint.setColor(color);
 	}
 
