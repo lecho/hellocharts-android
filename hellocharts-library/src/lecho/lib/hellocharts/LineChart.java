@@ -167,41 +167,42 @@ public class LineChart extends View {
 
 	// TODO Drawing points can be done in the same loop as drawing lines but it may cause problems in the future. Reuse
 	// calculated X/Y;
+	@SuppressLint("DefaultLocale")
 	private void drawPoints(Canvas canvas) {
-		int seriesIndex = 0;
 		for (InternalSeries internalSeries : mData.getInternalsSeries()) {
 			mPointPaint.setColor(internalSeries.getColor());
 			int valueIndex = 0;
 			for (float valueX : mData.getDomain()) {
 				final float rawValueX = calculateX(valueX);
-				final float rawValueY = calculateY(internalSeries.getValues().get(valueIndex).getPosition());
-				// Checks if current series-point is selected by touch.
-				if (mSelectedSeriesIndex == seriesIndex && mSelectedValueIndex == valueIndex) {
-					canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mPointPaint);
-					if (Config.POPUPS_ON == mPopups || Config.POPUPS_ON_PRESS == mPopups) {
-						drawValuePopup(canvas, 2 * mPointPressedRadius, internalSeries.getValues().get(valueIndex)
-								.getPosition(), rawValueX, rawValueY);
-					}
-				} else {
-					canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointPaint);
-					if (Config.POPUPS_ON == mPopups) {
-						drawValuePopup(canvas, mPointRadius, internalSeries.getValues().get(valueIndex).getPosition(),
-								rawValueX, rawValueY);
-					}
+				final float valueY = internalSeries.getValues().get(valueIndex).getPosition();
+				final float rawValueY = calculateY(valueY);
+				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointPaint);
+				if (Config.POPUPS_ON == mPopups) {
+					final String textValue = String.format(Config.DEFAULT_VALUE_FORMAT, valueY);
+					drawValuePopup(canvas, mPointRadius, textValue, rawValueX, rawValueY);
 				}
-
 				++valueIndex;
 			}
-			++seriesIndex;
+		}
+		if (mSelectedSeriesIndex >= 0 && mSelectedValueIndex >= 0) {
+			final float valueX = mData.getDomain().get(mSelectedValueIndex);
+			final float rawValueX = calculateX(valueX);
+			final float valueY = mData.getInternalsSeries().get(mSelectedSeriesIndex).getValues()
+					.get(mSelectedValueIndex).getPosition();
+			final float rawValueY = calculateY(valueY);
+			mPointPaint.setColor(mData.getInternalsSeries().get(mSelectedSeriesIndex).getColor());
+			canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mPointPaint);
+			if (Config.POPUPS_ON == mPopups || Config.POPUPS_ON_PRESS == mPopups) {
+				final String textValue = String.format(Config.DEFAULT_VALUE_FORMAT, valueY);
+				drawValuePopup(canvas, mPointRadius, textValue, rawValueX, rawValueY);
+			}
 		}
 	}
 
-	@SuppressLint("DefaultLocale")
-	private void drawValuePopup(Canvas canvas, float offset, float value, float rawValueX, float rawValueY) {
+	private void drawValuePopup(Canvas canvas, float offset, String text, float rawValueX, float rawValueY) {
 		final float margin = (float) Utils.dp2px(getContext(), 4);
-		final String strValue = String.format(Config.DEFAULT_VALUE_FORMAT, value);
 		final Rect textBounds = new Rect();
-		mPointPaint.getTextBounds(strValue, 0, strValue.length(), textBounds);
+		mPointPaint.getTextBounds(text, 0, text.length(), textBounds);
 		float left = rawValueX + offset;
 		float right = rawValueX + offset + textBounds.width() + margin * 2;
 		float top = rawValueY - offset - textBounds.height() - margin * 2;
@@ -218,7 +219,7 @@ public class LineChart extends View {
 		canvas.drawRoundRect(popup, margin, margin, mPointPaint);
 		final int color = mPointPaint.getColor();
 		mPointPaint.setColor(DEFAULT_TEXT_COLOR);
-		canvas.drawText(strValue, left + margin, bottom - margin, mPointPaint);
+		canvas.drawText(text, left + margin, bottom - margin, mPointPaint);
 		mPointPaint.setColor(color);
 	}
 
