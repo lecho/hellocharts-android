@@ -398,12 +398,12 @@ public class LineChart extends View {
 		}
 	}
 
+	// Just empty listener to avoid NPE checks.
 	private static class DummyOnPointListener implements OnPointClickListener {
 
 		@Override
 		public void onPointClick(int selectedSeriesIndex, int selectedValueIndex, float x, float y) {
-			// TODO Auto-generated method stub
-
+			// Do nothing.
 		}
 
 	}
