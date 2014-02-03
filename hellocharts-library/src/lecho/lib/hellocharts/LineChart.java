@@ -11,7 +11,6 @@ import lecho.lib.hellocharts.model.InternalLineChartData;
 import lecho.lib.hellocharts.model.InternalSeries;
 import lecho.lib.hellocharts.utils.Config;
 import lecho.lib.hellocharts.utils.Utils;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -51,7 +50,7 @@ public class LineChart extends View {
 	private boolean mInterpolationOn = true;
 	private boolean mHorizontalRulersOn = false;
 	private boolean mPointsOn = true;
-	private int mPopups = Config.POPUPS_ON;
+	private boolean mPopupsOn = true;
 	private ChartAnimator mAnimator;
 	private int mSelectedSeriesIndex = Integer.MIN_VALUE;
 	private int mSelectedValueIndex = Integer.MIN_VALUE;
@@ -167,7 +166,6 @@ public class LineChart extends View {
 
 	// TODO Drawing points can be done in the same loop as drawing lines but it may cause problems in the future. Reuse
 	// calculated X/Y;
-	@SuppressLint("DefaultLocale")
 	private void drawPoints(Canvas canvas) {
 		for (InternalSeries internalSeries : mData.getInternalsSeries()) {
 			mPointPaint.setColor(internalSeries.getColor());
@@ -177,7 +175,7 @@ public class LineChart extends View {
 				final float valueY = internalSeries.getValues().get(valueIndex).getPosition();
 				final float rawValueY = calculateY(valueY);
 				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointPaint);
-				if (Config.POPUPS_ON == mPopups) {
+				if (mPopupsOn) {
 					final String textValue = String.format(Config.DEFAULT_VALUE_FORMAT, valueY);
 					drawValuePopup(canvas, mPointRadius, textValue, rawValueX, rawValueY);
 				}
@@ -192,7 +190,7 @@ public class LineChart extends View {
 			final float rawValueY = calculateY(valueY);
 			mPointPaint.setColor(mData.getInternalsSeries().get(mSelectedSeriesIndex).getColor());
 			canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mPointPaint);
-			if (Config.POPUPS_ON == mPopups || Config.POPUPS_ON_PRESS == mPopups) {
+			if (mPopupsOn) {
 				final String textValue = String.format(Config.DEFAULT_VALUE_FORMAT, valueY);
 				drawValuePopup(canvas, mPointRadius, textValue, rawValueX, rawValueY);
 			}
