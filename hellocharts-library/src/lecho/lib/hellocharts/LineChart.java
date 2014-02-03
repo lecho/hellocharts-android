@@ -54,13 +54,7 @@ public class LineChart extends View {
 	private ChartAnimator mAnimator;
 	private int mSelectedSeriesIndex = Integer.MIN_VALUE;
 	private int mSelectedValueIndex = Integer.MIN_VALUE;
-	private OnPointClickListener mOnPointClickListener = new OnPointClickListener() {
-		@Override
-		public void onPointClick(int selectedSeriesIndex, int selectedValueIndex, float x, float y) {
-			// Dummy listener;
-		}
-
-	};
+	private OnPointClickListener mOnPointClickListener = new DummyOnPointListener();
 
 	public LineChart(Context context) {
 		super(context);
@@ -447,7 +441,21 @@ public class LineChart extends View {
 	}
 
 	public void setOnPointClickListener(OnPointClickListener listener) {
-		mOnPointClickListener = listener;
+		if (null == listener) {
+			mOnPointClickListener = new DummyOnPointListener();
+		} else {
+			mOnPointClickListener = listener;
+		}
+	}
+
+	private static class DummyOnPointListener implements OnPointClickListener {
+
+		@Override
+		public void onPointClick(int selectedSeriesIndex, int selectedValueIndex, float x, float y) {
+			// TODO Auto-generated method stub
+
+		}
+
 	}
 
 }
