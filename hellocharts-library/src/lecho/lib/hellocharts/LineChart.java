@@ -46,9 +46,7 @@ public class LineChart extends View {
 	private float mYMultiplier;
 	private float mAvailableWidth;
 	private float mAvailableHeight;
-	private int mHorizontalRulersDivider;
 	private boolean mInterpolationOn = true;
-	private boolean mHorizontalRulersOn = false;
 	private boolean mPointsOn = true;
 	private boolean mPopupsOn = true;
 	private ChartAnimator mAnimator;
@@ -115,11 +113,8 @@ public class LineChart extends View {
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
 		// TODO mPointRadus can change, recalculate in setter
 		calculateAvailableDimensions();
-		// TODO max-min can chage( - recalculate in setter
+		// TODO max-min can chage - recalculate in setter
 		calculateMultipliers();
-		if (mHorizontalRulersOn) {
-			calculateHorizontalRulersDivider();
-		}
 		Log.v(TAG, "onSizeChanged [ms]: " + (System.nanoTime() - time) / 1000000f);
 	}
 
@@ -137,9 +132,6 @@ public class LineChart extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
-		if (mHorizontalRulersOn) {
-			drawHorizontalRulers(canvas);
-		}
 		drawLines(canvas);
 		if (mPointsOn) {
 			drawPoints(canvas);
@@ -299,48 +291,6 @@ public class LineChart extends View {
 	private float calculateY(float valueY) {
 		final float additionalPadding = mPointPressedRadius;
 		return getHeight() - getPaddingBottom() - additionalPadding - (valueY - mData.getMinYValue()) * mYMultiplier;
-	}
-
-	/**
-	 * Calculates how many horizontal rulers will be visible on chart if user enabled rulers. Should be called before
-	 * drawHorizontalRulers().
-	 */
-	private void calculateHorizontalRulersDivider() {
-		final float scale = getResources().getDisplayMetrics().density;
-		// divider should be integer
-		int divider = Math.round((mAvailableHeight / scale) / 128.0f);
-		// if user want rulers give him at least 3 - lower, upper and one in the middle. Three rulers will divide chart
-		// into two areas that why divider will be >=2;
-		if (divider < 2) {
-			divider = 2;
-		}
-		mHorizontalRulersDivider = divider;
-	}
-
-	/**
-	 * Draw horizontal Rulers. Number or lines is determined by chart height and screen resolution.
-	 */
-	private void drawHorizontalRulers(Canvas canvas) {
-		float rawMinX = calculateX(mData.getMinXValue()) - mPointRadius;
-		float rawMaxX = calculateX(mData.getMaxXValue()) + mPointRadius;
-		float rawMinY = calculateY(mData.getMinYValue());
-		float rawMaxY = calculateY(mData.getMaxYValue());
-		mLinePath.moveTo(rawMinX, rawMinY);
-		mLinePath.lineTo(rawMaxX, rawMinY);
-		canvas.drawPath(mLinePath, mRulersPaint);
-		mLinePath.reset();
-		mLinePath.moveTo(rawMinX, rawMaxY);
-		mLinePath.lineTo(rawMaxX, rawMaxY);
-		canvas.drawPath(mLinePath, mRulersPaint);
-		mLinePath.reset();
-		final float step = (mData.getMaxYValue() - mData.getMinYValue()) / mHorizontalRulersDivider;
-		for (int i = 1; i < mHorizontalRulersDivider; ++i) {
-			final float rawValueY = calculateY(mData.getMinYValue() + step * i);
-			mLinePath.moveTo(rawMinX, rawValueY);
-			mLinePath.lineTo(rawMaxX, rawValueY);
-			canvas.drawPath(mLinePath, mRulersPaint);
-			mLinePath.reset();
-		}
 	}
 
 	@Override
