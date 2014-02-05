@@ -16,7 +16,7 @@ public class InternalLineChartData {
 		this.mDomain = new ArrayList<Float>(domain);
 	}
 
-	public static InternalLineChartData createFromRawDara(ChartData rawData) {
+	public static InternalLineChartData createFromRawData(ChartData rawData) {
 		InternalLineChartData internalData = new InternalLineChartData(rawData.getDomain());
 		for (Series series : rawData.getAllSeries()) {
 			internalData.addSeries(series);

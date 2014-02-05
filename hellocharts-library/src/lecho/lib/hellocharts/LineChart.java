@@ -118,12 +118,19 @@ public class LineChart extends View {
 		Log.v(TAG, "onSizeChanged [ms]: " + (System.nanoTime() - time) / 1000000f);
 	}
 
+	/**
+	 * Calculates available width and height. Should be called when chart dimensions or chart data change.
+	 */
 	private void calculateAvailableDimensions() {
 		final float additionalPadding = 2 * mPointPressedRadius;
 		mAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight() - additionalPadding;
 		mAvailableHeight = getHeight() - getPaddingTop() - getPaddingBottom() - additionalPadding;
 	}
 
+	/**
+	 * Calculates multipliers used to translate values into pixels. Should be called when chart dimensions or chart data
+	 * change.
+	 */
 	private void calculateMultipliers() {
 		mXMultiplier = mAvailableWidth / (mData.getMaxXValue() - mData.getMinXValue());
 		mYMultiplier = mAvailableHeight / (mData.getMaxYValue() - mData.getMinYValue());
@@ -360,8 +367,10 @@ public class LineChart extends View {
 	}
 
 	public void setData(final ChartData rawData) {
-		mData = InternalLineChartData.createFromRawDara(rawData);
+		mData = InternalLineChartData.createFromRawData(rawData);
 		mData.calculateRanges();
+		calculateAvailableDimensions();
+		calculateMultipliers();
 		postInvalidate();
 	}
 
