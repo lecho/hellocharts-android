@@ -46,6 +46,7 @@ public class LineChart extends View {
 	private float mYMultiplier;
 	private float mAvailableWidth;
 	private float mAvailableHeight;
+	private boolean mLinesOn = true;
 	private boolean mInterpolationOn = true;
 	private boolean mPointsOn = true;
 	private boolean mPopupsOn = true;
@@ -139,7 +140,9 @@ public class LineChart extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
-		drawLines(canvas);
+		if (mLinesOn) {
+			drawLines(canvas);
+		}
 		if (mPointsOn) {
 			drawPoints(canvas);
 		}
