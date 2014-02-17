@@ -49,7 +49,7 @@ public class LineChart extends View {
 	private boolean mLinesOn = true;
 	private boolean mInterpolationOn = true;
 	private boolean mPointsOn = true;
-	private boolean mPopupsOn = true;
+	private boolean mPopupsOn = false;
 	private ChartAnimator mAnimator;
 	private int mSelectedSeriesIndex = Integer.MIN_VALUE;
 	private int mSelectedValueIndex = Integer.MIN_VALUE;
@@ -140,6 +140,12 @@ public class LineChart extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
+		for (float y : mData.mYRules) {
+			float rawY = calculateY(y);
+			float rawX1 = calculateX(0);
+			float rawX2 = calculateX(getWidth());
+			canvas.drawLine(rawX1, rawY, rawX2, rawY, mRulersPaint);
+		}
 		if (mLinesOn) {
 			drawLines(canvas);
 		}
