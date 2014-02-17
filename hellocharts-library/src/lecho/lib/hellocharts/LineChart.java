@@ -15,6 +15,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
 import android.graphics.Paint.Cap;
 import android.graphics.Path;
 import android.graphics.Rect;
@@ -140,18 +141,23 @@ public class LineChart extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
+		//TODO move lines to the right of the Y values, calculate margin using formater and max Y value
+		mPointPaint.setColor(mRulersPaint.getColor());
 		for (float y : mData.mYRules) {
 			float rawY = calculateY(y);
-			float rawX1 = calculateX(0);
-			float rawX2 = calculateX(getWidth());
+			float rawX1 = calculateX(mData.getMinXValue());
+			float rawX2 = calculateX(mData.getMaxXValue());
 			canvas.drawLine(rawX1, rawY, rawX2, rawY, mRulersPaint);
+			canvas.drawText(String.valueOf(y), rawX1, rawY, mPointPaint);
 		}
+
 		if (mLinesOn) {
 			drawLines(canvas);
 		}
 		if (mPointsOn) {
 			drawPoints(canvas);
 		}
+
 		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
 	}
 
