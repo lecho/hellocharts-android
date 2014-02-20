@@ -7,7 +7,7 @@ public class ChartData {
 
 	private final List<Float> mDomain;
 	private final List<Series> mValuesSeries = new ArrayList<Series>();
-	private List<Float> mYRules;
+	private List<Float> mYAxis;
 
 	public ChartData(List<Float> domain) {
 		this.mDomain = domain;
@@ -29,12 +29,12 @@ public class ChartData {
 		mValuesSeries.add(series);
 	}
 
-	public void setYRules(List<Float> yRules) {
-		mYRules = yRules;
+	public void setYAxis(List<Float> yAxis) {
+		mYAxis = yAxis;
 	}
 
-	public List<Float> getYRules() {
-		return mYRules;
+	public List<Float> getYAxis() {
+		return mYAxis;
 	}
 
 }

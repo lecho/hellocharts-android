@@ -52,8 +52,8 @@ public class LineChart extends View {
 	private boolean mLinesOn = true;
 	private boolean mInterpolationOn = true;
 	private boolean mPointsOn = true;
-	private boolean mPopupsOn = true;
-	private boolean mRulesOn = true;
+	private boolean mPopupsOn = false;
+	private boolean mAxesOn = true;
 	private ChartAnimator mAnimator;
 	private int mSelectedSeriesIndex = Integer.MIN_VALUE;
 	private int mSelectedValueIndex = Integer.MIN_VALUE;
@@ -123,14 +123,6 @@ public class LineChart extends View {
 	 * Calculates available width and height. Should be called when chart dimensions or chart data change.
 	 */
 	private void calculateAvailableDimensions() {
-		if (mRulesOn) {
-			final Rect textBounds = new Rect();
-			final String text = String.format(Locale.ENGLISH, Config.DEFAULT_Y_AXIS_FORMAT, mData.getMaxYValue());
-			mTextPaint.getTextBounds(text, 0, text.length(), textBounds);
-			mYAxisMargin = textBounds.width() + mCommonMargin;
-		} else {
-			mYAxisMargin = 0;
-		}
 		final float additionalPadding = 2 * mPointPressedRadius;
 		mAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight() - additionalPadding - mYAxisMargin;
 		mAvailableHeight = getHeight() - getPaddingTop() - getPaddingBottom() - additionalPadding;
@@ -145,22 +137,28 @@ public class LineChart extends View {
 		mYMultiplier = mAvailableHeight / (mData.getMaxYValue() - mData.getMinYValue());
 	}
 
+	private void calculateYAxisMargin() {
+		if (mAxesOn) {
+			final Rect textBounds = new Rect();
+			final String text;
+			if (Math.abs(mData.getMaxYValue()) > Math.abs(mData.getMinYValue())) {
+				text = String.format(Locale.ENGLISH, Config.DEFAULT_Y_AXIS_FORMAT, mData.getMaxYValue());
+			} else {
+				text = String.format(Locale.ENGLISH, Config.DEFAULT_Y_AXIS_FORMAT, mData.getMinYValue());
+			}
+			mTextPaint.getTextBounds(text, 0, text.length(), textBounds);
+			mYAxisMargin = textBounds.width() + mCommonMargin;
+		} else {
+			mYAxisMargin = 0;
+		}
+	}
+
 	@Override
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
-		if (mRulesOn) {
-			mLinePaint.setStrokeWidth(1);
-			mLinePaint.setColor(DEFAULT_AXIS_COLOR);
-			mTextPaint.setColor(DEFAULT_AXIS_COLOR);
-			for (float y : mData.mYRules) {
-				float rawY = calculateY(y);
-				float rawX1 = 0 + getPaddingLeft();
-				float rawX2 = getWidth() - getPaddingRight();
-				canvas.drawLine(rawX1 + mYAxisMargin, rawY, rawX2, rawY, mLinePaint);
-				canvas.drawText(String.valueOf(y), rawX1, rawY, mTextPaint);
-			}
+		if (mAxesOn) {
+			drawYAxis(canvas);
 		}
-
 		if (mLinesOn) {
 			drawLines(canvas);
 		}
@@ -169,6 +167,19 @@ public class LineChart extends View {
 		}
 
 		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
+	}
+
+	private void drawYAxis(Canvas canvas) {
+		mLinePaint.setStrokeWidth(1);
+		mLinePaint.setColor(DEFAULT_AXIS_COLOR);
+		mTextPaint.setColor(DEFAULT_AXIS_COLOR);
+		final float rawX1 = getPaddingLeft();
+		final float rawX2 = getWidth() - getPaddingRight();
+		for (float y : mData.mYAxis) {
+			float rawY = calculateY(y);
+			canvas.drawLine(rawX1 + mYAxisMargin, rawY, rawX2, rawY, mLinePaint);
+			canvas.drawText(String.valueOf(y), rawX1, rawY, mTextPaint);
+		}
 	}
 
 	private void drawLines(Canvas canvas) {
@@ -393,6 +404,7 @@ public class LineChart extends View {
 	public void setData(final ChartData rawData) {
 		mData = InternalLineChartData.createFromRawData(rawData);
 		mData.calculateRanges();
+		calculateYAxisMargin();
 		calculateAvailableDimensions();
 		calculateMultipliers();
 		postInvalidate();
@@ -407,6 +419,7 @@ public class LineChart extends View {
 			value.update(scale);
 		}
 		mData.calculateYRanges();
+		calculateYAxisMargin();
 		calculateAvailableDimensions();
 		calculateMultipliers();
 		invalidate();

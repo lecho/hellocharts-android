@@ -107,7 +107,7 @@ public class MainActivity extends Activity {
 		yRules.add(400f);
 		yRules.add(600f);
 		yRules.add(800f);
-		data.setYRules(yRules);
+		data.setYAxis(yRules);
 		
 		chart.setData(data);
 		// chart.setBackgroundColor(Color.WHITE);

@@ -7,7 +7,7 @@ public class InternalLineChartData {
 
 	private final List<Float> mDomain;
 	private final List<InternalSeries> mInternalsSeries = new ArrayList<InternalSeries>();
-	public List<Float> mYRules;
+	public List<Float> mYAxis;
 	private float mMinXValue = Float.MAX_VALUE;
 	private float mMaxXValue = Float.MIN_VALUE;
 	private float mMinYValue = Float.MAX_VALUE;
@@ -22,7 +22,7 @@ public class InternalLineChartData {
 		for (Series series : rawData.getAllSeries()) {
 			internalData.addSeries(series);
 		}
-		internalData.mYRules = rawData.getYRules();
+		internalData.mYAxis = rawData.getYAxis();
 		return internalData;
 	}
 
