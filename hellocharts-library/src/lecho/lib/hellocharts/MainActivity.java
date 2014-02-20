@@ -103,7 +103,6 @@ public class MainActivity extends Activity {
 		data.addSeries(new Series(Color.parseColor("#FFBB33"), s1));
 		data.addSeries(new Series(Color.parseColor("#99CC00"), s2));
 		List<Float> yRules = new ArrayList<Float>();
-		yRules.add(100f);
 		yRules.add(200f);
 		yRules.add(400f);
 		yRules.add(600f);

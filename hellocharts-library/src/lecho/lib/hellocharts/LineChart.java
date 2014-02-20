@@ -1,6 +1,7 @@
 package lecho.lib.hellocharts;
 
 import java.util.List;
+import java.util.Locale;
 
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
@@ -15,7 +16,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Paint.Align;
 import android.graphics.Paint.Cap;
 import android.graphics.Path;
 import android.graphics.Rect;
@@ -47,10 +47,12 @@ public class LineChart extends View {
 	private float mYMultiplier;
 	private float mAvailableWidth;
 	private float mAvailableHeight;
+	private float mYAxisMargin = 0;
 	private boolean mLinesOn = true;
 	private boolean mInterpolationOn = true;
 	private boolean mPointsOn = true;
 	private boolean mPopupsOn = false;
+	private boolean mRulesOn = true;
 	private ChartAnimator mAnimator;
 	private int mSelectedSeriesIndex = Integer.MIN_VALUE;
 	private int mSelectedValueIndex = Integer.MIN_VALUE;
@@ -124,8 +126,16 @@ public class LineChart extends View {
 	 * Calculates available width and height. Should be called when chart dimensions or chart data change.
 	 */
 	private void calculateAvailableDimensions() {
+		if (mRulesOn) {
+			final Rect textBounds = new Rect();
+			final String text = String.format(Locale.ENGLISH, Config.DEFAULT_Y_AXIS_FORMAT, mData.getMaxYValue());
+			mPointPaint.getTextBounds(text, 0, text.length(), textBounds);
+			mYAxisMargin = textBounds.width();
+		} else {
+			mYAxisMargin = 0;
+		}
 		final float additionalPadding = 2 * mPointPressedRadius;
-		mAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight() - additionalPadding;
+		mAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight() - additionalPadding - mYAxisMargin;
 		mAvailableHeight = getHeight() - getPaddingTop() - getPaddingBottom() - additionalPadding;
 	}
 
@@ -141,14 +151,16 @@ public class LineChart extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
-		//TODO move lines to the right of the Y values, calculate margin using formater and max Y value
-		mPointPaint.setColor(mRulersPaint.getColor());
-		for (float y : mData.mYRules) {
-			float rawY = calculateY(y);
-			float rawX1 = calculateX(mData.getMinXValue());
-			float rawX2 = calculateX(mData.getMaxXValue());
-			canvas.drawLine(rawX1, rawY, rawX2, rawY, mRulersPaint);
-			canvas.drawText(String.valueOf(y), rawX1, rawY, mPointPaint);
+		if (mRulesOn) {
+			// TODO move lines to the right of the Y values, calculate margin using formater and max Y value
+			mPointPaint.setColor(mRulersPaint.getColor());
+			for (float y : mData.mYRules) {
+				float rawY = calculateY(y);
+				float rawX1 = 0 + getPaddingLeft();
+				float rawX2 = getWidth() - getPaddingRight();
+				canvas.drawLine(rawX1 + mYAxisMargin, rawY, rawX2, rawY, mRulersPaint);
+				canvas.drawText(String.valueOf(y), rawX1, rawY, mPointPaint);
+			}
 		}
 
 		if (mLinesOn) {
@@ -184,7 +196,7 @@ public class LineChart extends View {
 				final float rawValueY = calculateY(valueY);
 				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointPaint);
 				if (mPopupsOn) {
-					final String textValue = String.format(Config.DEFAULT_VALUE_FORMAT, valueY);
+					final String textValue = String.format(Locale.ENGLISH, Config.DEFAULT_VALUE_FORMAT, valueY);
 					drawValuePopup(canvas, mPointRadius, textValue, rawValueX, rawValueY);
 				}
 				++valueIndex;
@@ -199,13 +211,14 @@ public class LineChart extends View {
 			mPointPaint.setColor(mData.getInternalsSeries().get(mSelectedSeriesIndex).getColor());
 			canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mPointPaint);
 			if (mPopupsOn) {
-				final String textValue = String.format(Config.DEFAULT_VALUE_FORMAT, valueY);
+				final String textValue = String.format(Locale.ENGLISH, Config.DEFAULT_VALUE_FORMAT, valueY);
 				drawValuePopup(canvas, mPointRadius, textValue, rawValueX, rawValueY);
 			}
 		}
 	}
 
 	private void drawValuePopup(Canvas canvas, float offset, String text, float rawValueX, float rawValueY) {
+		//TODO move margin calculation up to calculate it only once.
 		final float margin = (float) Utils.dp2px(getContext(), 4);
 		final Rect textBounds = new Rect();
 		mPointPaint.getTextBounds(text, 0, text.length(), textBounds);
@@ -307,7 +320,7 @@ public class LineChart extends View {
 
 	private float calculateX(float valueX) {
 		final float additionalPadding = mPointPressedRadius;
-		return getPaddingLeft() + additionalPadding + (valueX - mData.getMinXValue()) * mXMultiplier;
+		return getPaddingLeft() + additionalPadding + mYAxisMargin + (valueX - mData.getMinXValue()) * mXMultiplier;
 	}
 
 	private float calculateY(float valueY) {
