@@ -34,11 +34,11 @@ public class LineChart extends View {
 	private static final int DEFAULT_POINT_TOUCH_RADIUS_DP = 12;
 	private static final int DEFAULT_TEXT_SIZE_DP = 14;
 	private static final int DEFAULT_TEXT_COLOR = Color.WHITE;
+	private static final int DEFAULT_AXIS_COLOR = Color.LTGRAY;
 	private float mCommonMargin = 0;
 	private Path mLinePath = new Path();
 	private Paint mLinePaint = new Paint();
-	private Paint mPointPaint = new Paint();
-	private Paint mRulersPaint = new Paint();
+	private Paint mTextPaint = new Paint();
 	private InternalLineChartData mData;
 	private float mLineWidth;
 	private float mPointRadius;
@@ -52,7 +52,7 @@ public class LineChart extends View {
 	private boolean mLinesOn = true;
 	private boolean mInterpolationOn = true;
 	private boolean mPointsOn = true;
-	private boolean mPopupsOn = false;
+	private boolean mPopupsOn = true;
 	private boolean mRulesOn = true;
 	private ChartAnimator mAnimator;
 	private int mSelectedSeriesIndex = Integer.MIN_VALUE;
@@ -91,17 +91,12 @@ public class LineChart extends View {
 	private void initPaints() {
 		mLinePaint.setAntiAlias(true);
 		mLinePaint.setStyle(Paint.Style.STROKE);
-		mLinePaint.setStrokeWidth(mLineWidth);
 		mLinePaint.setStrokeCap(Cap.ROUND);
 
-		mPointPaint.setAntiAlias(true);
-		mPointPaint.setStyle(Paint.Style.FILL);
-		mPointPaint.setStrokeWidth(1);
-		mPointPaint.setTextSize(Utils.dp2px(getContext(), DEFAULT_TEXT_SIZE_DP));
-
-		mRulersPaint.setStyle(Paint.Style.STROKE);
-		mRulersPaint.setColor(Color.LTGRAY);
-		mRulersPaint.setStrokeWidth(1);
+		mTextPaint.setAntiAlias(true);
+		mTextPaint.setStyle(Paint.Style.FILL);
+		mTextPaint.setStrokeWidth(1);
+		mTextPaint.setTextSize(Utils.dp2px(getContext(), DEFAULT_TEXT_SIZE_DP));
 
 	}
 
@@ -131,7 +126,7 @@ public class LineChart extends View {
 		if (mRulesOn) {
 			final Rect textBounds = new Rect();
 			final String text = String.format(Locale.ENGLISH, Config.DEFAULT_Y_AXIS_FORMAT, mData.getMaxYValue());
-			mPointPaint.getTextBounds(text, 0, text.length(), textBounds);
+			mTextPaint.getTextBounds(text, 0, text.length(), textBounds);
 			mYAxisMargin = textBounds.width() + mCommonMargin;
 		} else {
 			mYAxisMargin = 0;
@@ -154,13 +149,15 @@ public class LineChart extends View {
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
 		if (mRulesOn) {
-			mPointPaint.setColor(mRulersPaint.getColor());
+			mLinePaint.setStrokeWidth(1);
+			mLinePaint.setColor(DEFAULT_AXIS_COLOR);
+			mTextPaint.setColor(DEFAULT_AXIS_COLOR);
 			for (float y : mData.mYRules) {
 				float rawY = calculateY(y);
 				float rawX1 = 0 + getPaddingLeft();
 				float rawX2 = getWidth() - getPaddingRight();
-				canvas.drawLine(rawX1 + mYAxisMargin, rawY, rawX2, rawY, mRulersPaint);
-				canvas.drawText(String.valueOf(y), rawX1, rawY, mPointPaint);
+				canvas.drawLine(rawX1 + mYAxisMargin, rawY, rawX2, rawY, mLinePaint);
+				canvas.drawText(String.valueOf(y), rawX1, rawY, mTextPaint);
 			}
 		}
 
@@ -175,6 +172,7 @@ public class LineChart extends View {
 	}
 
 	private void drawLines(Canvas canvas) {
+		mLinePaint.setStrokeWidth(mLineWidth);
 		for (InternalSeries internalSeries : mData.getInternalsSeries()) {
 			if (mInterpolationOn) {
 				drawSmoothPath(canvas, internalSeries);
@@ -189,13 +187,13 @@ public class LineChart extends View {
 	// calculated X/Y;
 	private void drawPoints(Canvas canvas) {
 		for (InternalSeries internalSeries : mData.getInternalsSeries()) {
-			mPointPaint.setColor(internalSeries.getColor());
+			mTextPaint.setColor(internalSeries.getColor());
 			int valueIndex = 0;
 			for (float valueX : mData.getDomain()) {
 				final float rawValueX = calculateX(valueX);
 				final float valueY = internalSeries.getValues().get(valueIndex).getPosition();
 				final float rawValueY = calculateY(valueY);
-				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointPaint);
+				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mTextPaint);
 				if (mPopupsOn) {
 					final String textValue = String.format(Locale.ENGLISH, Config.DEFAULT_VALUE_FORMAT, valueY);
 					drawValuePopup(canvas, mPointRadius, textValue, rawValueX, rawValueY);
@@ -209,8 +207,8 @@ public class LineChart extends View {
 			final float valueY = mData.getInternalsSeries().get(mSelectedSeriesIndex).getValues()
 					.get(mSelectedValueIndex).getPosition();
 			final float rawValueY = calculateY(valueY);
-			mPointPaint.setColor(mData.getInternalsSeries().get(mSelectedSeriesIndex).getColor());
-			canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mPointPaint);
+			mTextPaint.setColor(mData.getInternalsSeries().get(mSelectedSeriesIndex).getColor());
+			canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mTextPaint);
 			if (mPopupsOn) {
 				final String textValue = String.format(Locale.ENGLISH, Config.DEFAULT_VALUE_FORMAT, valueY);
 				drawValuePopup(canvas, mPointRadius, textValue, rawValueX, rawValueY);
@@ -220,7 +218,7 @@ public class LineChart extends View {
 
 	private void drawValuePopup(Canvas canvas, float offset, String text, float rawValueX, float rawValueY) {
 		final Rect textBounds = new Rect();
-		mPointPaint.getTextBounds(text, 0, text.length(), textBounds);
+		mTextPaint.getTextBounds(text, 0, text.length(), textBounds);
 		float left = rawValueX + offset;
 		float right = rawValueX + offset + textBounds.width() + mCommonMargin * 2;
 		float top = rawValueY - offset - textBounds.height() - mCommonMargin * 2;
@@ -234,11 +232,11 @@ public class LineChart extends View {
 			right = rawValueX - offset;
 		}
 		final RectF popup = new RectF(left, top, right, bottom);
-		canvas.drawRoundRect(popup, mCommonMargin, mCommonMargin, mPointPaint);
-		final int color = mPointPaint.getColor();
-		mPointPaint.setColor(DEFAULT_TEXT_COLOR);
-		canvas.drawText(text, left + mCommonMargin, bottom - mCommonMargin, mPointPaint);
-		mPointPaint.setColor(color);
+		canvas.drawRoundRect(popup, mCommonMargin, mCommonMargin, mTextPaint);
+		final int color = mTextPaint.getColor();
+		mTextPaint.setColor(DEFAULT_TEXT_COLOR);
+		canvas.drawText(text, left + mCommonMargin, bottom - mCommonMargin, mTextPaint);
+		mTextPaint.setColor(color);
 	}
 
 	private void drawPath(Canvas canvas, final InternalSeries internalSeries) {
