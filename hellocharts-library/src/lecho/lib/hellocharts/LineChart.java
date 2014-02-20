@@ -195,8 +195,7 @@ public class LineChart extends View {
 				final float rawValueY = calculateY(valueY);
 				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mTextPaint);
 				if (mPopupsOn) {
-					final String textValue = String.format(Locale.ENGLISH, Config.DEFAULT_VALUE_FORMAT, valueY);
-					drawValuePopup(canvas, mPointRadius, textValue, rawValueX, rawValueY);
+					drawValuePopup(canvas, mPointRadius, valueY, rawValueX, rawValueY);
 				}
 				++valueIndex;
 			}
@@ -210,13 +209,13 @@ public class LineChart extends View {
 			mTextPaint.setColor(mData.getInternalsSeries().get(mSelectedSeriesIndex).getColor());
 			canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mTextPaint);
 			if (mPopupsOn) {
-				final String textValue = String.format(Locale.ENGLISH, Config.DEFAULT_VALUE_FORMAT, valueY);
-				drawValuePopup(canvas, mPointRadius, textValue, rawValueX, rawValueY);
+				drawValuePopup(canvas, mPointRadius, valueY, rawValueX, rawValueY);
 			}
 		}
 	}
 
-	private void drawValuePopup(Canvas canvas, float offset, String text, float rawValueX, float rawValueY) {
+	private void drawValuePopup(Canvas canvas, float offset, float valueY, float rawValueX, float rawValueY) {
+		final String text = String.format(Locale.ENGLISH, Config.DEFAULT_VALUE_FORMAT, valueY);
 		final Rect textBounds = new Rect();
 		mTextPaint.getTextBounds(text, 0, text.length(), textBounds);
 		float left = rawValueX + offset;
