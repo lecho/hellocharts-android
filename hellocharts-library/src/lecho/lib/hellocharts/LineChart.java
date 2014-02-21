@@ -1,6 +1,5 @@
 package lecho.lib.hellocharts;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -145,9 +144,9 @@ public class LineChart extends View {
 			final Rect textBounds = new Rect();
 			final String text;
 			if (Math.abs(mData.getMaxYValue()) > Math.abs(mData.getMinYValue())) {
-				text = String.format(Locale.ENGLISH, Config.DEFAULT_Y_AXIS_FORMAT, mData.getMaxYValue());
+				text = String.format(Locale.ENGLISH, Config.DEFAULT_AXES_FORMAT, mData.getMaxYValue());
 			} else {
-				text = String.format(Locale.ENGLISH, Config.DEFAULT_Y_AXIS_FORMAT, mData.getMinYValue());
+				text = String.format(Locale.ENGLISH, Config.DEFAULT_AXES_FORMAT, mData.getMinYValue());
 			}
 			mTextPaint.getTextBounds(text, 0, text.length(), textBounds);
 			mYAxisMargin = textBounds.width() + mCommonMargin;
@@ -172,25 +171,7 @@ public class LineChart extends View {
 		long time = System.nanoTime();
 		if (mAxesOn) {
 			drawYAxis(canvas);
-			mLinePaint.setStrokeWidth(1);
-			mLinePaint.setColor(DEFAULT_AXIS_COLOR);
-			mTextPaint.setColor(DEFAULT_AXIS_COLOR);
-			mTextPaint.setTextAlign(Align.CENTER);
-			final float rawX1 = getPaddingLeft();
-			final float rawX2 = getWidth() - getPaddingRight();
-			final float rawY1 = getHeight() - getPaddingBottom();
-			final float rawY2 = calculateY(mData.getMinYValue());
-			List<Float> xAxis = new ArrayList<Float>();
-			xAxis.add(1f);
-			xAxis.add(2f);
-			xAxis.add(3f);
-			xAxis.add(4f);
-			xAxis.add(5f);
-			for (float x : xAxis) {
-				canvas.drawLine(rawX1 + mYAxisMargin, rawY2, rawX2, rawY2, mLinePaint);
-				final String text = String.format(Locale.ENGLISH, Config.DEFAULT_Y_AXIS_FORMAT, x);
-				canvas.drawText(text, calculateX(x), rawY1, mTextPaint);
-			}
+			drawXAxis(canvas);
 		}
 		if (mLinesOn) {
 			drawLines(canvas);
@@ -200,6 +181,22 @@ public class LineChart extends View {
 		}
 
 		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
+	}
+
+	private void drawXAxis(Canvas canvas) {
+		mLinePaint.setStrokeWidth(1);
+		mLinePaint.setColor(DEFAULT_AXIS_COLOR);
+		mTextPaint.setColor(DEFAULT_AXIS_COLOR);
+		mTextPaint.setTextAlign(Align.CENTER);
+		final float rawX1 = getPaddingLeft();
+		final float rawX2 = getWidth() - getPaddingRight();
+		final float rawY1 = getHeight() - getPaddingBottom();
+		final float rawY2 = calculateY(mData.getMinYValue());
+		canvas.drawLine(rawX1 + mYAxisMargin, rawY2, rawX2, rawY2, mLinePaint);
+		for (float x : mData.mXAxis) {
+			final String text = String.format(Locale.ENGLISH, Config.DEFAULT_AXES_FORMAT, x);
+			canvas.drawText(text, calculateX(x), rawY1, mTextPaint);
+		}
 	}
 
 	private void drawYAxis(Canvas canvas) {

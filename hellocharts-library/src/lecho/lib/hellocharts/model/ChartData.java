@@ -8,6 +8,7 @@ public class ChartData {
 	private final List<Float> mDomain;
 	private final List<Series> mValuesSeries = new ArrayList<Series>();
 	private List<Float> mYAxis;
+	private List<Float> mXAxis;
 
 	public ChartData(List<Float> domain) {
 		this.mDomain = domain;
@@ -35,6 +36,14 @@ public class ChartData {
 
 	public List<Float> getYAxis() {
 		return mYAxis;
+	}
+	
+	public void setXAxis(List<Float> xAxis) {
+		mXAxis = xAxis;
+	}
+
+	public List<Float> getXAxis() {
+		return mXAxis;
 	}
 
 }
