@@ -208,8 +208,9 @@ public class LineChart extends View {
 		final float rawX2 = getWidth() - getPaddingRight();
 		for (float y : mData.mYAxis) {
 			float rawY = calculateY(y);
+			final String text = String.format(Locale.ENGLISH, Config.DEFAULT_AXES_FORMAT, y);
 			canvas.drawLine(rawX1 + mYAxisMargin, rawY, rawX2, rawY, mLinePaint);
-			canvas.drawText(String.valueOf(y), rawX1, rawY, mTextPaint);
+			canvas.drawText(text, rawX1, rawY, mTextPaint);
 		}
 	}
 
