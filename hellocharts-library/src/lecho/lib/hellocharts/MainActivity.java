@@ -97,16 +97,16 @@ public class MainActivity extends Activity {
 		List<Float> s2 = new ArrayList<Float>();
 		s2.add(500f);
 		s2.add(300f);
-		s2.add(800f);
+		s2.add(1300f);
 		s2.add(650f);
 		s2.add(100f);
 		data.addSeries(new Series(Color.parseColor("#FFBB33"), s1));
 		data.addSeries(new Series(Color.parseColor("#99CC00"), s2));
 		List<Float> yRules = new ArrayList<Float>();
-		yRules.add(200f);
-		yRules.add(400f);
-		yRules.add(600f);
-		yRules.add(800f);
+		//yRules.add(100f);
+		yRules.add(300f);
+		yRules.add(500f);
+		yRules.add(700f);
 		data.setYAxis(yRules);
 		
 		chart.setData(data);

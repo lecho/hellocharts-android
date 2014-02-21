@@ -1,5 +1,6 @@
 package lecho.lib.hellocharts;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -16,6 +17,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
 import android.graphics.Paint.Cap;
 import android.graphics.Path;
 import android.graphics.Rect;
@@ -49,6 +51,7 @@ public class LineChart extends View {
 	private float mAvailableWidth;
 	private float mAvailableHeight;
 	private float mYAxisMargin = 0;
+	private float mXAxisMargin = 0;
 	private boolean mLinesOn = true;
 	private boolean mInterpolationOn = true;
 	private boolean mPointsOn = true;
@@ -125,7 +128,7 @@ public class LineChart extends View {
 	private void calculateAvailableDimensions() {
 		final float additionalPadding = 2 * mPointPressedRadius;
 		mAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight() - additionalPadding - mYAxisMargin;
-		mAvailableHeight = getHeight() - getPaddingTop() - getPaddingBottom() - additionalPadding;
+		mAvailableHeight = getHeight() - getPaddingTop() - getPaddingBottom() - additionalPadding - mXAxisMargin;
 	}
 
 	/**
@@ -153,11 +156,41 @@ public class LineChart extends View {
 		}
 	}
 
+	private void calculateXAxisMargin() {
+		if (mAxesOn) {
+			final Rect textBounds = new Rect();
+			// Hard coded only for text height calculation.
+			mTextPaint.getTextBounds("X", 0, 1, textBounds);
+			mXAxisMargin = textBounds.height() + mCommonMargin;
+		} else {
+			mYAxisMargin = 0;
+		}
+	}
+
 	@Override
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
 		if (mAxesOn) {
 			drawYAxis(canvas);
+			mLinePaint.setStrokeWidth(1);
+			mLinePaint.setColor(DEFAULT_AXIS_COLOR);
+			mTextPaint.setColor(DEFAULT_AXIS_COLOR);
+			mTextPaint.setTextAlign(Align.CENTER);
+			final float rawX1 = getPaddingLeft();
+			final float rawX2 = getWidth() - getPaddingRight();
+			final float rawY1 = getHeight() - getPaddingBottom();
+			final float rawY2 = calculateY(mData.getMinYValue());
+			List<Float> xAxis = new ArrayList<Float>();
+			xAxis.add(1f);
+			xAxis.add(2f);
+			xAxis.add(3f);
+			xAxis.add(4f);
+			xAxis.add(5f);
+			for (float x : xAxis) {
+				canvas.drawLine(rawX1 + mYAxisMargin, rawY2, rawX2, rawY2, mLinePaint);
+				final String text = String.format(Locale.ENGLISH, Config.DEFAULT_Y_AXIS_FORMAT, x);
+				canvas.drawText(text, calculateX(x), rawY1, mTextPaint);
+			}
 		}
 		if (mLinesOn) {
 			drawLines(canvas);
@@ -173,6 +206,7 @@ public class LineChart extends View {
 		mLinePaint.setStrokeWidth(1);
 		mLinePaint.setColor(DEFAULT_AXIS_COLOR);
 		mTextPaint.setColor(DEFAULT_AXIS_COLOR);
+		mTextPaint.setTextAlign(Align.LEFT);
 		final float rawX1 = getPaddingLeft();
 		final float rawX2 = getWidth() - getPaddingRight();
 		for (float y : mData.mYAxis) {
@@ -226,6 +260,7 @@ public class LineChart extends View {
 	}
 
 	private void drawValuePopup(Canvas canvas, float offset, float valueY, float rawValueX, float rawValueY) {
+		mTextPaint.setTextAlign(Align.LEFT);
 		final String text = String.format(Locale.ENGLISH, Config.DEFAULT_VALUE_FORMAT, valueY);
 		final Rect textBounds = new Rect();
 		mTextPaint.getTextBounds(text, 0, text.length(), textBounds);
@@ -332,7 +367,8 @@ public class LineChart extends View {
 
 	private float calculateY(float valueY) {
 		final float additionalPadding = mPointPressedRadius;
-		return getHeight() - getPaddingBottom() - additionalPadding - (valueY - mData.getMinYValue()) * mYMultiplier;
+		return getHeight() - getPaddingBottom() - additionalPadding - mXAxisMargin - (valueY - mData.getMinYValue())
+				* mYMultiplier;
 	}
 
 	@Override
@@ -405,6 +441,7 @@ public class LineChart extends View {
 		mData = InternalLineChartData.createFromRawData(rawData);
 		mData.calculateRanges();
 		calculateYAxisMargin();
+		calculateXAxisMargin();
 		calculateAvailableDimensions();
 		calculateMultipliers();
 		postInvalidate();
@@ -420,6 +457,7 @@ public class LineChart extends View {
 		}
 		mData.calculateYRanges();
 		calculateYAxisMargin();
+		calculateXAxisMargin();
 		calculateAvailableDimensions();
 		calculateMultipliers();
 		invalidate();
