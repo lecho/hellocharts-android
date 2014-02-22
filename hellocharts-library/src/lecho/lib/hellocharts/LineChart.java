@@ -52,7 +52,7 @@ public class LineChart extends View {
 	private float mYAxisMargin = 0;
 	private float mXAxisMargin = 0;
 	private boolean mLinesOn = true;
-	private boolean mInterpolationOn = true;
+	private boolean mInterpolationOn = false;
 	private boolean mPointsOn = true;
 	private boolean mPopupsOn = false;
 	private boolean mAxesOn = true;
@@ -359,14 +359,16 @@ public class LineChart extends View {
 	}
 
 	private float calculateX(float valueX) {
-		final float additionalPadding = mPointPressedRadius;
-		return getPaddingLeft() + additionalPadding + mYAxisMargin + (valueX - mData.getMinXValue()) * mXMultiplier;
+		final float additionalPadding = getPaddingLeft() + mPointPressedRadius + mYAxisMargin;
+		final float valueDistance = (valueX - mData.getMinXValue()) * mXMultiplier;
+		return valueDistance + additionalPadding;
 	}
 
 	private float calculateY(float valueY) {
-		final float additionalPadding = mPointPressedRadius;
-		return getHeight() - getPaddingBottom() - additionalPadding - mXAxisMargin - (valueY - mData.getMinYValue())
-				* mYMultiplier;
+		final float additionalPadding = getPaddingBottom() + mPointPressedRadius + mXAxisMargin;
+		final float valueDistance = (valueY - mData.getMinYValue()) * mYMultiplier;
+		// Subtracting from height because on android top left corner is 0,0 and bottom right is maxX,maxY.
+		return getHeight() - valueDistance - additionalPadding;
 	}
 
 	@Override
