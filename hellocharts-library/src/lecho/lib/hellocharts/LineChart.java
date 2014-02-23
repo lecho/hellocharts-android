@@ -143,10 +143,10 @@ public class LineChart extends View {
 		if (mAxesOn) {
 			final Rect textBounds = new Rect();
 			final String text;
-			if (Math.abs(mData.getMaxYValue()) > Math.abs(mData.getMinYValue())) {
-				text = String.format(Locale.ENGLISH, Config.DEFAULT_AXES_FORMAT, mData.getMaxYValue());
+			if (Math.abs(mData.mYAxis.get(0)) > Math.abs(mData.mYAxis.get(mData.mYAxis.size()-1))) {
+				text = String.format(Locale.ENGLISH, Config.DEFAULT_AXES_FORMAT, mData.mYAxis.get(0));
 			} else {
-				text = String.format(Locale.ENGLISH, Config.DEFAULT_AXES_FORMAT, mData.getMinYValue());
+				text = String.format(Locale.ENGLISH, Config.DEFAULT_AXES_FORMAT, mData.mYAxis.get(mData.mYAxis.size()-1));
 			}
 			mTextPaint.getTextBounds(text, 0, text.length(), textBounds);
 			mYAxisMargin = textBounds.width() + mCommonMargin;
