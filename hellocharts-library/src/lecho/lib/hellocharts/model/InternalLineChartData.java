@@ -9,10 +9,10 @@ public class InternalLineChartData {
 	private final List<InternalSeries> mInternalsSeries = new ArrayList<InternalSeries>();
 	public List<Float> mYAxis;
 	public List<Float> mXAxis;
-	private float mMinXValue = Float.MAX_VALUE;
-	private float mMaxXValue = Float.MIN_VALUE;
-	private float mMinYValue = Float.MAX_VALUE;
-	private float mMaxYValue = Float.MIN_VALUE;
+	private float mMinXValue;
+	private float mMaxXValue;
+	private float mMinYValue;
+	private float mMaxYValue;
 
 	public InternalLineChartData(List<Float> domain) {
 		this.mDomain = new ArrayList<Float>(domain);
@@ -72,6 +72,8 @@ public class InternalLineChartData {
 	}
 
 	public void calculateXRanges() {
+		mMinXValue = Float.MAX_VALUE;
+		mMaxXValue = Float.MIN_VALUE;
 		for (Float value : mDomain) {
 			if (value < mMinXValue) {
 				mMinXValue = value;
@@ -82,6 +84,8 @@ public class InternalLineChartData {
 	}
 
 	public void calculateYRanges() {
+		mMinYValue = Float.MAX_VALUE;
+		mMaxYValue = Float.MIN_VALUE;
 		for (InternalSeries internalSeries : mInternalsSeries) {
 			for (AnimatedValue value : internalSeries.getValues()) {
 				if (value.getPosition() < mMinYValue) {

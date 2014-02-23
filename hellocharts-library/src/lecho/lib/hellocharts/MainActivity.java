@@ -57,7 +57,7 @@ public class MainActivity extends Activity {
 					s2.add(500f);
 					s2.add(550f);
 					s2.add(800f);
-					s2.add(700f);
+					s2.add(1700f);
 					// s2.add(300f);
 					// s2.add(500f);
 					// s2.add(550f);
