@@ -3,6 +3,7 @@ package lecho.lib.hellocharts;
 import java.util.ArrayList;
 import java.util.List;
 
+import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.Series;
 import android.app.Activity;
@@ -113,16 +114,20 @@ public class MainActivity extends Activity {
 		yRules.add(1500f);
 		yRules.add(1700f);
 		yRules.add(1900f);
-		data.setYAxis(yRules);
-		
-		List<Float> xAxis = new ArrayList<Float>();
-		xAxis.add(1f);
-		xAxis.add(2f);
-		xAxis.add(3f);
-		xAxis.add(4f);
-		xAxis.add(5f);
+		Axis yAxis = new Axis();
+		yAxis.setValues(yRules);
+		data.setYAxis(yAxis);
+
+		List<Float> xRules = new ArrayList<Float>();
+		xRules.add(1f);
+		xRules.add(2f);
+		xRules.add(3f);
+		xRules.add(4f);
+		xRules.add(5f);
+		Axis xAxis = new Axis();
+		xAxis.setValues(xRules);
 		data.setXAxis(xAxis);
-		
+
 		chart.setData(data);
 		// chart.setBackgroundColor(Color.WHITE);
 		chart.setOnPointClickListener(new OnPointClickListener() {

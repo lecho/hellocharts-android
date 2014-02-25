@@ -5,45 +5,45 @@ import java.util.List;
 
 public class ChartData {
 
-	private final List<Float> mDomain;
-	private final List<Series> mValuesSeries = new ArrayList<Series>();
-	private List<Float> mYAxis;
-	private List<Float> mXAxis;
+	private final List<Float> domain;
+	private final List<Series> valuesSeries = new ArrayList<Series>();
+	private Axis yAxis;
+	private Axis xAxis;
 
 	public ChartData(List<Float> domain) {
-		this.mDomain = domain;
+		this.domain = domain;
 	}
 
 	public List<Float> getDomain() {
-		return mDomain;
+		return domain;
 	}
 
 	public Series getSeries(int index) {
-		return mValuesSeries.get(index);
+		return valuesSeries.get(index);
 	}
 
 	public List<Series> getAllSeries() {
-		return mValuesSeries;
+		return valuesSeries;
 	}
 
 	public void addSeries(Series series) {
-		mValuesSeries.add(series);
+		this.valuesSeries.add(series);
 	}
 
-	public void setYAxis(List<Float> yAxis) {
-		mYAxis = yAxis;
+	public void setYAxis(Axis yAxis) {
+		this.yAxis = yAxis;
 	}
 
-	public List<Float> getYAxis() {
-		return mYAxis;
-	}
-	
-	public void setXAxis(List<Float> xAxis) {
-		mXAxis = xAxis;
+	public Axis getYAxis() {
+		return yAxis;
 	}
 
-	public List<Float> getXAxis() {
-		return mXAxis;
+	public void setXAxis(Axis xAxis) {
+		this.xAxis = xAxis;
+	}
+
+	public Axis getXAxis() {
+		return xAxis;
 	}
 
 }

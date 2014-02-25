@@ -143,11 +143,12 @@ public class LineChart extends View {
 		if (mAxesOn) {
 			final Rect textBounds = new Rect();
 			final String text;
-			if (Math.abs(mData.mYAxis.get(0)) > Math.abs(mData.mYAxis.get(mData.mYAxis.size() - 1))) {
-				text = String.format(Locale.ENGLISH, Config.DEFAULT_AXES_FORMAT, mData.mYAxis.get(0));
+			if (Math.abs(mData.getYAxis().getValues().get(0)) > Math.abs(mData.getYAxis().getValues()
+					.get(mData.getYAxis().getValues().size() - 1))) {
+				text = String.format(Locale.ENGLISH, Config.DEFAULT_AXES_FORMAT, mData.getYAxis().getValues().get(0));
 			} else {
 				text = String.format(Locale.ENGLISH, Config.DEFAULT_AXES_FORMAT,
-						mData.mYAxis.get(mData.mYAxis.size() - 1));
+						mData.getYAxis().getValues().get(mData.getYAxis().getValues().size() - 1));
 			}
 			mTextPaint.getTextBounds(text, 0, text.length(), textBounds);
 			mYAxisMargin = textBounds.width() + mCommonMargin;
@@ -194,7 +195,7 @@ public class LineChart extends View {
 		final float rawY1 = getHeight() - getPaddingBottom();
 		final float rawY2 = calculateY(mData.getMinYValue());
 		canvas.drawLine(rawX1 + mYAxisMargin, rawY2, rawX2, rawY2, mLinePaint);
-		for (float x : mData.mXAxis) {
+		for (float x : mData.getXAxis().getValues()) {
 			final String text = String.format(Locale.ENGLISH, Config.DEFAULT_AXES_FORMAT, x);
 			canvas.drawText(text, calculateX(x), rawY1, mTextPaint);
 		}
@@ -207,7 +208,7 @@ public class LineChart extends View {
 		mTextPaint.setTextAlign(Align.LEFT);
 		final float rawX1 = getPaddingLeft();
 		final float rawX2 = getWidth() - getPaddingRight();
-		for (float y : mData.mYAxis) {
+		for (float y : mData.getYAxis().getValues()) {
 			// Draw only if y is in chart range
 			if (y >= mData.getMinYValue() && y <= mData.getMaxYValue()) {
 				float rawY = calculateY(y);

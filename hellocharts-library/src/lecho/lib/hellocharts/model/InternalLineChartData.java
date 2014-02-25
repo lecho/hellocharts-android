@@ -7,8 +7,8 @@ public class InternalLineChartData {
 
 	private final List<Float> mDomain;
 	private final List<InternalSeries> mInternalsSeries = new ArrayList<InternalSeries>();
-	public List<Float> mYAxis;
-	public List<Float> mXAxis;
+	private Axis yAxis;
+	private Axis xAxis;
 	private float mMinXValue;
 	private float mMaxXValue;
 	private float mMinYValue;
@@ -23,8 +23,8 @@ public class InternalLineChartData {
 		for (Series series : rawData.getAllSeries()) {
 			internalData.addSeries(series);
 		}
-		internalData.mYAxis = rawData.getYAxis();
-		internalData.mXAxis = rawData.getXAxis();
+		internalData.yAxis = rawData.getYAxis();
+		internalData.xAxis = rawData.getXAxis();
 		return internalData;
 	}
 
@@ -103,6 +103,22 @@ public class InternalLineChartData {
 
 	public List<InternalSeries> getInternalsSeries() {
 		return mInternalsSeries;
+	}
+
+	public Axis getYAxis() {
+		return yAxis;
+	}
+
+	public void setYAxis(Axis yAxis) {
+		this.yAxis = yAxis;
+	}
+
+	public Axis getXAxis() {
+		return xAxis;
+	}
+
+	public void setXAxis(Axis xAxis) {
+		this.xAxis = xAxis;
 	}
 
 	public float getMinXValue() {
