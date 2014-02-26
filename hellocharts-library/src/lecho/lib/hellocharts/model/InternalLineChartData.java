@@ -37,6 +37,7 @@ public class InternalLineChartData {
 	}
 
 	public void updateSeries(int seriesIndex, List<Float> newValues) {
+		//TODO: Optimize.
 		if (seriesIndex < 0 || seriesIndex > mInternalsSeries.size()) {
 			throw new IllegalArgumentException("Invalid sereis index!");
 		}

@@ -7,6 +7,7 @@ import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
 import lecho.lib.hellocharts.model.AnimatedValue;
+import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.InternalLineChartData;
 import lecho.lib.hellocharts.model.InternalSeries;
@@ -143,12 +144,13 @@ public class LineChart extends View {
 		if (mAxesOn) {
 			final Rect textBounds = new Rect();
 			final String text;
-			if (Math.abs(mData.getYAxis().getValues().get(0)) > Math.abs(mData.getYAxis().getValues()
-					.get(mData.getYAxis().getValues().size() - 1))) {
-				text = String.format(Locale.ENGLISH, Config.DEFAULT_AXES_FORMAT, mData.getYAxis().getValues().get(0));
+			// TODO: check if axis has at least one element.
+			final int axisSize = mData.getYAxis().getValues().size();
+			final Axis yAxis = mData.getYAxis();
+			if (Math.abs(yAxis.getValues().get(0)) > Math.abs(yAxis.getValues().get(axisSize - 1))) {
+				text = getAxisValueToDraw(yAxis, yAxis.getValues().get(0), 0);
 			} else {
-				text = String.format(Locale.ENGLISH, Config.DEFAULT_AXES_FORMAT,
-						mData.getYAxis().getValues().get(mData.getYAxis().getValues().size() - 1));
+				text = getAxisValueToDraw(yAxis, yAxis.getValues().get(axisSize - 1), axisSize - 1);
 			}
 			mTextPaint.getTextBounds(text, 0, text.length(), textBounds);
 			mYAxisMargin = textBounds.width() + mCommonMargin;
@@ -195,9 +197,12 @@ public class LineChart extends View {
 		final float rawY1 = getHeight() - getPaddingBottom();
 		final float rawY2 = calculateY(mData.getMinYValue());
 		canvas.drawLine(rawX1 + mYAxisMargin, rawY2, rawX2, rawY2, mLinePaint);
-		for (float x : mData.getXAxis().getValues()) {
-			final String text = String.format(Locale.ENGLISH, Config.DEFAULT_AXES_FORMAT, x);
+		Axis xAxis = mData.getXAxis();
+		int index = 0;
+		for (float x : xAxis.getValues()) {
+			final String text = getAxisValueToDraw(xAxis, x, index);
 			canvas.drawText(text, calculateX(x), rawY1, mTextPaint);
+			++index;
 		}
 	}
 
@@ -208,14 +213,25 @@ public class LineChart extends View {
 		mTextPaint.setTextAlign(Align.LEFT);
 		final float rawX1 = getPaddingLeft();
 		final float rawX2 = getWidth() - getPaddingRight();
-		for (float y : mData.getYAxis().getValues()) {
+		Axis yAxis = mData.getYAxis();
+		int index = 0;
+		for (float y : yAxis.getValues()) {
 			// Draw only if y is in chart range
 			if (y >= mData.getMinYValue() && y <= mData.getMaxYValue()) {
+				final String text = getAxisValueToDraw(yAxis, y, index);
 				float rawY = calculateY(y);
-				final String text = String.format(Locale.ENGLISH, Config.DEFAULT_AXES_FORMAT, y);
 				canvas.drawLine(rawX1 + mYAxisMargin, rawY, rawX2, rawY, mLinePaint);
 				canvas.drawText(text, rawX1, rawY, mTextPaint);
 			}
+			++index;
+		}
+	}
+
+	private String getAxisValueToDraw(Axis axis, Float value, int index) {
+		if (axis.isStringAxis()) {
+			return axis.getStringValues().get(index);
+		} else {
+			return String.format(axis.getValueFormatter(), value);
 		}
 	}
 
