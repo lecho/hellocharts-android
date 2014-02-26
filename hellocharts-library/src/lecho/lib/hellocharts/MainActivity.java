@@ -126,6 +126,14 @@ public class MainActivity extends Activity {
 		xRules.add(5f);
 		Axis xAxis = new Axis();
 		xAxis.setValues(xRules);
+		List<String> xRulesText = new ArrayList<String>();
+		xRulesText.add("Mon");
+		xRulesText.add("Tue");
+		xRulesText.add("Wen");
+		xRulesText.add("Thu");
+		xRulesText.add("Fri");
+		xAxis.setStringValues(xRulesText);
+		xAxis.setStringAxis(true);
 		data.setXAxis(xAxis);
 
 		chart.setData(data);
