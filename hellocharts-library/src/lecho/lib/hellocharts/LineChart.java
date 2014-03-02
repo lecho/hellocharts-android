@@ -416,7 +416,7 @@ public class LineChart extends View {
 					++valueIndex;
 				}
 			}
-			break;
+			return true;
 		case MotionEvent.ACTION_UP:
 			// If value was selected call click listener and clear selection.
 			if (mSelectedValueIndex >= 0) {
@@ -428,7 +428,7 @@ public class LineChart extends View {
 				mSelectedValueIndex = Integer.MIN_VALUE;
 				invalidate();
 			}
-			break;
+			return true;
 		case MotionEvent.ACTION_MOVE:
 			// Clear selection if user is now touching outside touch area.
 			if (mSelectedValueIndex >= 0) {
@@ -443,7 +443,7 @@ public class LineChart extends View {
 					invalidate();
 				}
 			}
-			break;
+			return true;
 		case MotionEvent.ACTION_CANCEL:
 			// Clear selection
 			if (mSelectedValueIndex >= 0) {
@@ -451,11 +451,10 @@ public class LineChart extends View {
 				mSelectedValueIndex = Integer.MIN_VALUE;
 				invalidate();
 			}
-			break;
+			return true;
 		default:
-			break;
+			return true;
 		}
-		return true;
 	}
 
 	public void setData(final ChartData rawData) {
