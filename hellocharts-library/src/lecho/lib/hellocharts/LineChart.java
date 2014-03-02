@@ -492,7 +492,7 @@ public class LineChart extends View {
 
 	public void updateSeries(int index, List<Float> values) {
 		mData.updateSeries(index, values);
-		postInvalidate();
+		invalidate();
 	}
 
 	public void setOnPointClickListener(OnPointClickListener listener) {
