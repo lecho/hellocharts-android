@@ -36,21 +36,6 @@ public class MainActivity extends Activity {
 					s1.add(700f);
 					s1.add(600f);
 					s1.add(800f);
-					// s1.add(200f);
-					// s1.add(400f);
-					// s1.add(700f);
-					// s1.add(600f);
-					// s1.add(800f);
-					// s1.add(200f);
-					// s1.add(400f);
-					// s1.add(700f);
-					// s1.add(600f);
-					// s1.add(800f);
-					// s1.add(200f);
-					// s1.add(400f);
-					// s1.add(700f);
-					// s1.add(600f);
-					// s1.add(800f);
 					chart.animateSeries(0, s1);
 				} else {
 					List<Float> s2 = new ArrayList<Float>();
@@ -59,21 +44,6 @@ public class MainActivity extends Activity {
 					s2.add(550f);
 					s2.add(800f);
 					s2.add(1700f);
-					// s2.add(300f);
-					// s2.add(500f);
-					// s2.add(550f);
-					// s2.add(800f);
-					// s2.add(700f);
-					// s2.add(300f);
-					// s2.add(500f);
-					// s2.add(550f);
-					// s2.add(800f);
-					// s2.add(700f);
-					// s2.add(300f);
-					// s2.add(500f);
-					// s2.add(550f);
-					// s2.add(800f);
-					// s2.add(700f);
 					chart.animateSeries(0, s2);
 				}
 
@@ -95,6 +65,7 @@ public class MainActivity extends Activity {
 		s1.add(600f);
 		s1.add(100f);
 		s1.add(300f);
+		s1.add(150f);
 		List<Float> s2 = new ArrayList<Float>();
 		s2.add(500f);
 		s2.add(300f);

@@ -38,6 +38,7 @@ public class LineChart extends View {
 	private static final int DEFAULT_TEXT_SIZE_DP = 14;
 	private static final int DEFAULT_TEXT_COLOR = Color.WHITE;
 	private static final int DEFAULT_AXIS_COLOR = Color.LTGRAY;
+	private static final int DEFAULT_AREA_TRANSPARENCY = 64;
 	private float mCommonMargin = 0;
 	private Path mLinePath = new Path();
 	private Paint mLinePaint = new Paint();
@@ -54,7 +55,7 @@ public class LineChart extends View {
 	private float mYAxisMargin = 0;
 	private float mXAxisMargin = 0;
 	private boolean mLinesOn = true;
-	private boolean mInterpolationOn = false;
+	private boolean mInterpolationOn = true;
 	private boolean mPointsOn = true;
 	private boolean mPopupsOn = false;
 	private boolean mAxesOn = true;
@@ -339,6 +340,7 @@ public class LineChart extends View {
 		}
 		mLinePaint.setColor(internalSeries.getColor());
 		canvas.drawPath(mLinePath, mLinePaint);
+		drawArea(canvas);
 	}
 
 	private void drawSmoothPath(Canvas canvas, final InternalSeries internalSeries) {
@@ -386,7 +388,10 @@ public class LineChart extends View {
 			final float firstControlPointY = currentPointY + (LINE_SMOOTHNES * firstDiffY);
 			final float secondControlPointX = nextPointX - (LINE_SMOOTHNES * secondDiffX);
 			final float secondControlPointY = nextPointY - (LINE_SMOOTHNES * secondDiffY);
-			mLinePath.moveTo(currentPointX, currentPointY);
+			// Move to start point.
+			if (valueIndex == 0) {
+				mLinePath.moveTo(currentPointX, currentPointY);
+			}
 			mLinePath.cubicTo(firstControlPointX, firstControlPointY, secondControlPointX, secondControlPointY,
 					nextPointX, nextPointY);
 			// Shift values to prevent recalculation of values that have been already calculated.
@@ -399,6 +404,22 @@ public class LineChart extends View {
 		}
 		mLinePaint.setColor(internalSeries.getColor());
 		canvas.drawPath(mLinePath, mLinePaint);
+		drawArea(canvas);
+	}
+
+	private void drawArea(Canvas canvas) {
+		// TODO: avoid coordinates recalculations
+		final float rawStartValueX = calculateX(mData.getDomain().get(0));
+		final float rawStartValueY = calculateY(mData.getMinYValue());
+		final float rawEndValueX = calculateX(mData.getDomain().get(mData.getDomain().size() - 1));
+		final float rawEntValueY = rawStartValueY;
+		mLinePaint.setStyle(Paint.Style.FILL);
+		mLinePaint.setAlpha(DEFAULT_AREA_TRANSPARENCY);
+		mLinePath.lineTo(rawEndValueX, rawEntValueY);
+		mLinePath.lineTo(rawStartValueX, rawStartValueY);
+		mLinePath.close();
+		canvas.drawPath(mLinePath, mLinePaint);
+		mLinePaint.setStyle(Paint.Style.STROKE);
 	}
 
 	private float calculateX(float valueX) {
