@@ -24,9 +24,11 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 
 public class LineChart extends View {
@@ -63,6 +65,10 @@ public class LineChart extends View {
 	private int mSelectedSeriesIndex = Integer.MIN_VALUE;
 	private int mSelectedValueIndex = Integer.MIN_VALUE;
 	private OnPointClickListener mOnPointClickListener = new DummyOnPointListener();
+
+	public float mZoomLevel = 0.0f;
+	private ScaleGestureDetector mScaleGestureDetector = new ScaleGestureDetector(getContext(),
+			new ChartScaleGestureListener());
 
 	public LineChart(Context context) {
 		super(context);
@@ -424,80 +430,81 @@ public class LineChart extends View {
 
 	private float calculateX(float valueX) {
 		final float additionalPadding = getPaddingLeft() + mPointPressedRadius + mYAxisMargin;
-		final float valueDistance = (valueX - mData.getMinXValue()) * mXMultiplier;
-		return valueDistance + additionalPadding;
+		final float valueDistance = (valueX - mData.getMinXValue()) * (mXMultiplier * (1 + 2 * mZoomLevel));
+		return valueDistance + additionalPadding - (getWidth() * mZoomLevel);
 	}
 
 	private float calculateY(float valueY) {
 		final float additionalPadding = getPaddingBottom() + mPointPressedRadius + mXAxisMargin;
-		final float valueDistance = (valueY - mData.getMinYValue()) * mYMultiplier;
+		final float valueDistance = (valueY - mData.getMinYValue()) * (mYMultiplier * (1 + 2 * mZoomLevel));
 		// Subtracting from height because on android top left corner is 0,0 and bottom right is maxX,maxY.
-		return getHeight() - valueDistance - additionalPadding;
+		return getHeight() - valueDistance - additionalPadding + mZoomLevel;
 	}
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		if (!mPointsOn) {
-			// No point - no touch events.
-			return true;
-		}
-		switch (event.getAction()) {
-		case MotionEvent.ACTION_DOWN:
-			// Select only the first value within touched area.
-			// Reverse loop to starts with the line drawn on top.
-			for (int seriesIndex = mData.getInternalsSeries().size() - 1; seriesIndex >= 0; --seriesIndex) {
-				int valueIndex = 0;
-				for (AnimatedValue value : mData.getInternalsSeries().get(seriesIndex).getValues()) {
-					final float rawX = calculateX(mData.getDomain().get(valueIndex));
-					final float rawY = calculateY(value.getPosition());
-					if (Utils.isInArea(rawX, rawY, event.getX(), event.getY(), mTouchRadius)) {
-						mSelectedSeriesIndex = seriesIndex;
-						mSelectedValueIndex = valueIndex;
-						invalidate();
-						return true;
-					}
-					++valueIndex;
-				}
-			}
-			return true;
-		case MotionEvent.ACTION_UP:
-			// If value was selected call click listener and clear selection.
-			if (mSelectedValueIndex >= 0) {
-				final float x = mData.getDomain().get(mSelectedValueIndex);
-				final float y = mData.getInternalsSeries().get(mSelectedSeriesIndex).getValues()
-						.get(mSelectedValueIndex).getPosition();
-				mOnPointClickListener.onPointClick(mSelectedSeriesIndex, mSelectedValueIndex, x, y);
-				mSelectedSeriesIndex = Integer.MIN_VALUE;
-				mSelectedValueIndex = Integer.MIN_VALUE;
-				invalidate();
-			}
-			return true;
-		case MotionEvent.ACTION_MOVE:
-			// Clear selection if user is now touching outside touch area.
-			if (mSelectedValueIndex >= 0) {
-				final float x = mData.getDomain().get(mSelectedValueIndex);
-				final float y = mData.getInternalsSeries().get(mSelectedSeriesIndex).getValues()
-						.get(mSelectedValueIndex).getPosition();
-				final float rawX = calculateX(x);
-				final float rawY = calculateY(y);
-				if (!Utils.isInArea(rawX, rawY, event.getX(), event.getY(), mTouchRadius)) {
-					mSelectedSeriesIndex = Integer.MIN_VALUE;
-					mSelectedValueIndex = Integer.MIN_VALUE;
-					invalidate();
-				}
-			}
-			return true;
-		case MotionEvent.ACTION_CANCEL:
-			// Clear selection
-			if (mSelectedValueIndex >= 0) {
-				mSelectedSeriesIndex = Integer.MIN_VALUE;
-				mSelectedValueIndex = Integer.MIN_VALUE;
-				invalidate();
-			}
-			return true;
-		default:
-			return true;
-		}
+		return mScaleGestureDetector.onTouchEvent(event);
+		// if (!mPointsOn) {
+		// // No point - no touch events.
+		// return true;
+		// }
+		// switch (event.getAction()) {
+		// case MotionEvent.ACTION_DOWN:
+		// // Select only the first value within touched area.
+		// // Reverse loop to starts with the line drawn on top.
+		// for (int seriesIndex = mData.getInternalsSeries().size() - 1; seriesIndex >= 0; --seriesIndex) {
+		// int valueIndex = 0;
+		// for (AnimatedValue value : mData.getInternalsSeries().get(seriesIndex).getValues()) {
+		// final float rawX = calculateX(mData.getDomain().get(valueIndex));
+		// final float rawY = calculateY(value.getPosition());
+		// if (Utils.isInArea(rawX, rawY, event.getX(), event.getY(), mTouchRadius)) {
+		// mSelectedSeriesIndex = seriesIndex;
+		// mSelectedValueIndex = valueIndex;
+		// invalidate();
+		// return true;
+		// }
+		// ++valueIndex;
+		// }
+		// }
+		// return true;
+		// case MotionEvent.ACTION_UP:
+		// // If value was selected call click listener and clear selection.
+		// if (mSelectedValueIndex >= 0) {
+		// final float x = mData.getDomain().get(mSelectedValueIndex);
+		// final float y = mData.getInternalsSeries().get(mSelectedSeriesIndex).getValues()
+		// .get(mSelectedValueIndex).getPosition();
+		// mOnPointClickListener.onPointClick(mSelectedSeriesIndex, mSelectedValueIndex, x, y);
+		// mSelectedSeriesIndex = Integer.MIN_VALUE;
+		// mSelectedValueIndex = Integer.MIN_VALUE;
+		// invalidate();
+		// }
+		// return true;
+		// case MotionEvent.ACTION_MOVE:
+		// // Clear selection if user is now touching outside touch area.
+		// if (mSelectedValueIndex >= 0) {
+		// final float x = mData.getDomain().get(mSelectedValueIndex);
+		// final float y = mData.getInternalsSeries().get(mSelectedSeriesIndex).getValues()
+		// .get(mSelectedValueIndex).getPosition();
+		// final float rawX = calculateX(x);
+		// final float rawY = calculateY(y);
+		// if (!Utils.isInArea(rawX, rawY, event.getX(), event.getY(), mTouchRadius)) {
+		// mSelectedSeriesIndex = Integer.MIN_VALUE;
+		// mSelectedValueIndex = Integer.MIN_VALUE;
+		// invalidate();
+		// }
+		// }
+		// return true;
+		// case MotionEvent.ACTION_CANCEL:
+		// // Clear selection
+		// if (mSelectedValueIndex >= 0) {
+		// mSelectedSeriesIndex = Integer.MIN_VALUE;
+		// mSelectedValueIndex = Integer.MIN_VALUE;
+		// invalidate();
+		// }
+		// return true;
+		// default:
+		// return true;
+		// }
 	}
 
 	public void setData(final ChartData rawData) {
@@ -553,6 +560,28 @@ public class LineChart extends View {
 			// Do nothing.
 		}
 
+	}
+
+	private class ChartScaleGestureListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+		private float mScaleFactor = 1.0f;
+
+		@Override
+		public boolean onScaleBegin(ScaleGestureDetector detector) {
+			return true;
+		}
+
+		@Override
+		public void onScaleEnd(ScaleGestureDetector detector) {
+
+		}
+
+		@Override
+		public boolean onScale(ScaleGestureDetector detector) {
+			mScaleFactor = (mScaleFactor / detector.getScaleFactor());
+			mZoomLevel = -(1 - mScaleFactor);
+			ViewCompat.postInvalidateOnAnimation(LineChart.this);
+			return true;
+		}
 	}
 
 }

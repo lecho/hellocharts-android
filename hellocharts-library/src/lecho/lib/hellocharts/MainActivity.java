@@ -65,7 +65,6 @@ public class MainActivity extends Activity {
 		s1.add(600f);
 		s1.add(100f);
 		s1.add(300f);
-		s1.add(150f);
 		List<Float> s2 = new ArrayList<Float>();
 		s2.add(500f);
 		s2.add(300f);
