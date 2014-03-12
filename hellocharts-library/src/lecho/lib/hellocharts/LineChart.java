@@ -37,6 +37,7 @@ public class LineChart extends View {
 	private static final int DEFAULT_LINE_WIDTH_DP = 2;
 	private static final int DEFAULT_POINT_RADIUS_DP = 6;
 	private static final int DEFAULT_POINT_TOUCH_RADIUS_DP = 12;
+	private static final int DEFAULT_POINT_PRESSED_RADIUS = DEFAULT_POINT_RADIUS_DP + 4;
 	private static final int DEFAULT_TEXT_SIZE_DP = 14;
 	private static final int DEFAULT_TEXT_COLOR = Color.WHITE;
 	private static final int DEFAULT_AXIS_COLOR = Color.LTGRAY;
@@ -107,9 +108,9 @@ public class LineChart extends View {
 	private void initAttributes() {
 		mLineWidth = Utils.dp2px(getContext(), DEFAULT_LINE_WIDTH_DP);
 		mPointRadius = Utils.dp2px(getContext(), DEFAULT_POINT_RADIUS_DP);
-		mPointPressedRadius = mPointRadius + Utils.dp2px(getContext(), 4);
+		mPointPressedRadius = Utils.dp2px(getContext(), DEFAULT_POINT_PRESSED_RADIUS);
 		mTouchRadius = Utils.dp2px(getContext(), DEFAULT_POINT_TOUCH_RADIUS_DP);
-		mCommonMargin = Utils.dp2px(getContext(), 12);
+		mCommonMargin = Utils.dp2px(getContext(), DEFAULT_POINT_PRESSED_RADIUS + 4);
 	}
 
 	private void initPaints() {
