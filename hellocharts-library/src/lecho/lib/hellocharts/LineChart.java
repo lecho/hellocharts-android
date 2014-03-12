@@ -41,31 +41,37 @@ public class LineChart extends View {
 	private static final int DEFAULT_TEXT_COLOR = Color.WHITE;
 	private static final int DEFAULT_AXIS_COLOR = Color.LTGRAY;
 	private static final int DEFAULT_AREA_TRANSPARENCY = 64;
-	private float mCommonMargin = 0;
+	private int mCommonMargin = 0;
 	private Path mLinePath = new Path();
 	private Paint mLinePaint = new Paint();
 	private Paint mTextPaint = new Paint();
 	private InternalLineChartData mData;
 	private float mLineWidth;
-	private float mPointRadius;
-	private float mPointPressedRadius;
+	private int mPointRadius;
+	private int mPointPressedRadius;
 	private float mTouchRadius;
-	private float mXMultiplier;
-	private float mYMultiplier;
+	private float mPixelPerXValue;
+	private float mPixelPerYValue;
 	private float mAvailableWidth;
 	private float mAvailableHeight;
-	private float mYAxisMargin = 0;
-	private float mXAxisMargin = 0;
+	private int mYAxisMargin = 0;
+	private int mXAxisMargin = 0;
 	private boolean mLinesOn = true;
 	private boolean mInterpolationOn = true;
 	private boolean mPointsOn = true;
 	private boolean mPopupsOn = false;
-	private boolean mAxesOn = true;
+	private boolean mAxesOn = false;
 	private ChartAnimator mAnimator;
 	private int mSelectedSeriesIndex = Integer.MIN_VALUE;
 	private int mSelectedValueIndex = Integer.MIN_VALUE;
 	private OnPointClickListener mOnPointClickListener = new DummyOnPointListener();
 	public float mZoomLevel = 0.0f;
+
+	/**
+	 * The current area (in pixels) for chart data . Labels are drawn outside this area.
+	 */
+	private Rect mContentArea = new Rect();
+	private RectF mCurrentViewport = new RectF();
 	private ScaleGestureDetector mScaleGestureDetector = new ScaleGestureDetector(getContext(),
 			new ChartScaleGestureListener());
 
@@ -95,7 +101,7 @@ public class LineChart extends View {
 		mPointRadius = Utils.dp2px(getContext(), DEFAULT_POINT_RADIUS_DP);
 		mPointPressedRadius = mPointRadius + Utils.dp2px(getContext(), 4);
 		mTouchRadius = Utils.dp2px(getContext(), DEFAULT_POINT_TOUCH_RADIUS_DP);
-		mCommonMargin = (float) Utils.dp2px(getContext(), 4);
+		mCommonMargin = Utils.dp2px(getContext(), 4);
 	}
 
 	private void initPaints() {
@@ -120,31 +126,30 @@ public class LineChart extends View {
 
 	@Override
 	protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
-		long time = System.nanoTime();
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
 		// TODO mPointRadus can change, recalculate in setter
-		calculateAvailableDimensions();
+		calculateContentArea();
 		// TODO max-min can chage - recalculate in setter
-		calculateMultipliers();
-		Log.v(TAG, "onSizeChanged [ms]: " + (System.nanoTime() - time) / 1000000f);
+		calculatePixelsPerValue();
 	}
 
 	/**
 	 * Calculates available width and height. Should be called when chart dimensions or chart data change.
 	 */
-	private void calculateAvailableDimensions() {
-		final float additionalPadding = 2 * mPointPressedRadius;
-		mAvailableWidth = getWidth() - getPaddingLeft() - getPaddingRight() - additionalPadding - mYAxisMargin;
-		mAvailableHeight = getHeight() - getPaddingTop() - getPaddingBottom() - additionalPadding - mXAxisMargin;
+	private void calculateContentArea() {
+		mContentArea.set(getPaddingLeft() + mPointPressedRadius + mYAxisMargin, getPaddingTop() + mPointPressedRadius,
+				getWidth() - getPaddingRight() - mPointPressedRadius, getHeight() - getPaddingBottom()
+						- mPointPressedRadius - mXAxisMargin);
 	}
 
 	/**
 	 * Calculates multipliers used to translate values into pixels. Should be called when chart dimensions or chart data
 	 * change.
 	 */
-	private void calculateMultipliers() {
-		mXMultiplier = mAvailableWidth / (mData.getMaxXValue() - mData.getMinXValue());
-		mYMultiplier = mAvailableHeight / (mData.getMaxYValue() - mData.getMinYValue());
+	private void calculatePixelsPerValue() {
+		mCurrentViewport.set(mData.getMinXValue(), mData.getMinYValue(), mData.getMaxXValue(), mData.getMaxYValue());
+		mPixelPerXValue = mContentArea.width() / mCurrentViewport.width();
+		mPixelPerYValue = mContentArea.height() / mCurrentViewport.height();
 	}
 
 	private void calculateYAxisMargin() {
@@ -223,13 +228,13 @@ public class LineChart extends View {
 		final float rawX1 = getPaddingLeft();
 		final float rawX2 = getWidth() - getPaddingRight();
 		final float rawY1 = getHeight() - getPaddingBottom();
-		final float rawY2 = calculateY(mData.getMinYValue());
+		final float rawY2 = calculatePixelY(mData.getMinYValue());
 		canvas.drawLine(rawX1 + mYAxisMargin, rawY2, rawX2, rawY2, mLinePaint);
 		Axis xAxis = mData.getXAxis();
 		int index = 0;
 		for (float x : xAxis.getValues()) {
 			final String text = getAxisValueToDraw(xAxis, x, index);
-			canvas.drawText(text, calculateX(x), rawY1, mTextPaint);
+			canvas.drawText(text, calculatePixelX(x), rawY1, mTextPaint);
 			++index;
 		}
 	}
@@ -247,7 +252,7 @@ public class LineChart extends View {
 			// Draw only if y is in chart range
 			if (y >= mData.getMinYValue() && y <= mData.getMaxYValue()) {
 				final String text = getAxisValueToDraw(yAxis, y, index);
-				float rawY = calculateY(y);
+				float rawY = calculatePixelY(y);
 				canvas.drawLine(rawX1 + mYAxisMargin, rawY, rawX2, rawY, mLinePaint);
 				canvas.drawText(text, rawX1, rawY, mTextPaint);
 			}
@@ -282,9 +287,9 @@ public class LineChart extends View {
 			mTextPaint.setColor(internalSeries.getColor());
 			int valueIndex = 0;
 			for (float valueX : mData.getDomain()) {
-				final float rawValueX = calculateX(valueX);
+				final float rawValueX = calculatePixelX(valueX);
 				final float valueY = internalSeries.getValues().get(valueIndex).getPosition();
-				final float rawValueY = calculateY(valueY);
+				final float rawValueY = calculatePixelY(valueY);
 				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mTextPaint);
 				if (mPopupsOn) {
 					drawValuePopup(canvas, mPointRadius, valueY, rawValueX, rawValueY);
@@ -294,10 +299,10 @@ public class LineChart extends View {
 		}
 		if (mSelectedSeriesIndex >= 0 && mSelectedValueIndex >= 0) {
 			final float valueX = mData.getDomain().get(mSelectedValueIndex);
-			final float rawValueX = calculateX(valueX);
+			final float rawValueX = calculatePixelX(valueX);
 			final float valueY = mData.getInternalsSeries().get(mSelectedSeriesIndex).getValues()
 					.get(mSelectedValueIndex).getPosition();
-			final float rawValueY = calculateY(valueY);
+			final float rawValueY = calculatePixelY(valueY);
 			mTextPaint.setColor(mData.getInternalsSeries().get(mSelectedSeriesIndex).getColor());
 			canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mTextPaint);
 			if (mPopupsOn) {
@@ -334,8 +339,8 @@ public class LineChart extends View {
 	private void drawPath(Canvas canvas, final InternalSeries internalSeries) {
 		int valueIndex = 0;
 		for (float valueX : mData.getDomain()) {
-			final float rawValueX = calculateX(valueX);
-			final float rawValueY = calculateY(internalSeries.getValues().get(valueIndex).getPosition());
+			final float rawValueX = calculatePixelX(valueX);
+			final float rawValueY = calculatePixelY(internalSeries.getValues().get(valueIndex).getPosition());
 			if (valueIndex == 0) {
 				mLinePath.moveTo(rawValueX, rawValueY);
 			} else {
@@ -358,28 +363,28 @@ public class LineChart extends View {
 		float nextPointY = Float.NaN;
 		for (int valueIndex = 0; valueIndex < domainSize - 1; ++valueIndex) {
 			if (Float.isNaN(currentPointX)) {
-				currentPointX = calculateX(mData.getDomain().get(valueIndex));
-				currentPointY = calculateY(internalSeries.getValues().get(valueIndex).getPosition());
+				currentPointX = calculatePixelX(mData.getDomain().get(valueIndex));
+				currentPointY = calculatePixelY(internalSeries.getValues().get(valueIndex).getPosition());
 			}
 			if (Float.isNaN(previousPointX)) {
 				if (valueIndex > 0) {
-					previousPointX = calculateX(mData.getDomain().get(valueIndex - 1));
-					previousPointY = calculateY(internalSeries.getValues().get(valueIndex - 1).getPosition());
+					previousPointX = calculatePixelX(mData.getDomain().get(valueIndex - 1));
+					previousPointY = calculatePixelY(internalSeries.getValues().get(valueIndex - 1).getPosition());
 				} else {
 					previousPointX = currentPointX;
 					previousPointY = currentPointY;
 				}
 			}
 			if (Float.isNaN(nextPointX)) {
-				nextPointX = calculateX(mData.getDomain().get(valueIndex + 1));
-				nextPointY = calculateY(internalSeries.getValues().get(valueIndex + 1).getPosition());
+				nextPointX = calculatePixelX(mData.getDomain().get(valueIndex + 1));
+				nextPointY = calculatePixelY(internalSeries.getValues().get(valueIndex + 1).getPosition());
 			}
 			// afterNextPoint is always new one or it is equal nextPoint.
 			final float afterNextPointX;
 			final float afterNextPointY;
 			if (valueIndex < domainSize - 2) {
-				afterNextPointX = calculateX(mData.getDomain().get(valueIndex + 2));
-				afterNextPointY = calculateY(internalSeries.getValues().get(valueIndex + 2).getPosition());
+				afterNextPointX = calculatePixelX(mData.getDomain().get(valueIndex + 2));
+				afterNextPointY = calculatePixelY(internalSeries.getValues().get(valueIndex + 2).getPosition());
 			} else {
 				afterNextPointX = nextPointX;
 				afterNextPointY = nextPointY;
@@ -414,9 +419,9 @@ public class LineChart extends View {
 
 	private void drawArea(Canvas canvas) {
 		// TODO: avoid coordinates recalculations
-		final float rawStartValueX = calculateX(mData.getDomain().get(0));
-		final float rawStartValueY = calculateY(mData.getMinYValue());
-		final float rawEndValueX = calculateX(mData.getDomain().get(mData.getDomain().size() - 1));
+		final float rawStartValueX = calculatePixelX(mData.getDomain().get(0));
+		final float rawStartValueY = calculatePixelY(mData.getMinYValue());
+		final float rawEndValueX = calculatePixelX(mData.getDomain().get(mData.getDomain().size() - 1));
 		final float rawEntValueY = rawStartValueY;
 		mLinePaint.setStyle(Paint.Style.FILL);
 		mLinePaint.setAlpha(DEFAULT_AREA_TRANSPARENCY);
@@ -427,17 +432,15 @@ public class LineChart extends View {
 		mLinePaint.setStyle(Paint.Style.STROKE);
 	}
 
-	private float calculateX(float valueX) {
-		final float additionalPadding = getPaddingLeft() + mPointPressedRadius + mYAxisMargin;
-		final float valueDistance = (valueX - mData.getMinXValue()) * (mXMultiplier * (1 + 2 * mZoomLevel));
-		return valueDistance + additionalPadding - (getWidth() * mZoomLevel);
+	private float calculatePixelX(float valueX) {
+		final float pixelOffset = (valueX - mData.getMinXValue()) * (mPixelPerXValue * (1 + 2 * mZoomLevel));
+		return mContentArea.left + pixelOffset - (mContentArea.width() * mZoomLevel);
 	}
 
-	private float calculateY(float valueY) {
-		final float additionalPadding = getPaddingBottom() + mPointPressedRadius + mXAxisMargin;
-		final float valueDistance = (valueY - mData.getMinYValue()) * (mYMultiplier * (1 + 2 * mZoomLevel));
+	private float calculatePixelY(float valueY) {
+		final float pixelOffset = (valueY - mData.getMinYValue()) * (mPixelPerYValue * (1 + 2 * mZoomLevel));
 		// Subtracting from height because on android top left corner is 0,0 and bottom right is maxX,maxY.
-		return getHeight() - valueDistance - additionalPadding + (getHeight() * mZoomLevel);
+		return mContentArea.bottom - pixelOffset + (mContentArea.height() * mZoomLevel);
 	}
 
 	@Override
@@ -511,8 +514,8 @@ public class LineChart extends View {
 		mData.calculateRanges();
 		calculateYAxisMargin();
 		calculateXAxisMargin();
-		calculateAvailableDimensions();
-		calculateMultipliers();
+		calculateContentArea();
+		calculatePixelsPerValue();
 		postInvalidate();
 	}
 
@@ -527,8 +530,8 @@ public class LineChart extends View {
 		mData.calculateYRanges();
 		calculateYAxisMargin();
 		calculateXAxisMargin();
-		calculateAvailableDimensions();
-		calculateMultipliers();
+		calculateContentArea();
+		calculatePixelsPerValue();
 		invalidate();
 	}
 
