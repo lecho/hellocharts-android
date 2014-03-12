@@ -60,7 +60,7 @@ public class LineChart extends View {
 	private boolean mInterpolationOn = true;
 	private boolean mPointsOn = true;
 	private boolean mPopupsOn = false;
-	private boolean mAxesOn = false;
+	private boolean mAxesOn = true;
 	private ChartAnimator mAnimator;
 	private int mSelectedSeriesIndex = Integer.MIN_VALUE;
 	private int mSelectedValueIndex = Integer.MIN_VALUE;
@@ -225,16 +225,13 @@ public class LineChart extends View {
 		mLinePaint.setColor(DEFAULT_AXIS_COLOR);
 		mTextPaint.setColor(DEFAULT_AXIS_COLOR);
 		mTextPaint.setTextAlign(Align.CENTER);
-		final float rawX1 = getPaddingLeft();
-		final float rawX2 = getWidth() - getPaddingRight();
-		final float rawY1 = getHeight() - getPaddingBottom();
-		final float rawY2 = calculatePixelY(mData.getMinYValue());
-		canvas.drawLine(rawX1 + mYAxisMargin, rawY2, rawX2, rawY2, mLinePaint);
+		final int xAxisBaseline = mContentArea.bottom + mXAxisMargin + mCommonMargin;
+		canvas.drawLine(mContentArea.left, mContentArea.bottom, mContentArea.right, mContentArea.bottom, mLinePaint);
 		Axis xAxis = mData.getXAxis();
 		int index = 0;
 		for (float x : xAxis.getValues()) {
 			final String text = getAxisValueToDraw(xAxis, x, index);
-			canvas.drawText(text, calculatePixelX(x), rawY1, mTextPaint);
+			canvas.drawText(text, calculatePixelX(x), xAxisBaseline, mTextPaint);
 			++index;
 		}
 	}
