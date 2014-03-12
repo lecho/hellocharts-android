@@ -52,8 +52,6 @@ public class LineChart extends View {
 	private float mTouchRadius;
 	private float mPixelPerXValue;
 	private float mPixelPerYValue;
-	private float mAvailableWidth;
-	private float mAvailableHeight;
 	private int mYAxisMargin = 0;
 	private int mXAxisMargin = 0;
 	private boolean mLinesOn = true;
@@ -68,9 +66,19 @@ public class LineChart extends View {
 	public float mZoomLevel = 0.0f;
 
 	/**
-	 * The current area (in pixels) for chart data . Labels are drawn outside this area.
+	 * The current area (in pixels) for chart data, including mCoomonMargin. Labels are drawn outside this area.
 	 */
 	private Rect mContentArea = new Rect();
+	/**
+	 * This rectangle represents the currently visible chart values ranges. The currently visible chart X values are
+	 * from this rectangle's left to its right. The currently visible chart Y values are from this rectangle's top to
+	 * its bottom.
+	 * <p>
+	 * Note that this rectangle's top is actually the smaller Y value, and its bottom is the larger Y value. Since the
+	 * chart is drawn onscreen in such a way that chart Y values increase towards the top of the screen (decreasing
+	 * pixel Y positions), this rectangle's "top" is drawn above this rectangle's "bottom" value.
+	 * 
+	 */
 	private RectF mCurrentViewport = new RectF();
 	private ScaleGestureDetector mScaleGestureDetector = new ScaleGestureDetector(getContext(),
 			new ChartScaleGestureListener());
@@ -101,7 +109,7 @@ public class LineChart extends View {
 		mPointRadius = Utils.dp2px(getContext(), DEFAULT_POINT_RADIUS_DP);
 		mPointPressedRadius = mPointRadius + Utils.dp2px(getContext(), 4);
 		mTouchRadius = Utils.dp2px(getContext(), DEFAULT_POINT_TOUCH_RADIUS_DP);
-		mCommonMargin = Utils.dp2px(getContext(), 4);
+		mCommonMargin = Utils.dp2px(getContext(), 12);
 	}
 
 	private void initPaints() {
@@ -137,9 +145,8 @@ public class LineChart extends View {
 	 * Calculates available width and height. Should be called when chart dimensions or chart data change.
 	 */
 	private void calculateContentArea() {
-		mContentArea.set(getPaddingLeft() + mPointPressedRadius + mYAxisMargin, getPaddingTop() + mPointPressedRadius,
-				getWidth() - getPaddingRight() - mPointPressedRadius, getHeight() - getPaddingBottom()
-						- mPointPressedRadius - mXAxisMargin);
+		mContentArea.set(getPaddingLeft() + mYAxisMargin, getPaddingTop(), getWidth() - getPaddingRight(), getHeight()
+				- getPaddingBottom() - mXAxisMargin);
 	}
 
 	/**
@@ -148,8 +155,8 @@ public class LineChart extends View {
 	 */
 	private void calculatePixelsPerValue() {
 		mCurrentViewport.set(mData.getMinXValue(), mData.getMinYValue(), mData.getMaxXValue(), mData.getMaxYValue());
-		mPixelPerXValue = mContentArea.width() / mCurrentViewport.width();
-		mPixelPerYValue = mContentArea.height() / mCurrentViewport.height();
+		mPixelPerXValue = (mContentArea.width() - 2 * mCommonMargin) / mCurrentViewport.width();
+		mPixelPerYValue = (mContentArea.height() - 2 * mCommonMargin) / mCurrentViewport.height();
 	}
 
 	private void calculateYAxisMargin() {
@@ -165,7 +172,7 @@ public class LineChart extends View {
 				text = getAxisValueToDraw(yAxis, yAxis.getValues().get(axisSize - 1), axisSize - 1);
 			}
 			mTextPaint.getTextBounds(text, 0, text.length(), textBounds);
-			mYAxisMargin = textBounds.width() + mCommonMargin;
+			mYAxisMargin = textBounds.width();
 		} else {
 			mYAxisMargin = 0;
 		}
@@ -176,7 +183,7 @@ public class LineChart extends View {
 			final Rect textBounds = new Rect();
 			// Hard coded only for text height calculation.
 			mTextPaint.getTextBounds("X", 0, 1, textBounds);
-			mXAxisMargin = textBounds.height() + mCommonMargin;
+			mXAxisMargin = textBounds.height();
 		} else {
 			mYAxisMargin = 0;
 		}
@@ -225,12 +232,14 @@ public class LineChart extends View {
 		mLinePaint.setColor(DEFAULT_AXIS_COLOR);
 		mTextPaint.setColor(DEFAULT_AXIS_COLOR);
 		mTextPaint.setTextAlign(Align.CENTER);
-		final int xAxisBaseline = mContentArea.bottom + mXAxisMargin + mCommonMargin;
-		canvas.drawLine(mContentArea.left, mContentArea.bottom, mContentArea.right, mContentArea.bottom, mLinePaint);
+		final int xAxisBaseline = mContentArea.bottom + mXAxisMargin;
+		canvas.drawLine(mContentArea.left, mContentArea.bottom - mCommonMargin, mContentArea.right, mContentArea.bottom
+				- mCommonMargin, mLinePaint);
 		Axis xAxis = mData.getXAxis();
 		int index = 0;
 		for (float x : xAxis.getValues()) {
 			final String text = getAxisValueToDraw(xAxis, x, index);
+			// TODO: check if raw x > contentArea.left
 			canvas.drawText(text, calculatePixelX(x), xAxisBaseline, mTextPaint);
 			++index;
 		}
@@ -240,9 +249,8 @@ public class LineChart extends View {
 		mLinePaint.setStrokeWidth(1);
 		mLinePaint.setColor(DEFAULT_AXIS_COLOR);
 		mTextPaint.setColor(DEFAULT_AXIS_COLOR);
-		mTextPaint.setTextAlign(Align.LEFT);
-		final float rawX1 = getPaddingLeft();
-		final float rawX2 = getWidth() - getPaddingRight();
+		mTextPaint.setTextAlign(Align.RIGHT);
+		final int yAxisRightAlign = mContentArea.left;
 		Axis yAxis = mData.getYAxis();
 		int index = 0;
 		for (float y : yAxis.getValues()) {
@@ -250,8 +258,8 @@ public class LineChart extends View {
 			if (y >= mData.getMinYValue() && y <= mData.getMaxYValue()) {
 				final String text = getAxisValueToDraw(yAxis, y, index);
 				float rawY = calculatePixelY(y);
-				canvas.drawLine(rawX1 + mYAxisMargin, rawY, rawX2, rawY, mLinePaint);
-				canvas.drawText(text, rawX1, rawY, mTextPaint);
+				canvas.drawLine(mContentArea.left, rawY, mContentArea.right, rawY, mLinePaint);
+				canvas.drawText(text, yAxisRightAlign, rawY, mTextPaint);
 			}
 			++index;
 		}
@@ -429,81 +437,81 @@ public class LineChart extends View {
 		mLinePaint.setStyle(Paint.Style.STROKE);
 	}
 
-	private float calculatePixelX(float valueX) {
-		final float pixelOffset = (valueX - mData.getMinXValue()) * (mPixelPerXValue * (1 + 2 * mZoomLevel));
-		return mContentArea.left + pixelOffset - (mContentArea.width() * mZoomLevel);
+	private int calculatePixelX(float valueX) {
+		final int pixelOffset = Math.round((valueX - mData.getMinXValue()) * (mPixelPerXValue * (1 + 2 * mZoomLevel)));
+		return mContentArea.left + mCommonMargin + pixelOffset - (int) (mContentArea.width() * mZoomLevel);
 	}
 
-	private float calculatePixelY(float valueY) {
-		final float pixelOffset = (valueY - mData.getMinYValue()) * (mPixelPerYValue * (1 + 2 * mZoomLevel));
+	private int calculatePixelY(float valueY) {
+		final int pixelOffset = Math.round((valueY - mData.getMinYValue()) * (mPixelPerYValue * (1 + 2 * mZoomLevel)));
 		// Subtracting from height because on android top left corner is 0,0 and bottom right is maxX,maxY.
-		return mContentArea.bottom - pixelOffset + (mContentArea.height() * mZoomLevel);
+		return mContentArea.bottom - mCommonMargin - pixelOffset + (int) (mContentArea.height() * mZoomLevel);
 	}
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		return mScaleGestureDetector.onTouchEvent(event);
-		// if (!mPointsOn) {
-		// // No point - no touch events.
-		// return true;
-		// }
-		// switch (event.getAction()) {
-		// case MotionEvent.ACTION_DOWN:
-		// // Select only the first value within touched area.
-		// // Reverse loop to starts with the line drawn on top.
-		// for (int seriesIndex = mData.getInternalsSeries().size() - 1; seriesIndex >= 0; --seriesIndex) {
-		// int valueIndex = 0;
-		// for (AnimatedValue value : mData.getInternalsSeries().get(seriesIndex).getValues()) {
-		// final float rawX = calculateX(mData.getDomain().get(valueIndex));
-		// final float rawY = calculateY(value.getPosition());
-		// if (Utils.isInArea(rawX, rawY, event.getX(), event.getY(), mTouchRadius)) {
-		// mSelectedSeriesIndex = seriesIndex;
-		// mSelectedValueIndex = valueIndex;
-		// invalidate();
-		// return true;
-		// }
-		// ++valueIndex;
-		// }
-		// }
-		// return true;
-		// case MotionEvent.ACTION_UP:
-		// // If value was selected call click listener and clear selection.
-		// if (mSelectedValueIndex >= 0) {
-		// final float x = mData.getDomain().get(mSelectedValueIndex);
-		// final float y = mData.getInternalsSeries().get(mSelectedSeriesIndex).getValues()
-		// .get(mSelectedValueIndex).getPosition();
-		// mOnPointClickListener.onPointClick(mSelectedSeriesIndex, mSelectedValueIndex, x, y);
-		// mSelectedSeriesIndex = Integer.MIN_VALUE;
-		// mSelectedValueIndex = Integer.MIN_VALUE;
-		// invalidate();
-		// }
-		// return true;
-		// case MotionEvent.ACTION_MOVE:
-		// // Clear selection if user is now touching outside touch area.
-		// if (mSelectedValueIndex >= 0) {
-		// final float x = mData.getDomain().get(mSelectedValueIndex);
-		// final float y = mData.getInternalsSeries().get(mSelectedSeriesIndex).getValues()
-		// .get(mSelectedValueIndex).getPosition();
-		// final float rawX = calculateX(x);
-		// final float rawY = calculateY(y);
-		// if (!Utils.isInArea(rawX, rawY, event.getX(), event.getY(), mTouchRadius)) {
-		// mSelectedSeriesIndex = Integer.MIN_VALUE;
-		// mSelectedValueIndex = Integer.MIN_VALUE;
-		// invalidate();
-		// }
-		// }
-		// return true;
-		// case MotionEvent.ACTION_CANCEL:
-		// // Clear selection
-		// if (mSelectedValueIndex >= 0) {
-		// mSelectedSeriesIndex = Integer.MIN_VALUE;
-		// mSelectedValueIndex = Integer.MIN_VALUE;
-		// invalidate();
-		// }
-		// return true;
-		// default:
-		// return true;
-		// }
+		mScaleGestureDetector.onTouchEvent(event);
+		if (!mPointsOn) {
+			// No point - no touch events.
+			return true;
+		}
+		switch (event.getAction()) {
+		case MotionEvent.ACTION_DOWN:
+			// Select only the first value within touched area.
+			// Reverse loop to starts with the line drawn on top.
+			for (int seriesIndex = mData.getInternalsSeries().size() - 1; seriesIndex >= 0; --seriesIndex) {
+				int valueIndex = 0;
+				for (AnimatedValue value : mData.getInternalsSeries().get(seriesIndex).getValues()) {
+					final float rawX = calculatePixelX(mData.getDomain().get(valueIndex));
+					final float rawY = calculatePixelY(value.getPosition());
+					if (Utils.isInArea(rawX, rawY, event.getX(), event.getY(), mTouchRadius)) {
+						mSelectedSeriesIndex = seriesIndex;
+						mSelectedValueIndex = valueIndex;
+						invalidate();
+						return true;
+					}
+					++valueIndex;
+				}
+			}
+			return true;
+		case MotionEvent.ACTION_UP:
+			// If value was selected call click listener and clear selection.
+			if (mSelectedValueIndex >= 0) {
+				final float x = mData.getDomain().get(mSelectedValueIndex);
+				final float y = mData.getInternalsSeries().get(mSelectedSeriesIndex).getValues()
+						.get(mSelectedValueIndex).getPosition();
+				mOnPointClickListener.onPointClick(mSelectedSeriesIndex, mSelectedValueIndex, x, y);
+				mSelectedSeriesIndex = Integer.MIN_VALUE;
+				mSelectedValueIndex = Integer.MIN_VALUE;
+				invalidate();
+			}
+			return true;
+		case MotionEvent.ACTION_MOVE:
+			// Clear selection if user is now touching outside touch area.
+			if (mSelectedValueIndex >= 0) {
+				final float x = mData.getDomain().get(mSelectedValueIndex);
+				final float y = mData.getInternalsSeries().get(mSelectedSeriesIndex).getValues()
+						.get(mSelectedValueIndex).getPosition();
+				final float rawX = calculatePixelX(x);
+				final float rawY = calculatePixelY(y);
+				if (!Utils.isInArea(rawX, rawY, event.getX(), event.getY(), mTouchRadius)) {
+					mSelectedSeriesIndex = Integer.MIN_VALUE;
+					mSelectedValueIndex = Integer.MIN_VALUE;
+					invalidate();
+				}
+			}
+			return true;
+		case MotionEvent.ACTION_CANCEL:
+			// Clear selection
+			if (mSelectedValueIndex >= 0) {
+				mSelectedSeriesIndex = Integer.MIN_VALUE;
+				mSelectedValueIndex = Integer.MIN_VALUE;
+				invalidate();
+			}
+			return true;
+		default:
+			return true;
+		}
 	}
 
 	public void setData(final ChartData rawData) {
