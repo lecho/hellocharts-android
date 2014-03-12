@@ -65,7 +65,6 @@ public class LineChart extends View {
 	private int mSelectedSeriesIndex = Integer.MIN_VALUE;
 	private int mSelectedValueIndex = Integer.MIN_VALUE;
 	private OnPointClickListener mOnPointClickListener = new DummyOnPointListener();
-
 	public float mZoomLevel = 0.0f;
 	private ScaleGestureDetector mScaleGestureDetector = new ScaleGestureDetector(getContext(),
 			new ChartScaleGestureListener());
@@ -438,7 +437,7 @@ public class LineChart extends View {
 		final float additionalPadding = getPaddingBottom() + mPointPressedRadius + mXAxisMargin;
 		final float valueDistance = (valueY - mData.getMinYValue()) * (mYMultiplier * (1 + 2 * mZoomLevel));
 		// Subtracting from height because on android top left corner is 0,0 and bottom right is maxX,maxY.
-		return getHeight() - valueDistance - additionalPadding + mZoomLevel;
+		return getHeight() - valueDistance - additionalPadding + (getHeight() * mZoomLevel);
 	}
 
 	@Override
