@@ -146,8 +146,8 @@ public class LineChart extends View {
 	 * Calculates available width and height. Should be called when chart dimensions or chart data change.
 	 */
 	private void calculateContentArea() {
-		mContentArea.set(getPaddingLeft() + mYAxisMargin, getPaddingTop(), getWidth() - getPaddingRight(), getHeight()
-				- getPaddingBottom() - mXAxisMargin);
+		mContentArea.set(getPaddingLeft() + mYAxisMargin + mCommonMargin, getPaddingTop() + mCommonMargin, getWidth()
+				- getPaddingRight() - mCommonMargin, getHeight() - getPaddingBottom() - mXAxisMargin - mCommonMargin);
 	}
 
 	/**
@@ -156,8 +156,8 @@ public class LineChart extends View {
 	 */
 	private void calculatePixelsPerValue() {
 		mCurrentViewport.set(mData.getMinXValue(), mData.getMinYValue(), mData.getMaxXValue(), mData.getMaxYValue());
-		mPixelPerXValue = (mContentArea.width() - 2 * mCommonMargin) / mCurrentViewport.width();
-		mPixelPerYValue = (mContentArea.height() - 2 * mCommonMargin) / mCurrentViewport.height();
+		mPixelPerXValue = mContentArea.width() / mCurrentViewport.width();
+		mPixelPerYValue = mContentArea.height() / mCurrentViewport.height();
 	}
 
 	private void calculateYAxisMargin() {
@@ -233,9 +233,9 @@ public class LineChart extends View {
 		mLinePaint.setColor(DEFAULT_AXIS_COLOR);
 		mTextPaint.setColor(DEFAULT_AXIS_COLOR);
 		mTextPaint.setTextAlign(Align.CENTER);
-		final int xAxisBaseline = mContentArea.bottom + mXAxisMargin;
-		canvas.drawLine(mContentArea.left, mContentArea.bottom - mCommonMargin, mContentArea.right, mContentArea.bottom
-				- mCommonMargin, mLinePaint);
+		final int xAxisBaseline = mContentArea.bottom + mCommonMargin + mXAxisMargin;
+		canvas.drawLine(mContentArea.left - mCommonMargin, mContentArea.bottom, mContentArea.right + mCommonMargin,
+				mContentArea.bottom, mLinePaint);
 		Axis xAxis = mData.getXAxis();
 		int index = 0;
 		for (float x : xAxis.getValues()) {
@@ -251,7 +251,7 @@ public class LineChart extends View {
 		mLinePaint.setColor(DEFAULT_AXIS_COLOR);
 		mTextPaint.setColor(DEFAULT_AXIS_COLOR);
 		mTextPaint.setTextAlign(Align.RIGHT);
-		final int yAxisRightAlign = mContentArea.left;
+		final int yAxisRightAlign = mContentArea.left - mCommonMargin;
 		Axis yAxis = mData.getYAxis();
 		int index = 0;
 		for (float y : yAxis.getValues()) {
@@ -259,7 +259,8 @@ public class LineChart extends View {
 			if (y >= mData.getMinYValue() && y <= mData.getMaxYValue()) {
 				final String text = getAxisValueToDraw(yAxis, y, index);
 				float rawY = calculatePixelY(y);
-				canvas.drawLine(mContentArea.left, rawY, mContentArea.right, rawY, mLinePaint);
+				canvas.drawLine(mContentArea.left - mCommonMargin, rawY, mContentArea.right + mCommonMargin, rawY,
+						mLinePaint);
 				canvas.drawText(text, yAxisRightAlign, rawY, mTextPaint);
 			}
 			++index;
@@ -440,13 +441,13 @@ public class LineChart extends View {
 
 	private int calculatePixelX(float valueX) {
 		final int pixelOffset = Math.round((valueX - mData.getMinXValue()) * (mPixelPerXValue * (1 + 2 * mZoomLevel)));
-		return mContentArea.left + mCommonMargin + pixelOffset - (int) (mContentArea.width() * mZoomLevel);
+		return mContentArea.left + pixelOffset - (int) (mContentArea.width() * mZoomLevel);
 	}
 
 	private int calculatePixelY(float valueY) {
 		final int pixelOffset = Math.round((valueY - mData.getMinYValue()) * (mPixelPerYValue * (1 + 2 * mZoomLevel)));
 		// Subtracting from height because on android top left corner is 0,0 and bottom right is maxX,maxY.
-		return mContentArea.bottom - mCommonMargin - pixelOffset + (int) (mContentArea.height() * mZoomLevel);
+		return mContentArea.bottom - pixelOffset + (int) (mContentArea.height() * mZoomLevel);
 	}
 
 	@Override

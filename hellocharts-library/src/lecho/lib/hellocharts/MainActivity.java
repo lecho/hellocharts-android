@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	private LineChart chart;
-	private static final int NUM_OF_VALUES = 100;
+	private static final int NUM_OF_VALUES = 20;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,16 +48,15 @@ public class MainActivity extends Activity {
 		List<Float> s1 = generateValues(NUM_OF_VALUES, 1.0f);
 		List<Float> s2 = generateValues(NUM_OF_VALUES, 1.0f);
 		data.addSeries(new Series(Color.parseColor("#FFBB33"), s1));
-		//data.addSeries(new Series(Color.parseColor("#99CC00"), s2));
+		data.addSeries(new Series(Color.parseColor("#99CC00"), s2));
 		List<Float> yRules = generateAxis(0, 100, 10.0f);
 		Axis yAxis = new Axis();
 		yAxis.setValues(yRules);
 		data.setYAxis(yAxis);
-		List<Float> xRules = generateAxis(0, 100, 20.0f);
+		List<Float> xRules = generateAxis(0, 20, 5.0f);
 		Axis xAxis = new Axis();
 		xAxis.setValues(xRules);
 		data.setXAxis(xAxis);
-
 		chart.setData(data);
 		// chart.setBackgroundColor(Color.WHITE);
 		chart.setOnPointClickListener(new OnPointClickListener() {
