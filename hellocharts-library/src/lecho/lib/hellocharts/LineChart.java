@@ -144,6 +144,7 @@ public class LineChart extends View {
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
 		// TODO mPointRadus can change, recalculate in setter
 		calculateContentArea();
+		calculateViewport();
 	}
 
 	/**
@@ -154,6 +155,9 @@ public class LineChart extends View {
 				getHeight() - getPaddingBottom() - mXAxisMargin);
 		mContentRect.set(mContentRectWithMargins.left + mCommonMargin, mContentRectWithMargins.top + mCommonMargin,
 				mContentRectWithMargins.right - mCommonMargin, mContentRectWithMargins.bottom - mCommonMargin);
+	}
+
+	private void calculateViewport() {
 		mCurrentViewport.set(mData.getMinXValue(), mData.getMinYValue(), mData.getMaxXValue(), mData.getMaxYValue());
 	}
 
@@ -530,6 +534,7 @@ public class LineChart extends View {
 		calculateYAxisMargin();
 		calculateXAxisMargin();
 		calculateContentArea();
+		calculateViewport();
 		postInvalidate();
 	}
 
@@ -544,8 +549,8 @@ public class LineChart extends View {
 		mData.calculateYRanges();
 		calculateYAxisMargin();
 		calculateXAxisMargin();
-		calculateContentArea();
-		invalidate();
+		calculateViewport();
+		ViewCompat.postInvalidateOnAnimation(LineChart.this);
 	}
 
 	public void animateSeries(int index, List<Float> values) {
@@ -556,7 +561,7 @@ public class LineChart extends View {
 
 	public void updateSeries(int index, List<Float> values) {
 		mData.updateSeries(index, values);
-		invalidate();
+		ViewCompat.postInvalidateOnAnimation(LineChart.this);
 	}
 
 	public void setOnPointClickListener(OnPointClickListener listener) {
