@@ -37,7 +37,7 @@ public class InternalLineChartData {
 	}
 
 	public void updateSeries(int seriesIndex, List<Float> newValues) {
-		//TODO: Optimize.
+		// TODO: Optimize.
 		if (seriesIndex < 0 || seriesIndex > mInternalsSeries.size()) {
 			throw new IllegalArgumentException("Invalid sereis index!");
 		}
@@ -78,7 +78,8 @@ public class InternalLineChartData {
 		for (Float value : mDomain) {
 			if (value < mMinXValue) {
 				mMinXValue = value;
-			} else if (value > mMaxXValue) {
+			}
+			if (value > mMaxXValue) {
 				mMaxXValue = value;
 			}
 		}
@@ -91,7 +92,8 @@ public class InternalLineChartData {
 			for (AnimatedValue value : internalSeries.getValues()) {
 				if (value.getPosition() < mMinYValue) {
 					mMinYValue = value.getPosition();
-				} else if (value.getPosition() > mMaxYValue) {
+				}
+				if (value.getPosition() > mMaxYValue) {
 					mMaxYValue = value.getPosition();
 				}
 			}
