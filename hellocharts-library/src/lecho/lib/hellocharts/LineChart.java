@@ -55,8 +55,6 @@ public class LineChart extends View {
 	private float mPointRadius;
 	private float mPointPressedRadius;
 	private float mTouchRadius;
-	private float mPixelPerXValue;
-	private float mPixelPerYValue;
 	private int mYAxisMargin = 0;
 	private int mXAxisMargin = 0;
 	private boolean mLinesOn = true;
@@ -146,8 +144,6 @@ public class LineChart extends View {
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
 		// TODO mPointRadus can change, recalculate in setter
 		calculateContentArea();
-		// TODO max-min can chage - recalculate in setter
-		calculatePixelsPerValue();
 	}
 
 	/**
@@ -159,15 +155,6 @@ public class LineChart extends View {
 		mContentRect.set(mContentRectWithMargins.left + mCommonMargin, mContentRectWithMargins.top + mCommonMargin,
 				mContentRectWithMargins.right - mCommonMargin, mContentRectWithMargins.bottom - mCommonMargin);
 		mCurrentViewport.set(mData.getMinXValue(), mData.getMinYValue(), mData.getMaxXValue(), mData.getMaxYValue());
-	}
-
-	/**
-	 * Calculates multipliers used to translate values into pixels. Should be called when chart dimensions or chart data
-	 * change.
-	 */
-	private void calculatePixelsPerValue() {
-		mPixelPerXValue = mContentRect.width() / mCurrentViewport.width();
-		mPixelPerYValue = mContentRect.height() / mCurrentViewport.height();
 	}
 
 	private void calculateYAxisMargin() {
@@ -454,12 +441,12 @@ public class LineChart extends View {
 	}
 
 	private float calculatePixelX(float valueX) {
-		final float pixelOffset = (valueX - mData.getMinXValue()) * (mPixelPerXValue);
+		final float pixelOffset = (valueX - mCurrentViewport.left) * (mContentRect.width() / mCurrentViewport.width());
 		return mContentRect.left + pixelOffset;
 	}
 
 	private float calculatePixelY(float valueY) {
-		final float pixelOffset = (valueY - mData.getMinYValue()) * (mPixelPerYValue);
+		final float pixelOffset = (valueY - mCurrentViewport.top) * (mContentRect.height() / mCurrentViewport.height());
 		return mContentRect.bottom - pixelOffset;
 	}
 
@@ -535,7 +522,6 @@ public class LineChart extends View {
 		calculateYAxisMargin();
 		calculateXAxisMargin();
 		calculateContentArea();
-		calculatePixelsPerValue();
 		postInvalidate();
 	}
 
@@ -551,7 +537,6 @@ public class LineChart extends View {
 		calculateYAxisMargin();
 		calculateXAxisMargin();
 		calculateContentArea();
-		calculatePixelsPerValue();
 		invalidate();
 	}
 
@@ -600,7 +585,6 @@ public class LineChart extends View {
 					* (newHeight / mContentRect.height());
 			mCurrentViewport.right = mCurrentViewport.left + newWidth;
 			mCurrentViewport.bottom = mCurrentViewport.top + newHeight;
-			calculatePixelsPerValue();
 			ViewCompat.postInvalidateOnAnimation(LineChart.this);
 			return true;
 		}
