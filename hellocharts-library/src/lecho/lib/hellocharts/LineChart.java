@@ -45,14 +45,14 @@ public class LineChart extends View {
 	private static final int DEFAULT_AXIS_COLOR = Color.LTGRAY;
 	private static final int DEFAULT_AREA_TRANSPARENCY = 64;
 	private int mCommonMargin;
-	private float mPopupTextMargin;
+	private int mPopupTextMargin;
 	private Path mLinePath = new Path();
 	private Paint mLinePaint = new Paint();
 	private Paint mTextPaint = new Paint();
 	private InternalLineChartData mData;
 	private float mLineWidth;
-	private int mPointRadius;
-	private int mPointPressedRadius;
+	private float mPointRadius;
+	private float mPointPressedRadius;
 	private float mTouchRadius;
 	private float mPixelPerXValue;
 	private float mPixelPerYValue;
@@ -452,13 +452,13 @@ public class LineChart extends View {
 		mLinePaint.setStyle(Paint.Style.STROKE);
 	}
 
-	private int calculatePixelX(float valueX) {
-		final int pixelOffset = Math.round((valueX - mData.getMinXValue()) * (mPixelPerXValue * (1 + 2 * mZoomLevel)));
-		return mContentArea.left + pixelOffset - (int) (mContentArea.width() * mZoomLevel);
+	private float calculatePixelX(float valueX) {
+		final float pixelOffset = (valueX - mData.getMinXValue()) * (mPixelPerXValue * (1 + 2 * mZoomLevel));
+		return mContentArea.left + pixelOffset - (mContentArea.width() * mZoomLevel);
 	}
 
-	private int calculatePixelY(float valueY) {
-		final int pixelOffset = Math.round((valueY - mData.getMinYValue()) * (mPixelPerYValue * (1 + 2 * mZoomLevel)));
+	private float calculatePixelY(float valueY) {
+		final float pixelOffset = (valueY - mData.getMinYValue()) * (mPixelPerYValue * (1 + 2 * mZoomLevel));
 		// Subtracting from height because on android top left corner is 0,0 and bottom right is maxX,maxY.
 		return mContentArea.bottom - pixelOffset + (int) (mContentArea.height() * mZoomLevel);
 	}
