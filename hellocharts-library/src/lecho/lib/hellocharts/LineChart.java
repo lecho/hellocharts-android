@@ -19,6 +19,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Cap;
 import android.graphics.Path;
@@ -60,20 +61,20 @@ public class LineChart extends View {
 	private int mXAxisMargin = 0;
 	private boolean mLinesOn = true;
 	private boolean mInterpolationOn = false;
-	private boolean mPointsOn = true;
-	private boolean mPopupsOn = true;
+	private boolean mPointsOn = false;
+	private boolean mPopupsOn = false;
 	private boolean mAxesOn = true;
 	private ChartAnimator mAnimator;
 	private int mSelectedSeriesIndex = Integer.MIN_VALUE;
 	private int mSelectedValueIndex = Integer.MIN_VALUE;
 	private OnPointClickListener mOnPointClickListener = new DummyOnPointListener();
-	public float mZoomLevel = 0.0f;
+	public float mZoomLevel = 1.0f;
 
 	/**
 	 * The current area (in pixels) for chart data, including mCoomonMargin. Labels are drawn outside this area.
 	 */
-	private Rect mContentArea = new Rect();
-	private Rect mContentAreaWithMargins = new Rect();
+	private Rect mContentRect = new Rect();
+	private Rect mContentRectWithMargins = new Rect();
 	/**
 	 * This rectangle represents the currently visible chart values ranges. The currently visible chart X values are
 	 * from this rectangle's left to its right. The currently visible chart Y values are from this rectangle's top to
@@ -153,10 +154,11 @@ public class LineChart extends View {
 	 * Calculates available width and height. Should be called when chart dimensions or chart data change.
 	 */
 	private void calculateContentArea() {
-		mContentAreaWithMargins.set(getPaddingLeft() + mYAxisMargin, getPaddingTop(), getWidth() - getPaddingRight(),
+		mContentRectWithMargins.set(getPaddingLeft() + mYAxisMargin, getPaddingTop(), getWidth() - getPaddingRight(),
 				getHeight() - getPaddingBottom() - mXAxisMargin);
-		mContentArea.set(mContentAreaWithMargins.left + mCommonMargin, mContentAreaWithMargins.top + mCommonMargin,
-				mContentAreaWithMargins.right - mCommonMargin, mContentAreaWithMargins.bottom - mCommonMargin);
+		mContentRect.set(mContentRectWithMargins.left + mCommonMargin, mContentRectWithMargins.top + mCommonMargin,
+				mContentRectWithMargins.right - mCommonMargin, mContentRectWithMargins.bottom - mCommonMargin);
+		mCurrentViewport.set(mData.getMinXValue(), mData.getMinYValue(), mData.getMaxXValue(), mData.getMaxYValue());
 	}
 
 	/**
@@ -164,9 +166,8 @@ public class LineChart extends View {
 	 * change.
 	 */
 	private void calculatePixelsPerValue() {
-		mCurrentViewport.set(mData.getMinXValue(), mData.getMinYValue(), mData.getMaxXValue(), mData.getMaxYValue());
-		mPixelPerXValue = mContentArea.width() / mCurrentViewport.width();
-		mPixelPerYValue = mContentArea.height() / mCurrentViewport.height();
+		mPixelPerXValue = mContentRect.width() / mCurrentViewport.width();
+		mPixelPerYValue = mContentRect.height() / mCurrentViewport.height();
 	}
 
 	private void calculateYAxisMargin() {
@@ -229,9 +230,9 @@ public class LineChart extends View {
 		}
 		int clipRestoreCount = canvas.save();
 		if (mZoomLevel <= 0.0f) {
-			canvas.clipRect(mContentAreaWithMargins);
+			canvas.clipRect(mContentRectWithMargins);
 		} else {
-			canvas.clipRect(mContentArea);
+			canvas.clipRect(mContentRect);
 		}
 		if (mLinesOn) {
 			drawLines(canvas);
@@ -248,9 +249,9 @@ public class LineChart extends View {
 		mLinePaint.setColor(DEFAULT_AXIS_COLOR);
 		mTextPaint.setColor(DEFAULT_AXIS_COLOR);
 		mTextPaint.setTextAlign(Align.CENTER);
-		final int xAxisBaseline = mContentAreaWithMargins.bottom + mXAxisMargin;
-		canvas.drawLine(mContentAreaWithMargins.left, mContentArea.bottom, mContentAreaWithMargins.right,
-				mContentArea.bottom, mLinePaint);
+		final int xAxisBaseline = mContentRectWithMargins.bottom + mXAxisMargin;
+		canvas.drawLine(mContentRectWithMargins.left, mContentRect.bottom, mContentRectWithMargins.right,
+				mContentRect.bottom, mLinePaint);
 		Axis xAxis = mData.getXAxis();
 		int index = 0;
 		for (float x : xAxis.getValues()) {
@@ -273,8 +274,8 @@ public class LineChart extends View {
 			if (y >= mData.getMinYValue() && y <= mData.getMaxYValue()) {
 				final String text = getAxisValueToDraw(yAxis, y, index);
 				float rawY = calculatePixelY(y);
-				canvas.drawLine(mContentAreaWithMargins.left, rawY, mContentAreaWithMargins.right, rawY, mLinePaint);
-				canvas.drawText(text, mContentAreaWithMargins.left, rawY, mTextPaint);
+				canvas.drawLine(mContentRectWithMargins.left, rawY, mContentRectWithMargins.right, rawY, mLinePaint);
+				canvas.drawText(text, mContentRectWithMargins.left, rawY, mTextPaint);
 			}
 			++index;
 		}
@@ -453,14 +454,13 @@ public class LineChart extends View {
 	}
 
 	private float calculatePixelX(float valueX) {
-		final float pixelOffset = (valueX - mData.getMinXValue()) * (mPixelPerXValue * (1 + 2 * mZoomLevel));
-		return mContentArea.left + pixelOffset - (mContentArea.width() * mZoomLevel);
+		final float pixelOffset = (valueX - mData.getMinXValue()) * (mPixelPerXValue);
+		return mContentRect.left + pixelOffset;
 	}
 
 	private float calculatePixelY(float valueY) {
-		final float pixelOffset = (valueY - mData.getMinYValue()) * (mPixelPerYValue * (1 + 2 * mZoomLevel));
-		// Subtracting from height because on android top left corner is 0,0 and bottom right is maxX,maxY.
-		return mContentArea.bottom - pixelOffset + (int) (mContentArea.height() * mZoomLevel);
+		final float pixelOffset = (valueY - mData.getMinYValue()) * (mPixelPerYValue);
+		return mContentRect.bottom - pixelOffset;
 	}
 
 	@Override
@@ -585,25 +585,34 @@ public class LineChart extends View {
 	}
 
 	private class ChartScaleGestureListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-		private float mScaleFactor = 1.0f;
-
-		@Override
-		public boolean onScaleBegin(ScaleGestureDetector detector) {
-			return true;
-		}
-
-		@Override
-		public void onScaleEnd(ScaleGestureDetector detector) {
-
-		}
+		private PointF viewportFocus = new PointF();
 
 		@Override
 		public boolean onScale(ScaleGestureDetector detector) {
-			mScaleFactor = (mScaleFactor / detector.getScaleFactor());
-			mZoomLevel = -(1 - mScaleFactor);
+			mZoomLevel = 2.0f - detector.getScaleFactor();
+			final float newWidth = mZoomLevel * mCurrentViewport.width();
+			final float newHeight = mZoomLevel * mCurrentViewport.height();
+			final float focusX = detector.getFocusX();
+			final float focusY = detector.getFocusY();
+			hitTest(focusX, focusY, viewportFocus);
+			mCurrentViewport.left = viewportFocus.x - (focusX - mContentRect.left) * (newWidth / mContentRect.width());
+			mCurrentViewport.top = viewportFocus.y - (mContentRect.bottom - focusY)
+					* (newHeight / mContentRect.height());
+			mCurrentViewport.right = mCurrentViewport.left + newWidth;
+			mCurrentViewport.bottom = mCurrentViewport.top + newHeight;
+			calculatePixelsPerValue();
 			ViewCompat.postInvalidateOnAnimation(LineChart.this);
 			return true;
 		}
+	}
+
+	private boolean hitTest(float x, float y, PointF dest) {
+		if (!mContentRect.contains((int) x, (int) y)) {
+			return false;
+		}
+		dest.set(mCurrentViewport.left + (x - mContentRect.left) * (mCurrentViewport.width() / mContentRect.width()),
+				mCurrentViewport.top + (y - mContentRect.bottom) * (mCurrentViewport.height() / -mContentRect.height()));
+		return true;
 	}
 
 }
