@@ -14,6 +14,7 @@ import lecho.lib.hellocharts.model.InternalLineChartData;
 import lecho.lib.hellocharts.model.InternalSeries;
 import lecho.lib.hellocharts.utils.Config;
 import lecho.lib.hellocharts.utils.Utils;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -34,7 +35,7 @@ import android.view.View;
 public class LineChart extends View {
 	private static final String TAG = "LineChart";
 	private static final float LINE_SMOOTHNES = 0.16f;
-	private static final int DEFAULT_LINE_WIDTH_DP = 2;
+	private static final int DEFAULT_LINE_WIDTH_DP = 3;
 	private static final int DEFAULT_POINT_RADIUS_DP = 6;
 	private static final int DEFAULT_POINT_TOUCH_RADIUS_DP = 12;
 	private static final int DEFAULT_POINT_PRESSED_RADIUS = DEFAULT_POINT_RADIUS_DP + 4;
@@ -56,9 +57,9 @@ public class LineChart extends View {
 	private int mYAxisMargin = 0;
 	private int mXAxisMargin = 0;
 	private boolean mLinesOn = true;
-	private boolean mInterpolationOn = true;
+	private boolean mInterpolationOn = false;
 	private boolean mPointsOn = true;
-	private boolean mPopupsOn = false;
+	private boolean mPopupsOn = true;
 	private boolean mAxesOn = true;
 	private ChartAnimator mAnimator;
 	private int mSelectedSeriesIndex = Integer.MIN_VALUE;
@@ -70,6 +71,7 @@ public class LineChart extends View {
 	 * The current area (in pixels) for chart data, including mCoomonMargin. Labels are drawn outside this area.
 	 */
 	private Rect mContentArea = new Rect();
+	private Rect mContentAreaWithMargins = new Rect();
 	/**
 	 * This rectangle represents the currently visible chart values ranges. The currently visible chart X values are
 	 * from this rectangle's left to its right. The currently visible chart Y values are from this rectangle's top to
@@ -105,12 +107,14 @@ public class LineChart extends View {
 		initAnimatiors();
 	}
 
+	@SuppressLint("NewApi")
 	private void initAttributes() {
+		setLayerType(LAYER_TYPE_SOFTWARE, null);
 		mLineWidth = Utils.dp2px(getContext(), DEFAULT_LINE_WIDTH_DP);
 		mPointRadius = Utils.dp2px(getContext(), DEFAULT_POINT_RADIUS_DP);
 		mPointPressedRadius = Utils.dp2px(getContext(), DEFAULT_POINT_PRESSED_RADIUS);
 		mTouchRadius = Utils.dp2px(getContext(), DEFAULT_POINT_TOUCH_RADIUS_DP);
-		mCommonMargin = Utils.dp2px(getContext(), DEFAULT_POINT_PRESSED_RADIUS + 4);
+		mCommonMargin = Utils.dp2px(getContext(), DEFAULT_POINT_PRESSED_RADIUS);
 	}
 
 	private void initPaints() {
@@ -146,8 +150,10 @@ public class LineChart extends View {
 	 * Calculates available width and height. Should be called when chart dimensions or chart data change.
 	 */
 	private void calculateContentArea() {
-		mContentArea.set(getPaddingLeft() + mYAxisMargin + mCommonMargin, getPaddingTop() + mCommonMargin, getWidth()
-				- getPaddingRight() - mCommonMargin, getHeight() - getPaddingBottom() - mXAxisMargin - mCommonMargin);
+		mContentAreaWithMargins.set(getPaddingLeft() + mYAxisMargin, getPaddingTop(), getWidth() - getPaddingRight(),
+				getHeight() - getPaddingBottom() - mXAxisMargin);
+		mContentArea.set(mContentAreaWithMargins.left + mCommonMargin, mContentAreaWithMargins.top + mCommonMargin,
+				mContentAreaWithMargins.right - mCommonMargin, mContentAreaWithMargins.bottom - mCommonMargin);
 	}
 
 	/**
@@ -218,13 +224,19 @@ public class LineChart extends View {
 			drawXAxis(canvas);
 			drawYAxis(canvas);
 		}
+		int clipRestoreCount = canvas.save();
+		if (mZoomLevel <= 0.0f) {
+			canvas.clipRect(mContentAreaWithMargins);
+		} else {
+			canvas.clipRect(mContentArea);
+		}
 		if (mLinesOn) {
 			drawLines(canvas);
 		}
 		if (mPointsOn) {
 			drawPoints(canvas);
 		}
-
+		canvas.restoreToCount(clipRestoreCount);
 		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
 	}
 
@@ -233,8 +245,8 @@ public class LineChart extends View {
 		mLinePaint.setColor(DEFAULT_AXIS_COLOR);
 		mTextPaint.setColor(DEFAULT_AXIS_COLOR);
 		mTextPaint.setTextAlign(Align.CENTER);
-		final int xAxisBaseline = mContentArea.bottom + mCommonMargin + mXAxisMargin;
-		canvas.drawLine(mContentArea.left - mCommonMargin, mContentArea.bottom, mContentArea.right + mCommonMargin,
+		final int xAxisBaseline = mContentAreaWithMargins.bottom + mXAxisMargin;
+		canvas.drawLine(mContentAreaWithMargins.left, mContentArea.bottom, mContentAreaWithMargins.right,
 				mContentArea.bottom, mLinePaint);
 		Axis xAxis = mData.getXAxis();
 		int index = 0;
@@ -251,7 +263,6 @@ public class LineChart extends View {
 		mLinePaint.setColor(DEFAULT_AXIS_COLOR);
 		mTextPaint.setColor(DEFAULT_AXIS_COLOR);
 		mTextPaint.setTextAlign(Align.RIGHT);
-		final int yAxisRightAlign = mContentArea.left - mCommonMargin;
 		Axis yAxis = mData.getYAxis();
 		int index = 0;
 		for (float y : yAxis.getValues()) {
@@ -259,9 +270,8 @@ public class LineChart extends View {
 			if (y >= mData.getMinYValue() && y <= mData.getMaxYValue()) {
 				final String text = getAxisValueToDraw(yAxis, y, index);
 				float rawY = calculatePixelY(y);
-				canvas.drawLine(mContentArea.left - mCommonMargin, rawY, mContentArea.right + mCommonMargin, rawY,
-						mLinePaint);
-				canvas.drawText(text, yAxisRightAlign, rawY, mTextPaint);
+				canvas.drawLine(mContentAreaWithMargins.left, rawY, mContentAreaWithMargins.right, rawY, mLinePaint);
+				canvas.drawText(text, mContentAreaWithMargins.left, rawY, mTextPaint);
 			}
 			++index;
 		}
@@ -357,7 +367,7 @@ public class LineChart extends View {
 		}
 		mLinePaint.setColor(internalSeries.getColor());
 		canvas.drawPath(mLinePath, mLinePaint);
-		drawArea(canvas);
+		// drawArea(canvas);
 	}
 
 	private void drawSmoothPath(Canvas canvas, final InternalSeries internalSeries) {
