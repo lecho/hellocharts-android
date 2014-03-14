@@ -19,10 +19,10 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PointF;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Cap;
 import android.graphics.Path;
+import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
@@ -450,6 +450,14 @@ public class LineChart extends View {
 		return mContentRect.bottom - pixelOffset;
 	}
 
+	private void pixelsToPoint(float x, float y, PointF dest) {
+		if (!mContentRect.contains((int) x, (int) y)) {
+			return;
+		}
+		dest.set(mCurrentViewport.left + (x - mContentRect.left) * (mCurrentViewport.width() / mContentRect.width()),
+				mCurrentViewport.top + (y - mContentRect.bottom) * (mCurrentViewport.height() / -mContentRect.height()));
+	}
+
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		mScaleGestureDetector.onTouchEvent(event);
@@ -579,7 +587,7 @@ public class LineChart extends View {
 			final float newHeight = mZoomLevel * mCurrentViewport.height();
 			final float focusX = detector.getFocusX();
 			final float focusY = detector.getFocusY();
-			hitTest(focusX, focusY, viewportFocus);
+			pixelsToPoint(focusX, focusY, viewportFocus);
 			mCurrentViewport.left = viewportFocus.x - (focusX - mContentRect.left) * (newWidth / mContentRect.width());
 			mCurrentViewport.top = viewportFocus.y - (mContentRect.bottom - focusY)
 					* (newHeight / mContentRect.height());
@@ -588,15 +596,6 @@ public class LineChart extends View {
 			ViewCompat.postInvalidateOnAnimation(LineChart.this);
 			return true;
 		}
-	}
-
-	private boolean hitTest(float x, float y, PointF dest) {
-		if (!mContentRect.contains((int) x, (int) y)) {
-			return false;
-		}
-		dest.set(mCurrentViewport.left + (x - mContentRect.left) * (mCurrentViewport.width() / mContentRect.width()),
-				mCurrentViewport.top + (y - mContentRect.bottom) * (mCurrentViewport.height() / -mContentRect.height()));
-		return true;
 	}
 
 }
