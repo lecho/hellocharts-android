@@ -39,11 +39,13 @@ public class LineChart extends View {
 	private static final int DEFAULT_POINT_RADIUS_DP = 6;
 	private static final int DEFAULT_POINT_TOUCH_RADIUS_DP = 12;
 	private static final int DEFAULT_POINT_PRESSED_RADIUS = DEFAULT_POINT_RADIUS_DP + 4;
+	private static final int DEFAULT_POPUP_TEXT_MARGIN = 4;
 	private static final int DEFAULT_TEXT_SIZE_DP = 14;
 	private static final int DEFAULT_TEXT_COLOR = Color.WHITE;
 	private static final int DEFAULT_AXIS_COLOR = Color.LTGRAY;
 	private static final int DEFAULT_AREA_TRANSPARENCY = 64;
-	private int mCommonMargin = 0;
+	private int mCommonMargin;
+	private float mPopupTextMargin;
 	private Path mLinePath = new Path();
 	private Paint mLinePaint = new Paint();
 	private Paint mTextPaint = new Paint();
@@ -115,6 +117,7 @@ public class LineChart extends View {
 		mPointPressedRadius = Utils.dp2px(getContext(), DEFAULT_POINT_PRESSED_RADIUS);
 		mTouchRadius = Utils.dp2px(getContext(), DEFAULT_POINT_TOUCH_RADIUS_DP);
 		mCommonMargin = Utils.dp2px(getContext(), DEFAULT_POINT_PRESSED_RADIUS);
+		mPopupTextMargin = Utils.dp2px(getContext(), DEFAULT_POPUP_TEXT_MARGIN);
 	}
 
 	private void initPaints() {
@@ -309,7 +312,7 @@ public class LineChart extends View {
 				final float rawValueY = calculatePixelY(valueY);
 				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mTextPaint);
 				if (mPopupsOn) {
-					drawValuePopup(canvas, mPointRadius, valueY, rawValueX, rawValueY);
+					drawValuePopup(canvas, mPopupTextMargin, valueY, rawValueX, rawValueY);
 				}
 				++valueIndex;
 			}
@@ -323,7 +326,7 @@ public class LineChart extends View {
 			mTextPaint.setColor(mData.getInternalsSeries().get(mSelectedSeriesIndex).getColor());
 			canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mTextPaint);
 			if (mPopupsOn) {
-				drawValuePopup(canvas, mPointRadius, valueY, rawValueX, rawValueY);
+				drawValuePopup(canvas, mPopupTextMargin, valueY, rawValueX, rawValueY);
 			}
 		}
 	}
@@ -334,22 +337,22 @@ public class LineChart extends View {
 		final Rect textBounds = new Rect();
 		mTextPaint.getTextBounds(text, 0, text.length(), textBounds);
 		float left = rawValueX + offset;
-		float right = rawValueX + offset + textBounds.width() + mCommonMargin * 2;
-		float top = rawValueY - offset - textBounds.height() - mCommonMargin * 2;
+		float right = rawValueX + offset + textBounds.width() + mPopupTextMargin * 2;
+		float top = rawValueY - offset - textBounds.height() - mPopupTextMargin * 2;
 		float bottom = rawValueY - offset;
-		if (top < getPaddingTop() + mPointPressedRadius) {
+		if (top < getPaddingTop() + mCommonMargin) {
 			top = rawValueY + offset;
-			bottom = rawValueY + offset + textBounds.height() + mCommonMargin * 2;
+			bottom = rawValueY + offset + textBounds.height() + mPopupTextMargin * 2;
 		}
-		if (right > getWidth() - getPaddingRight() - mPointPressedRadius) {
-			left = rawValueX - offset - textBounds.width() - mCommonMargin * 2;
+		if (right > getWidth() - getPaddingRight() - mCommonMargin) {
+			left = rawValueX - offset - textBounds.width() - mPopupTextMargin * 2;
 			right = rawValueX - offset;
 		}
 		final RectF popup = new RectF(left, top, right, bottom);
-		canvas.drawRoundRect(popup, mCommonMargin, mCommonMargin, mTextPaint);
+		canvas.drawRoundRect(popup, mPopupTextMargin, mPopupTextMargin, mTextPaint);
 		final int color = mTextPaint.getColor();
 		mTextPaint.setColor(DEFAULT_TEXT_COLOR);
-		canvas.drawText(text, left + mCommonMargin, bottom - mCommonMargin, mTextPaint);
+		canvas.drawText(text, left + mPopupTextMargin, bottom - mPopupTextMargin, mTextPaint);
 		mTextPaint.setColor(color);
 	}
 
