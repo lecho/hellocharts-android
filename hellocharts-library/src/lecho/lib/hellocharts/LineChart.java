@@ -88,17 +88,11 @@ public class LineChart extends View {
 			new ChartScaleGestureListener());
 
 	public LineChart(Context context) {
-		super(context);
-		initAttributes();
-		initPaints();
-		initAnimatiors();
+		super(context, null, 0);
 	}
 
 	public LineChart(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		initAttributes();
-		initPaints();
-		initAnimatiors();
+		super(context, attrs, 0);
 	}
 
 	public LineChart(Context context, AttributeSet attrs, int defStyle) {
