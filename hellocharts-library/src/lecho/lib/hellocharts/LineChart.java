@@ -45,6 +45,7 @@ public class LineChart extends View {
 	private static final int DEFAULT_TEXT_COLOR = Color.WHITE;
 	private static final int DEFAULT_AXIS_COLOR = Color.LTGRAY;
 	private static final int DEFAULT_AREA_TRANSPARENCY = 64;
+	private static final float DEFAULT_MAX_ZOOM_LEVEL = 3;
 	private int mCommonMargin;
 	private int mPopupTextMargin;
 	private Path mLinePath = new Path();
@@ -59,14 +60,14 @@ public class LineChart extends View {
 	private int mXAxisMargin = 0;
 	private boolean mLinesOn = true;
 	private boolean mInterpolationOn = false;
-	private boolean mPointsOn = false;
+	private boolean mPointsOn = true;
 	private boolean mPopupsOn = false;
 	private boolean mAxesOn = true;
 	private ChartAnimator mAnimator;
 	private int mSelectedSeriesIndex = Integer.MIN_VALUE;
 	private int mSelectedValueIndex = Integer.MIN_VALUE;
 	private OnPointClickListener mOnPointClickListener = new DummyOnPointListener();
-	public float mZoomLevel = 1.0f;
+	private float mZoomLevel = 1.0f;
 
 	/**
 	 * The current area (in pixels) for chart data, including mCoomonMargin. Labels are drawn outside this area.
@@ -84,6 +85,7 @@ public class LineChart extends View {
 	 * 
 	 */
 	private RectF mCurrentViewport = new RectF();
+	private RectF mMaximumViewport = new RectF();
 	private ScaleGestureDetector mScaleGestureDetector = new ScaleGestureDetector(getContext(),
 			new ChartScaleGestureListener());
 
@@ -158,7 +160,15 @@ public class LineChart extends View {
 	}
 
 	private void calculateViewport() {
-		mCurrentViewport.set(mData.getMinXValue(), mData.getMinYValue(), mData.getMaxXValue(), mData.getMaxYValue());
+		mMaximumViewport.set(mData.getMinXValue(), mData.getMinYValue(), mData.getMaxXValue(), mData.getMaxYValue());
+		mCurrentViewport.set(mMaximumViewport);
+	}
+
+	private void constrainViewport() {
+		mCurrentViewport.left = Math.max(mMaximumViewport.left, mCurrentViewport.left);
+		mCurrentViewport.top = Math.max(mMaximumViewport.top, mCurrentViewport.top);
+		mCurrentViewport.bottom = Math.min(mMaximumViewport.bottom, mCurrentViewport.bottom);
+		mCurrentViewport.right = Math.min(mMaximumViewport.right, mCurrentViewport.right);
 	}
 
 	private void calculateYAxisMargin() {
@@ -220,7 +230,7 @@ public class LineChart extends View {
 			drawYAxis(canvas);
 		}
 		int clipRestoreCount = canvas.save();
-		if (mZoomLevel <= 0.0f) {
+		if (mZoomLevel >= 1.0f) {
 			canvas.clipRect(mContentRectWithMargins);
 		} else {
 			canvas.clipRect(mContentRect);
@@ -587,9 +597,18 @@ public class LineChart extends View {
 
 		@Override
 		public boolean onScale(ScaleGestureDetector detector) {
-			mZoomLevel = 2.0f - detector.getScaleFactor();
-			final float newWidth = mZoomLevel * mCurrentViewport.width();
-			final float newHeight = mZoomLevel * mCurrentViewport.height();
+			float scale = 2.0f - detector.getScaleFactor();
+			// mZoomLevel *= scale;
+			// if (mZoomLevel >= DEFAULT_MAX_ZOOM_LEVEL) {
+			// mZoomLevel = DEFAULT_MAX_ZOOM_LEVEL;
+			// return true;
+			// }
+			// if (mZoomLevel <= 1.0f) {
+			// mZoomLevel = 1.0f;
+			// return true;
+			// }
+			final float newWidth = scale * mCurrentViewport.width();
+			final float newHeight = scale * mCurrentViewport.height();
 			final float focusX = detector.getFocusX();
 			final float focusY = detector.getFocusY();
 			pixelsToPoint(focusX, focusY, viewportFocus);
@@ -598,6 +617,7 @@ public class LineChart extends View {
 					* (newHeight / mContentRect.height());
 			mCurrentViewport.right = mCurrentViewport.left + newWidth;
 			mCurrentViewport.bottom = mCurrentViewport.top + newHeight;
+			constrainViewport();
 			ViewCompat.postInvalidateOnAnimation(LineChart.this);
 			return true;
 		}
