@@ -7,6 +7,7 @@ import java.util.Locale;
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
+import lecho.lib.hellocharts.gestures.Zoomer;
 import lecho.lib.hellocharts.model.AnimatedValue;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.ChartData;
@@ -29,9 +30,11 @@ import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.widget.Scroller;
 
 public class LineChart extends View {
 	private static final String TAG = "LineChart";
@@ -45,6 +48,7 @@ public class LineChart extends View {
 	private static final int DEFAULT_TEXT_COLOR = Color.WHITE;
 	private static final int DEFAULT_AXIS_COLOR = Color.LTGRAY;
 	private static final int DEFAULT_AREA_TRANSPARENCY = 64;
+	private static final float ZOOM_AMOUNT = 0.25f;
 	private int mCommonMargin;
 	private int mPopupTextMargin;
 	private Path mLinePath = new Path();
@@ -58,15 +62,13 @@ public class LineChart extends View {
 	private int mYAxisMargin = 0;
 	private int mXAxisMargin = 0;
 	private boolean mLinesOn = true;
-	private boolean mInterpolationOn = true;
+	private boolean mInterpolationOn = false;
 	private boolean mPointsOn = false;
 	private boolean mPopupsOn = false;
 	private boolean mAxesOn = true;
 	private ChartAnimator mAnimator;
 	private int mSelectedSeriesIndex = Integer.MIN_VALUE;
 	private int mSelectedValueIndex = Integer.MIN_VALUE;
-	private OnPointClickListener mOnPointClickListener = new DummyOnPointListener();
-
 	/**
 	 * The current area (in pixels) for chart data, including mCoomonMargin. Labels are drawn outside this area.
 	 */
@@ -83,16 +85,23 @@ public class LineChart extends View {
 	 * 
 	 */
 	private RectF mCurrentViewport = new RectF();
-	private RectF mMaximumViewport = new RectF();
+	private RectF mMaximumViewport = new RectF();// Viewport for whole data ranges
+	private Zoomer mZoomer;
+	private Scroller mScroller;
+	private PointF mZoomFocalPoint = new PointF();// Used for double tap zoom
+	private RectF mScrollerStartViewport = new RectF(); // Used only for zooms and flings.
+
+	private OnPointClickListener mOnPointClickListener = new DummyOnPointListener();
 	private ScaleGestureDetector mScaleGestureDetector = new ScaleGestureDetector(getContext(),
 			new ChartScaleGestureListener());
+	private GestureDetector mGestureDetector = new GestureDetector(getContext(), new ChartGestureListener());
 
 	public LineChart(Context context) {
-		super(context, null, 0);
+		this(context, null, 0);
 	}
 
 	public LineChart(Context context, AttributeSet attrs) {
-		super(context, attrs, 0);
+		this(context, attrs, 0);
 	}
 
 	public LineChart(Context context, AttributeSet attrs, int defStyle) {
@@ -111,6 +120,8 @@ public class LineChart extends View {
 		mTouchRadius = Utils.dp2px(getContext(), DEFAULT_POINT_TOUCH_RADIUS_DP);
 		mCommonMargin = Utils.dp2px(getContext(), DEFAULT_POINT_PRESSED_RADIUS);
 		mPopupTextMargin = Utils.dp2px(getContext(), DEFAULT_POPUP_TEXT_MARGIN);
+		mScroller = new Scroller(getContext());
+		mZoomer = new Zoomer(getContext());
 	}
 
 	private void initPaints() {
@@ -218,6 +229,7 @@ public class LineChart extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
+		super.onDraw(canvas);
 		if (mAxesOn) {
 			drawXAxis(canvas);
 			drawYAxis(canvas);
@@ -457,17 +469,25 @@ public class LineChart extends View {
 		return mContentRect.bottom - pixelOffset;
 	}
 
-	private void pixelsToPoint(float x, float y, PointF dest) {
+	/**
+	 * Finds the chart point (i.e. within the chart's domain and range) represented by the given pixel coordinates, if
+	 * that pixel is within the chart region described by {@link #mContentRect}. If the point is found, the "dest"
+	 * argument is set to the point and this function returns true. Otherwise, this function returns false and "dest" is
+	 * unchanged.
+	 */
+	private boolean pixelsToPoint(float x, float y, PointF dest) {
 		if (!mContentRect.contains((int) x, (int) y)) {
-			return;
+			return false;
 		}
 		dest.set(mCurrentViewport.left + (x - mContentRect.left) * (mCurrentViewport.width() / mContentRect.width()),
 				mCurrentViewport.top + (y - mContentRect.bottom) * (mCurrentViewport.height() / -mContentRect.height()));
+		return true;
 	}
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		mScaleGestureDetector.onTouchEvent(event);
+		mGestureDetector.onTouchEvent(event);
 		if (!mPointsOn) {
 			// No point - no touch events.
 			return true;
@@ -531,6 +551,70 @@ public class LineChart extends View {
 		}
 	}
 
+	@Override
+	public void computeScroll() {
+		super.computeScroll();
+		boolean needsInvalidate = false;
+
+		if (mScroller.computeScrollOffset()) {
+			// The scroller isn't finished, meaning a fling or programmatic pan operation is
+			// currently active.
+
+			// computeScrollSurfaceSize(mSurfaceSizeBuffer);
+			// int currX = mScroller.getCurrX();
+			// int currY = mScroller.getCurrY();
+			//
+			// boolean canScrollX = (mCurrentViewport.left > AXIS_X_MIN || mCurrentViewport.right < AXIS_X_MAX);
+			// boolean canScrollY = (mCurrentViewport.top > AXIS_Y_MIN || mCurrentViewport.bottom < AXIS_Y_MAX);
+			//
+			// if (canScrollX && currX < 0 && mEdgeEffectLeft.isFinished() && !mEdgeEffectLeftActive) {
+			// mEdgeEffectLeft.onAbsorb((int) OverScrollerCompat.getCurrVelocity(mScroller));
+			// mEdgeEffectLeftActive = true;
+			// needsInvalidate = true;
+			// } else if (canScrollX && currX > (mSurfaceSizeBuffer.x - mContentRect.width())
+			// && mEdgeEffectRight.isFinished() && !mEdgeEffectRightActive) {
+			// mEdgeEffectRight.onAbsorb((int) OverScrollerCompat.getCurrVelocity(mScroller));
+			// mEdgeEffectRightActive = true;
+			// needsInvalidate = true;
+			// }
+			//
+			// if (canScrollY && currY < 0 && mEdgeEffectTop.isFinished() && !mEdgeEffectTopActive) {
+			// mEdgeEffectTop.onAbsorb((int) OverScrollerCompat.getCurrVelocity(mScroller));
+			// mEdgeEffectTopActive = true;
+			// needsInvalidate = true;
+			// } else if (canScrollY && currY > (mSurfaceSizeBuffer.y - mContentRect.height())
+			// && mEdgeEffectBottom.isFinished() && !mEdgeEffectBottomActive) {
+			// mEdgeEffectBottom.onAbsorb((int) OverScrollerCompat.getCurrVelocity(mScroller));
+			// mEdgeEffectBottomActive = true;
+			// needsInvalidate = true;
+			// }
+			//
+			// float currXRange = AXIS_X_MIN + (AXIS_X_MAX - AXIS_X_MIN) * currX / mSurfaceSizeBuffer.x;
+			// float currYRange = AXIS_Y_MAX - (AXIS_Y_MAX - AXIS_Y_MIN) * currY / mSurfaceSizeBuffer.y;
+			// setViewportBottomLeft(currXRange, currYRange);
+		}
+
+		if (mZoomer.computeZoom()) {
+			// Performs the zoom since a zoom is in progress (either programmatically or via
+			// double-touch).
+			final float newWidth = (1.0f - mZoomer.getCurrZoom()) * mScrollerStartViewport.width();
+			final float newHeight = (1.0f - mZoomer.getCurrZoom()) * mScrollerStartViewport.height();
+			final float pointWithinViewportX = (mZoomFocalPoint.x - mScrollerStartViewport.left)
+					/ mScrollerStartViewport.width();
+			final float pointWithinViewportY = (mZoomFocalPoint.y - mScrollerStartViewport.top)
+					/ mScrollerStartViewport.height();
+			mCurrentViewport.left = mZoomFocalPoint.x - newWidth * pointWithinViewportX;
+			mCurrentViewport.top = mZoomFocalPoint.y - newHeight * pointWithinViewportY;
+			mCurrentViewport.right = mZoomFocalPoint.x + newWidth * (1 - pointWithinViewportX);
+			mCurrentViewport.bottom = mZoomFocalPoint.y + newHeight * (1 - pointWithinViewportY);
+			constrainViewport();
+			needsInvalidate = true;
+		}
+		if (needsInvalidate) {
+			ViewCompat.postInvalidateOnAnimation(this);
+		}
+	}
+
 	public void setData(final ChartData rawData) {
 		mData = InternalLineChartData.createFromRawData(rawData);
 		mData.calculateRanges();
@@ -538,7 +622,7 @@ public class LineChart extends View {
 		calculateXAxisMargin();
 		calculateContentArea();
 		calculateViewport();
-		postInvalidate();
+		ViewCompat.postInvalidateOnAnimation(LineChart.this);
 	}
 
 	public ChartData getData() {
@@ -590,6 +674,9 @@ public class LineChart extends View {
 
 		@Override
 		public boolean onScale(ScaleGestureDetector detector) {
+			/**
+			 * Smaller viewport means bigger zoom so for zoomIn scale should have value <1, for zoomOout >1
+			 */
 			float scale = 2.0f - detector.getScaleFactor();
 			final float newWidth = scale * mCurrentViewport.width();
 			final float newHeight = scale * mCurrentViewport.height();
@@ -603,6 +690,75 @@ public class LineChart extends View {
 			mCurrentViewport.bottom = mCurrentViewport.top + newHeight;
 			constrainViewport();
 			ViewCompat.postInvalidateOnAnimation(LineChart.this);
+			return true;
+		}
+	}
+
+	private class ChartGestureListener extends GestureDetector.SimpleOnGestureListener {
+		@Override
+		public boolean onDown(MotionEvent e) {
+			// releaseEdgeEffects();
+			mScrollerStartViewport.set(mCurrentViewport);
+			// mScroller.forceFinished(true);
+			ViewCompat.postInvalidateOnAnimation(LineChart.this);
+			return true;
+		}
+
+		@Override
+		public boolean onDoubleTap(MotionEvent e) {
+			mZoomer.forceFinished(true);
+			if (pixelsToPoint(e.getX(), e.getY(), mZoomFocalPoint)) {
+				mZoomer.startZoom(ZOOM_AMOUNT);
+			}
+			ViewCompat.postInvalidateOnAnimation(LineChart.this);
+			return true;
+		}
+
+		@Override
+		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+			// Scrolling uses math based on the viewport (as opposed to math using pixels).
+			/**
+			 * Pixel offset is the offset in screen pixels, while viewport offset is the offset within the current
+			 * viewport. For additional information on surface sizes and pixel offsets, see the docs for {@link
+			 * computeScrollSurfaceSize()}. For additional information about the viewport, see the comments for
+			 * {@link mCurrentViewport}.
+			 */
+			// float viewportOffsetX = distanceX * mCurrentViewport.width() / mContentRect.width();
+			// float viewportOffsetY = -distanceY * mCurrentViewport.height() / mContentRect.height();
+			// computeScrollSurfaceSize(mSurfaceSizeBuffer);
+			// int scrolledX = (int) (mSurfaceSizeBuffer.x * (mCurrentViewport.left + viewportOffsetX - AXIS_X_MIN) /
+			// (AXIS_X_MAX - AXIS_X_MIN));
+			// int scrolledY = (int) (mSurfaceSizeBuffer.y * (AXIS_Y_MAX - mCurrentViewport.bottom - viewportOffsetY) /
+			// (AXIS_Y_MAX - AXIS_Y_MIN));
+			// boolean canScrollX = mCurrentViewport.left > AXIS_X_MIN || mCurrentViewport.right < AXIS_X_MAX;
+			// boolean canScrollY = mCurrentViewport.top > AXIS_Y_MIN || mCurrentViewport.bottom < AXIS_Y_MAX;
+			// setViewportBottomLeft(mCurrentViewport.left + viewportOffsetX, mCurrentViewport.bottom +
+			// viewportOffsetY);
+
+			// if (canScrollX && scrolledX < 0) {
+			// mEdgeEffectLeft.onPull(scrolledX / (float) mContentRect.width());
+			// mEdgeEffectLeftActive = true;
+			// }
+			// if (canScrollY && scrolledY < 0) {
+			// mEdgeEffectTop.onPull(scrolledY / (float) mContentRect.height());
+			// mEdgeEffectTopActive = true;
+			// }
+			// if (canScrollX && scrolledX > mSurfaceSizeBuffer.x - mContentRect.width()) {
+			// mEdgeEffectRight.onPull((scrolledX - mSurfaceSizeBuffer.x + mContentRect.width())
+			// / (float) mContentRect.width());
+			// mEdgeEffectRightActive = true;
+			// }
+			// if (canScrollY && scrolledY > mSurfaceSizeBuffer.y - mContentRect.height()) {
+			// mEdgeEffectBottom.onPull((scrolledY - mSurfaceSizeBuffer.y + mContentRect.height())
+			// / (float) mContentRect.height());
+			// mEdgeEffectBottomActive = true;
+			// }
+			return true;
+		}
+
+		@Override
+		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+			// fling((int) -velocityX, (int) -velocityY);
 			return true;
 		}
 	}
