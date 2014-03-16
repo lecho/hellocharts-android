@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	private LineChart chart;
-	private static final int NUM_OF_VALUES = 21;
+	private static final int NUM_OF_VALUES = 11;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
