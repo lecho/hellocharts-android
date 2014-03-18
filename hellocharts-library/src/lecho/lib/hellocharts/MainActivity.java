@@ -58,7 +58,7 @@ public class MainActivity extends Activity {
 		xAxis.setValues(xRules);
 		data.setXAxis(xAxis);
 		chart.setData(data);
-		// chart.setBackgroundColor(Color.WHITE);
+		chart.setBackgroundColor(Color.WHITE);
 		//chart.setPadding(10, 10, 10, 20);
 		chart.setOnPointClickListener(new OnPointClickListener() {
 

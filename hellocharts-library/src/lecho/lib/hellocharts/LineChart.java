@@ -36,8 +36,6 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.widget.OverScroller;
-import android.widget.Scroller;
 
 public class LineChart extends View {
 	private static final String TAG = "LineChart";
@@ -77,6 +75,7 @@ public class LineChart extends View {
 	 */
 	private Rect mContentRect = new Rect();
 	private Rect mContentRectWithMargins = new Rect();
+	private Rect mClippingRect = new Rect();
 	/**
 	 * This rectangle represents the currently visible chart values ranges. The currently visible chart X values are
 	 * from this rectangle's left to its right. The currently visible chart Y values are from this rectangle's top to
@@ -92,8 +91,8 @@ public class LineChart extends View {
 	private Zoomer mZoomer;
 	private ScrollerCompat mScroller;
 	private PointF mZoomFocalPoint = new PointF();// Used for double tap zoom
-	private RectF mScrollerStartViewport = new RectF(); // Used only for zooms and flings.
-	private Point mSurfaceSizeBuffer = new Point();
+	private RectF mScrollerStartViewport = new RectF(); // Used only for zooms and flings
+	private Point mSurfaceSizeBuffer = new Point();// Used for scroll and flings
 
 	private OnPointClickListener mOnPointClickListener = new DummyOnPointListener();
 	private ScaleGestureDetector mScaleGestureDetector = new ScaleGestureDetector(getContext(),
@@ -172,11 +171,37 @@ public class LineChart extends View {
 	}
 
 	private void constrainViewport() {
-		// TODO: avoid too much zoom by checking if mMaximumViewport.width/mCurrentViewport.width <= maxZoomLevel
+		// TODO: avoid too much zoom by checking
 		mCurrentViewport.left = Math.max(mMaximumViewport.left, mCurrentViewport.left);
 		mCurrentViewport.top = Math.max(mMaximumViewport.top, mCurrentViewport.top);
-		mCurrentViewport.bottom = Math.min(mMaximumViewport.bottom, mCurrentViewport.bottom);
-		mCurrentViewport.right = Math.min(mMaximumViewport.right, mCurrentViewport.right);
+		mCurrentViewport.bottom = Math.max(Utils.nextUpF(mCurrentViewport.top),
+				Math.min(mMaximumViewport.bottom, mCurrentViewport.bottom));
+		mCurrentViewport.right = Math.max(Utils.nextUpF(mCurrentViewport.left),
+				Math.min(mMaximumViewport.right, mCurrentViewport.right));
+	}
+
+	private void calculateClippingArea() {
+		final float diff = mCurrentViewport.width() / 100;
+		if (Math.abs(mCurrentViewport.left - mMaximumViewport.left) < diff) {
+			mClippingRect.left = mContentRectWithMargins.left;
+		} else {
+			mClippingRect.left = mContentRect.left;
+		}
+		if (Math.abs(mCurrentViewport.top - mMaximumViewport.top) < diff) {
+			mClippingRect.bottom = mContentRectWithMargins.bottom;
+		} else {
+			mClippingRect.bottom = mContentRect.bottom;
+		}
+		if (Math.abs(mCurrentViewport.right - mMaximumViewport.right) < diff) {
+			mClippingRect.right = mContentRectWithMargins.right;
+		} else {
+			mClippingRect.right = mContentRect.right;
+		}
+		if (Math.abs(mCurrentViewport.bottom - mMaximumViewport.bottom) < diff) {
+			mClippingRect.top = mContentRectWithMargins.top;
+		} else {
+			mClippingRect.top = mContentRect.top;
+		}
 	}
 
 	private void calculateYAxisMargin() {
@@ -205,7 +230,7 @@ public class LineChart extends View {
 			mTextPaint.getTextBounds("X", 0, 1, textBounds);
 			mXAxisMargin = textBounds.height();
 		} else {
-			mYAxisMargin = 0;
+			mXAxisMargin = 0;
 		}
 	}
 
@@ -239,11 +264,8 @@ public class LineChart extends View {
 			drawYAxis(canvas);
 		}
 		int clipRestoreCount = canvas.save();
-		if (mMaximumViewport.equals(mCurrentViewport)) {
-			canvas.clipRect(mContentRectWithMargins);
-		} else {
-			canvas.clipRect(mContentRect);
-		}
+		calculateClippingArea();// only if zoom is enabled
+		canvas.clipRect(mClippingRect);
 		if (mLinesOn) {
 			drawLines(canvas);
 		}
@@ -564,8 +586,8 @@ public class LineChart extends View {
 			computeScrollSurfaceSize(mSurfaceSizeBuffer);
 			int currX = mScroller.getCurrX();
 			int currY = mScroller.getCurrY();
-			float currXRange = mMaximumViewport.left + (mMaximumViewport.width()) * currX / mSurfaceSizeBuffer.x;
-			float currYRange = mMaximumViewport.bottom - (mMaximumViewport.height()) * currY / mSurfaceSizeBuffer.y;
+			float currXRange = mMaximumViewport.left + mMaximumViewport.width() * currX / mSurfaceSizeBuffer.x;
+			float currYRange = mMaximumViewport.bottom - mMaximumViewport.height() * currY / mSurfaceSizeBuffer.y;
 			setViewportBottomLeft(currXRange, currYRange);
 		}
 
@@ -588,7 +610,6 @@ public class LineChart extends View {
 	}
 
 	private void fling(int velocityX, int velocityY) {
-		// releaseEdgeEffects();
 		// Flings use math in pixels (as opposed to math based on the viewport).
 		computeScrollSurfaceSize(mSurfaceSizeBuffer);
 		mScrollerStartViewport.set(mCurrentViewport);
@@ -608,8 +629,8 @@ public class LineChart extends View {
 	 * returned size will be twice as large horizontally and vertically.
 	 */
 	private void computeScrollSurfaceSize(Point out) {
-		out.set((int) (mContentRect.width() * mMaximumViewport.width() / mCurrentViewport.width()),
-				(int) (mContentRect.height() * mMaximumViewport.height() / mCurrentViewport.height()));
+		out.set((int) (mMaximumViewport.width() * mContentRect.width() / mCurrentViewport.width()),
+				(int) (mMaximumViewport.height() * mContentRect.height() / mCurrentViewport.height()));
 	}
 
 	/**
@@ -624,8 +645,8 @@ public class LineChart extends View {
 		 * would be 0 to 8.
 		 */
 
-		float curWidth = mCurrentViewport.width();
-		float curHeight = mCurrentViewport.height();
+		final float curWidth = mCurrentViewport.width();
+		final float curHeight = mCurrentViewport.height();
 		x = Math.max(mMaximumViewport.left, Math.min(x, mMaximumViewport.right - curWidth));
 		y = Math.max(mMaximumViewport.top + curHeight, Math.min(y, mMaximumViewport.bottom));
 
