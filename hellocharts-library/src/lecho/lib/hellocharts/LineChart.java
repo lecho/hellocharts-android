@@ -180,24 +180,30 @@ public class LineChart extends View {
 				Math.min(mMaximumViewport.right, mCurrentViewport.right));
 	}
 
+	/**
+	 * Prevents dot clipping when user scroll to the one of ends of chart or zoom out. calculating pixel value helps to
+	 * avoid float rounding error.
+	 */
 	private void calculateClippingArea() {
-		final float diff = mCurrentViewport.width() / 100;
-		if (Math.abs(mCurrentViewport.left - mMaximumViewport.left) < diff) {
+		if ((int) calculatePixelY(mCurrentViewport.left) == (int) calculatePixelY(mMaximumViewport.left)) {
 			mClippingRect.left = mContentRectWithMargins.left;
 		} else {
 			mClippingRect.left = mContentRect.left;
 		}
-		if (Math.abs(mCurrentViewport.top - mMaximumViewport.top) < diff) {
+
+		if ((int) calculatePixelY(mCurrentViewport.top) == (int) calculatePixelY(mMaximumViewport.top)) {
 			mClippingRect.bottom = mContentRectWithMargins.bottom;
 		} else {
 			mClippingRect.bottom = mContentRect.bottom;
 		}
-		if (Math.abs(mCurrentViewport.right - mMaximumViewport.right) < diff) {
+
+		if ((int) calculatePixelY(mCurrentViewport.right) == (int) calculatePixelY(mMaximumViewport.right)) {
 			mClippingRect.right = mContentRectWithMargins.right;
 		} else {
 			mClippingRect.right = mContentRect.right;
 		}
-		if (Math.abs(mCurrentViewport.bottom - mMaximumViewport.bottom) < diff) {
+
+		if ((int) calculatePixelY(mCurrentViewport.bottom) == (int) calculatePixelY(mMaximumViewport.bottom)) {
 			mClippingRect.top = mContentRectWithMargins.top;
 		} else {
 			mClippingRect.top = mContentRect.top;
@@ -584,10 +590,10 @@ public class LineChart extends View {
 			// The scroller isn't finished, meaning a fling or programmatic pan operation is
 			// currently active.
 			computeScrollSurfaceSize(mSurfaceSizeBuffer);
-			int currX = mScroller.getCurrX();
-			int currY = mScroller.getCurrY();
-			float currXRange = mMaximumViewport.left + mMaximumViewport.width() * currX / mSurfaceSizeBuffer.x;
-			float currYRange = mMaximumViewport.bottom - mMaximumViewport.height() * currY / mSurfaceSizeBuffer.y;
+			float currXRange = mMaximumViewport.left + mMaximumViewport.width() * mScroller.getCurrX()
+					/ mSurfaceSizeBuffer.x;
+			float currYRange = mMaximumViewport.bottom - mMaximumViewport.height() * mScroller.getCurrY()
+					/ mSurfaceSizeBuffer.y;
 			setViewportBottomLeft(currXRange, currYRange);
 		}
 
@@ -649,7 +655,6 @@ public class LineChart extends View {
 		final float curHeight = mCurrentViewport.height();
 		x = Math.max(mMaximumViewport.left, Math.min(x, mMaximumViewport.right - curWidth));
 		y = Math.max(mMaximumViewport.top + curHeight, Math.min(y, mMaximumViewport.bottom));
-
 		mCurrentViewport.set(x, y - curHeight, x + curWidth, y);
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
@@ -736,9 +741,8 @@ public class LineChart extends View {
 	private class ChartGestureListener extends GestureDetector.SimpleOnGestureListener {
 		@Override
 		public boolean onDown(MotionEvent e) {
-			// releaseEdgeEffects();
 			mScrollerStartViewport.set(mCurrentViewport);
-			// mScroller.forceFinished(true);
+			mScroller.abortAnimation();
 			ViewCompat.postInvalidateOnAnimation(LineChart.this);
 			return true;
 		}

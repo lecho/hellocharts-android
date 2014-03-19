@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	private LineChart chart;
-	private static final int NUM_OF_VALUES = 11;
+	private static final int NUM_OF_VALUES = 25;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +59,7 @@ public class MainActivity extends Activity {
 		data.setXAxis(xAxis);
 		chart.setData(data);
 		chart.setBackgroundColor(Color.WHITE);
-		//chart.setPadding(10, 10, 10, 20);
+		// chart.setPadding(10, 10, 10, 20);
 		chart.setOnPointClickListener(new OnPointClickListener() {
 
 			@Override
@@ -96,9 +96,12 @@ public class MainActivity extends Activity {
 	}
 
 	private List<Float> generateValues(int num, float step) {
+		float temp = 0.0f;
 		List<Float> result = new ArrayList<Float>();
 		for (float f = 0.0f; f < num; f += step) {
-			result.add((float) Math.random() * 100.0f);
+			result.add((float) Math.random() * 100.0f + 10);
+			// result.add(temp);
+			// temp = temp + 0.2f;
 		}
 		return result;
 	}
