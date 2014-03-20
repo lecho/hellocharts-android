@@ -167,6 +167,7 @@ public class LineChart extends View {
 
 	private void calculateViewport() {
 		mMaximumViewport.set(mData.getMinXValue(), mData.getMinYValue(), mData.getMaxXValue(), mData.getMaxYValue());
+		// TODO: don't reset current viewport during animation if zoom is enabled
 		mCurrentViewport.set(mMaximumViewport);
 	}
 
@@ -293,9 +294,10 @@ public class LineChart extends View {
 		Axis xAxis = mData.getXAxis();
 		int index = 0;
 		for (float x : xAxis.getValues()) {
-			final String text = getAxisValueToDraw(xAxis, x, index);
-			// TODO: check if raw x > contentArea.left
-			canvas.drawText(text, calculatePixelX(x), xAxisBaseline, mTextPaint);
+			if (x >= mCurrentViewport.left && x <= mCurrentViewport.right) {
+				final String text = getAxisValueToDraw(xAxis, x, index);
+				canvas.drawText(text, calculatePixelX(x), xAxisBaseline, mTextPaint);
+			}
 			++index;
 		}
 	}
@@ -308,10 +310,9 @@ public class LineChart extends View {
 		Axis yAxis = mData.getYAxis();
 		int index = 0;
 		for (float y : yAxis.getValues()) {
-			// Draw only if y is in chart range
-			if (y >= mData.getMinYValue() && y <= mData.getMaxYValue()) {
+			if (y >= mCurrentViewport.top && y <= mCurrentViewport.bottom) {
 				final String text = getAxisValueToDraw(yAxis, y, index);
-				float rawY = calculatePixelY(y);
+				final float rawY = calculatePixelY(y);
 				canvas.drawLine(mContentRectWithMargins.left, rawY, mContentRectWithMargins.right, rawY, mLinePaint);
 				canvas.drawText(text, mContentRectWithMargins.left, rawY, mTextPaint);
 			}
