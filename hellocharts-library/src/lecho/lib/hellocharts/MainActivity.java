@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lecho.lib.hellocharts.model.Axis;
-import lecho.lib.hellocharts.model.ChartData;
-import lecho.lib.hellocharts.model.Series;
+import lecho.lib.hellocharts.model.Axis.AxisValue;
+import lecho.lib.hellocharts.model.Data;
+import lecho.lib.hellocharts.model.Line;
+import lecho.lib.hellocharts.model.Point;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -18,7 +20,7 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	private LineChart chart;
-	private static final int NUM_OF_VALUES = 25;
+	private static final int NUM_OF_VALUES = 10;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -31,10 +33,10 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				if (++counter % 2 != 0) {
-					List<Float> s1 = generateValues(NUM_OF_VALUES, 1.0f);
+					List<Point> s1 = generateValues(NUM_OF_VALUES, 1.0f);
 					chart.animateSeries(0, s1);
 				} else {
-					List<Float> s2 = generateValues(NUM_OF_VALUES, 1.0f);
+					List<Point> s2 = generateValues(NUM_OF_VALUES, 1.0f);
 					chart.animateSeries(0, s2);
 				}
 
@@ -43,20 +45,24 @@ public class MainActivity extends Activity {
 
 		LinearLayout layout = (LinearLayout) findViewById(R.id.layout);
 		chart = new LineChart(this);
-		List<Float> domain = generateDomein(NUM_OF_VALUES, 1.0f);
-		final ChartData data = new ChartData(domain);
-		List<Float> s1 = generateValues(NUM_OF_VALUES, 1.0f);
-		List<Float> s2 = generateValues(NUM_OF_VALUES, 1.0f);
-		data.addSeries(new Series(Color.parseColor("#FFBB33"), s1));
-		// data.addSeries(new Series(Color.parseColor("#99CC00"), s2));
-		List<Float> yRules = generateAxis(0, 100, 10.0f);
-		Axis yAxis = new Axis();
-		yAxis.setValues(yRules);
-		data.setYAxis(yAxis);
-		List<Float> xRules = generateAxis(0, 50, 10.0f);
-		Axis xAxis = new Axis();
-		xAxis.setValues(xRules);
-		data.setXAxis(xAxis);
+		final Data data = new Data();
+		List<Point> s1 = generateValues(NUM_OF_VALUES, 1.0f);
+		List<Point> s2 = generateValues(NUM_OF_VALUES, 1.0f);
+		Line l1 = new Line(s1);
+		l1.color = Color.parseColor("#FFBB33");
+		Line l2 = new Line(s2);
+		l2.color = Color.parseColor("#99CC00");
+		List<Line> lines = new ArrayList<Line>();
+		lines.add(l1);
+		lines.add(l2);
+		data.lines = lines;
+		Axis axisX = new Axis();
+		axisX.values = generateAxis(0.0f, 100.0f, 5.0f);
+		data.axisX = axisX;
+
+		Axis axisY = new Axis();
+		axisY.values = generateAxis(0.0f, 100.0f, 15.0f);
+		data.axisY = axisY;
 		chart.setData(data);
 		chart.setBackgroundColor(Color.WHITE);
 		// chart.setPadding(10, 10, 10, 20);
@@ -87,29 +93,20 @@ public class MainActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private List<Float> generateDomein(int num, float step) {
-		List<Float> result = new ArrayList<Float>();
+	private List<Point> generateValues(int num, float step) {
+		float x = 0.0f;
+		List<Point> result = new ArrayList<Point>();
 		for (float f = 0.0f; f < num; f += step) {
-			result.add(f);
+			result.add(new Point(x, (float) Math.random() * 100.0f));
+			x += step;
 		}
 		return result;
 	}
 
-	private List<Float> generateValues(int num, float step) {
-		float temp = 0.0f;
-		List<Float> result = new ArrayList<Float>();
-		for (float f = 0.0f; f < num; f += step) {
-			result.add((float) Math.random() * 100.0f + 10);
-			// result.add(temp);
-			// temp = temp + 0.2f;
-		}
-		return result;
-	}
-
-	private List<Float> generateAxis(float min, float max, float step) {
-		List<Float> result = new ArrayList<Float>();
+	private List<AxisValue> generateAxis(float min, float max, float step) {
+		List<AxisValue> result = new ArrayList<AxisValue>();
 		for (float f = min; f <= max; f += step) {
-			result.add(f);
+			result.add(new AxisValue(f));
 		}
 		return result;
 	}
