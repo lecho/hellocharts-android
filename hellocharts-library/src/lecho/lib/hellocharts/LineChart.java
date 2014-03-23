@@ -53,6 +53,7 @@ public class LineChart extends View {
 	private int mCommonMargin;
 	private int mPopupTextMargin;
 	private Path mLinePath = new Path();
+	private Path mYAxisNamePath = new Path();
 	private Paint mLinePaint = new Paint();
 	private Paint mTextPaint = new Paint();
 	private Data mData;
@@ -211,24 +212,6 @@ public class LineChart extends View {
 		}
 	}
 
-	private void calculateYAxisMargin() {
-		if (mAxesOn && mData.axisY.values.size() > 0) {
-			final Rect textBounds = new Rect();
-			final String text;
-			final int axisSize = mData.axisY.values.size();
-			final Axis axisY = mData.axisY;
-			if (Math.abs(axisY.values.get(0).value) > Math.abs(axisY.values.get(axisSize - 1).value)) {
-				text = axisY.formatter.formatValue(axisY.values.get(0));
-			} else {
-				text = axisY.formatter.formatValue(axisY.values.get(axisSize - 1));
-			}
-			mTextPaint.getTextBounds(text, 0, text.length(), textBounds);
-			mYAxisMargin = textBounds.width();
-		} else {
-			mYAxisMargin = 0;
-		}
-	}
-
 	private void calculateXAxisMargin() {
 		if (mAxesOn) {
 			if (mData.axisX.values.size() > 0) {
@@ -243,6 +226,32 @@ public class LineChart extends View {
 			}
 		} else {
 			mXAxisMargin = 0;
+		}
+	}
+
+	private void calculateYAxisMargin() {
+		if (mAxesOn) {
+			if (mData.axisY.values.size() > 0) {
+				final Rect textBounds = new Rect();
+				final String text;
+				final int axisSize = mData.axisY.values.size();
+				final Axis axisY = mData.axisY;
+				if (Math.abs(axisY.values.get(0).value) > Math.abs(axisY.values.get(axisSize - 1).value)) {
+					text = axisY.formatter.formatValue(axisY.values.get(0));
+				} else {
+					text = axisY.formatter.formatValue(axisY.values.get(axisSize - 1));
+				}
+				mTextPaint.getTextBounds(text, 0, text.length(), textBounds);
+				mYAxisMargin = textBounds.width();
+			}
+			if (!TextUtils.isEmpty(mData.axisY.name)) {
+				// Additional margin for axis name.
+				final Rect textBounds = new Rect();
+				mTextPaint.getTextBounds("X", 0, 1, textBounds);
+				mYAxisMargin += textBounds.width() + mCommonMargin;
+			}
+		} else {
+			mYAxisMargin = 0;
 		}
 	}
 
@@ -315,11 +324,19 @@ public class LineChart extends View {
 		mLinePaint.setStrokeWidth(1);
 		mLinePaint.setColor(DEFAULT_AXIS_COLOR);
 		mTextPaint.setColor(DEFAULT_AXIS_COLOR);
+		if (!TextUtils.isEmpty(mData.axisY.name)) {
+			mTextPaint.setTextAlign(Align.CENTER);
+			mYAxisNamePath.moveTo(mContentRectWithMargins.left - (mYAxisMargin - mCommonMargin) / 2 - mCommonMargin,
+					mContentRect.bottom);
+			mYAxisNamePath.lineTo(mContentRectWithMargins.left - (mYAxisMargin - mCommonMargin) / 2 - mCommonMargin,
+					mContentRect.top);
+			canvas.drawTextOnPath(mData.axisY.name, mYAxisNamePath, 0, 0, mTextPaint);
+			mYAxisNamePath.reset();
+		}
 		mTextPaint.setTextAlign(Align.RIGHT);
-		Axis axisY = mData.axisY;
-		for (AxisValue axisValue : axisY.values) {
+		for (AxisValue axisValue : mData.axisY.values) {
 			if (axisValue.value >= mCurrentViewport.top && axisValue.value <= mCurrentViewport.bottom) {
-				final String text = axisY.formatter.formatValue(axisValue);
+				final String text = mData.axisY.formatter.formatValue(axisValue);
 				final float rawY = calculatePixelY(axisValue.value);
 				canvas.drawLine(mContentRectWithMargins.left, rawY, mContentRectWithMargins.right, rawY, mLinePaint);
 				canvas.drawText(text, mContentRectWithMargins.left, rawY, mTextPaint);
