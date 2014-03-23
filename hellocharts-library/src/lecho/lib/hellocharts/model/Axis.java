@@ -9,7 +9,7 @@ public class Axis {
 
 	public List<AxisValue> values = Collections.emptyList();
 	public int color = Color.LTGRAY;
-	public String name = "name";
+	public String name = "LOREM IPSUM";
 	public AxisValueFormatter formatter = new DefaultAxisValueFormatter();
 
 	public Axis() {

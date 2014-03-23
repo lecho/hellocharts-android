@@ -57,7 +57,7 @@ public class MainActivity extends Activity {
 		lines.add(l2);
 		data.lines = lines;
 		Axis axisX = new Axis();
-		axisX.values = generateAxis(0.0f, 100.0f, 5.0f);
+		axisX.values = generateAxis(0.0f, 100.0f, 1.0f);
 		data.axisX = axisX;
 
 		Axis axisY = new Axis();

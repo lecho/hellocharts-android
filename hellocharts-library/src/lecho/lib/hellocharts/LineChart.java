@@ -1,6 +1,5 @@
 package lecho.lib.hellocharts;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -30,6 +29,7 @@ import android.graphics.RectF;
 import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ScrollerCompat;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -230,11 +230,17 @@ public class LineChart extends View {
 	}
 
 	private void calculateXAxisMargin() {
-		if (mAxesOn && mData.axisX.values.size() > 0) {
-			final Rect textBounds = new Rect();
-			// Hard coded only for text height calculation.
-			mTextPaint.getTextBounds("X", 0, 1, textBounds);
-			mXAxisMargin = textBounds.height();
+		if (mAxesOn) {
+			if (mData.axisX.values.size() > 0) {
+				final Rect textBounds = new Rect();
+				// Hard coded only for text height calculation.
+				mTextPaint.getTextBounds("X", 0, 1, textBounds);
+				mXAxisMargin = textBounds.height();
+			}
+			if (!TextUtils.isEmpty(mData.axisX.name)) {
+				// Additional margin for axis name.
+				mXAxisMargin += mXAxisMargin + mCommonMargin;
+			}
 		} else {
 			mXAxisMargin = 0;
 		}
@@ -287,13 +293,19 @@ public class LineChart extends View {
 		mLinePaint.setColor(DEFAULT_AXIS_COLOR);
 		mTextPaint.setColor(DEFAULT_AXIS_COLOR);
 		mTextPaint.setTextAlign(Align.CENTER);
-		final int xAxisBaseline = mContentRectWithMargins.bottom + mXAxisMargin;
+		final int xAxisBaseline;
+		if (TextUtils.isEmpty(mData.axisX.name)) {
+			xAxisBaseline = mContentRectWithMargins.bottom + mXAxisMargin;
+		} else {
+			xAxisBaseline = mContentRectWithMargins.bottom + (mXAxisMargin - mCommonMargin) / 2;
+			canvas.drawText(mData.axisX.name, mContentRect.centerX(), mContentRectWithMargins.bottom + mXAxisMargin,
+					mTextPaint);
+		}
 		canvas.drawLine(mContentRectWithMargins.left, mContentRect.bottom, mContentRectWithMargins.right,
 				mContentRect.bottom, mLinePaint);
-		Axis axisX = mData.axisX;
-		for (AxisValue axisValue : axisX.values) {
+		for (AxisValue axisValue : mData.axisX.values) {
 			if (axisValue.value >= mCurrentViewport.left && axisValue.value <= mCurrentViewport.right) {
-				final String text = axisX.formatter.formatValue(axisValue);
+				final String text = mData.axisX.formatter.formatValue(axisValue);
 				canvas.drawText(text, calculatePixelX(axisValue.value), xAxisBaseline, mTextPaint);
 			}
 		}
