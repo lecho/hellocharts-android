@@ -1,5 +1,6 @@
 package lecho.lib.hellocharts;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -214,13 +215,12 @@ public class LineChart extends View {
 		if (mAxesOn && mData.axisY.values.size() > 0) {
 			final Rect textBounds = new Rect();
 			final String text;
-			// TODO: check if axis has at least one element.
 			final int axisSize = mData.axisY.values.size();
 			final Axis axisY = mData.axisY;
 			if (Math.abs(axisY.values.get(0).value) > Math.abs(axisY.values.get(axisSize - 1).value)) {
-				text = getAxisValueToDraw(axisY, axisY.values.get(0).value, 0);
+				text = axisY.formatter.formatValue(axisY.values.get(0));
 			} else {
-				text = getAxisValueToDraw(axisY, axisY.values.get(axisSize - 1).value, axisSize - 1);
+				text = axisY.formatter.formatValue(axisY.values.get(axisSize - 1));
 			}
 			mTextPaint.getTextBounds(text, 0, text.length(), textBounds);
 			mYAxisMargin = textBounds.width();
@@ -291,13 +291,11 @@ public class LineChart extends View {
 		canvas.drawLine(mContentRectWithMargins.left, mContentRect.bottom, mContentRectWithMargins.right,
 				mContentRect.bottom, mLinePaint);
 		Axis axisX = mData.axisX;
-		int index = 0;
 		for (AxisValue axisValue : axisX.values) {
 			if (axisValue.value >= mCurrentViewport.left && axisValue.value <= mCurrentViewport.right) {
-				final String text = getAxisValueToDraw(axisX, axisValue.value, index);
+				final String text = axisX.formatter.formatValue(axisValue);
 				canvas.drawText(text, calculatePixelX(axisValue.value), xAxisBaseline, mTextPaint);
 			}
-			++index;
 		}
 	}
 
@@ -307,20 +305,14 @@ public class LineChart extends View {
 		mTextPaint.setColor(DEFAULT_AXIS_COLOR);
 		mTextPaint.setTextAlign(Align.RIGHT);
 		Axis axisY = mData.axisY;
-		int index = 0;
 		for (AxisValue axisValue : axisY.values) {
 			if (axisValue.value >= mCurrentViewport.top && axisValue.value <= mCurrentViewport.bottom) {
-				final String text = getAxisValueToDraw(axisY, axisValue.value, index);
+				final String text = axisY.formatter.formatValue(axisValue);
 				final float rawY = calculatePixelY(axisValue.value);
 				canvas.drawLine(mContentRectWithMargins.left, rawY, mContentRectWithMargins.right, rawY, mLinePaint);
 				canvas.drawText(text, mContentRectWithMargins.left, rawY, mTextPaint);
 			}
-			++index;
 		}
-	}
-
-	private String getAxisValueToDraw(Axis axis, Float value, int index) {
-		return Float.toString(value);
 	}
 
 	private void drawLines(Canvas canvas) {

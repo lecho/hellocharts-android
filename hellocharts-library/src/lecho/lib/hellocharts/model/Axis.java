@@ -10,6 +10,7 @@ public class Axis {
 	public List<AxisValue> values = Collections.emptyList();
 	public int color = Color.LTGRAY;
 	public String name = "name";
+	public AxisValueFormatter formatter = new DefaultAxisValueFormatter();
 
 	public Axis() {
 
@@ -33,4 +34,16 @@ public class Axis {
 		}
 	}
 
+	public interface AxisValueFormatter {
+		public String formatValue(AxisValue value);
+	}
+
+	public static class DefaultAxisValueFormatter implements AxisValueFormatter {
+
+		@Override
+		public String formatValue(AxisValue axisValue) {
+			return String.format("%.0f", axisValue.value);
+		}
+
+	}
 }
