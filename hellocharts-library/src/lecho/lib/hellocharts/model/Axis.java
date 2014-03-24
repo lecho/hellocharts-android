@@ -3,13 +3,14 @@ package lecho.lib.hellocharts.model;
 import java.util.Collections;
 import java.util.List;
 
-import android.graphics.Color;
+import lecho.lib.hellocharts.utils.Config;
 
 public class Axis {
 
 	public List<AxisValue> values = Collections.emptyList();
-	public int color = Color.LTGRAY;
-	public String name = "LOREM IPSUM";
+	public String name = "";
+	public int color = Config.DEFAULT_AXIS_COLOR;
+	public int textSize = Config.DEFAULT_AXIS_TEXT_SIZE_DP;
 	public AxisValueFormatter formatter = new DefaultAxisValueFormatter();
 
 	public Axis() {
@@ -42,7 +43,7 @@ public class Axis {
 
 		@Override
 		public String formatValue(AxisValue axisValue) {
-			return String.format("%.0f", axisValue.value);
+			return String.format(Config.DEFAULT_AXES_FORMAT, axisValue.value);
 		}
 
 	}

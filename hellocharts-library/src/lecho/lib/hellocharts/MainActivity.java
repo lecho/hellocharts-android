@@ -8,6 +8,7 @@ import lecho.lib.hellocharts.model.Axis.AxisValue;
 import lecho.lib.hellocharts.model.Data;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.Point;
+import lecho.lib.hellocharts.utils.Utils;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -59,10 +60,14 @@ public class MainActivity extends Activity {
 		Axis axisX = new Axis();
 		axisX.values = generateAxis(0.0f, 100.0f, 1.0f);
 		data.axisX = axisX;
+		data.axisX.textSize = Utils.sp2px(getApplicationContext(), 10);
+		data.axisX.color = Color.parseColor("#FFBB33");
 
 		Axis axisY = new Axis();
 		axisY.values = generateAxis(0.0f, 100.0f, 15.0f);
 		data.axisY = axisY;
+		data.axisY.textSize = Utils.sp2px(getApplicationContext(), 10);
+		data.axisY.color = Color.parseColor("#99CC00");
 		chart.setData(data);
 		chart.setBackgroundColor(Color.WHITE);
 		// chart.setPadding(10, 10, 10, 20);

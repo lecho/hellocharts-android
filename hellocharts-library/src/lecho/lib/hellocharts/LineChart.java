@@ -47,7 +47,6 @@ public class LineChart extends View {
 	private static final int DEFAULT_POPUP_TEXT_MARGIN = 4;
 	private static final int DEFAULT_TEXT_SIZE_DP = 14;
 	private static final int DEFAULT_TEXT_COLOR = Color.WHITE;
-	private static final int DEFAULT_AXIS_COLOR = Color.LTGRAY;
 	private static final int DEFAULT_AREA_TRANSPARENCY = 64;
 	private static final float ZOOM_AMOUNT = 0.25f;
 	private int mCommonMargin;
@@ -56,6 +55,8 @@ public class LineChart extends View {
 	private Path mYAxisNamePath = new Path();
 	private Paint mLinePaint = new Paint();
 	private Paint mTextPaint = new Paint();
+	private Paint mAxisTextPaint = new Paint();
+	private Paint mAxisLinePaint = new Paint();
 	private Data mData;
 	private float mLineWidth;
 	private float mPointRadius;
@@ -138,6 +139,13 @@ public class LineChart extends View {
 		mTextPaint.setStrokeWidth(1);
 		mTextPaint.setTextSize(Utils.dp2px(getContext(), DEFAULT_TEXT_SIZE_DP));
 
+		mAxisLinePaint.setAntiAlias(true);
+		mAxisLinePaint.setStyle(Paint.Style.STROKE);
+		mAxisLinePaint.setStrokeWidth(1);
+
+		mAxisTextPaint.setAntiAlias(true);
+		mAxisTextPaint.setStyle(Paint.Style.FILL);
+		mAxisTextPaint.setStrokeWidth(1);
 	}
 
 	private void initAnimatiors() {
@@ -214,15 +222,18 @@ public class LineChart extends View {
 
 	private void calculateXAxisMargin() {
 		if (mAxesOn) {
-			if (mData.axisX.values.size() > 0) {
+			mAxisTextPaint.setTextSize(Utils.sp2px(getContext(), mData.axisX.textSize));
+			if (!mData.axisX.values.isEmpty()) {
 				final Rect textBounds = new Rect();
 				// Hard coded only for text height calculation.
-				mTextPaint.getTextBounds("X", 0, 1, textBounds);
+				mAxisTextPaint.getTextBounds("X", 0, 1, textBounds);
 				mXAxisMargin = textBounds.height();
 			}
 			if (!TextUtils.isEmpty(mData.axisX.name)) {
+				final Rect textBounds = new Rect();
+				mAxisTextPaint.getTextBounds("X", 0, 1, textBounds);
 				// Additional margin for axis name.
-				mXAxisMargin += mXAxisMargin + mCommonMargin;
+				mXAxisMargin += textBounds.height() + mCommonMargin;
 			}
 		} else {
 			mXAxisMargin = 0;
@@ -231,7 +242,8 @@ public class LineChart extends View {
 
 	private void calculateYAxisMargin() {
 		if (mAxesOn) {
-			if (mData.axisY.values.size() > 0) {
+			mAxisTextPaint.setTextSize(Utils.sp2px(getContext(), mData.axisX.textSize));
+			if (!mData.axisY.values.isEmpty()) {
 				final Rect textBounds = new Rect();
 				final String text;
 				final int axisSize = mData.axisY.values.size();
@@ -241,13 +253,13 @@ public class LineChart extends View {
 				} else {
 					text = axisY.formatter.formatValue(axisY.values.get(axisSize - 1));
 				}
-				mTextPaint.getTextBounds(text, 0, text.length(), textBounds);
+				mAxisTextPaint.getTextBounds(text, 0, text.length(), textBounds);
 				mYAxisMargin = textBounds.width();
 			}
 			if (!TextUtils.isEmpty(mData.axisY.name)) {
 				// Additional margin for axis name.
 				final Rect textBounds = new Rect();
-				mTextPaint.getTextBounds("X", 0, 1, textBounds);
+				mAxisTextPaint.getTextBounds("X", 0, 1, textBounds);
 				mYAxisMargin += textBounds.width() + mCommonMargin;
 			}
 		} else {
@@ -298,48 +310,49 @@ public class LineChart extends View {
 	}
 
 	private void drawXAxis(Canvas canvas) {
-		mLinePaint.setStrokeWidth(1);
-		mLinePaint.setColor(DEFAULT_AXIS_COLOR);
-		mTextPaint.setColor(DEFAULT_AXIS_COLOR);
-		mTextPaint.setTextAlign(Align.CENTER);
+		mAxisLinePaint.setColor(mData.axisX.color);
+		mAxisTextPaint.setColor(mData.axisX.color);
+		mAxisTextPaint.setTextSize(Utils.sp2px(getContext(), mData.axisX.textSize));
+		mAxisTextPaint.setTextAlign(Align.CENTER);
 		final int xAxisBaseline;
 		if (TextUtils.isEmpty(mData.axisX.name)) {
 			xAxisBaseline = mContentRectWithMargins.bottom + mXAxisMargin;
 		} else {
 			xAxisBaseline = mContentRectWithMargins.bottom + (mXAxisMargin - mCommonMargin) / 2;
 			canvas.drawText(mData.axisX.name, mContentRect.centerX(), mContentRectWithMargins.bottom + mXAxisMargin,
-					mTextPaint);
+					mAxisTextPaint);
 		}
 		canvas.drawLine(mContentRectWithMargins.left, mContentRect.bottom, mContentRectWithMargins.right,
-				mContentRect.bottom, mLinePaint);
+				mContentRect.bottom, mAxisLinePaint);
 		for (AxisValue axisValue : mData.axisX.values) {
 			if (axisValue.value >= mCurrentViewport.left && axisValue.value <= mCurrentViewport.right) {
 				final String text = mData.axisX.formatter.formatValue(axisValue);
-				canvas.drawText(text, calculatePixelX(axisValue.value), xAxisBaseline, mTextPaint);
+				canvas.drawText(text, calculatePixelX(axisValue.value), xAxisBaseline, mAxisTextPaint);
 			}
 		}
 	}
 
 	private void drawYAxis(Canvas canvas) {
-		mLinePaint.setStrokeWidth(1);
-		mLinePaint.setColor(DEFAULT_AXIS_COLOR);
-		mTextPaint.setColor(DEFAULT_AXIS_COLOR);
+		mAxisLinePaint.setColor(mData.axisY.color);
+		mAxisTextPaint.setColor(mData.axisY.color);
+		mAxisTextPaint.setTextSize(Utils.sp2px(getContext(), mData.axisX.textSize));
+		mAxisTextPaint.setTextAlign(Align.CENTER);
 		if (!TextUtils.isEmpty(mData.axisY.name)) {
-			mTextPaint.setTextAlign(Align.CENTER);
+			mAxisTextPaint.setTextAlign(Align.CENTER);
 			mYAxisNamePath.moveTo(mContentRectWithMargins.left - (mYAxisMargin - mCommonMargin) / 2 - mCommonMargin,
 					mContentRect.bottom);
 			mYAxisNamePath.lineTo(mContentRectWithMargins.left - (mYAxisMargin - mCommonMargin) / 2 - mCommonMargin,
 					mContentRect.top);
-			canvas.drawTextOnPath(mData.axisY.name, mYAxisNamePath, 0, 0, mTextPaint);
+			canvas.drawTextOnPath(mData.axisY.name, mYAxisNamePath, 0, 0, mAxisTextPaint);
 			mYAxisNamePath.reset();
 		}
-		mTextPaint.setTextAlign(Align.RIGHT);
+		mAxisTextPaint.setTextAlign(Align.RIGHT);
 		for (AxisValue axisValue : mData.axisY.values) {
 			if (axisValue.value >= mCurrentViewport.top && axisValue.value <= mCurrentViewport.bottom) {
 				final String text = mData.axisY.formatter.formatValue(axisValue);
 				final float rawY = calculatePixelY(axisValue.value);
-				canvas.drawLine(mContentRectWithMargins.left, rawY, mContentRectWithMargins.right, rawY, mLinePaint);
-				canvas.drawText(text, mContentRectWithMargins.left, rawY, mTextPaint);
+				canvas.drawLine(mContentRectWithMargins.left, rawY, mContentRectWithMargins.right, rawY, mAxisLinePaint);
+				canvas.drawText(text, mContentRectWithMargins.left, rawY, mAxisTextPaint);
 			}
 		}
 	}

@@ -12,6 +12,13 @@ public abstract class Utils {
 
 	}
 
+	public static int sp2px(Context context, int sp) {
+		// Get the screen's density scale
+		final float scale = context.getResources().getDisplayMetrics().scaledDensity;
+		// Convert the sps to pixels, based on scale density scale
+		return (int) (sp * scale + 0.5f);
+	}
+
 	public static boolean isInArea(float x, float y, float touchX, float touchY, float radius) {
 		float diffX = touchX - x;
 		float diffY = touchY - y;
