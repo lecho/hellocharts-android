@@ -242,7 +242,7 @@ public class LineChart extends View {
 
 	private void calculateYAxisMargin() {
 		if (mAxesOn) {
-			mAxisTextPaint.setTextSize(Utils.sp2px(getContext(), mData.axisX.textSize));
+			mAxisTextPaint.setTextSize(Utils.sp2px(getContext(), mData.axisY.textSize));
 			if (!mData.axisY.values.isEmpty()) {
 				final Rect textBounds = new Rect();
 				final String text;
@@ -314,11 +314,11 @@ public class LineChart extends View {
 		mAxisTextPaint.setColor(mData.axisX.color);
 		mAxisTextPaint.setTextSize(Utils.sp2px(getContext(), mData.axisX.textSize));
 		mAxisTextPaint.setTextAlign(Align.CENTER);
-		final int xAxisBaseline;
+		final float baselineY;
 		if (TextUtils.isEmpty(mData.axisX.name)) {
-			xAxisBaseline = mContentRectWithMargins.bottom + mXAxisMargin;
+			baselineY = mContentRectWithMargins.bottom + mXAxisMargin;
 		} else {
-			xAxisBaseline = mContentRectWithMargins.bottom + (mXAxisMargin - mCommonMargin) / 2;
+			baselineY = mContentRectWithMargins.bottom + (mXAxisMargin - mCommonMargin) / 2;
 			canvas.drawText(mData.axisX.name, mContentRect.centerX(), mContentRectWithMargins.bottom + mXAxisMargin,
 					mAxisTextPaint);
 		}
@@ -327,7 +327,7 @@ public class LineChart extends View {
 		for (AxisValue axisValue : mData.axisX.values) {
 			if (axisValue.value >= mCurrentViewport.left && axisValue.value <= mCurrentViewport.right) {
 				final String text = mData.axisX.formatter.formatValue(axisValue);
-				canvas.drawText(text, calculatePixelX(axisValue.value), xAxisBaseline, mAxisTextPaint);
+				canvas.drawText(text, calculatePixelX(axisValue.value), baselineY, mAxisTextPaint);
 			}
 		}
 	}
@@ -338,11 +338,14 @@ public class LineChart extends View {
 		mAxisTextPaint.setTextSize(Utils.sp2px(getContext(), mData.axisX.textSize));
 		mAxisTextPaint.setTextAlign(Align.CENTER);
 		if (!TextUtils.isEmpty(mData.axisY.name)) {
-			mAxisTextPaint.setTextAlign(Align.CENTER);
-			mYAxisNamePath.moveTo(mContentRectWithMargins.left - (mYAxisMargin - mCommonMargin) / 2 - mCommonMargin,
-					mContentRect.bottom);
-			mYAxisNamePath.lineTo(mContentRectWithMargins.left - (mYAxisMargin - mCommonMargin) / 2 - mCommonMargin,
-					mContentRect.top);
+			final float baselineY;
+			if (mData.axisY.values.isEmpty()) {
+				baselineY = mContentRectWithMargins.left;
+			} else {
+				baselineY = mContentRectWithMargins.left - (mYAxisMargin - mCommonMargin) / 2 - mCommonMargin;
+			}
+			mYAxisNamePath.moveTo(baselineY, mContentRect.bottom);
+			mYAxisNamePath.lineTo(baselineY, mContentRect.top);
 			canvas.drawTextOnPath(mData.axisY.name, mYAxisNamePath, 0, 0, mAxisTextPaint);
 			mYAxisNamePath.reset();
 		}
