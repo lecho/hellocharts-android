@@ -60,13 +60,14 @@ public class MainActivity extends Activity {
 		Axis axisX = new Axis();
 		axisX.values = generateAxis(0.0f, 100.0f, 1.0f);
 		data.axisX = axisX;
+		data.axisX.name = "ala ma kota";
 		data.axisX.textSize = Utils.sp2px(getApplicationContext(), 10);
 		data.axisX.color = Color.parseColor("#FFBB33");
 
 		Axis axisY = new Axis();
 		axisY.values = generateAxis(0.0f, 100.0f, 15.0f);
 		data.axisY = axisY;
-		data.axisY.name = "DUPA";
+		data.axisY.name = "Axis Y";
 		data.axisY.textSize = Utils.sp2px(getApplicationContext(), 10);
 		data.axisY.color = Color.parseColor("#99CC00");
 		chart.setData(data);

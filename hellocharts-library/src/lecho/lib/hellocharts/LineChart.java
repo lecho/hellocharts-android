@@ -325,9 +325,11 @@ public class LineChart extends View {
 		canvas.drawLine(mContentRectWithMargins.left, mContentRect.bottom, mContentRectWithMargins.right,
 				mContentRect.bottom, mAxisLinePaint);
 		for (AxisValue axisValue : mData.axisX.values) {
-			if (axisValue.value >= mCurrentViewport.left && axisValue.value <= mCurrentViewport.right) {
+			final float rawX = calculatePixelX(axisValue.value);
+			final int rawXround = (int) rawX;
+			if (rawXround >= mContentRect.left && rawXround <= mContentRect.right) {
 				final String text = mData.axisX.formatter.formatValue(axisValue);
-				canvas.drawText(text, calculatePixelX(axisValue.value), baselineY, mAxisTextPaint);
+				canvas.drawText(text, rawX, baselineY, mAxisTextPaint);
 			}
 		}
 	}
@@ -351,9 +353,11 @@ public class LineChart extends View {
 		}
 		mAxisTextPaint.setTextAlign(Align.RIGHT);
 		for (AxisValue axisValue : mData.axisY.values) {
-			if (axisValue.value >= mCurrentViewport.top && axisValue.value <= mCurrentViewport.bottom) {
-				final String text = mData.axisY.formatter.formatValue(axisValue);
-				final float rawY = calculatePixelY(axisValue.value);
+			// TODO: compare axisValue with current viewport to skip calculations for values out of range
+			final String text = mData.axisY.formatter.formatValue(axisValue);
+			final float rawY = calculatePixelY(axisValue.value);
+			final int rawYround = (int) rawY;
+			if (rawYround >= mContentRect.top && rawYround <= mContentRect.bottom) {
 				canvas.drawLine(mContentRectWithMargins.left, rawY, mContentRectWithMargins.right, rawY, mAxisLinePaint);
 				canvas.drawText(text, mContentRectWithMargins.left, rawY, mAxisTextPaint);
 			}
