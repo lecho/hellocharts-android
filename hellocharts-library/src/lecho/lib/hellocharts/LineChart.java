@@ -6,7 +6,7 @@ import java.util.Locale;
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
-import lecho.lib.hellocharts.gestures.Zoomer;
+import lecho.lib.hellocharts.gestures.ChartZoomer;
 import lecho.lib.hellocharts.model.AnimatedPoint;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Axis.AxisValue;
@@ -90,7 +90,7 @@ public class LineChart extends View {
 	 */
 	private RectF mCurrentViewport = new RectF();
 	private RectF mMaximumViewport = new RectF();// Viewport for whole data ranges
-	private Zoomer mZoomer;
+	private ChartZoomer mZoomer;
 	private ScrollerCompat mScroller;
 	private PointF mZoomFocalPoint = new PointF();// Used for double tap zoom
 	private RectF mScrollerStartViewport = new RectF(); // Used only for zooms and flings
@@ -126,7 +126,7 @@ public class LineChart extends View {
 		mCommonMargin = Utils.dp2px(getContext(), DEFAULT_POINT_PRESSED_RADIUS);
 		mPopupTextMargin = Utils.dp2px(getContext(), DEFAULT_POPUP_TEXT_MARGIN);
 		mScroller = ScrollerCompat.create(getContext());
-		mZoomer = new Zoomer(getContext());
+		mZoomer = new ChartZoomer(getContext());
 	}
 
 	private void initPaints() {
