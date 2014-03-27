@@ -4,22 +4,27 @@ import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Data;
 import lecho.lib.hellocharts.utils.Utils;
 import android.content.Context;
+import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.support.v4.view.ViewCompat;
+import android.text.TextUtils;
 import android.view.View;
 
 public class ChartCalculator {
+	// TODO: use getters/setters instead of public members
 	private static final int DEFAULT_COMMON_MARGIN_DP = 10;
-	private int mCommonMargin;
-	private int mYAxisMargin = 0;
-	private int mXAxisMargin = 0;
+	public int mCommonMargin;
+	public int mAxisYMargin;
+	public int mAxisXMargin;
 	/**
 	 * The current area (in pixels) for chart data, including mCoomonMargin. Labels are drawn outside this area.
 	 */
-	private Rect mContentRect = new Rect();
-	private Rect mContentRectWithMargins = new Rect();
-	private Rect mClippingRect = new Rect();
+	public Rect mContentRect = new Rect();
+	public Rect mContentRectWithMargins = new Rect();
+	public Rect mClippingRect = new Rect();
 	/**
 	 * This rectangle represents the currently visible chart values ranges. The currently visible chart X values are
 	 * from this rectangle's left to its right. The currently visible chart Y values are from this rectangle's top to
@@ -30,8 +35,8 @@ public class ChartCalculator {
 	 * pixel Y positions), this rectangle's "top" is drawn above this rectangle's "bottom" value.
 	 * 
 	 */
-	private RectF mCurrentViewport = new RectF();
-	private RectF mMaximumViewport = new RectF();// Viewport for whole data ranges
+	public RectF mCurrentViewport = new RectF();
+	public RectF mMaximumViewport = new RectF();// Viewport for whole data ranges
 
 	/**
 	 * Constructor
@@ -43,21 +48,21 @@ public class ChartCalculator {
 	/**
 	 * Calculates available width and height. Should be called when chart dimensions or chart data change.
 	 */
-	private void calculateContentArea(View chart) {
-		mContentRectWithMargins.set(chart.getPaddingLeft() + mYAxisMargin, chart.getPaddingTop(), chart.getWidth()
-				- chart.getPaddingRight(), chart.getHeight() - chart.getPaddingBottom() - mXAxisMargin);
+	public void calculateContentArea(View chart) {
+		mContentRectWithMargins.set(chart.getPaddingLeft() + mAxisYMargin, chart.getPaddingTop(), chart.getWidth()
+				- chart.getPaddingRight(), chart.getHeight() - chart.getPaddingBottom() - mAxisXMargin);
 		mContentRect.set(mContentRectWithMargins.left + mCommonMargin, mContentRectWithMargins.top + mCommonMargin,
 				mContentRectWithMargins.right - mCommonMargin, mContentRectWithMargins.bottom - mCommonMargin);
 	}
 
-	private void calculateViewport(Data data) {
+	public void calculateViewport(Data data) {
 		mMaximumViewport.set(data.minXValue, data.minYValue, data.maxXValue, data.maxYValue);
 		// TODO: don't reset current viewport during animation if zoom is enabled
 		mCurrentViewport.set(mMaximumViewport);
 	}
 
-	private void constrainViewport() {
-		// TODO: avoid too much zoom by checking
+	public void constrainViewport() {
+		// TODO: avoid too much zoom
 		mCurrentViewport.left = Math.max(mMaximumViewport.left, mCurrentViewport.left);
 		mCurrentViewport.top = Math.max(mMaximumViewport.top, mCurrentViewport.top);
 		mCurrentViewport.bottom = Math.max(Utils.nextUpF(mCurrentViewport.top),
@@ -67,10 +72,31 @@ public class ChartCalculator {
 	}
 
 	/**
+	 * Sets the current viewport (defined by {@link #mCurrentViewport}) to the given X and Y positions. Note that the Y
+	 * value represents the topmost pixel position, and thus the bottom of the {@link #mCurrentViewport} rectangle. For
+	 * more details on why top and bottom are flipped, see {@link #mCurrentViewport}.
+	 */
+	// TODO: move invalidate outside this method
+	public void setViewportBottomLeft(float x, float y, View chart) {
+		/**
+		 * Constrains within the scroll range. The scroll range is simply the viewport extremes (AXIS_X_MAX, etc.) minus
+		 * the viewport size. For example, if the extrema were 0 and 10, and the viewport size was 2, the scroll range
+		 * would be 0 to 8.
+		 */
+
+		final float curWidth = mCurrentViewport.width();
+		final float curHeight = mCurrentViewport.height();
+		x = Math.max(mMaximumViewport.left, Math.min(x, mMaximumViewport.right - curWidth));
+		y = Math.max(mMaximumViewport.top + curHeight, Math.min(y, mMaximumViewport.bottom));
+		mCurrentViewport.set(x, y - curHeight, x + curWidth, y);
+		ViewCompat.postInvalidateOnAnimation(chart);
+	}
+
+	/**
 	 * Prevents dot clipping when user scroll to the one of ends of chart or zoom out. calculating pixel value helps to
 	 * avoid float rounding error.
 	 */
-	private void calculateClippingArea() {
+	public void calculateClippingArea() {
 		if ((int) calculateRawX(mCurrentViewport.left) == (int) calculateRawX(mMaximumViewport.left)) {
 			mClippingRect.left = mContentRectWithMargins.left;
 		} else {
@@ -96,51 +122,53 @@ public class ChartCalculator {
 		}
 	}
 
-	private void calculateAxisXMargin(Axis axisX) {
-		// mAxisTextPaint.setTextSize(Utils.sp2px(getContext(), mData.axisX.textSize));
-		// if (!mData.axisX.values.isEmpty()) {
-		// final Rect textBounds = new Rect();
-		// // Hard coded only for text height calculation.
-		// mAxisTextPaint.getTextBounds("X", 0, 1, textBounds);
-		// mXAxisMargin = textBounds.height();
-		// }
-		// if (!TextUtils.isEmpty(mData.axisX.name)) {
-		// final Rect textBounds = new Rect();
-		// mAxisTextPaint.getTextBounds("X", 0, 1, textBounds);
-		// // Additional margin for axis name.
-		// mXAxisMargin += textBounds.height() + mCommonMargin;
-		// }
+	// TODO improve margin calculation by move paint outside this method.
+	public void calculateAxisXMargin(Context context, Axis axisX, Paint axisTextPaint) {
+		mAxisXMargin = 0;
+		axisTextPaint.setTextSize(Utils.sp2px(context, axisX.textSize));
+		if (!axisX.values.isEmpty()) {
+			final Rect textBounds = new Rect();
+			// Hard coded only for text height calculation.
+			axisTextPaint.getTextBounds("X", 0, 1, textBounds);
+			mAxisXMargin = textBounds.height();
+		}
+		if (!TextUtils.isEmpty(axisX.name)) {
+			final Rect textBounds = new Rect();
+			axisTextPaint.getTextBounds("X", 0, 1, textBounds);
+			// Additional margin for axis name.
+			mAxisXMargin += textBounds.height() + mCommonMargin;
+		}
 	}
 
-	private void calculateAxisYMargin(Axis axisY) {
-		// mAxisTextPaint.setTextSize(Utils.sp2px(getContext(), mData.axisY.textSize));
-		// if (!mData.axisY.values.isEmpty()) {
-		// final Rect textBounds = new Rect();
-		// final String text;
-		// final int axisSize = mData.axisY.values.size();
-		// final Axis axisY = mData.axisY;
-		// if (Math.abs(axisY.values.get(0).value) > Math.abs(axisY.values.get(axisSize - 1).value)) {
-		// text = axisY.formatter.formatValue(axisY.values.get(0));
-		// } else {
-		// text = axisY.formatter.formatValue(axisY.values.get(axisSize - 1));
-		// }
-		// mAxisTextPaint.getTextBounds(text, 0, text.length(), textBounds);
-		// mYAxisMargin = textBounds.width();
-		// }
-		// if (!TextUtils.isEmpty(mData.axisY.name)) {
-		// // Additional margin for axis name.
-		// final Rect textBounds = new Rect();
-		// mAxisTextPaint.getTextBounds("X", 0, 1, textBounds);
-		// mYAxisMargin += textBounds.width() + mCommonMargin;
-		// }
+	public void calculateAxisYMargin(Context context, Axis axisY, Paint axisTextPaint) {
+		mAxisYMargin = 0;
+		axisTextPaint.setTextSize(Utils.sp2px(context, axisY.textSize));
+		if (!axisY.values.isEmpty()) {
+			final Rect textBounds = new Rect();
+			final String text;
+			final int axisSize = axisY.values.size();
+			if (Math.abs(axisY.values.get(0).value) > Math.abs(axisY.values.get(axisSize - 1).value)) {
+				text = axisY.formatter.formatValue(axisY.values.get(0));
+			} else {
+				text = axisY.formatter.formatValue(axisY.values.get(axisSize - 1));
+			}
+			axisTextPaint.getTextBounds(text, 0, text.length(), textBounds);
+			mAxisYMargin = textBounds.width();
+		}
+		if (!TextUtils.isEmpty(axisY.name)) {
+			// Additional margin for axis name.
+			final Rect textBounds = new Rect();
+			axisTextPaint.getTextBounds("X", 0, 1, textBounds);
+			mAxisYMargin += textBounds.width() + mCommonMargin;
+		}
 	}
 
-	private float calculateRawX(float valueX) {
+	public float calculateRawX(float valueX) {
 		final float pixelOffset = (valueX - mCurrentViewport.left) * (mContentRect.width() / mCurrentViewport.width());
 		return mContentRect.left + pixelOffset;
 	}
 
-	private float calculateRawY(float valueY) {
+	public float calculateRawY(float valueY) {
 		final float pixelOffset = (valueY - mCurrentViewport.top) * (mContentRect.height() / mCurrentViewport.height());
 		return mContentRect.bottom - pixelOffset;
 	}
@@ -151,12 +179,22 @@ public class ChartCalculator {
 	 * argument is set to the point and this function returns true. Otherwise, this function returns false and "dest" is
 	 * unchanged.
 	 */
-	private boolean rawPixelsToDataPoint(float x, float y, PointF dest) {
+	public boolean rawPixelsToDataPoint(float x, float y, PointF dest) {
 		if (!mContentRect.contains((int) x, (int) y)) {
 			return false;
 		}
 		dest.set(mCurrentViewport.left + (x - mContentRect.left) * (mCurrentViewport.width() / mContentRect.width()),
 				mCurrentViewport.top + (y - mContentRect.bottom) * (mCurrentViewport.height() / -mContentRect.height()));
 		return true;
+	}
+
+	/**
+	 * Computes the current scrollable surface size, in pixels. For example, if the entire chart area is visible, this
+	 * is simply the current size of {@link #mContentRect}. If the chart is zoomed in 200% in both directions, the
+	 * returned size will be twice as large horizontally and vertically.
+	 */
+	public void computeScrollSurfaceSize(Point out) {
+		out.set((int) (mMaximumViewport.width() * mContentRect.width() / mCurrentViewport.width()),
+				(int) (mMaximumViewport.height() * mContentRect.height() / mCurrentViewport.height()));
 	}
 }

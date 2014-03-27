@@ -8,7 +8,6 @@ import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
 import lecho.lib.hellocharts.gestures.ChartZoomer;
 import lecho.lib.hellocharts.model.AnimatedPoint;
-import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Axis.AxisValue;
 import lecho.lib.hellocharts.model.Data;
 import lecho.lib.hellocharts.model.Line;
@@ -49,7 +48,7 @@ public class LineChart extends View {
 	private static final int DEFAULT_TEXT_COLOR = Color.WHITE;
 	private static final int DEFAULT_AREA_TRANSPARENCY = 64;
 	private static final float ZOOM_AMOUNT = 0.25f;
-	private int mCommonMargin;
+	private ChartCalculator mChartCalculator;
 	private int mPopupTextMargin;
 	private Path mLinePath = new Path();
 	private Path mYAxisNamePath = new Path();
@@ -62,8 +61,6 @@ public class LineChart extends View {
 	private float mPointRadius;
 	private float mPointPressedRadius;
 	private float mTouchRadius;
-	private int mYAxisMargin = 0;
-	private int mXAxisMargin = 0;
 	private boolean mLinesOn = true;
 	private boolean mInterpolationOn = true;
 	private boolean mPointsOn = true;
@@ -72,24 +69,6 @@ public class LineChart extends View {
 	private ChartAnimator mAnimator;
 	private int mSelectedLineIndex = Integer.MIN_VALUE;
 	private int mSelectedPointIndex = Integer.MIN_VALUE;
-	/**
-	 * The current area (in pixels) for chart data, including mCoomonMargin. Labels are drawn outside this area.
-	 */
-	private Rect mContentRect = new Rect();
-	private Rect mContentRectWithMargins = new Rect();
-	private Rect mClippingRect = new Rect();
-	/**
-	 * This rectangle represents the currently visible chart values ranges. The currently visible chart X values are
-	 * from this rectangle's left to its right. The currently visible chart Y values are from this rectangle's top to
-	 * its bottom.
-	 * <p>
-	 * Note that this rectangle's top is actually the smaller Y value, and its bottom is the larger Y value. Since the
-	 * chart is drawn onscreen in such a way that chart Y values increase towards the top of the screen (decreasing
-	 * pixel Y positions), this rectangle's "top" is drawn above this rectangle's "bottom" value.
-	 * 
-	 */
-	private RectF mCurrentViewport = new RectF();
-	private RectF mMaximumViewport = new RectF();// Viewport for whole data ranges
 	private ChartZoomer mZoomer;
 	private ScrollerCompat mScroller;
 	private PointF mZoomFocalPoint = new PointF();// Used for double tap zoom
@@ -114,6 +93,7 @@ public class LineChart extends View {
 		initAttributes();
 		initPaints();
 		initAnimatiors();
+		mChartCalculator = new ChartCalculator(context);
 	}
 
 	@SuppressLint("NewApi")
@@ -123,7 +103,6 @@ public class LineChart extends View {
 		mPointRadius = Utils.dp2px(getContext(), DEFAULT_POINT_RADIUS_DP);
 		mPointPressedRadius = Utils.dp2px(getContext(), DEFAULT_POINT_PRESSED_RADIUS);
 		mTouchRadius = Utils.dp2px(getContext(), DEFAULT_POINT_TOUCH_RADIUS_DP);
-		mCommonMargin = Utils.dp2px(getContext(), DEFAULT_POINT_PRESSED_RADIUS);
 		mPopupTextMargin = Utils.dp2px(getContext(), DEFAULT_POPUP_TEXT_MARGIN);
 		mScroller = ScrollerCompat.create(getContext());
 		mZoomer = new ChartZoomer(getContext());
@@ -160,111 +139,8 @@ public class LineChart extends View {
 	protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
 		// TODO mPointRadus can change, recalculate in setter
-		calculateContentArea();
-		calculateViewport();
-	}
-
-	/**
-	 * Calculates available width and height. Should be called when chart dimensions or chart data change.
-	 */
-	private void calculateContentArea() {
-		mContentRectWithMargins.set(getPaddingLeft() + mYAxisMargin, getPaddingTop(), getWidth() - getPaddingRight(),
-				getHeight() - getPaddingBottom() - mXAxisMargin);
-		mContentRect.set(mContentRectWithMargins.left + mCommonMargin, mContentRectWithMargins.top + mCommonMargin,
-				mContentRectWithMargins.right - mCommonMargin, mContentRectWithMargins.bottom - mCommonMargin);
-	}
-
-	private void calculateViewport() {
-		mMaximumViewport.set(mData.minXValue, mData.minYValue, mData.maxXValue, mData.maxYValue);
-		// TODO: don't reset current viewport during animation if zoom is enabled
-		mCurrentViewport.set(mMaximumViewport);
-	}
-
-	private void constrainViewport() {
-		// TODO: avoid too much zoom by checking
-		mCurrentViewport.left = Math.max(mMaximumViewport.left, mCurrentViewport.left);
-		mCurrentViewport.top = Math.max(mMaximumViewport.top, mCurrentViewport.top);
-		mCurrentViewport.bottom = Math.max(Utils.nextUpF(mCurrentViewport.top),
-				Math.min(mMaximumViewport.bottom, mCurrentViewport.bottom));
-		mCurrentViewport.right = Math.max(Utils.nextUpF(mCurrentViewport.left),
-				Math.min(mMaximumViewport.right, mCurrentViewport.right));
-	}
-
-	/**
-	 * Prevents dot clipping when user scroll to the one of ends of chart or zoom out. calculating pixel value helps to
-	 * avoid float rounding error.
-	 */
-	private void calculateClippingArea() {
-		if ((int) calculatePixelX(mCurrentViewport.left) == (int) calculatePixelX(mMaximumViewport.left)) {
-			mClippingRect.left = mContentRectWithMargins.left;
-		} else {
-			mClippingRect.left = mContentRect.left;
-		}
-
-		if ((int) calculatePixelY(mCurrentViewport.top) == (int) calculatePixelY(mMaximumViewport.top)) {
-			mClippingRect.bottom = mContentRectWithMargins.bottom;
-		} else {
-			mClippingRect.bottom = mContentRect.bottom;
-		}
-
-		if ((int) calculatePixelX(mCurrentViewport.right) == (int) calculatePixelX(mMaximumViewport.right)) {
-			mClippingRect.right = mContentRectWithMargins.right;
-		} else {
-			mClippingRect.right = mContentRect.right;
-		}
-
-		if ((int) calculatePixelY(mCurrentViewport.bottom) == (int) calculatePixelY(mMaximumViewport.bottom)) {
-			mClippingRect.top = mContentRectWithMargins.top;
-		} else {
-			mClippingRect.top = mContentRect.top;
-		}
-	}
-
-	private void calculateXAxisMargin() {
-		if (mAxesOn) {
-			mAxisTextPaint.setTextSize(Utils.sp2px(getContext(), mData.axisX.textSize));
-			if (!mData.axisX.values.isEmpty()) {
-				final Rect textBounds = new Rect();
-				// Hard coded only for text height calculation.
-				mAxisTextPaint.getTextBounds("X", 0, 1, textBounds);
-				mXAxisMargin = textBounds.height();
-			}
-			if (!TextUtils.isEmpty(mData.axisX.name)) {
-				final Rect textBounds = new Rect();
-				mAxisTextPaint.getTextBounds("X", 0, 1, textBounds);
-				// Additional margin for axis name.
-				mXAxisMargin += textBounds.height() + mCommonMargin;
-			}
-		} else {
-			mXAxisMargin = 0;
-		}
-	}
-
-	private void calculateYAxisMargin() {
-		if (mAxesOn) {
-			mAxisTextPaint.setTextSize(Utils.sp2px(getContext(), mData.axisY.textSize));
-			if (!mData.axisY.values.isEmpty()) {
-				final Rect textBounds = new Rect();
-				final String text;
-				final int axisSize = mData.axisY.values.size();
-				final Axis axisY = mData.axisY;
-				if (Math.abs(axisY.values.get(0).value) > Math.abs(axisY.values.get(axisSize - 1).value)) {
-					text = axisY.formatter.formatValue(axisY.values.get(0));
-				} else {
-					text = axisY.formatter.formatValue(axisY.values.get(axisSize - 1));
-				}
-				mAxisTextPaint.getTextBounds(text, 0, text.length(), textBounds);
-				mYAxisMargin = textBounds.width();
-			}
-			if (!TextUtils.isEmpty(mData.axisY.name)) {
-				// Additional margin for axis name.
-				final Rect textBounds = new Rect();
-				mAxisTextPaint.getTextBounds("X", 0, 1, textBounds);
-				mYAxisMargin += textBounds.width() + mCommonMargin;
-			}
-		} else {
-			mYAxisMargin = 0;
-		}
+		mChartCalculator.calculateContentArea(this);
+		mChartCalculator.calculateViewport(mData);
 	}
 
 	// Automatically calculates Y axis values.
@@ -297,8 +173,8 @@ public class LineChart extends View {
 			drawYAxis(canvas);
 		}
 		int clipRestoreCount = canvas.save();
-		calculateClippingArea();// only if zoom is enabled
-		canvas.clipRect(mClippingRect);
+		mChartCalculator.calculateClippingArea();// only if zoom is enabled
+		canvas.clipRect(mChartCalculator.mClippingRect);
 		if (mLinesOn) {
 			drawLines(canvas);
 		}
@@ -316,18 +192,19 @@ public class LineChart extends View {
 		mAxisTextPaint.setTextAlign(Align.CENTER);
 		final float baselineY;
 		if (TextUtils.isEmpty(mData.axisX.name)) {
-			baselineY = mContentRectWithMargins.bottom + mXAxisMargin;
+			baselineY = mChartCalculator.mContentRectWithMargins.bottom + mChartCalculator.mAxisXMargin;
 		} else {
-			baselineY = mContentRectWithMargins.bottom + (mXAxisMargin - mCommonMargin) / 2;
-			canvas.drawText(mData.axisX.name, mContentRect.centerX(), mContentRectWithMargins.bottom + mXAxisMargin,
-					mAxisTextPaint);
+			baselineY = mChartCalculator.mContentRectWithMargins.bottom
+					+ (mChartCalculator.mAxisXMargin - mChartCalculator.mCommonMargin) / 2;
+			canvas.drawText(mData.axisX.name, mChartCalculator.mContentRect.centerX(),
+					mChartCalculator.mContentRectWithMargins.bottom + mChartCalculator.mAxisXMargin, mAxisTextPaint);
 		}
-		canvas.drawLine(mContentRectWithMargins.left, mContentRect.bottom, mContentRectWithMargins.right,
-				mContentRect.bottom, mAxisLinePaint);
+		canvas.drawLine(mChartCalculator.mContentRectWithMargins.left, mChartCalculator.mContentRect.bottom,
+				mChartCalculator.mContentRectWithMargins.right, mChartCalculator.mContentRect.bottom, mAxisLinePaint);
 		for (AxisValue axisValue : mData.axisX.values) {
-			final float rawX = calculatePixelX(axisValue.value);
+			final float rawX = mChartCalculator.calculateRawX(axisValue.value);
 			final int rawXround = (int) rawX;
-			if (rawXround >= mContentRect.left && rawXround <= mContentRect.right) {
+			if (rawXround >= mChartCalculator.mContentRect.left && rawXround <= mChartCalculator.mContentRect.right) {
 				final String text = mData.axisX.formatter.formatValue(axisValue);
 				canvas.drawText(text, rawX, baselineY, mAxisTextPaint);
 			}
@@ -342,12 +219,14 @@ public class LineChart extends View {
 		if (!TextUtils.isEmpty(mData.axisY.name)) {
 			final float baselineY;
 			if (mData.axisY.values.isEmpty()) {
-				baselineY = mContentRectWithMargins.left;
+				baselineY = mChartCalculator.mContentRectWithMargins.left;
 			} else {
-				baselineY = mContentRectWithMargins.left - (mYAxisMargin - mCommonMargin) / 2 - mCommonMargin;
+				baselineY = mChartCalculator.mContentRectWithMargins.left
+						- (mChartCalculator.mAxisYMargin - mChartCalculator.mCommonMargin) / 2
+						- mChartCalculator.mCommonMargin;
 			}
-			mYAxisNamePath.moveTo(baselineY, mContentRect.bottom);
-			mYAxisNamePath.lineTo(baselineY, mContentRect.top);
+			mYAxisNamePath.moveTo(baselineY, mChartCalculator.mContentRect.bottom);
+			mYAxisNamePath.lineTo(baselineY, mChartCalculator.mContentRect.top);
 			canvas.drawTextOnPath(mData.axisY.name, mYAxisNamePath, 0, 0, mAxisTextPaint);
 			mYAxisNamePath.reset();
 		}
@@ -355,11 +234,12 @@ public class LineChart extends View {
 		for (AxisValue axisValue : mData.axisY.values) {
 			// TODO: compare axisValue with current viewport to skip calculations for values out of range
 			final String text = mData.axisY.formatter.formatValue(axisValue);
-			final float rawY = calculatePixelY(axisValue.value);
+			final float rawY = mChartCalculator.calculateRawY(axisValue.value);
 			final int rawYround = (int) rawY;
-			if (rawYround >= mContentRect.top && rawYround <= mContentRect.bottom) {
-				canvas.drawLine(mContentRectWithMargins.left, rawY, mContentRectWithMargins.right, rawY, mAxisLinePaint);
-				canvas.drawText(text, mContentRectWithMargins.left, rawY, mAxisTextPaint);
+			if (rawYround >= mChartCalculator.mContentRect.top && rawYround <= mChartCalculator.mContentRect.bottom) {
+				canvas.drawLine(mChartCalculator.mContentRectWithMargins.left, rawY,
+						mChartCalculator.mContentRectWithMargins.right, rawY, mAxisLinePaint);
+				canvas.drawText(text, mChartCalculator.mContentRectWithMargins.left, rawY, mAxisTextPaint);
 			}
 		}
 	}
@@ -382,8 +262,8 @@ public class LineChart extends View {
 		for (Line line : mData.lines) {
 			mTextPaint.setColor(line.color);
 			for (AnimatedPoint animatedPoint : line.animatedPoints) {
-				final float rawValueX = calculatePixelX(animatedPoint.point.x);
-				final float rawValueY = calculatePixelY(animatedPoint.point.y);
+				final float rawValueX = mChartCalculator.calculateRawX(animatedPoint.point.x);
+				final float rawValueY = mChartCalculator.calculateRawY(animatedPoint.point.y);
 				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mTextPaint);
 				if (mPopupsOn) {
 					drawValuePopup(canvas, mPopupTextMargin, animatedPoint.point.y, rawValueX, rawValueY);
@@ -393,8 +273,8 @@ public class LineChart extends View {
 		if (mSelectedLineIndex >= 0 && mSelectedPointIndex >= 0) {
 			final Line line = mData.lines.get(mSelectedLineIndex);
 			final AnimatedPoint animatedPoint = line.animatedPoints.get(mSelectedPointIndex);
-			final float rawValueX = calculatePixelX(animatedPoint.point.x);
-			final float rawValueY = calculatePixelY(animatedPoint.point.y);
+			final float rawValueX = mChartCalculator.calculateRawX(animatedPoint.point.x);
+			final float rawValueY = mChartCalculator.calculateRawY(animatedPoint.point.y);
 			mTextPaint.setColor(line.color);
 			canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mTextPaint);
 			if (mPopupsOn) {
@@ -412,11 +292,11 @@ public class LineChart extends View {
 		float right = rawValueX + offset + textBounds.width() + mPopupTextMargin * 2;
 		float top = rawValueY - offset - textBounds.height() - mPopupTextMargin * 2;
 		float bottom = rawValueY - offset;
-		if (top < getPaddingTop() + mCommonMargin) {
+		if (top < getPaddingTop() + mChartCalculator.mCommonMargin) {
 			top = rawValueY + offset;
 			bottom = rawValueY + offset + textBounds.height() + mPopupTextMargin * 2;
 		}
-		if (right > getWidth() - getPaddingRight() - mCommonMargin) {
+		if (right > getWidth() - getPaddingRight() - mChartCalculator.mCommonMargin) {
 			left = rawValueX - offset - textBounds.width() - mPopupTextMargin * 2;
 			right = rawValueX - offset;
 		}
@@ -431,8 +311,8 @@ public class LineChart extends View {
 	private void drawPath(Canvas canvas, final Line line) {
 		int valueIndex = 0;
 		for (AnimatedPoint animatedPoint : line.animatedPoints) {
-			final float rawValueX = calculatePixelX(animatedPoint.point.x);
-			final float rawValueY = calculatePixelY(animatedPoint.point.y);
+			final float rawValueX = mChartCalculator.calculateRawX(animatedPoint.point.x);
+			final float rawValueY = mChartCalculator.calculateRawY(animatedPoint.point.y);
 			if (valueIndex == 0) {
 				mLinePath.moveTo(rawValueX, rawValueY);
 			} else {
@@ -456,14 +336,14 @@ public class LineChart extends View {
 		for (int valueIndex = 0; valueIndex < lineSize - 1; ++valueIndex) {
 			if (Float.isNaN(currentPointX)) {
 				AnimatedPoint animatedPoint = line.animatedPoints.get(valueIndex);
-				currentPointX = calculatePixelX(animatedPoint.point.x);
-				currentPointY = calculatePixelY(animatedPoint.point.y);
+				currentPointX = mChartCalculator.calculateRawX(animatedPoint.point.x);
+				currentPointY = mChartCalculator.calculateRawY(animatedPoint.point.y);
 			}
 			if (Float.isNaN(previousPointX)) {
 				if (valueIndex > 0) {
 					AnimatedPoint animatedPoint = line.animatedPoints.get(valueIndex - 1);
-					previousPointX = calculatePixelX(animatedPoint.point.x);
-					previousPointY = calculatePixelY(animatedPoint.point.y);
+					previousPointX = mChartCalculator.calculateRawX(animatedPoint.point.x);
+					previousPointY = mChartCalculator.calculateRawY(animatedPoint.point.y);
 				} else {
 					previousPointX = currentPointX;
 					previousPointY = currentPointY;
@@ -471,16 +351,16 @@ public class LineChart extends View {
 			}
 			if (Float.isNaN(nextPointX)) {
 				AnimatedPoint animatedPoint = line.animatedPoints.get(valueIndex + 1);
-				nextPointX = calculatePixelX(animatedPoint.point.x);
-				nextPointY = calculatePixelY(animatedPoint.point.y);
+				nextPointX = mChartCalculator.calculateRawX(animatedPoint.point.x);
+				nextPointY = mChartCalculator.calculateRawY(animatedPoint.point.y);
 			}
 			// afterNextPoint is always new one or it is equal nextPoint.
 			final float afterNextPointX;
 			final float afterNextPointY;
 			if (valueIndex < lineSize - 2) {
 				AnimatedPoint animatedPoint = line.animatedPoints.get(valueIndex + 2);
-				afterNextPointX = calculatePixelX(animatedPoint.point.x);
-				afterNextPointY = calculatePixelY(animatedPoint.point.y);
+				afterNextPointX = mChartCalculator.calculateRawX(animatedPoint.point.x);
+				afterNextPointY = mChartCalculator.calculateRawY(animatedPoint.point.y);
 			} else {
 				afterNextPointX = nextPointX;
 				afterNextPointY = nextPointY;
@@ -516,36 +396,11 @@ public class LineChart extends View {
 	private void drawArea(Canvas canvas) {
 		mLinePaint.setStyle(Paint.Style.FILL);
 		mLinePaint.setAlpha(DEFAULT_AREA_TRANSPARENCY);
-		mLinePath.lineTo(mContentRect.right, mContentRect.bottom);
-		mLinePath.lineTo(mContentRect.left, mContentRect.bottom);
+		mLinePath.lineTo(mChartCalculator.mContentRect.right, mChartCalculator.mContentRect.bottom);
+		mLinePath.lineTo(mChartCalculator.mContentRect.left, mChartCalculator.mContentRect.bottom);
 		mLinePath.close();
 		canvas.drawPath(mLinePath, mLinePaint);
 		mLinePaint.setStyle(Paint.Style.STROKE);
-	}
-
-	private float calculatePixelX(float valueX) {
-		final float pixelOffset = (valueX - mCurrentViewport.left) * (mContentRect.width() / mCurrentViewport.width());
-		return mContentRect.left + pixelOffset;
-	}
-
-	private float calculatePixelY(float valueY) {
-		final float pixelOffset = (valueY - mCurrentViewport.top) * (mContentRect.height() / mCurrentViewport.height());
-		return mContentRect.bottom - pixelOffset;
-	}
-
-	/**
-	 * Finds the chart point (i.e. within the chart's domain and range) represented by the given pixel coordinates, if
-	 * that pixel is within the chart region described by {@link #mContentRect}. If the point is found, the "dest"
-	 * argument is set to the point and this function returns true. Otherwise, this function returns false and "dest" is
-	 * unchanged.
-	 */
-	private boolean pixelsToPoint(float x, float y, PointF dest) {
-		if (!mContentRect.contains((int) x, (int) y)) {
-			return false;
-		}
-		dest.set(mCurrentViewport.left + (x - mContentRect.left) * (mCurrentViewport.width() / mContentRect.width()),
-				mCurrentViewport.top + (y - mContentRect.bottom) * (mCurrentViewport.height() / -mContentRect.height()));
-		return true;
 	}
 
 	@Override
@@ -563,8 +418,8 @@ public class LineChart extends View {
 			for (int lineIndex = mData.lines.size() - 1; lineIndex >= 0; --lineIndex) {
 				int valueIndex = 0;
 				for (AnimatedPoint animatedPoint : mData.lines.get(lineIndex).animatedPoints) {
-					final float rawX = calculatePixelX(animatedPoint.point.x);
-					final float rawY = calculatePixelY(animatedPoint.point.y);
+					final float rawX = mChartCalculator.calculateRawX(animatedPoint.point.x);
+					final float rawY = mChartCalculator.calculateRawY(animatedPoint.point.y);
 					if (Utils.isInArea(rawX, rawY, event.getX(), event.getY(), mTouchRadius)) {
 						mSelectedLineIndex = lineIndex;
 						mSelectedPointIndex = valueIndex;
@@ -592,8 +447,8 @@ public class LineChart extends View {
 			if (mSelectedPointIndex >= 0) {
 				final Line line = mData.lines.get(mSelectedLineIndex);
 				final AnimatedPoint animatedPoint = line.animatedPoints.get(mSelectedPointIndex);
-				final float rawX = calculatePixelX(animatedPoint.point.x);
-				final float rawY = calculatePixelY(animatedPoint.point.y);
+				final float rawX = mChartCalculator.calculateRawX(animatedPoint.point.x);
+				final float rawY = mChartCalculator.calculateRawY(animatedPoint.point.y);
 				if (!Utils.isInArea(rawX, rawY, event.getX(), event.getY(), mTouchRadius)) {
 					mSelectedLineIndex = Integer.MIN_VALUE;
 					mSelectedPointIndex = Integer.MIN_VALUE;
@@ -620,12 +475,12 @@ public class LineChart extends View {
 		if (mScroller.computeScrollOffset()) {
 			// The scroller isn't finished, meaning a fling or programmatic pan operation is
 			// currently active.
-			computeScrollSurfaceSize(mSurfaceSizeBuffer);
-			float currXRange = mMaximumViewport.left + mMaximumViewport.width() * mScroller.getCurrX()
-					/ mSurfaceSizeBuffer.x;
-			float currYRange = mMaximumViewport.bottom - mMaximumViewport.height() * mScroller.getCurrY()
-					/ mSurfaceSizeBuffer.y;
-			setViewportBottomLeft(currXRange, currYRange);
+			mChartCalculator.computeScrollSurfaceSize(mSurfaceSizeBuffer);
+			float currXRange = mChartCalculator.mMaximumViewport.left + mChartCalculator.mMaximumViewport.width()
+					* mScroller.getCurrX() / mSurfaceSizeBuffer.x;
+			float currYRange = mChartCalculator.mMaximumViewport.bottom - mChartCalculator.mMaximumViewport.height()
+					* mScroller.getCurrY() / mSurfaceSizeBuffer.y;
+			mChartCalculator.setViewportBottomLeft(currXRange, currYRange, this);
 		}
 
 		if (mZoomer.computeZoom()) {
@@ -637,66 +492,39 @@ public class LineChart extends View {
 					/ mScrollerStartViewport.width();
 			final float pointWithinViewportY = (mZoomFocalPoint.y - mScrollerStartViewport.top)
 					/ mScrollerStartViewport.height();
-			mCurrentViewport.left = mZoomFocalPoint.x - newWidth * pointWithinViewportX;
-			mCurrentViewport.top = mZoomFocalPoint.y - newHeight * pointWithinViewportY;
-			mCurrentViewport.right = mZoomFocalPoint.x + newWidth * (1 - pointWithinViewportX);
-			mCurrentViewport.bottom = mZoomFocalPoint.y + newHeight * (1 - pointWithinViewportY);
-			constrainViewport();
+			mChartCalculator.mCurrentViewport.left = mZoomFocalPoint.x - newWidth * pointWithinViewportX;
+			mChartCalculator.mCurrentViewport.top = mZoomFocalPoint.y - newHeight * pointWithinViewportY;
+			mChartCalculator.mCurrentViewport.right = mZoomFocalPoint.x + newWidth * (1 - pointWithinViewportX);
+			mChartCalculator.mCurrentViewport.bottom = mZoomFocalPoint.y + newHeight * (1 - pointWithinViewportY);
+			mChartCalculator.constrainViewport();
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
 	}
 
 	private void fling(int velocityX, int velocityY) {
 		// Flings use math in pixels (as opposed to math based on the viewport).
-		computeScrollSurfaceSize(mSurfaceSizeBuffer);
-		mScrollerStartViewport.set(mCurrentViewport);
-		int startX = (int) (mSurfaceSizeBuffer.x * (mScrollerStartViewport.left - mMaximumViewport.left) / mMaximumViewport
+		mChartCalculator.computeScrollSurfaceSize(mSurfaceSizeBuffer);
+		mScrollerStartViewport.set(mChartCalculator.mCurrentViewport);
+		int startX = (int) (mSurfaceSizeBuffer.x
+				* (mScrollerStartViewport.left - mChartCalculator.mMaximumViewport.left) / mChartCalculator.mMaximumViewport
 				.width());
-		int startY = (int) (mSurfaceSizeBuffer.y * (mMaximumViewport.bottom - mScrollerStartViewport.bottom) / mMaximumViewport
+		int startY = (int) (mSurfaceSizeBuffer.y
+				* (mChartCalculator.mMaximumViewport.bottom - mScrollerStartViewport.bottom) / mChartCalculator.mMaximumViewport
 				.height());
 		mScroller.abortAnimation();// probably should be mScroller.forceFinish but compat doesn't have that method.
-		mScroller.fling(startX, startY, velocityX, velocityY, 0, mSurfaceSizeBuffer.x - mContentRect.width(), 0,
-				mSurfaceSizeBuffer.y - mContentRect.height(), mContentRect.width() / 2, mContentRect.height() / 2);
-		ViewCompat.postInvalidateOnAnimation(this);
-	}
-
-	/**
-	 * Computes the current scrollable surface size, in pixels. For example, if the entire chart area is visible, this
-	 * is simply the current size of {@link #mContentRect}. If the chart is zoomed in 200% in both directions, the
-	 * returned size will be twice as large horizontally and vertically.
-	 */
-	private void computeScrollSurfaceSize(Point out) {
-		out.set((int) (mMaximumViewport.width() * mContentRect.width() / mCurrentViewport.width()),
-				(int) (mMaximumViewport.height() * mContentRect.height() / mCurrentViewport.height()));
-	}
-
-	/**
-	 * Sets the current viewport (defined by {@link #mCurrentViewport}) to the given X and Y positions. Note that the Y
-	 * value represents the topmost pixel position, and thus the bottom of the {@link #mCurrentViewport} rectangle. For
-	 * more details on why top and bottom are flipped, see {@link #mCurrentViewport}.
-	 */
-	private void setViewportBottomLeft(float x, float y) {
-		/**
-		 * Constrains within the scroll range. The scroll range is simply the viewport extremes (AXIS_X_MAX, etc.) minus
-		 * the viewport size. For example, if the extrema were 0 and 10, and the viewport size was 2, the scroll range
-		 * would be 0 to 8.
-		 */
-
-		final float curWidth = mCurrentViewport.width();
-		final float curHeight = mCurrentViewport.height();
-		x = Math.max(mMaximumViewport.left, Math.min(x, mMaximumViewport.right - curWidth));
-		y = Math.max(mMaximumViewport.top + curHeight, Math.min(y, mMaximumViewport.bottom));
-		mCurrentViewport.set(x, y - curHeight, x + curWidth, y);
+		mScroller.fling(startX, startY, velocityX, velocityY, 0,
+				mSurfaceSizeBuffer.x - mChartCalculator.mContentRect.width(), 0, mSurfaceSizeBuffer.y
+						- mChartCalculator.mContentRect.height(), mChartCalculator.mContentRect.width() / 2,
+				mChartCalculator.mContentRect.height() / 2);
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
 	public void setData(final Data data) {
 		mData = data;
 		mData.calculateRanges();
-		calculateYAxisMargin();
-		calculateXAxisMargin();
-		calculateContentArea();
-		calculateViewport();
+		mChartCalculator.calculateAxisYMargin(getContext(), mData.axisY, mAxisTextPaint);
+		mChartCalculator.calculateAxisXMargin(getContext(), mData.axisX, mAxisTextPaint);
+		mChartCalculator.calculateViewport(mData);
 		ViewCompat.postInvalidateOnAnimation(LineChart.this);
 	}
 
@@ -709,9 +537,7 @@ public class LineChart extends View {
 			animatedPoint.update(scale);
 		}
 		mData.calculateRanges();
-		calculateYAxisMargin();
-		calculateXAxisMargin();
-		calculateViewport();
+		mChartCalculator.calculateViewport(mData);
 		ViewCompat.postInvalidateOnAnimation(LineChart.this);
 	}
 
@@ -753,17 +579,18 @@ public class LineChart extends View {
 			 * Smaller viewport means bigger zoom so for zoomIn scale should have value <1, for zoomOout >1
 			 */
 			float scale = 2.0f - detector.getScaleFactor();
-			final float newWidth = scale * mCurrentViewport.width();
-			final float newHeight = scale * mCurrentViewport.height();
+			final float newWidth = scale * mChartCalculator.mCurrentViewport.width();
+			final float newHeight = scale * mChartCalculator.mCurrentViewport.height();
 			final float focusX = detector.getFocusX();
 			final float focusY = detector.getFocusY();
-			pixelsToPoint(focusX, focusY, viewportFocus);
-			mCurrentViewport.left = viewportFocus.x - (focusX - mContentRect.left) * (newWidth / mContentRect.width());
-			mCurrentViewport.top = viewportFocus.y - (mContentRect.bottom - focusY)
-					* (newHeight / mContentRect.height());
-			mCurrentViewport.right = mCurrentViewport.left + newWidth;
-			mCurrentViewport.bottom = mCurrentViewport.top + newHeight;
-			constrainViewport();
+			mChartCalculator.rawPixelsToDataPoint(focusX, focusY, viewportFocus);
+			mChartCalculator.mCurrentViewport.left = viewportFocus.x - (focusX - mChartCalculator.mContentRect.left)
+					* (newWidth / mChartCalculator.mContentRect.width());
+			mChartCalculator.mCurrentViewport.top = viewportFocus.y - (mChartCalculator.mContentRect.bottom - focusY)
+					* (newHeight / mChartCalculator.mContentRect.height());
+			mChartCalculator.mCurrentViewport.right = mChartCalculator.mCurrentViewport.left + newWidth;
+			mChartCalculator.mCurrentViewport.bottom = mChartCalculator.mCurrentViewport.top + newHeight;
+			mChartCalculator.constrainViewport();
 			ViewCompat.postInvalidateOnAnimation(LineChart.this);
 			return true;
 		}
@@ -772,7 +599,7 @@ public class LineChart extends View {
 	private class ChartGestureListener extends GestureDetector.SimpleOnGestureListener {
 		@Override
 		public boolean onDown(MotionEvent e) {
-			mScrollerStartViewport.set(mCurrentViewport);
+			mScrollerStartViewport.set(mChartCalculator.mCurrentViewport);
 			mScroller.abortAnimation();
 			ViewCompat.postInvalidateOnAnimation(LineChart.this);
 			return true;
@@ -781,7 +608,7 @@ public class LineChart extends View {
 		@Override
 		public boolean onDoubleTap(MotionEvent e) {
 			mZoomer.forceFinished(true);
-			if (pixelsToPoint(e.getX(), e.getY(), mZoomFocalPoint)) {
+			if (mChartCalculator.rawPixelsToDataPoint(e.getX(), e.getY(), mZoomFocalPoint)) {
 				mZoomer.startZoom(ZOOM_AMOUNT);
 			}
 			ViewCompat.postInvalidateOnAnimation(LineChart.this);
@@ -797,10 +624,13 @@ public class LineChart extends View {
 			 * computeScrollSurfaceSize()}. For additional information about the viewport, see the comments for
 			 * {@link mCurrentViewport}.
 			 */
-			float viewportOffsetX = distanceX * mCurrentViewport.width() / mContentRect.width();
-			float viewportOffsetY = -distanceY * mCurrentViewport.height() / mContentRect.height();
-			computeScrollSurfaceSize(mSurfaceSizeBuffer);
-			setViewportBottomLeft(mCurrentViewport.left + viewportOffsetX, mCurrentViewport.bottom + viewportOffsetY);
+			float viewportOffsetX = distanceX * mChartCalculator.mCurrentViewport.width()
+					/ mChartCalculator.mContentRect.width();
+			float viewportOffsetY = -distanceY * mChartCalculator.mCurrentViewport.height()
+					/ mChartCalculator.mContentRect.height();
+			mChartCalculator.computeScrollSurfaceSize(mSurfaceSizeBuffer);
+			mChartCalculator.setViewportBottomLeft(mChartCalculator.mCurrentViewport.left + viewportOffsetX,
+					mChartCalculator.mCurrentViewport.bottom + viewportOffsetY, LineChart.this);
 			return true;
 		}
 
