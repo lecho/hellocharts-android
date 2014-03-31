@@ -8,7 +8,6 @@ import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
 import lecho.lib.hellocharts.gestures.ChartZoomer;
 import lecho.lib.hellocharts.model.AnimatedPoint;
-import lecho.lib.hellocharts.model.Axis.AxisValue;
 import lecho.lib.hellocharts.model.Data;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.utils.Config;
@@ -28,7 +27,6 @@ import android.graphics.RectF;
 import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ScrollerCompat;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -49,13 +47,11 @@ public class LineChart extends View {
 	private static final int DEFAULT_AREA_TRANSPARENCY = 64;
 	private static final float ZOOM_AMOUNT = 0.25f;
 	private ChartCalculator mChartCalculator;
+	private AxesRenderer mAxisRenderer;
 	private int mPopupTextMargin;
 	private Path mLinePath = new Path();
-	private Path mYAxisNamePath = new Path();
 	private Paint mLinePaint = new Paint();
 	private Paint mTextPaint = new Paint();
-	private Paint mAxisTextPaint = new Paint();
-	private Paint mAxisLinePaint = new Paint();
 	private Data mData;
 	private float mLineWidth;
 	private float mPointRadius;
@@ -94,6 +90,7 @@ public class LineChart extends View {
 		initPaints();
 		initAnimatiors();
 		mChartCalculator = new ChartCalculator(context);
+		mAxisRenderer = new AxesRenderer();
 	}
 
 	@SuppressLint("NewApi")
@@ -117,14 +114,6 @@ public class LineChart extends View {
 		mTextPaint.setStyle(Paint.Style.FILL);
 		mTextPaint.setStrokeWidth(1);
 		mTextPaint.setTextSize(Utils.dp2px(getContext(), DEFAULT_TEXT_SIZE_DP));
-
-		mAxisLinePaint.setAntiAlias(true);
-		mAxisLinePaint.setStyle(Paint.Style.STROKE);
-		mAxisLinePaint.setStrokeWidth(1);
-
-		mAxisTextPaint.setAntiAlias(true);
-		mAxisTextPaint.setStyle(Paint.Style.FILL);
-		mAxisTextPaint.setStrokeWidth(1);
 	}
 
 	private void initAnimatiors() {
@@ -169,8 +158,8 @@ public class LineChart extends View {
 		long time = System.nanoTime();
 		super.onDraw(canvas);
 		if (mAxesOn) {
-			drawXAxis(canvas);
-			drawYAxis(canvas);
+			mAxisRenderer.drawAxisX(getContext(), canvas, mData.axisX, mChartCalculator);
+			mAxisRenderer.drawAxisY(getContext(), canvas, mData.axisY, mChartCalculator);
 		}
 		int clipRestoreCount = canvas.save();
 		mChartCalculator.calculateClippingArea();// only if zoom is enabled
@@ -183,65 +172,6 @@ public class LineChart extends View {
 		}
 		canvas.restoreToCount(clipRestoreCount);
 		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
-	}
-
-	private void drawXAxis(Canvas canvas) {
-		mAxisLinePaint.setColor(mData.axisX.color);
-		mAxisTextPaint.setColor(mData.axisX.color);
-		mAxisTextPaint.setTextSize(Utils.sp2px(getContext(), mData.axisX.textSize));
-		mAxisTextPaint.setTextAlign(Align.CENTER);
-		final float baselineY;
-		if (TextUtils.isEmpty(mData.axisX.name)) {
-			baselineY = mChartCalculator.mContentRectWithMargins.bottom + mChartCalculator.mAxisXMargin;
-		} else {
-			baselineY = mChartCalculator.mContentRectWithMargins.bottom
-					+ (mChartCalculator.mAxisXMargin - mChartCalculator.mCommonMargin) / 2;
-			canvas.drawText(mData.axisX.name, mChartCalculator.mContentRect.centerX(),
-					mChartCalculator.mContentRectWithMargins.bottom + mChartCalculator.mAxisXMargin, mAxisTextPaint);
-		}
-		canvas.drawLine(mChartCalculator.mContentRectWithMargins.left, mChartCalculator.mContentRect.bottom,
-				mChartCalculator.mContentRectWithMargins.right, mChartCalculator.mContentRect.bottom, mAxisLinePaint);
-		for (AxisValue axisValue : mData.axisX.values) {
-			final float rawX = mChartCalculator.calculateRawX(axisValue.value);
-			final int rawXround = (int) rawX;
-			if (rawXround >= mChartCalculator.mContentRect.left && rawXround <= mChartCalculator.mContentRect.right) {
-				final String text = mData.axisX.formatter.formatValue(axisValue);
-				canvas.drawText(text, rawX, baselineY, mAxisTextPaint);
-			}
-		}
-	}
-
-	private void drawYAxis(Canvas canvas) {
-		mAxisLinePaint.setColor(mData.axisY.color);
-		mAxisTextPaint.setColor(mData.axisY.color);
-		mAxisTextPaint.setTextSize(Utils.sp2px(getContext(), mData.axisX.textSize));
-		mAxisTextPaint.setTextAlign(Align.CENTER);
-		if (!TextUtils.isEmpty(mData.axisY.name)) {
-			final float baselineY;
-			if (mData.axisY.values.isEmpty()) {
-				baselineY = mChartCalculator.mContentRectWithMargins.left;
-			} else {
-				baselineY = mChartCalculator.mContentRectWithMargins.left
-						- (mChartCalculator.mAxisYMargin - mChartCalculator.mCommonMargin) / 2
-						- mChartCalculator.mCommonMargin;
-			}
-			mYAxisNamePath.moveTo(baselineY, mChartCalculator.mContentRect.bottom);
-			mYAxisNamePath.lineTo(baselineY, mChartCalculator.mContentRect.top);
-			canvas.drawTextOnPath(mData.axisY.name, mYAxisNamePath, 0, 0, mAxisTextPaint);
-			mYAxisNamePath.reset();
-		}
-		mAxisTextPaint.setTextAlign(Align.RIGHT);
-		for (AxisValue axisValue : mData.axisY.values) {
-			// TODO: compare axisValue with current viewport to skip calculations for values out of range
-			final String text = mData.axisY.formatter.formatValue(axisValue);
-			final float rawY = mChartCalculator.calculateRawY(axisValue.value);
-			final int rawYround = (int) rawY;
-			if (rawYround >= mChartCalculator.mContentRect.top && rawYround <= mChartCalculator.mContentRect.bottom) {
-				canvas.drawLine(mChartCalculator.mContentRectWithMargins.left, rawY,
-						mChartCalculator.mContentRectWithMargins.right, rawY, mAxisLinePaint);
-				canvas.drawText(text, mChartCalculator.mContentRectWithMargins.left, rawY, mAxisTextPaint);
-			}
-		}
 	}
 
 	private void drawLines(Canvas canvas) {
@@ -522,8 +452,7 @@ public class LineChart extends View {
 	public void setData(final Data data) {
 		mData = data;
 		mData.calculateRanges();
-		mChartCalculator.calculateAxisYMargin(getContext(), mData.axisY, mAxisTextPaint);
-		mChartCalculator.calculateAxisXMargin(getContext(), mData.axisX, mAxisTextPaint);
+		mChartCalculator.calculateAxesMargins(getContext(), mAxisRenderer, mData);
 		mChartCalculator.calculateViewport(mData);
 		ViewCompat.postInvalidateOnAnimation(LineChart.this);
 	}

@@ -1,10 +1,8 @@
 package lecho.lib.hellocharts;
 
-import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Data;
 import lecho.lib.hellocharts.utils.Utils;
 import android.content.Context;
-import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -122,44 +120,17 @@ public class ChartCalculator {
 		}
 	}
 
-	// TODO improve margin calculation by move paint outside this method.
-	public void calculateAxisXMargin(Context context, Axis axisX, Paint axisTextPaint) {
-		mAxisXMargin = 0;
-		axisTextPaint.setTextSize(Utils.sp2px(context, axisX.textSize));
-		if (!axisX.values.isEmpty()) {
-			final Rect textBounds = new Rect();
-			// Hard coded only for text height calculation.
-			axisTextPaint.getTextBounds("X", 0, 1, textBounds);
-			mAxisXMargin = textBounds.height();
+	public void calculateAxesMargins(Context context, AxesRenderer axesRenderer, Data data) {
+		mAxisXMargin = axesRenderer.getAxisXHeight(context, data.axisX) + mCommonMargin;
+		if (TextUtils.isEmpty(data.axisX.name)) {
+			// additonal margin for separation axis name from axis values.
+			mAxisXMargin += mCommonMargin;
 		}
-		if (!TextUtils.isEmpty(axisX.name)) {
-			final Rect textBounds = new Rect();
-			axisTextPaint.getTextBounds("X", 0, 1, textBounds);
-			// Additional margin for axis name.
-			mAxisXMargin += textBounds.height() + mCommonMargin;
-		}
-	}
 
-	public void calculateAxisYMargin(Context context, Axis axisY, Paint axisTextPaint) {
-		mAxisYMargin = 0;
-		axisTextPaint.setTextSize(Utils.sp2px(context, axisY.textSize));
-		if (!axisY.values.isEmpty()) {
-			final Rect textBounds = new Rect();
-			final String text;
-			final int axisSize = axisY.values.size();
-			if (Math.abs(axisY.values.get(0).value) > Math.abs(axisY.values.get(axisSize - 1).value)) {
-				text = axisY.formatter.formatValue(axisY.values.get(0));
-			} else {
-				text = axisY.formatter.formatValue(axisY.values.get(axisSize - 1));
-			}
-			axisTextPaint.getTextBounds(text, 0, text.length(), textBounds);
-			mAxisYMargin = textBounds.width();
-		}
-		if (!TextUtils.isEmpty(axisY.name)) {
-			// Additional margin for axis name.
-			final Rect textBounds = new Rect();
-			axisTextPaint.getTextBounds("X", 0, 1, textBounds);
-			mAxisYMargin += textBounds.width() + mCommonMargin;
+		mAxisYMargin = axesRenderer.getAxisYWidth(context, data.axisY) + mCommonMargin;
+		if (TextUtils.isEmpty(data.axisY.name)) {
+			// additional margin for separation axis name from axis values.
+			mAxisYMargin += mCommonMargin;
 		}
 	}
 
