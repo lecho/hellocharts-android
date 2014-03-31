@@ -8,7 +8,7 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.v4.view.ViewCompat;
-import android.text.TextUtils;
+import android.util.Pair;
 import android.view.View;
 
 public class ChartCalculator {
@@ -17,6 +17,8 @@ public class ChartCalculator {
 	public int mCommonMargin;
 	public int mAxisYMargin;
 	public int mAxisXMargin;
+	public Pair<Integer, Integer> mAxisXPair = new Pair<Integer, Integer>(0, 0);
+	public Pair<Integer, Integer> mAxisYPair = new Pair<Integer, Integer>(0, 0);
 	/**
 	 * The current area (in pixels) for chart data, including mCoomonMargin. Labels are drawn outside this area.
 	 */
@@ -121,15 +123,17 @@ public class ChartCalculator {
 	}
 
 	public void calculateAxesMargins(Context context, AxesRenderer axesRenderer, Data data) {
-		mAxisXMargin = axesRenderer.getAxisXHeight(context, data.axisX) + mCommonMargin;
-		if (TextUtils.isEmpty(data.axisX.name)) {
-			// additonal margin for separation axis name from axis values.
+		mAxisXPair = axesRenderer.getAxisXHeight(context, data.axisX);
+		mAxisXMargin = mAxisXPair.first + mAxisXPair.second;
+		if (mAxisXPair.first > 0 && mAxisXPair.second > 0) {
+			// Additional margin for separation axis name from axis values.
 			mAxisXMargin += mCommonMargin;
 		}
 
-		mAxisYMargin = axesRenderer.getAxisYWidth(context, data.axisY) + mCommonMargin;
-		if (TextUtils.isEmpty(data.axisY.name)) {
-			// additional margin for separation axis name from axis values.
+		mAxisYPair = axesRenderer.getAxisYWidth(context, data.axisY);
+		mAxisYMargin = mAxisYPair.first + mAxisYPair.second;
+		if (mAxisYPair.first > 0 && mAxisYPair.second > 0) {
+			// Additional margin for separation axis name from axis values.
 			mAxisYMargin += mCommonMargin;
 		}
 	}

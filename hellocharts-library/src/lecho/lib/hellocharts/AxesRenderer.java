@@ -10,6 +10,7 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.Paint.Align;
 import android.text.TextUtils;
+import android.util.Pair;
 
 public class AxesRenderer {
 
@@ -31,25 +32,32 @@ public class AxesRenderer {
 		mAxisYNamePath = new Path();
 	}
 
-	public int getAxisXHeight(Context context, Axis axisX) {
+	/**
+	 * 
+	 * @param context
+	 * @param axisX
+	 * @return height of axis values and axis name
+	 */
+	public Pair<Integer, Integer> getAxisXHeight(Context context, Axis axisX) {
 		// TODO: maybe get rid of Utils.sp2px
-		int axisHeight = 0;
+		int valuesHeight = 0;
 		mAxisTextPaint.setTextSize(Utils.sp2px(context, axisX.textSize));
 		if (!axisX.values.isEmpty()) {
 			final Rect textBounds = new Rect();
 			mAxisTextPaint.getTextBounds(axisX.formatter.formatValue(axisX.values.get(0)), 0, 1, textBounds);
-			axisHeight += textBounds.height();
+			valuesHeight = textBounds.height();
 		}
+		int nameHeight = 0;
 		if (!TextUtils.isEmpty(axisX.name)) {
 			final Rect textBounds = new Rect();
 			mAxisTextPaint.getTextBounds(axisX.name, 0, 1, textBounds);
-			axisHeight += textBounds.height();
+			nameHeight = textBounds.height();
 		}
-		return axisHeight;
+		return new Pair<Integer, Integer>(valuesHeight, nameHeight);
 	}
 
-	public int getAxisYWidth(Context context, Axis axisY) {
-		int axisWidth = 0;
+	public Pair<Integer, Integer> getAxisYWidth(Context context, Axis axisY) {
+		int valuesWidth = 0;
 		mAxisTextPaint.setTextSize(Utils.sp2px(context, axisY.textSize));
 		if (!axisY.values.isEmpty()) {
 			final Rect textBounds = new Rect();
@@ -61,15 +69,16 @@ public class AxesRenderer {
 				text = axisY.formatter.formatValue(axisY.values.get(axisY.values.size() - 1));
 			}
 			mAxisTextPaint.getTextBounds(text, 0, 1, textBounds);
-			axisWidth += textBounds.width();
+			valuesWidth += textBounds.width();
 		}
+		int nameWidth = 0;
 		if (!TextUtils.isEmpty(axisY.name)) {
 			final Rect textBounds = new Rect();
 			mAxisTextPaint.getTextBounds(axisY.name, 0, 1, textBounds);
 			// Additional margin for axis name.
-			axisWidth += textBounds.width();
+			nameWidth += textBounds.width();
 		}
-		return axisWidth;
+		return new Pair<Integer, Integer>(valuesWidth, nameWidth);
 	}
 
 	public void drawAxisX(Context context, Canvas canvas, Axis axisX, ChartCalculator chartCalculator) {
