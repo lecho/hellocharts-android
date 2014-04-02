@@ -17,8 +17,8 @@ public class ChartCalculator {
 	public int mCommonMargin;
 	public int mAxisYMargin;
 	public int mAxisXMargin;
-	public Pair<Integer, Integer> mAxisXPair = new Pair<Integer, Integer>(0, 0);
-	public Pair<Integer, Integer> mAxisYPair = new Pair<Integer, Integer>(0, 0);
+	public Pair<Integer, Integer> mAxisXHeight = new Pair<Integer, Integer>(0, 0);
+	public Pair<Integer, Integer> mAxisYWidth = new Pair<Integer, Integer>(0, 0);
 	/**
 	 * The current area (in pixels) for chart data, including mCoomonMargin. Labels are drawn outside this area.
 	 */
@@ -123,16 +123,16 @@ public class ChartCalculator {
 	}
 
 	public void calculateAxesMargins(Context context, AxesRenderer axesRenderer, Data data) {
-		mAxisXPair = axesRenderer.getAxisXHeight(context, data.axisX);
-		mAxisXMargin = mAxisXPair.first + mAxisXPair.second;
-		if (mAxisXPair.first > 0 && mAxisXPair.second > 0) {
+		mAxisXHeight = axesRenderer.getAxisXHeight(context, data.axisX);
+		mAxisXMargin = mAxisXHeight.first + mAxisXHeight.second;
+		if (mAxisXHeight.first > 0 && mAxisXHeight.second > 0) {
 			// Additional margin for separation axis name from axis values.
 			mAxisXMargin += mCommonMargin;
 		}
 
-		mAxisYPair = axesRenderer.getAxisYWidth(context, data.axisY);
-		mAxisYMargin = mAxisYPair.first + mAxisYPair.second;
-		if (mAxisYPair.first > 0 && mAxisYPair.second > 0) {
+		mAxisYWidth = axesRenderer.getAxisYWidth(context, data.axisY);
+		mAxisYMargin = mAxisYWidth.first + mAxisYWidth.second;
+		if (mAxisYWidth.first > 0 && mAxisYWidth.second > 0) {
 			// Additional margin for separation axis name from axis values.
 			mAxisYMargin += mCommonMargin;
 		}
