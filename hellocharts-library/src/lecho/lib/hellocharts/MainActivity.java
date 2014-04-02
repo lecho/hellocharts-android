@@ -60,7 +60,7 @@ public class MainActivity extends Activity {
 		Axis axisX = new Axis();
 		axisX.values = generateAxis(0.0f, 100.0f, 1.0f);
 		data.axisX = axisX;
-		//data.axisX.name = "ala ma kota";
+		data.axisX.name = "Axis X";
 		data.axisX.textSize = Utils.sp2px(getApplicationContext(), 10);
 		data.axisX.color = Color.parseColor("#FFBB33");
 

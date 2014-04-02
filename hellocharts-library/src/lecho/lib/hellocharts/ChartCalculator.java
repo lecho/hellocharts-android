@@ -14,7 +14,9 @@ import android.view.View;
 public class ChartCalculator {
 	// TODO: use getters/setters instead of public members
 	private static final int DEFAULT_COMMON_MARGIN_DP = 10;
+	private static final int DEFAULT_AXIS_NAME_MARGIN_DP = 4;
 	public int mCommonMargin;
+	private int mAxisNameMargin;
 	public int mAxisYMargin;
 	public int mAxisXMargin;
 	public Pair<Integer, Integer> mAxisXHeight = new Pair<Integer, Integer>(0, 0);
@@ -43,6 +45,7 @@ public class ChartCalculator {
 	 */
 	public ChartCalculator(Context context) {
 		mCommonMargin = Utils.dp2px(context, DEFAULT_COMMON_MARGIN_DP);
+		mAxisNameMargin = Utils.dp2px(context, DEFAULT_AXIS_NAME_MARGIN_DP);
 	}
 
 	/**
@@ -127,14 +130,14 @@ public class ChartCalculator {
 		mAxisXMargin = mAxisXHeight.first + mAxisXHeight.second;
 		if (mAxisXHeight.first > 0 && mAxisXHeight.second > 0) {
 			// Additional margin for separation axis name from axis values.
-			mAxisXMargin += mCommonMargin;
+			mAxisXMargin += mAxisNameMargin;
 		}
 
 		mAxisYWidth = axesRenderer.getAxisYWidth(context, data.axisY);
 		mAxisYMargin = mAxisYWidth.first + mAxisYWidth.second;
 		if (mAxisYWidth.first > 0 && mAxisYWidth.second > 0) {
 			// Additional margin for separation axis name from axis values.
-			mAxisYMargin += mCommonMargin;
+			mAxisYMargin += mAxisNameMargin;
 		}
 	}
 
