@@ -397,9 +397,16 @@ public class LineChart extends View {
 	@Override
 	public void computeScroll() {
 		super.computeScroll();
-		mChartScroller.computeScrollOffset(mChartCalculator);
-		mChartZoomer.computeZoom(mChartCalculator, mChartScroller);
-		ViewCompat.postInvalidateOnAnimation(this);
+		boolean needInvalidate = false;
+		if (mChartScroller.computeScrollOffset(mChartCalculator)) {
+			needInvalidate = true;
+		}
+		if (mChartZoomer.computeZoom(mChartCalculator, mChartScroller)) {
+			needInvalidate = true;
+		}
+		if (needInvalidate) {
+			ViewCompat.postInvalidateOnAnimation(this);
+		}
 	}
 
 	public void setData(final Data data) {

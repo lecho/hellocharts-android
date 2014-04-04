@@ -38,7 +38,7 @@ public class ChartScroller {
 				chartCalculator.mCurrentViewport.bottom + viewportOffsetY);
 	}
 
-	public void computeScrollOffset(ChartCalculator chartCalculator) {
+	public boolean computeScrollOffset(ChartCalculator chartCalculator) {
 		if (mScroller.computeScrollOffset()) {
 			// The scroller isn't finished, meaning a fling or programmatic pan operation is
 			// currently active.
@@ -48,7 +48,9 @@ public class ChartScroller {
 			float currYRange = chartCalculator.mMaximumViewport.bottom - chartCalculator.mMaximumViewport.height()
 					* mScroller.getCurrY() / mSurfaceSizeBuffer.y;
 			chartCalculator.setViewportBottomLeft(currXRange, currYRange);
+			return true;
 		}
+		return false;
 	}
 
 	public void fling(int velocityX, int velocityY, ChartCalculator chartCalculator) {
