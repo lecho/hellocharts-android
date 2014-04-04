@@ -25,7 +25,7 @@ import android.view.animation.Interpolator;
 /**
  * A simple class that animates double-touch zoom gestures. Functionally similar to a {@link android.widget.Scroller}.
  */
-public class ChartZoomer {
+public class ZoomerCompat {
 	/**
 	 * The interpolator, used for making zooms animate 'naturally.'
 	 */
@@ -56,7 +56,7 @@ public class ChartZoomer {
 	 */
 	private float mEndZoom;
 
-	public ChartZoomer(Context context) {
+	public ZoomerCompat(Context context) {
 		mInterpolator = new DecelerateInterpolator();
 		// TODO: use constant
 		mAnimationDurationMillis = Config.DEFAULT_SHORT_ANIMATION_DURATION;

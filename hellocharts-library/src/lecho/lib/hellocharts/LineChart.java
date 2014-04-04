@@ -6,7 +6,8 @@ import java.util.Locale;
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
-import lecho.lib.hellocharts.gestures.ChartZoomer;
+import lecho.lib.hellocharts.gestures.ChartScroller;
+import lecho.lib.hellocharts.gestures.ZoomerCompat;
 import lecho.lib.hellocharts.model.AnimatedPoint;
 import lecho.lib.hellocharts.model.Data;
 import lecho.lib.hellocharts.model.Line;
@@ -20,13 +21,11 @@ import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Cap;
 import android.graphics.Path;
-import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
 import android.support.v4.view.ViewCompat;
-import android.support.v4.widget.ScrollerCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -47,6 +46,7 @@ public class LineChart extends View {
 	private static final int DEFAULT_AREA_TRANSPARENCY = 64;
 	private static final float ZOOM_AMOUNT = 0.25f;
 	private ChartCalculator mChartCalculator;
+	private ChartScroller mChartScroller;
 	private AxesRenderer mAxisRenderer;
 	private int mPopupTextMargin;
 	private Path mLinePath = new Path();
@@ -65,11 +65,8 @@ public class LineChart extends View {
 	private ChartAnimator mAnimator;
 	private int mSelectedLineIndex = Integer.MIN_VALUE;
 	private int mSelectedPointIndex = Integer.MIN_VALUE;
-	private ChartZoomer mZoomer;
-	private ScrollerCompat mScroller;
+	private ZoomerCompat mZoomer;
 	private PointF mZoomFocalPoint = new PointF();// Used for double tap zoom
-	private RectF mScrollerStartViewport = new RectF(); // Used only for zooms and flings
-	private Point mSurfaceSizeBuffer = new Point();// Used for scroll and flings
 
 	private OnPointClickListener mOnPointClickListener = new DummyOnPointListener();
 	private ScaleGestureDetector mScaleGestureDetector = new ScaleGestureDetector(getContext(),
@@ -90,6 +87,7 @@ public class LineChart extends View {
 		initPaints();
 		initAnimatiors();
 		mChartCalculator = new ChartCalculator(context);
+		mChartScroller = new ChartScroller(context);
 		mAxisRenderer = new AxesRenderer();
 	}
 
@@ -101,8 +99,7 @@ public class LineChart extends View {
 		mPointPressedRadius = Utils.dp2px(getContext(), DEFAULT_POINT_PRESSED_RADIUS);
 		mTouchRadius = Utils.dp2px(getContext(), DEFAULT_POINT_TOUCH_RADIUS_DP);
 		mPopupTextMargin = Utils.dp2px(getContext(), DEFAULT_POPUP_TEXT_MARGIN);
-		mScroller = ScrollerCompat.create(getContext());
-		mZoomer = new ChartZoomer(getContext());
+		mZoomer = new ZoomerCompat(getContext());
 	}
 
 	private void initPaints() {
@@ -402,18 +399,10 @@ public class LineChart extends View {
 	@Override
 	public void computeScroll() {
 		super.computeScroll();
-		if (mScroller.computeScrollOffset()) {
-			// The scroller isn't finished, meaning a fling or programmatic pan operation is
-			// currently active.
-			mChartCalculator.computeScrollSurfaceSize(mSurfaceSizeBuffer);
-			float currXRange = mChartCalculator.mMaximumViewport.left + mChartCalculator.mMaximumViewport.width()
-					* mScroller.getCurrX() / mSurfaceSizeBuffer.x;
-			float currYRange = mChartCalculator.mMaximumViewport.bottom - mChartCalculator.mMaximumViewport.height()
-					* mScroller.getCurrY() / mSurfaceSizeBuffer.y;
-			mChartCalculator.setViewportBottomLeft(currXRange, currYRange, this);
-		}
+		mChartScroller.computeScrollOffset(mChartCalculator);
 
 		if (mZoomer.computeZoom()) {
+			RectF mScrollerStartViewport = mChartScroller.mScrollerStartViewport;
 			// Performs the zoom since a zoom is in progress (either programmatically or via
 			// double-touch).
 			final float newWidth = (1.0f - mZoomer.getCurrZoom()) * mScrollerStartViewport.width();
@@ -427,25 +416,7 @@ public class LineChart extends View {
 			mChartCalculator.mCurrentViewport.right = mZoomFocalPoint.x + newWidth * (1 - pointWithinViewportX);
 			mChartCalculator.mCurrentViewport.bottom = mZoomFocalPoint.y + newHeight * (1 - pointWithinViewportY);
 			mChartCalculator.constrainViewport();
-			ViewCompat.postInvalidateOnAnimation(this);
 		}
-	}
-
-	private void fling(int velocityX, int velocityY) {
-		// Flings use math in pixels (as opposed to math based on the viewport).
-		mChartCalculator.computeScrollSurfaceSize(mSurfaceSizeBuffer);
-		mScrollerStartViewport.set(mChartCalculator.mCurrentViewport);
-		int startX = (int) (mSurfaceSizeBuffer.x
-				* (mScrollerStartViewport.left - mChartCalculator.mMaximumViewport.left) / mChartCalculator.mMaximumViewport
-				.width());
-		int startY = (int) (mSurfaceSizeBuffer.y
-				* (mChartCalculator.mMaximumViewport.bottom - mScrollerStartViewport.bottom) / mChartCalculator.mMaximumViewport
-				.height());
-		mScroller.abortAnimation();// probably should be mScroller.forceFinish but compat doesn't have that method.
-		mScroller.fling(startX, startY, velocityX, velocityY, 0,
-				mSurfaceSizeBuffer.x - mChartCalculator.mContentRect.width(), 0, mSurfaceSizeBuffer.y
-						- mChartCalculator.mContentRect.height(), mChartCalculator.mContentRect.width() / 2,
-				mChartCalculator.mContentRect.height() / 2);
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
@@ -528,8 +499,7 @@ public class LineChart extends View {
 	private class ChartGestureListener extends GestureDetector.SimpleOnGestureListener {
 		@Override
 		public boolean onDown(MotionEvent e) {
-			mScrollerStartViewport.set(mChartCalculator.mCurrentViewport);
-			mScroller.abortAnimation();
+			mChartScroller.startScroll(mChartCalculator);
 			ViewCompat.postInvalidateOnAnimation(LineChart.this);
 			return true;
 		}
@@ -546,26 +516,15 @@ public class LineChart extends View {
 
 		@Override
 		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-			// Scrolling uses math based on the viewport (as opposed to math using pixels).
-			/**
-			 * Pixel offset is the offset in screen pixels, while viewport offset is the offset within the current
-			 * viewport. For additional information on surface sizes and pixel offsets, see the docs for {@link
-			 * computeScrollSurfaceSize()}. For additional information about the viewport, see the comments for
-			 * {@link mCurrentViewport}.
-			 */
-			float viewportOffsetX = distanceX * mChartCalculator.mCurrentViewport.width()
-					/ mChartCalculator.mContentRect.width();
-			float viewportOffsetY = -distanceY * mChartCalculator.mCurrentViewport.height()
-					/ mChartCalculator.mContentRect.height();
-			mChartCalculator.computeScrollSurfaceSize(mSurfaceSizeBuffer);
-			mChartCalculator.setViewportBottomLeft(mChartCalculator.mCurrentViewport.left + viewportOffsetX,
-					mChartCalculator.mCurrentViewport.bottom + viewportOffsetY, LineChart.this);
+			mChartScroller.scroll(distanceX, distanceY, mChartCalculator);
+			ViewCompat.postInvalidateOnAnimation(LineChart.this);
 			return true;
 		}
 
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-			fling((int) -velocityX, (int) -velocityY);
+			mChartScroller.fling((int) -velocityX, (int) -velocityY, mChartCalculator);
+			ViewCompat.postInvalidateOnAnimation(LineChart.this);
 			return true;
 		}
 	}

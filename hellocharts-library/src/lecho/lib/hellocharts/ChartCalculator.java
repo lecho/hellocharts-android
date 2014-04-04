@@ -7,7 +7,6 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.support.v4.view.ViewCompat;
 import android.util.Pair;
 import android.view.View;
 
@@ -79,8 +78,7 @@ public class ChartCalculator {
 	 * value represents the topmost pixel position, and thus the bottom of the {@link #mCurrentViewport} rectangle. For
 	 * more details on why top and bottom are flipped, see {@link #mCurrentViewport}.
 	 */
-	// TODO: move invalidate outside this method
-	public void setViewportBottomLeft(float x, float y, View chart) {
+	public void setViewportBottomLeft(float x, float y) {
 		/**
 		 * Constrains within the scroll range. The scroll range is simply the viewport extremes (AXIS_X_MAX, etc.) minus
 		 * the viewport size. For example, if the extrema were 0 and 10, and the viewport size was 2, the scroll range
@@ -92,7 +90,6 @@ public class ChartCalculator {
 		x = Math.max(mMaximumViewport.left, Math.min(x, mMaximumViewport.right - curWidth));
 		y = Math.max(mMaximumViewport.top + curHeight, Math.min(y, mMaximumViewport.bottom));
 		mCurrentViewport.set(x, y - curHeight, x + curWidth, y);
-		ViewCompat.postInvalidateOnAnimation(chart);
 	}
 
 	/**
