@@ -7,7 +7,7 @@ import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
 import lecho.lib.hellocharts.gestures.ChartScroller;
-import lecho.lib.hellocharts.gestures.ZoomerCompat;
+import lecho.lib.hellocharts.gestures.ChartZoomer;
 import lecho.lib.hellocharts.model.AnimatedPoint;
 import lecho.lib.hellocharts.model.Data;
 import lecho.lib.hellocharts.model.Line;
@@ -44,9 +44,9 @@ public class LineChart extends View {
 	private static final int DEFAULT_TEXT_SIZE_DP = 14;
 	private static final int DEFAULT_TEXT_COLOR = Color.WHITE;
 	private static final int DEFAULT_AREA_TRANSPARENCY = 64;
-	private static final float ZOOM_AMOUNT = 0.25f;
 	private ChartCalculator mChartCalculator;
 	private ChartScroller mChartScroller;
+	private ChartZoomer mChartZoomer;
 	private AxesRenderer mAxisRenderer;
 	private int mPopupTextMargin;
 	private Path mLinePath = new Path();
@@ -65,8 +65,6 @@ public class LineChart extends View {
 	private ChartAnimator mAnimator;
 	private int mSelectedLineIndex = Integer.MIN_VALUE;
 	private int mSelectedPointIndex = Integer.MIN_VALUE;
-	private ZoomerCompat mZoomer;
-	private PointF mZoomFocalPoint = new PointF();// Used for double tap zoom
 
 	private OnPointClickListener mOnPointClickListener = new DummyOnPointListener();
 	private ScaleGestureDetector mScaleGestureDetector = new ScaleGestureDetector(getContext(),
@@ -88,6 +86,7 @@ public class LineChart extends View {
 		initAnimatiors();
 		mChartCalculator = new ChartCalculator(context);
 		mChartScroller = new ChartScroller(context);
+		mChartZoomer = new ChartZoomer(context);
 		mAxisRenderer = new AxesRenderer();
 	}
 
@@ -99,7 +98,6 @@ public class LineChart extends View {
 		mPointPressedRadius = Utils.dp2px(getContext(), DEFAULT_POINT_PRESSED_RADIUS);
 		mTouchRadius = Utils.dp2px(getContext(), DEFAULT_POINT_TOUCH_RADIUS_DP);
 		mPopupTextMargin = Utils.dp2px(getContext(), DEFAULT_POPUP_TEXT_MARGIN);
-		mZoomer = new ZoomerCompat(getContext());
 	}
 
 	private void initPaints() {
@@ -400,23 +398,7 @@ public class LineChart extends View {
 	public void computeScroll() {
 		super.computeScroll();
 		mChartScroller.computeScrollOffset(mChartCalculator);
-
-		if (mZoomer.computeZoom()) {
-			RectF mScrollerStartViewport = mChartScroller.mScrollerStartViewport;
-			// Performs the zoom since a zoom is in progress (either programmatically or via
-			// double-touch).
-			final float newWidth = (1.0f - mZoomer.getCurrZoom()) * mScrollerStartViewport.width();
-			final float newHeight = (1.0f - mZoomer.getCurrZoom()) * mScrollerStartViewport.height();
-			final float pointWithinViewportX = (mZoomFocalPoint.x - mScrollerStartViewport.left)
-					/ mScrollerStartViewport.width();
-			final float pointWithinViewportY = (mZoomFocalPoint.y - mScrollerStartViewport.top)
-					/ mScrollerStartViewport.height();
-			mChartCalculator.mCurrentViewport.left = mZoomFocalPoint.x - newWidth * pointWithinViewportX;
-			mChartCalculator.mCurrentViewport.top = mZoomFocalPoint.y - newHeight * pointWithinViewportY;
-			mChartCalculator.mCurrentViewport.right = mZoomFocalPoint.x + newWidth * (1 - pointWithinViewportX);
-			mChartCalculator.mCurrentViewport.bottom = mZoomFocalPoint.y + newHeight * (1 - pointWithinViewportY);
-			mChartCalculator.constrainViewport();
-		}
+		mChartZoomer.computeZoom(mChartCalculator, mChartScroller);
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
@@ -506,10 +488,7 @@ public class LineChart extends View {
 
 		@Override
 		public boolean onDoubleTap(MotionEvent e) {
-			mZoomer.forceFinished(true);
-			if (mChartCalculator.rawPixelsToDataPoint(e.getX(), e.getY(), mZoomFocalPoint)) {
-				mZoomer.startZoom(ZOOM_AMOUNT);
-			}
+			mChartZoomer.startZoom(e, mChartCalculator);
 			ViewCompat.postInvalidateOnAnimation(LineChart.this);
 			return true;
 		}
