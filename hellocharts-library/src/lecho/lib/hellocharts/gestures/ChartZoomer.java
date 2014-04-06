@@ -5,11 +5,14 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 
 public class ChartZoomer {
 	private static final float ZOOM_AMOUNT = 0.25f;
 	private ZoomerCompat mZoomer;
 	private PointF mZoomFocalPoint = new PointF();// Used for double tap zoom
+	private PointF mViewportFocus = new PointF();
+	public RectF mScrollerStartViewport = new RectF(); // Used only for zooms and flings
 
 	public ChartZoomer(Context context) {
 		mZoomer = new ZoomerCompat(context);
@@ -17,14 +20,14 @@ public class ChartZoomer {
 
 	public void startZoom(MotionEvent e, ChartCalculator chartCalculator) {
 		mZoomer.forceFinished(true);
+		mScrollerStartViewport.set(chartCalculator.mCurrentViewport);
 		if (chartCalculator.rawPixelsToDataPoint(e.getX(), e.getY(), mZoomFocalPoint)) {
 			mZoomer.startZoom(ZOOM_AMOUNT);
 		}
 	}
 
-	public boolean computeZoom(ChartCalculator chartCalculator, ChartScroller chartScroller) {
+	public boolean computeZoom(ChartCalculator chartCalculator) {
 		if (mZoomer.computeZoom()) {
-			RectF mScrollerStartViewport = chartScroller.mScrollerStartViewport;
 			// Performs the zoom since a zoom is in progress (either programmatically or via
 			// double-touch).
 			final float newWidth = (1.0f - mZoomer.getCurrZoom()) * mScrollerStartViewport.width();
@@ -41,6 +44,25 @@ public class ChartZoomer {
 			return true;
 		}
 		return false;
+	}
+
+	public void scale(ChartCalculator chartCalculator, ScaleGestureDetector detector) {
+		/**
+		 * Smaller viewport means bigger zoom so for zoomIn scale should have value <1, for zoomOout >1
+		 */
+		float scale = 2.0f - detector.getScaleFactor();
+		final float newWidth = scale * chartCalculator.mCurrentViewport.width();
+		final float newHeight = scale * chartCalculator.mCurrentViewport.height();
+		final float focusX = detector.getFocusX();
+		final float focusY = detector.getFocusY();
+		chartCalculator.rawPixelsToDataPoint(focusX, focusY, mViewportFocus);
+		chartCalculator.mCurrentViewport.left = mViewportFocus.x - (focusX - chartCalculator.mContentRect.left)
+				* (newWidth / chartCalculator.mContentRect.width());
+		chartCalculator.mCurrentViewport.top = mViewportFocus.y - (chartCalculator.mContentRect.bottom - focusY)
+				* (newHeight / chartCalculator.mContentRect.height());
+		chartCalculator.mCurrentViewport.right = chartCalculator.mCurrentViewport.left + newWidth;
+		chartCalculator.mCurrentViewport.bottom = chartCalculator.mCurrentViewport.top + newHeight;
+		chartCalculator.constrainViewport();
 	}
 
 }

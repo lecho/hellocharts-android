@@ -21,7 +21,6 @@ import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Cap;
 import android.graphics.Path;
-import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
@@ -401,7 +400,7 @@ public class LineChart extends View {
 		if (mChartScroller.computeScrollOffset(mChartCalculator)) {
 			needInvalidate = true;
 		}
-		if (mChartZoomer.computeZoom(mChartCalculator, mChartScroller)) {
+		if (mChartZoomer.computeZoom(mChartCalculator)) {
 			needInvalidate = true;
 		}
 		if (needInvalidate) {
@@ -460,26 +459,10 @@ public class LineChart extends View {
 	}
 
 	private class ChartScaleGestureListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-		private PointF viewportFocus = new PointF();
 
 		@Override
 		public boolean onScale(ScaleGestureDetector detector) {
-			/**
-			 * Smaller viewport means bigger zoom so for zoomIn scale should have value <1, for zoomOout >1
-			 */
-			float scale = 2.0f - detector.getScaleFactor();
-			final float newWidth = scale * mChartCalculator.mCurrentViewport.width();
-			final float newHeight = scale * mChartCalculator.mCurrentViewport.height();
-			final float focusX = detector.getFocusX();
-			final float focusY = detector.getFocusY();
-			mChartCalculator.rawPixelsToDataPoint(focusX, focusY, viewportFocus);
-			mChartCalculator.mCurrentViewport.left = viewportFocus.x - (focusX - mChartCalculator.mContentRect.left)
-					* (newWidth / mChartCalculator.mContentRect.width());
-			mChartCalculator.mCurrentViewport.top = viewportFocus.y - (mChartCalculator.mContentRect.bottom - focusY)
-					* (newHeight / mChartCalculator.mContentRect.height());
-			mChartCalculator.mCurrentViewport.right = mChartCalculator.mCurrentViewport.left + newWidth;
-			mChartCalculator.mCurrentViewport.bottom = mChartCalculator.mCurrentViewport.top + newHeight;
-			mChartCalculator.constrainViewport();
+			mChartZoomer.scale(mChartCalculator, detector);
 			ViewCompat.postInvalidateOnAnimation(LineChart.this);
 			return true;
 		}
