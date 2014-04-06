@@ -8,14 +8,19 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
 public class ChartZoomer {
+	public static final int ZOOM_HORIZONTAL_AND_VERTICAL = 0;
+	public static final int ZOOM_HORIZONTAL = 1;
+	public static final int ZOOM_VERTICAL = 2;
 	private static final float ZOOM_AMOUNT = 0.25f;
 	private ZoomerCompat mZoomer;
+	private int mZoomType = ZOOM_HORIZONTAL_AND_VERTICAL;
 	private PointF mZoomFocalPoint = new PointF();// Used for double tap zoom
 	private PointF mViewportFocus = new PointF();
 	public RectF mScrollerStartViewport = new RectF(); // Used only for zooms and flings
 
-	public ChartZoomer(Context context) {
+	public ChartZoomer(Context context, int zoomType) {
 		mZoomer = new ZoomerCompat(context);
+		mZoomType = zoomType;
 	}
 
 	public void startZoom(MotionEvent e, ChartCalculator chartCalculator) {
@@ -36,11 +41,12 @@ public class ChartZoomer {
 					/ mScrollerStartViewport.width();
 			final float pointWithinViewportY = (mZoomFocalPoint.y - mScrollerStartViewport.top)
 					/ mScrollerStartViewport.height();
-			chartCalculator.mCurrentViewport.left = mZoomFocalPoint.x - newWidth * pointWithinViewportX;
-			chartCalculator.mCurrentViewport.top = mZoomFocalPoint.y - newHeight * pointWithinViewportY;
-			chartCalculator.mCurrentViewport.right = mZoomFocalPoint.x + newWidth * (1 - pointWithinViewportX);
-			chartCalculator.mCurrentViewport.bottom = mZoomFocalPoint.y + newHeight * (1 - pointWithinViewportY);
-			chartCalculator.constrainViewport();
+
+			float left = mZoomFocalPoint.x - newWidth * pointWithinViewportX;
+			float top = mZoomFocalPoint.y - newHeight * pointWithinViewportY;
+			float right = mZoomFocalPoint.x + newWidth * (1 - pointWithinViewportX);
+			float bottom = mZoomFocalPoint.y + newHeight * (1 - pointWithinViewportY);
+			setCurrentViewport(chartCalculator, left, top, right, bottom);
 			return true;
 		}
 		return false;
@@ -56,12 +62,25 @@ public class ChartZoomer {
 		final float focusX = detector.getFocusX();
 		final float focusY = detector.getFocusY();
 		chartCalculator.rawPixelsToDataPoint(focusX, focusY, mViewportFocus);
-		chartCalculator.mCurrentViewport.left = mViewportFocus.x - (focusX - chartCalculator.mContentRect.left)
+
+		float left = mViewportFocus.x - (focusX - chartCalculator.mContentRect.left)
 				* (newWidth / chartCalculator.mContentRect.width());
-		chartCalculator.mCurrentViewport.top = mViewportFocus.y - (chartCalculator.mContentRect.bottom - focusY)
+		float top = mViewportFocus.y - (chartCalculator.mContentRect.bottom - focusY)
 				* (newHeight / chartCalculator.mContentRect.height());
-		chartCalculator.mCurrentViewport.right = chartCalculator.mCurrentViewport.left + newWidth;
-		chartCalculator.mCurrentViewport.bottom = chartCalculator.mCurrentViewport.top + newHeight;
+		float right = chartCalculator.mCurrentViewport.left + newWidth;
+		float bottom = chartCalculator.mCurrentViewport.top + newHeight;
+		setCurrentViewport(chartCalculator, left, top, right, bottom);
+	}
+
+	private void setCurrentViewport(ChartCalculator chartCalculator, float left, float top, float right, float bottom) {
+		if (mZoomType == ZOOM_HORIZONTAL_AND_VERTICAL || mZoomType == ZOOM_HORIZONTAL) {
+			chartCalculator.mCurrentViewport.left = left;
+			chartCalculator.mCurrentViewport.right = right;
+		}
+		if (mZoomType == ZOOM_HORIZONTAL_AND_VERTICAL || mZoomType == ZOOM_VERTICAL) {
+			chartCalculator.mCurrentViewport.top = top;
+			chartCalculator.mCurrentViewport.bottom = bottom;
+		}
 		chartCalculator.constrainViewport();
 	}
 

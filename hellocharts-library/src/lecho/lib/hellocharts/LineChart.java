@@ -85,7 +85,7 @@ public class LineChart extends View {
 		initAnimatiors();
 		mChartCalculator = new ChartCalculator(context);
 		mChartScroller = new ChartScroller(context);
-		mChartZoomer = new ChartZoomer(context);
+		mChartZoomer = new ChartZoomer(context, ChartZoomer.ZOOM_HORIZONTAL_AND_VERTICAL);
 		mAxisRenderer = new AxesRenderer();
 	}
 
