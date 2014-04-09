@@ -1,7 +1,6 @@
 package lecho.lib.hellocharts;
 
 import java.util.List;
-import java.util.Locale;
 
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
@@ -11,6 +10,7 @@ import lecho.lib.hellocharts.gestures.ChartZoomer;
 import lecho.lib.hellocharts.model.AnimatedPoint;
 import lecho.lib.hellocharts.model.Data;
 import lecho.lib.hellocharts.model.Line;
+import lecho.lib.hellocharts.model.Point;
 import lecho.lib.hellocharts.utils.Config;
 import lecho.lib.hellocharts.utils.Utils;
 import android.annotation.SuppressLint;
@@ -59,7 +59,7 @@ public class LineChart extends View {
 	private boolean mLinesOn = true;
 	private boolean mInterpolationOn = true;
 	private boolean mPointsOn = true;
-	private boolean mPopupsOn = false;
+	private boolean mPopupsOn = true;
 	private boolean mAxesOn = true;
 	private ChartAnimator mAnimator;
 	private int mSelectedLineIndex = Integer.MIN_VALUE;
@@ -190,7 +190,7 @@ public class LineChart extends View {
 				final float rawValueY = mChartCalculator.calculateRawY(animatedPoint.point.y);
 				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mTextPaint);
 				if (mPopupsOn) {
-					drawValuePopup(canvas, mPopupTextMargin, animatedPoint.point.y, rawValueX, rawValueY);
+					drawValuePopup(canvas, mPopupTextMargin, line, animatedPoint.point, rawValueX, rawValueY);
 				}
 			}
 		}
@@ -202,14 +202,14 @@ public class LineChart extends View {
 			mTextPaint.setColor(line.color);
 			canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mTextPaint);
 			if (mPopupsOn) {
-				drawValuePopup(canvas, mPopupTextMargin, animatedPoint.point.y, rawValueX, rawValueY);
+				drawValuePopup(canvas, mPopupTextMargin, line, animatedPoint.point, rawValueX, rawValueY);
 			}
 		}
 	}
 
-	private void drawValuePopup(Canvas canvas, float offset, float valueY, float rawValueX, float rawValueY) {
+	private void drawValuePopup(Canvas canvas, float offset, Line line, Point value, float rawValueX, float rawValueY) {
 		mTextPaint.setTextAlign(Align.LEFT);
-		final String text = String.format(Locale.ENGLISH, Config.DEFAULT_VALUE_FORMAT, valueY);
+		final String text = line.formatter.formatValue(value);
 		final Rect textBounds = new Rect();
 		mTextPaint.getTextBounds(text, 0, text.length(), textBounds);
 		float left = rawValueX + offset;

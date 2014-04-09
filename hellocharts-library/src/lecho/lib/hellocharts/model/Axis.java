@@ -36,6 +36,7 @@ public class Axis {
 	}
 
 	public interface AxisValueFormatter {
+		public static final String DEFAULT_AXES_FORMAT = "%.0f";
 		public String formatValue(AxisValue value);
 	}
 
@@ -43,7 +44,7 @@ public class Axis {
 
 		@Override
 		public String formatValue(AxisValue axisValue) {
-			return String.format(Config.DEFAULT_AXES_FORMAT, axisValue.value);
+			return String.format(DEFAULT_AXES_FORMAT, axisValue.value);
 		}
 
 	}
