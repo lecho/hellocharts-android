@@ -14,6 +14,10 @@ public class ChartAnimatorV11 implements ChartAnimator, AnimatorListener, Animat
 	private final LineChart mChart;
 	private final long mDuration;
 
+	public ChartAnimatorV11(final LineChart chart) {
+		this(chart, DEFAULT_ANIMATION_DURATION);
+	}
+
 	public ChartAnimatorV11(final LineChart chart, final long duration) {
 		mChart = chart;
 		mDuration = duration;

@@ -29,6 +29,10 @@ public class ChartAnimatorV8 implements ChartAnimator {
 		}
 	};
 
+	public ChartAnimatorV8(final LineChart chart) {
+		this(chart, DEFAULT_ANIMATION_DURATION);
+	}
+
 	public ChartAnimatorV8(final LineChart chart, final long duration) {
 		mChart = chart;
 		mDuration = duration;

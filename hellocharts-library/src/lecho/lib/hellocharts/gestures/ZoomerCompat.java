@@ -16,7 +16,6 @@
 
 package lecho.lib.hellocharts.gestures;
 
-import lecho.lib.hellocharts.utils.Config;
 import android.content.Context;
 import android.os.SystemClock;
 import android.view.animation.DecelerateInterpolator;
@@ -26,6 +25,7 @@ import android.view.animation.Interpolator;
  * A simple class that animates double-touch zoom gestures. Functionally similar to a {@link android.widget.Scroller}.
  */
 public class ZoomerCompat {
+	private static final int DEFAULT_SHORT_ANIMATION_DURATION = 200;
 	/**
 	 * The interpolator, used for making zooms animate 'naturally.'
 	 */
@@ -59,7 +59,7 @@ public class ZoomerCompat {
 	public ZoomerCompat(Context context) {
 		mInterpolator = new DecelerateInterpolator();
 		// TODO: use constant
-		mAnimationDurationMillis = Config.DEFAULT_SHORT_ANIMATION_DURATION;
+		mAnimationDurationMillis = DEFAULT_SHORT_ANIMATION_DURATION;
 	}
 
 	/**

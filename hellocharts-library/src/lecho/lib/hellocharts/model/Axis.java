@@ -3,14 +3,15 @@ package lecho.lib.hellocharts.model;
 import java.util.Collections;
 import java.util.List;
 
-import lecho.lib.hellocharts.utils.Config;
+import android.graphics.Color;
 
 public class Axis {
-
+	private static final int DEFAULT_AXIS_TEXT_SIZE_SP = 10;
+	private static final int DEFAULT_AXIS_COLOR = Color.LTGRAY;
 	public List<AxisValue> values = Collections.emptyList();
 	public String name = "";
-	public int color = Config.DEFAULT_AXIS_COLOR;
-	public int textSize = Config.DEFAULT_AXIS_TEXT_SIZE_DP;
+	public int color = DEFAULT_AXIS_COLOR;
+	public int textSize = DEFAULT_AXIS_TEXT_SIZE_SP;
 	public AxisValueFormatter formatter = new DefaultAxisValueFormatter();
 
 	public Axis() {
@@ -37,6 +38,7 @@ public class Axis {
 
 	public interface AxisValueFormatter {
 		public static final String DEFAULT_AXES_FORMAT = "%.0f";
+
 		public String formatValue(AxisValue value);
 	}
 

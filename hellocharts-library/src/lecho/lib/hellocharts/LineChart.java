@@ -11,7 +11,6 @@ import lecho.lib.hellocharts.model.AnimatedPoint;
 import lecho.lib.hellocharts.model.Data;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.Point;
-import lecho.lib.hellocharts.utils.Config;
 import lecho.lib.hellocharts.utils.Utils;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -112,9 +111,9 @@ public class LineChart extends View {
 
 	private void initAnimatiors() {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-			mAnimator = new ChartAnimatorV8(this, Config.DEFAULT_ANIMATION_DURATION);
+			mAnimator = new ChartAnimatorV8(this);
 		} else {
-			mAnimator = new ChartAnimatorV11(this, Config.DEFAULT_ANIMATION_DURATION);
+			mAnimator = new ChartAnimatorV11(this);
 		}
 	}
 
