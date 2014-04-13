@@ -53,11 +53,14 @@ public class MainActivity extends Activity {
 		l1.color = Color.parseColor("#FFBB33");
 		l1.hasPoints = true;
 		l1.isSmooth = true;
+		l1.hasValuesPopups = true;
 		Line l2 = new Line(s2);
 		l2.color = Color.parseColor("#99CC00");
+		l2.isSmooth = true;
+		l2.isFilled = true;
 		List<Line> lines = new ArrayList<Line>();
 		lines.add(l1);
-		// lines.add(l2);
+		lines.add(l2);
 		data.lines = lines;
 		Axis axisX = new Axis();
 		axisX.values = generateAxis(0.0f, 100.0f, 1.0f);
