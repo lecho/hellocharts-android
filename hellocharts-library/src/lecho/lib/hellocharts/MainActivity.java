@@ -51,11 +51,13 @@ public class MainActivity extends Activity {
 		List<Point> s2 = generateValues(NUM_OF_VALUES, 1.0f);
 		Line l1 = new Line(s1);
 		l1.color = Color.parseColor("#FFBB33");
+		l1.hasPoints = true;
+		l1.isSmooth = true;
 		Line l2 = new Line(s2);
 		l2.color = Color.parseColor("#99CC00");
 		List<Line> lines = new ArrayList<Line>();
 		lines.add(l1);
-		//lines.add(l2);
+		// lines.add(l2);
 		data.lines = lines;
 		Axis axisX = new Axis();
 		axisX.values = generateAxis(0.0f, 100.0f, 1.0f);

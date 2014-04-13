@@ -39,13 +39,13 @@ public class LineChart extends View {
 	private static final int DEFAULT_POINT_TOUCH_RADIUS_DP = 12;
 	private static final int DEFAULT_POINT_PRESSED_RADIUS = DEFAULT_POINT_RADIUS_DP + 4;
 	private static final int DEFAULT_POPUP_TEXT_MARGIN = 4;
-	private static final int DEFAULT_TEXT_SIZE_DP = 14;
 	private static final int DEFAULT_TEXT_COLOR = Color.WHITE;
 	private static final int DEFAULT_AREA_TRANSPARENCY = 64;
 	private ChartCalculator mChartCalculator;
 	private ChartScroller mChartScroller;
 	private ChartZoomer mChartZoomer;
 	private AxesRenderer mAxisRenderer;
+	private LineChartRenderer mLineChartRenderer;
 	private int mPopupTextMargin;
 	private Path mLinePath = new Path();
 	private Paint mLinePaint = new Paint();
@@ -56,9 +56,6 @@ public class LineChart extends View {
 	private float mPointPressedRadius;
 	private float mTouchRadius;
 	private boolean mLinesOn = true;
-	private boolean mInterpolationOn = true;
-	private boolean mPointsOn = true;
-	private boolean mPopupsOn = true;
 	private boolean mAxesOn = true;
 	private ChartAnimator mAnimator;
 	private int mSelectedLineIndex = Integer.MIN_VALUE;
@@ -86,6 +83,7 @@ public class LineChart extends View {
 		mChartScroller = new ChartScroller(context);
 		mChartZoomer = new ChartZoomer(context, ChartZoomer.ZOOM_HORIZONTAL_AND_VERTICAL);
 		mAxisRenderer = new AxesRenderer();
+		mLineChartRenderer = new LineChartRenderer(context);
 	}
 
 	@SuppressLint("NewApi")
@@ -106,7 +104,6 @@ public class LineChart extends View {
 		mTextPaint.setAntiAlias(true);
 		mTextPaint.setStyle(Paint.Style.FILL);
 		mTextPaint.setStrokeWidth(1);
-		mTextPaint.setTextSize(Utils.dp2px(getContext(), DEFAULT_TEXT_SIZE_DP));
 	}
 
 	private void initAnimatiors() {
@@ -157,183 +154,177 @@ public class LineChart extends View {
 		int clipRestoreCount = canvas.save();
 		mChartCalculator.calculateClippingArea();// only if zoom is enabled
 		canvas.clipRect(mChartCalculator.mClippingRect);
-		if (mLinesOn) {
-			drawLines(canvas);
-		}
-		if (mPointsOn) {
-			drawPoints(canvas);
-		}
+		// TODO: draw lines
+		mLineChartRenderer.drawLines(canvas, mData, mChartCalculator);
 		canvas.restoreToCount(clipRestoreCount);
 		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
 	}
 
-	private void drawLines(Canvas canvas) {
-		mLinePaint.setStrokeWidth(mLineWidth);
-		for (Line line : mData.lines) {
-			if (mInterpolationOn) {
-				drawSmoothPath(canvas, line);
-			} else {
-				drawPath(canvas, line);
-			}
-			mLinePath.reset();
-		}
-	}
+	// private void drawLines(Canvas canvas) {
+	// mLinePaint.setStrokeWidth(mLineWidth);
+	// for (Line line : mData.lines) {
+	// if (mInterpolationOn) {
+	// drawSmoothPath(canvas, line);
+	// } else {
+	// drawPath(canvas, line);
+	// }
+	// mLinePath.reset();
+	// }
+	// }
 
-	// TODO Drawing points can be done in the same loop as drawing lines but it may cause problems in the future. Reuse
-	// calculated X/Y;
-	private void drawPoints(Canvas canvas) {
-		for (Line line : mData.lines) {
-			mTextPaint.setColor(line.color);
-			for (AnimatedPoint animatedPoint : line.animatedPoints) {
-				final float rawValueX = mChartCalculator.calculateRawX(animatedPoint.point.x);
-				final float rawValueY = mChartCalculator.calculateRawY(animatedPoint.point.y);
-				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mTextPaint);
-				if (mPopupsOn) {
-					drawValuePopup(canvas, mPopupTextMargin, line, animatedPoint.point, rawValueX, rawValueY);
-				}
-			}
-		}
-		if (mSelectedLineIndex >= 0 && mSelectedPointIndex >= 0) {
-			final Line line = mData.lines.get(mSelectedLineIndex);
-			final AnimatedPoint animatedPoint = line.animatedPoints.get(mSelectedPointIndex);
-			final float rawValueX = mChartCalculator.calculateRawX(animatedPoint.point.x);
-			final float rawValueY = mChartCalculator.calculateRawY(animatedPoint.point.y);
-			mTextPaint.setColor(line.color);
-			canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mTextPaint);
-			if (mPopupsOn) {
-				drawValuePopup(canvas, mPopupTextMargin, line, animatedPoint.point, rawValueX, rawValueY);
-			}
-		}
-	}
+	// // TODO Drawing points can be done in the same loop as drawing lines but it may cause problems in the future.
+	// Reuse
+	// // calculated X/Y;
+	// private void drawPoints(Canvas canvas) {
+	// for (Line line : mData.lines) {
+	// mTextPaint.setColor(line.color);
+	// for (AnimatedPoint animatedPoint : line.animatedPoints) {
+	// final float rawValueX = mChartCalculator.calculateRawX(animatedPoint.point.x);
+	// final float rawValueY = mChartCalculator.calculateRawY(animatedPoint.point.y);
+	// canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mTextPaint);
+	// if (mPopupsOn) {
+	// drawValuePopup(canvas, mPopupTextMargin, line, animatedPoint.point, rawValueX, rawValueY);
+	// }
+	// }
+	// }
+	// if (mSelectedLineIndex >= 0 && mSelectedPointIndex >= 0) {
+	// final Line line = mData.lines.get(mSelectedLineIndex);
+	// final AnimatedPoint animatedPoint = line.animatedPoints.get(mSelectedPointIndex);
+	// final float rawValueX = mChartCalculator.calculateRawX(animatedPoint.point.x);
+	// final float rawValueY = mChartCalculator.calculateRawY(animatedPoint.point.y);
+	// mTextPaint.setColor(line.color);
+	// canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mTextPaint);
+	// if (mPopupsOn) {
+	// drawValuePopup(canvas, mPopupTextMargin, line, animatedPoint.point, rawValueX, rawValueY);
+	// }
+	// }
+	// }
 
-	private void drawValuePopup(Canvas canvas, float offset, Line line, Point value, float rawValueX, float rawValueY) {
-		mTextPaint.setTextAlign(Align.LEFT);
-		final String text = line.formatter.formatValue(value);
-		final Rect textBounds = new Rect();
-		mTextPaint.getTextBounds(text, 0, text.length(), textBounds);
-		float left = rawValueX + offset;
-		float right = rawValueX + offset + textBounds.width() + mPopupTextMargin * 2;
-		float top = rawValueY - offset - textBounds.height() - mPopupTextMargin * 2;
-		float bottom = rawValueY - offset;
-		if (top < getPaddingTop() + mChartCalculator.mCommonMargin) {
-			top = rawValueY + offset;
-			bottom = rawValueY + offset + textBounds.height() + mPopupTextMargin * 2;
-		}
-		if (right > getWidth() - getPaddingRight() - mChartCalculator.mCommonMargin) {
-			left = rawValueX - offset - textBounds.width() - mPopupTextMargin * 2;
-			right = rawValueX - offset;
-		}
-		final RectF popup = new RectF(left, top, right, bottom);
-		canvas.drawRoundRect(popup, mPopupTextMargin, mPopupTextMargin, mTextPaint);
-		final int color = mTextPaint.getColor();
-		mTextPaint.setColor(DEFAULT_TEXT_COLOR);
-		canvas.drawText(text, left + mPopupTextMargin, bottom - mPopupTextMargin, mTextPaint);
-		mTextPaint.setColor(color);
-	}
-
-	private void drawPath(Canvas canvas, final Line line) {
-		int valueIndex = 0;
-		for (AnimatedPoint animatedPoint : line.animatedPoints) {
-			final float rawValueX = mChartCalculator.calculateRawX(animatedPoint.point.x);
-			final float rawValueY = mChartCalculator.calculateRawY(animatedPoint.point.y);
-			if (valueIndex == 0) {
-				mLinePath.moveTo(rawValueX, rawValueY);
-			} else {
-				mLinePath.lineTo(rawValueX, rawValueY);
-			}
-			++valueIndex;
-		}
-		mLinePaint.setColor(line.color);
-		canvas.drawPath(mLinePath, mLinePaint);
-		drawArea(canvas);
-	}
-
-	private void drawSmoothPath(Canvas canvas, final Line line) {
-		final int lineSize = line.animatedPoints.size();
-		float previousPointX = Float.NaN;
-		float previousPointY = Float.NaN;
-		float currentPointX = Float.NaN;
-		float currentPointY = Float.NaN;
-		float nextPointX = Float.NaN;
-		float nextPointY = Float.NaN;
-		for (int valueIndex = 0; valueIndex < lineSize - 1; ++valueIndex) {
-			if (Float.isNaN(currentPointX)) {
-				AnimatedPoint animatedPoint = line.animatedPoints.get(valueIndex);
-				currentPointX = mChartCalculator.calculateRawX(animatedPoint.point.x);
-				currentPointY = mChartCalculator.calculateRawY(animatedPoint.point.y);
-			}
-			if (Float.isNaN(previousPointX)) {
-				if (valueIndex > 0) {
-					AnimatedPoint animatedPoint = line.animatedPoints.get(valueIndex - 1);
-					previousPointX = mChartCalculator.calculateRawX(animatedPoint.point.x);
-					previousPointY = mChartCalculator.calculateRawY(animatedPoint.point.y);
-				} else {
-					previousPointX = currentPointX;
-					previousPointY = currentPointY;
-				}
-			}
-			if (Float.isNaN(nextPointX)) {
-				AnimatedPoint animatedPoint = line.animatedPoints.get(valueIndex + 1);
-				nextPointX = mChartCalculator.calculateRawX(animatedPoint.point.x);
-				nextPointY = mChartCalculator.calculateRawY(animatedPoint.point.y);
-			}
-			// afterNextPoint is always new one or it is equal nextPoint.
-			final float afterNextPointX;
-			final float afterNextPointY;
-			if (valueIndex < lineSize - 2) {
-				AnimatedPoint animatedPoint = line.animatedPoints.get(valueIndex + 2);
-				afterNextPointX = mChartCalculator.calculateRawX(animatedPoint.point.x);
-				afterNextPointY = mChartCalculator.calculateRawY(animatedPoint.point.y);
-			} else {
-				afterNextPointX = nextPointX;
-				afterNextPointY = nextPointY;
-			}
-			// Calculate control points.
-			final float firstDiffX = (nextPointX - previousPointX);
-			final float firstDiffY = (nextPointY - previousPointY);
-			final float secondDiffX = (afterNextPointX - currentPointX);
-			final float secondDiffY = (afterNextPointY - currentPointY);
-			final float firstControlPointX = currentPointX + (LINE_SMOOTHNES * firstDiffX);
-			final float firstControlPointY = currentPointY + (LINE_SMOOTHNES * firstDiffY);
-			final float secondControlPointX = nextPointX - (LINE_SMOOTHNES * secondDiffX);
-			final float secondControlPointY = nextPointY - (LINE_SMOOTHNES * secondDiffY);
-			// Move to start point.
-			if (valueIndex == 0) {
-				mLinePath.moveTo(currentPointX, currentPointY);
-			}
-			mLinePath.cubicTo(firstControlPointX, firstControlPointY, secondControlPointX, secondControlPointY,
-					nextPointX, nextPointY);
-			// Shift values to prevent recalculation of values that have been already calculated.
-			previousPointX = currentPointX;
-			previousPointY = currentPointY;
-			currentPointX = nextPointX;
-			currentPointY = nextPointY;
-			nextPointX = afterNextPointX;
-			nextPointY = afterNextPointY;
-		}
-		mLinePaint.setColor(line.color);
-		canvas.drawPath(mLinePath, mLinePaint);
-		drawArea(canvas);
-	}
-
-	private void drawArea(Canvas canvas) {
-		mLinePaint.setStyle(Paint.Style.FILL);
-		mLinePaint.setAlpha(DEFAULT_AREA_TRANSPARENCY);
-		mLinePath.lineTo(mChartCalculator.mContentRect.right, mChartCalculator.mContentRect.bottom);
-		mLinePath.lineTo(mChartCalculator.mContentRect.left, mChartCalculator.mContentRect.bottom);
-		mLinePath.close();
-		canvas.drawPath(mLinePath, mLinePaint);
-		mLinePaint.setStyle(Paint.Style.STROKE);
-	}
+	// private void drawValuePopup(Canvas canvas, float offset, Line line, Point value, float rawValueX, float
+	// rawValueY) {
+	// mTextPaint.setTextAlign(Align.LEFT);
+	// final String text = line.formatter.formatValue(value);
+	// final Rect textBounds = new Rect();
+	// mTextPaint.getTextBounds(text, 0, text.length(), textBounds);
+	// float left = rawValueX + offset;
+	// float right = rawValueX + offset + textBounds.width() + mPopupTextMargin * 2;
+	// float top = rawValueY - offset - textBounds.height() - mPopupTextMargin * 2;
+	// float bottom = rawValueY - offset;
+	// if (top < getPaddingTop() + mChartCalculator.mCommonMargin) {
+	// top = rawValueY + offset;
+	// bottom = rawValueY + offset + textBounds.height() + mPopupTextMargin * 2;
+	// }
+	// if (right > getWidth() - getPaddingRight() - mChartCalculator.mCommonMargin) {
+	// left = rawValueX - offset - textBounds.width() - mPopupTextMargin * 2;
+	// right = rawValueX - offset;
+	// }
+	// final RectF popup = new RectF(left, top, right, bottom);
+	// canvas.drawRoundRect(popup, mPopupTextMargin, mPopupTextMargin, mTextPaint);
+	// final int color = mTextPaint.getColor();
+	// mTextPaint.setColor(DEFAULT_TEXT_COLOR);
+	// canvas.drawText(text, left + mPopupTextMargin, bottom - mPopupTextMargin, mTextPaint);
+	// mTextPaint.setColor(color);
+	// }
+	//
+	// private void drawPath(Canvas canvas, final Line line) {
+	// int valueIndex = 0;
+	// for (AnimatedPoint animatedPoint : line.animatedPoints) {
+	// final float rawValueX = mChartCalculator.calculateRawX(animatedPoint.point.x);
+	// final float rawValueY = mChartCalculator.calculateRawY(animatedPoint.point.y);
+	// if (valueIndex == 0) {
+	// mLinePath.moveTo(rawValueX, rawValueY);
+	// } else {
+	// mLinePath.lineTo(rawValueX, rawValueY);
+	// }
+	// ++valueIndex;
+	// }
+	// mLinePaint.setColor(line.color);
+	// canvas.drawPath(mLinePath, mLinePaint);
+	// drawArea(canvas);
+	// }
+	//
+	// private void drawSmoothPath(Canvas canvas, final Line line) {
+	// final int lineSize = line.animatedPoints.size();
+	// float previousPointX = Float.NaN;
+	// float previousPointY = Float.NaN;
+	// float currentPointX = Float.NaN;
+	// float currentPointY = Float.NaN;
+	// float nextPointX = Float.NaN;
+	// float nextPointY = Float.NaN;
+	// for (int valueIndex = 0; valueIndex < lineSize - 1; ++valueIndex) {
+	// if (Float.isNaN(currentPointX)) {
+	// AnimatedPoint animatedPoint = line.animatedPoints.get(valueIndex);
+	// currentPointX = mChartCalculator.calculateRawX(animatedPoint.point.x);
+	// currentPointY = mChartCalculator.calculateRawY(animatedPoint.point.y);
+	// }
+	// if (Float.isNaN(previousPointX)) {
+	// if (valueIndex > 0) {
+	// AnimatedPoint animatedPoint = line.animatedPoints.get(valueIndex - 1);
+	// previousPointX = mChartCalculator.calculateRawX(animatedPoint.point.x);
+	// previousPointY = mChartCalculator.calculateRawY(animatedPoint.point.y);
+	// } else {
+	// previousPointX = currentPointX;
+	// previousPointY = currentPointY;
+	// }
+	// }
+	// if (Float.isNaN(nextPointX)) {
+	// AnimatedPoint animatedPoint = line.animatedPoints.get(valueIndex + 1);
+	// nextPointX = mChartCalculator.calculateRawX(animatedPoint.point.x);
+	// nextPointY = mChartCalculator.calculateRawY(animatedPoint.point.y);
+	// }
+	// // afterNextPoint is always new one or it is equal nextPoint.
+	// final float afterNextPointX;
+	// final float afterNextPointY;
+	// if (valueIndex < lineSize - 2) {
+	// AnimatedPoint animatedPoint = line.animatedPoints.get(valueIndex + 2);
+	// afterNextPointX = mChartCalculator.calculateRawX(animatedPoint.point.x);
+	// afterNextPointY = mChartCalculator.calculateRawY(animatedPoint.point.y);
+	// } else {
+	// afterNextPointX = nextPointX;
+	// afterNextPointY = nextPointY;
+	// }
+	// // Calculate control points.
+	// final float firstDiffX = (nextPointX - previousPointX);
+	// final float firstDiffY = (nextPointY - previousPointY);
+	// final float secondDiffX = (afterNextPointX - currentPointX);
+	// final float secondDiffY = (afterNextPointY - currentPointY);
+	// final float firstControlPointX = currentPointX + (LINE_SMOOTHNES * firstDiffX);
+	// final float firstControlPointY = currentPointY + (LINE_SMOOTHNES * firstDiffY);
+	// final float secondControlPointX = nextPointX - (LINE_SMOOTHNES * secondDiffX);
+	// final float secondControlPointY = nextPointY - (LINE_SMOOTHNES * secondDiffY);
+	// // Move to start point.
+	// if (valueIndex == 0) {
+	// mLinePath.moveTo(currentPointX, currentPointY);
+	// }
+	// mLinePath.cubicTo(firstControlPointX, firstControlPointY, secondControlPointX, secondControlPointY,
+	// nextPointX, nextPointY);
+	// // Shift values to prevent recalculation of values that have been already calculated.
+	// previousPointX = currentPointX;
+	// previousPointY = currentPointY;
+	// currentPointX = nextPointX;
+	// currentPointY = nextPointY;
+	// nextPointX = afterNextPointX;
+	// nextPointY = afterNextPointY;
+	// }
+	// mLinePaint.setColor(line.color);
+	// canvas.drawPath(mLinePath, mLinePaint);
+	// drawArea(canvas);
+	// }
+	//
+	// private void drawArea(Canvas canvas) {
+	// mLinePaint.setStyle(Paint.Style.FILL);
+	// mLinePaint.setAlpha(DEFAULT_AREA_TRANSPARENCY);
+	// mLinePath.lineTo(mChartCalculator.mContentRect.right, mChartCalculator.mContentRect.bottom);
+	// mLinePath.lineTo(mChartCalculator.mContentRect.left, mChartCalculator.mContentRect.bottom);
+	// mLinePath.close();
+	// canvas.drawPath(mLinePath, mLinePaint);
+	// mLinePaint.setStyle(Paint.Style.STROKE);
+	// }
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		mScaleGestureDetector.onTouchEvent(event);
 		mGestureDetector.onTouchEvent(event);
-		if (!mPointsOn) {
-			// No point - no touch events.
-			return true;
-		}
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			// Select only the first value within touched area.

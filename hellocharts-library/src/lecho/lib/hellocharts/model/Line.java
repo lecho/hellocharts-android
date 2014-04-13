@@ -12,6 +12,11 @@ public class Line {
 	public int color = Color.GREEN;
 	public int textSize = DEFAULT_LINE_VALUE_TEXT_SIZE_DP;
 	public LineValueFormatter formatter = new DefaultLineValueFormatter();
+	//TODO: replace boolean flags with something else
+	public boolean isFilled = false;
+	public boolean hasPoints = false;
+	public boolean hasValuesPopups = false;
+	public boolean isSmooth = false;
 
 	public Line(List<Point> points) {
 		setPoints(points);
