@@ -27,7 +27,7 @@ public class LineChartRenderer {
 	private int mPopupMargin;
 	private Path mLinePath = new Path();
 	private Paint mLinePaint = new Paint();
-	private Paint mTextPaint = new Paint();
+	private Paint mPointAndPopupPaint = new Paint();
 	private float mLineWidth;
 	private float mPointRadius;
 	private float mPointPressedRadius;
@@ -44,9 +44,9 @@ public class LineChartRenderer {
 		mLinePaint.setStyle(Paint.Style.STROKE);
 		mLinePaint.setStrokeCap(Cap.ROUND);
 
-		mTextPaint.setAntiAlias(true);
-		mTextPaint.setStyle(Paint.Style.FILL);
-		mTextPaint.setStrokeWidth(1);
+		mPointAndPopupPaint.setAntiAlias(true);
+		mPointAndPopupPaint.setStyle(Paint.Style.FILL);
+		mPointAndPopupPaint.setStrokeWidth(1);
 	}
 
 	public void drawLines(Canvas canvas, Data data, ChartCalculator chartCalculator) {
@@ -159,12 +159,11 @@ public class LineChartRenderer {
 	// calculated X/Y;
 	private void drawPoints(Canvas canvas, Data data, ChartCalculator chartCalculator) {
 		for (Line line : data.lines) {
-			mTextPaint.setColor(line.color);
-			mTextPaint.setTextSize(Utils.sp2px(mContext, line.textSize));
+			mPointAndPopupPaint.setColor(line.color);
 			for (AnimatedPoint animatedPoint : line.animatedPoints) {
 				final float rawValueX = chartCalculator.calculateRawX(animatedPoint.point.x);
 				final float rawValueY = chartCalculator.calculateRawY(animatedPoint.point.y);
-				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mTextPaint);
+				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointAndPopupPaint);
 				if (line.hasValuesPopups) {
 					drawValuePopup(chartCalculator, canvas, line, animatedPoint.point, rawValueX, rawValueY);
 				}
@@ -185,10 +184,11 @@ public class LineChartRenderer {
 
 	private void drawValuePopup(ChartCalculator chartCalculator, Canvas canvas, Line line, Point value,
 			float rawValueX, float rawValueY) {
-		mTextPaint.setTextAlign(Align.LEFT);
+		mPointAndPopupPaint.setTextAlign(Align.LEFT);
+		mPointAndPopupPaint.setTextSize(Utils.sp2px(mContext, line.textSize));
 		final String text = line.formatter.formatValue(value);
 		final Rect textBounds = new Rect();
-		mTextPaint.getTextBounds(text, 0, text.length(), textBounds);
+		mPointAndPopupPaint.getTextBounds(text, 0, text.length(), textBounds);
 		float left = rawValueX + mPopupMargin;
 		float right = rawValueX + mPopupMargin + textBounds.width() + mPopupMargin * 2;
 		float top = rawValueY - mPopupMargin - textBounds.height() - mPopupMargin * 2;
@@ -202,11 +202,11 @@ public class LineChartRenderer {
 			right = rawValueX - mPopupMargin;
 		}
 		final RectF popup = new RectF(left, top, right, bottom);
-		canvas.drawRoundRect(popup, mPopupMargin, mPopupMargin, mTextPaint);
-		final int color = mTextPaint.getColor();
-		mTextPaint.setColor(DEFAULT_TEXT_COLOR);
-		canvas.drawText(text, left + mPopupMargin, bottom - mPopupMargin, mTextPaint);
-		mTextPaint.setColor(color);
+		canvas.drawRoundRect(popup, mPopupMargin, mPopupMargin, mPointAndPopupPaint);
+		final int color = mPointAndPopupPaint.getColor();
+		mPointAndPopupPaint.setColor(DEFAULT_TEXT_COLOR);
+		canvas.drawText(text, left + mPopupMargin, bottom - mPopupMargin, mPointAndPopupPaint);
+		mPointAndPopupPaint.setColor(color);
 	}
 
 	private void drawArea(Canvas canvas, ChartCalculator chartCalculator) {
