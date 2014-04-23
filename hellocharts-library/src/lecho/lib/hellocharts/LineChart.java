@@ -10,18 +10,12 @@ import lecho.lib.hellocharts.gestures.ChartZoomer;
 import lecho.lib.hellocharts.model.AnimatedPoint;
 import lecho.lib.hellocharts.model.Data;
 import lecho.lib.hellocharts.model.Line;
-import lecho.lib.hellocharts.model.Point;
 import lecho.lib.hellocharts.utils.Utils;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Paint.Align;
 import android.graphics.Paint.Cap;
-import android.graphics.Path;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
@@ -33,29 +27,16 @@ import android.view.View;
 
 public class LineChart extends View {
 	private static final String TAG = "LineChart";
-	private static final float LINE_SMOOTHNES = 0.16f;
-	private static final int DEFAULT_LINE_WIDTH_DP = 3;
-	private static final int DEFAULT_POINT_RADIUS_DP = 6;
 	private static final int DEFAULT_POINT_TOUCH_RADIUS_DP = 12;
-	private static final int DEFAULT_POINT_PRESSED_RADIUS = DEFAULT_POINT_RADIUS_DP + 4;
-	private static final int DEFAULT_POPUP_TEXT_MARGIN = 4;
-	private static final int DEFAULT_TEXT_COLOR = Color.WHITE;
-	private static final int DEFAULT_AREA_TRANSPARENCY = 64;
 	private ChartCalculator mChartCalculator;
 	private ChartScroller mChartScroller;
 	private ChartZoomer mChartZoomer;
 	private AxesRenderer mAxisRenderer;
 	private LineChartRenderer mLineChartRenderer;
-	private int mPopupTextMargin;
-	private Path mLinePath = new Path();
 	private Paint mLinePaint = new Paint();
 	private Paint mTextPaint = new Paint();
 	private Data mData;
-	private float mLineWidth;
-	private float mPointRadius;
-	private float mPointPressedRadius;
 	private float mTouchRadius;
-	private boolean mLinesOn = true;
 	private boolean mAxesOn = true;
 	private ChartAnimator mAnimator;
 	private int mSelectedLineIndex = Integer.MIN_VALUE;
@@ -89,11 +70,7 @@ public class LineChart extends View {
 	@SuppressLint("NewApi")
 	private void initAttributes() {
 		setLayerType(LAYER_TYPE_SOFTWARE, null);
-		mLineWidth = Utils.dp2px(getContext(), DEFAULT_LINE_WIDTH_DP);
-		mPointRadius = Utils.dp2px(getContext(), DEFAULT_POINT_RADIUS_DP);
-		mPointPressedRadius = Utils.dp2px(getContext(), DEFAULT_POINT_PRESSED_RADIUS);
 		mTouchRadius = Utils.dp2px(getContext(), DEFAULT_POINT_TOUCH_RADIUS_DP);
-		mPopupTextMargin = Utils.dp2px(getContext(), DEFAULT_POPUP_TEXT_MARGIN);
 	}
 
 	private void initPaints() {
