@@ -5,12 +5,9 @@ import java.util.List;
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
-import lecho.lib.hellocharts.gestures.ChartScroller;
-import lecho.lib.hellocharts.gestures.ChartZoomer;
+import lecho.lib.hellocharts.gestures.ChartTouchHandler;
 import lecho.lib.hellocharts.model.AnimatedPoint;
 import lecho.lib.hellocharts.model.Data;
-import lecho.lib.hellocharts.model.Line;
-import lecho.lib.hellocharts.utils.Utils;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -20,32 +17,21 @@ import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.View;
 
 public class LineChart extends View {
 	private static final String TAG = "LineChart";
 	private static final int DEFAULT_POINT_TOUCH_RADIUS_DP = 12;
 	private ChartCalculator mChartCalculator;
-	private ChartScroller mChartScroller;
-	private ChartZoomer mChartZoomer;
 	private AxesRenderer mAxisRenderer;
 	private LineChartRenderer mLineChartRenderer;
+	private ChartTouchHandler mTouchHandler;
 	private Paint mLinePaint = new Paint();
 	private Paint mTextPaint = new Paint();
 	private Data mData;
-	private float mTouchRadius;
 	private boolean mAxesOn = true;
 	private ChartAnimator mAnimator;
-	private int mSelectedLineIndex = Integer.MIN_VALUE;
-	private int mSelectedPointIndex = Integer.MIN_VALUE;
-
-	private OnPointClickListener mOnPointClickListener = new DummyOnPointListener();
-	private ScaleGestureDetector mScaleGestureDetector = new ScaleGestureDetector(getContext(),
-			new ChartScaleGestureListener());
-	private GestureDetector mGestureDetector = new GestureDetector(getContext(), new ChartGestureListener());
 
 	public LineChart(Context context) {
 		this(context, null, 0);
@@ -61,16 +47,14 @@ public class LineChart extends View {
 		initPaints();
 		initAnimatiors();
 		mChartCalculator = new ChartCalculator(context);
-		mChartScroller = new ChartScroller(context);
-		mChartZoomer = new ChartZoomer(context, ChartZoomer.ZOOM_HORIZONTAL_AND_VERTICAL);
 		mAxisRenderer = new AxesRenderer();
 		mLineChartRenderer = new LineChartRenderer(context);
+		mTouchHandler = new ChartTouchHandler(context);
 	}
 
 	@SuppressLint("NewApi")
 	private void initAttributes() {
 		setLayerType(LAYER_TYPE_SOFTWARE, null);
-		mTouchRadius = Utils.dp2px(getContext(), DEFAULT_POINT_TOUCH_RADIUS_DP);
 	}
 
 	private void initPaints() {
@@ -139,77 +123,17 @@ public class LineChart extends View {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		mScaleGestureDetector.onTouchEvent(event);
-		mGestureDetector.onTouchEvent(event);
-		switch (event.getAction()) {
-		case MotionEvent.ACTION_DOWN:
-			// Select only the first value within touched area.
-			// Reverse loop to starts with the line drawn on top.
-			for (int lineIndex = mData.lines.size() - 1; lineIndex >= 0; --lineIndex) {
-				int valueIndex = 0;
-				for (AnimatedPoint animatedPoint : mData.lines.get(lineIndex).animatedPoints) {
-					final float rawX = mChartCalculator.calculateRawX(animatedPoint.point.x);
-					final float rawY = mChartCalculator.calculateRawY(animatedPoint.point.y);
-					if (Utils.isInArea(rawX, rawY, event.getX(), event.getY(), mTouchRadius)) {
-						mSelectedLineIndex = lineIndex;
-						mSelectedPointIndex = valueIndex;
-						invalidate();
-						return true;
-					}
-					++valueIndex;
-				}
-			}
-			return true;
-		case MotionEvent.ACTION_UP:
-			// If value was selected call click listener and clear selection.
-			if (mSelectedPointIndex >= 0) {
-				final Line line = mData.lines.get(mSelectedLineIndex);
-				final AnimatedPoint animatedPoint = line.animatedPoints.get(mSelectedPointIndex);
-				mOnPointClickListener.onPointClick(mSelectedLineIndex, mSelectedPointIndex, animatedPoint.point.x,
-						animatedPoint.point.y);
-				mSelectedLineIndex = Integer.MIN_VALUE;
-				mSelectedPointIndex = Integer.MIN_VALUE;
-				invalidate();
-			}
-			return true;
-		case MotionEvent.ACTION_MOVE:
-			// Clear selection if user is now touching outside touch area.
-			if (mSelectedPointIndex >= 0) {
-				final Line line = mData.lines.get(mSelectedLineIndex);
-				final AnimatedPoint animatedPoint = line.animatedPoints.get(mSelectedPointIndex);
-				final float rawX = mChartCalculator.calculateRawX(animatedPoint.point.x);
-				final float rawY = mChartCalculator.calculateRawY(animatedPoint.point.y);
-				if (!Utils.isInArea(rawX, rawY, event.getX(), event.getY(), mTouchRadius)) {
-					mSelectedLineIndex = Integer.MIN_VALUE;
-					mSelectedPointIndex = Integer.MIN_VALUE;
-					invalidate();
-				}
-			}
-			return true;
-		case MotionEvent.ACTION_CANCEL:
-			// Clear selection
-			if (mSelectedPointIndex >= 0) {
-				mSelectedLineIndex = Integer.MIN_VALUE;
-				mSelectedPointIndex = Integer.MIN_VALUE;
-				invalidate();
-			}
-			return true;
-		default:
-			return true;
+		super.onTouchEvent(event);
+		if (mTouchHandler.handleTouchEvent(event, mData, mChartCalculator)) {
+			ViewCompat.postInvalidateOnAnimation(this);
 		}
+		return true;
 	}
 
 	@Override
 	public void computeScroll() {
 		super.computeScroll();
-		boolean needInvalidate = false;
-		if (mChartScroller.computeScrollOffset(mChartCalculator)) {
-			needInvalidate = true;
-		}
-		if (mChartZoomer.computeZoom(mChartCalculator)) {
-			needInvalidate = true;
-		}
-		if (needInvalidate) {
+		if (mTouchHandler.computeScroll(this, mChartCalculator)) {
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
 	}
@@ -247,11 +171,11 @@ public class LineChart extends View {
 	}
 
 	public void setOnPointClickListener(OnPointClickListener listener) {
-		if (null == listener) {
-			mOnPointClickListener = new DummyOnPointListener();
-		} else {
-			mOnPointClickListener = listener;
-		}
+		// if (null == listener) {
+		// mOnPointClickListener = new DummyOnPointListener();
+		// } else {
+		// mOnPointClickListener = listener;
+		// }s
 	}
 
 	// Just empty listener to avoid NPE checks.
@@ -262,46 +186,6 @@ public class LineChart extends View {
 			// Do nothing.
 		}
 
-	}
-
-	private class ChartScaleGestureListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
-
-		@Override
-		public boolean onScale(ScaleGestureDetector detector) {
-			mChartZoomer.scale(mChartCalculator, detector);
-			ViewCompat.postInvalidateOnAnimation(LineChart.this);
-			return true;
-		}
-	}
-
-	private class ChartGestureListener extends GestureDetector.SimpleOnGestureListener {
-		@Override
-		public boolean onDown(MotionEvent e) {
-			mChartScroller.startScroll(mChartCalculator);
-			ViewCompat.postInvalidateOnAnimation(LineChart.this);
-			return true;
-		}
-
-		@Override
-		public boolean onDoubleTap(MotionEvent e) {
-			mChartZoomer.startZoom(e, mChartCalculator);
-			ViewCompat.postInvalidateOnAnimation(LineChart.this);
-			return true;
-		}
-
-		@Override
-		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-			mChartScroller.scroll(distanceX, distanceY, mChartCalculator);
-			ViewCompat.postInvalidateOnAnimation(LineChart.this);
-			return true;
-		}
-
-		@Override
-		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-			mChartScroller.fling((int) -velocityX, (int) -velocityY, mChartCalculator);
-			ViewCompat.postInvalidateOnAnimation(LineChart.this);
-			return true;
-		}
 	}
 
 }
