@@ -21,7 +21,8 @@ public class LineChartRenderer {
 	private static final int DEFAULT_LINE_WIDTH_DP = 3;
 	private static final int DEFAULT_POINT_RADIUS_DP = 6;
 	private static final int DEFAULT_POINT_PRESSED_RADIUS = DEFAULT_POINT_RADIUS_DP + 4;
-	private static final int DEFAULT_POPUP_MARGIN = 4;
+	private static final int DEFAULT_TOUCH_RADIUS_DP = 12;
+	private static final int DEFAULT_POPUP_MARGIN_DP = 4;
 	private static final int DEFAULT_TEXT_COLOR = Color.WHITE;
 	private static final int DEFAULT_AREA_TRANSPARENCY = 64;
 	private int mPopupMargin;
@@ -31,6 +32,7 @@ public class LineChartRenderer {
 	private float mLineWidth;
 	private float mPointRadius;
 	private float mPointPressedRadius;
+	private float mTouchRadius;
 	private Context mContext;
 
 	public LineChartRenderer(Context context) {
@@ -38,7 +40,8 @@ public class LineChartRenderer {
 		mLineWidth = Utils.dp2px(context, DEFAULT_LINE_WIDTH_DP);
 		mPointRadius = Utils.dp2px(context, DEFAULT_POINT_RADIUS_DP);
 		mPointPressedRadius = Utils.dp2px(context, DEFAULT_POINT_PRESSED_RADIUS);
-		mPopupMargin = Utils.dp2px(context, DEFAULT_POPUP_MARGIN);
+		mPopupMargin = Utils.dp2px(context, DEFAULT_POPUP_MARGIN_DP);
+		mTouchRadius = Utils.dp2px(context, DEFAULT_TOUCH_RADIUS_DP);
 
 		mLinePaint.setAntiAlias(true);
 		mLinePaint.setStyle(Paint.Style.STROKE);
@@ -217,6 +220,12 @@ public class LineChartRenderer {
 		mLinePath.close();
 		canvas.drawPath(mLinePath, mLinePaint);
 		mLinePaint.setStyle(Paint.Style.STROKE);
+	}
+
+	public boolean isInArea(float x, float y, float touchX, float touchY) {
+		float diffX = touchX - x;
+		float diffY = touchY - y;
+		return Math.pow(diffX, 2) + Math.pow(diffY, 2) <= 2 * Math.pow(mTouchRadius, 2);
 	}
 
 }
