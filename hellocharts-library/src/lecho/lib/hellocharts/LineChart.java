@@ -22,7 +22,6 @@ import android.view.View;
 
 public class LineChart extends View {
 	private static final String TAG = "LineChart";
-	private static final int DEFAULT_POINT_TOUCH_RADIUS_DP = 12;
 	private ChartCalculator mChartCalculator;
 	private AxesRenderer mAxisRenderer;
 	private LineChartRenderer mLineChartRenderer;

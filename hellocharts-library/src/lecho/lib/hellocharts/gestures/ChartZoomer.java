@@ -52,7 +52,7 @@ public class ChartZoomer {
 		return false;
 	}
 
-	public void scale(ChartCalculator chartCalculator, ScaleGestureDetector detector) {
+	public void scale(ScaleGestureDetector detector, ChartCalculator chartCalculator) {
 		/**
 		 * Smaller viewport means bigger zoom so for zoomIn scale should have value <1, for zoomOout >1
 		 */

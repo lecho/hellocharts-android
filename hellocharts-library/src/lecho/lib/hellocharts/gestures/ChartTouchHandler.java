@@ -105,7 +105,7 @@ public class ChartTouchHandler {
 
 		@Override
 		public boolean onScale(ScaleGestureDetector detector) {
-			// mChartZoomer.scale(mChartCalculator, detector);
+			mChartZoomer.scale(detector, mChart.getChartCalculator());
 			return true;
 		}
 	}
@@ -113,25 +113,25 @@ public class ChartTouchHandler {
 	private class ChartGestureListener extends GestureDetector.SimpleOnGestureListener {
 		@Override
 		public boolean onDown(MotionEvent e) {
-			// mChartScroller.startScroll(mChartCalculator);
+			mChartScroller.startScroll(mChart.getChartCalculator());
 			return true;
 		}
 
 		@Override
 		public boolean onDoubleTap(MotionEvent e) {
-			// mChartZoomer.startZoom(e, mChartCalculator);
+			mChartZoomer.startZoom(e, mChart.getChartCalculator());
 			return true;
 		}
 
 		@Override
 		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-			// mChartScroller.scroll(distanceX, distanceY, mChartCalculator);
+			mChartScroller.scroll(distanceX, distanceY, mChart.getChartCalculator());
 			return true;
 		}
 
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-			// mChartScroller.fling((int) -velocityX, (int) -velocityY, mChartCalculator);
+			mChartScroller.fling((int) -velocityX, (int) -velocityY, mChart.getChartCalculator());
 			return true;
 		}
 	}
