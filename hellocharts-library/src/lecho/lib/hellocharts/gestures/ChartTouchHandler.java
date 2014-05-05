@@ -20,8 +20,10 @@ public class ChartTouchHandler {
 	private OnPointClickListener mOnPointClickListener = new DummyOnPointListener();
 	private ChartScroller mChartScroller;
 	private ChartZoomer mChartZoomer;
+	private LineChart mChart;
 
-	public ChartTouchHandler(Context context) {
+	public ChartTouchHandler(Context context, LineChart chart) {
+		mChart = chart;
 		mGestureDetector = new GestureDetector(context, new ChartGestureListener());
 		mScaleGestureDetector = new ScaleGestureDetector(context, new ChartScaleGestureListener());
 		mChartScroller = new ChartScroller(context);
@@ -52,11 +54,11 @@ public class ChartTouchHandler {
 				for (AnimatedPoint animatedPoint : data.lines.get(lineIndex).animatedPoints) {
 					final float rawX = chartCalculator.calculateRawX(animatedPoint.point.x);
 					final float rawY = chartCalculator.calculateRawY(animatedPoint.point.y);
-					// if (Utils.isInArea(rawX, rawY, event.getX(), event.getY(), mTouchRadius)) {
-					// mSelectedLineIndex = lineIndex;
-					// mSelectedPointIndex = valueIndex;
-					// needInvalidate = true;
-					// }
+					if (mChart.getLineChartRenderer().isInArea(rawX, rawY, event.getX(), event.getY())) {
+						mSelectedLineIndex = lineIndex;
+						mSelectedPointIndex = valueIndex;
+						needInvalidate = true;
+					}
 					++valueIndex;
 				}
 			}
@@ -80,11 +82,11 @@ public class ChartTouchHandler {
 				final AnimatedPoint animatedPoint = line.animatedPoints.get(mSelectedPointIndex);
 				final float rawX = chartCalculator.calculateRawX(animatedPoint.point.x);
 				final float rawY = chartCalculator.calculateRawY(animatedPoint.point.y);
-				// if (!Utils.isInArea(rawX, rawY, event.getX(), event.getY(), mTouchRadius)) {
-				// mSelectedLineIndex = Integer.MIN_VALUE;
-				// mSelectedPointIndex = Integer.MIN_VALUE;
-				// needInvalidate = true;
-				// }
+				if (mChart.getLineChartRenderer().isInArea(rawX, rawY, event.getX(), event.getY())) {
+					mSelectedLineIndex = Integer.MIN_VALUE;
+					mSelectedPointIndex = Integer.MIN_VALUE;
+					needInvalidate = true;
+				}
 			}
 			break;
 		case MotionEvent.ACTION_CANCEL:
@@ -103,7 +105,7 @@ public class ChartTouchHandler {
 
 		@Override
 		public boolean onScale(ScaleGestureDetector detector) {
-			//mChartZoomer.scale(mChartCalculator, detector);
+			// mChartZoomer.scale(mChartCalculator, detector);
 			return true;
 		}
 	}
@@ -111,25 +113,25 @@ public class ChartTouchHandler {
 	private class ChartGestureListener extends GestureDetector.SimpleOnGestureListener {
 		@Override
 		public boolean onDown(MotionEvent e) {
-			//mChartScroller.startScroll(mChartCalculator);
+			// mChartScroller.startScroll(mChartCalculator);
 			return true;
 		}
 
 		@Override
 		public boolean onDoubleTap(MotionEvent e) {
-			//mChartZoomer.startZoom(e, mChartCalculator);
+			// mChartZoomer.startZoom(e, mChartCalculator);
 			return true;
 		}
 
 		@Override
 		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-			//mChartScroller.scroll(distanceX, distanceY, mChartCalculator);
+			// mChartScroller.scroll(distanceX, distanceY, mChartCalculator);
 			return true;
 		}
 
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-			//mChartScroller.fling((int) -velocityX, (int) -velocityY, mChartCalculator);
+			// mChartScroller.fling((int) -velocityX, (int) -velocityY, mChartCalculator);
 			return true;
 		}
 	}

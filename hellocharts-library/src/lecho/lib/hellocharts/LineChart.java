@@ -46,10 +46,10 @@ public class LineChart extends View {
 		initAttributes();
 		initPaints();
 		initAnimatiors();
-		mChartCalculator = new ChartCalculator(context);
+		setChartCalculator(new ChartCalculator(context));
 		mAxisRenderer = new AxesRenderer();
-		mLineChartRenderer = new LineChartRenderer(context);
-		mTouchHandler = new ChartTouchHandler(context);
+		setLineChartRenderer(new LineChartRenderer(context));
+		setTouchHandler(new ChartTouchHandler(context, this));
 	}
 
 	@SuppressLint("NewApi")
@@ -79,8 +79,8 @@ public class LineChart extends View {
 	protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
 		// TODO mPointRadus can change, recalculate in setter
-		mChartCalculator.calculateContentArea(this);
-		mChartCalculator.calculateViewport(mData);
+		getChartCalculator().calculateContentArea(this);
+		getChartCalculator().calculateViewport(mData);
 	}
 
 	// Automatically calculates Y axis values.
@@ -109,14 +109,14 @@ public class LineChart extends View {
 		long time = System.nanoTime();
 		super.onDraw(canvas);
 		if (mAxesOn) {
-			mAxisRenderer.drawAxisX(getContext(), canvas, mData.axisX, mChartCalculator);
-			mAxisRenderer.drawAxisY(getContext(), canvas, mData.axisY, mChartCalculator);
+			mAxisRenderer.drawAxisX(getContext(), canvas, mData.axisX, getChartCalculator());
+			mAxisRenderer.drawAxisY(getContext(), canvas, mData.axisY, getChartCalculator());
 		}
 		int clipRestoreCount = canvas.save();
-		mChartCalculator.calculateClippingArea();// only if zoom is enabled
-		canvas.clipRect(mChartCalculator.mClippingRect);
+		getChartCalculator().calculateClippingArea();// only if zoom is enabled
+		canvas.clipRect(getChartCalculator().mClippingRect);
 		// TODO: draw lines
-		mLineChartRenderer.drawLines(canvas, mData, mChartCalculator);
+		getLineChartRenderer().drawLines(canvas, mData, getChartCalculator());
 		canvas.restoreToCount(clipRestoreCount);
 		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
 	}
@@ -124,7 +124,7 @@ public class LineChart extends View {
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		super.onTouchEvent(event);
-		if (mTouchHandler.handleTouchEvent(event, mData, mChartCalculator)) {
+		if (getTouchHandler().handleTouchEvent(event, mData, getChartCalculator())) {
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
 		return true;
@@ -133,7 +133,7 @@ public class LineChart extends View {
 	@Override
 	public void computeScroll() {
 		super.computeScroll();
-		if (mTouchHandler.computeScroll(this, mChartCalculator)) {
+		if (getTouchHandler().computeScroll(this, getChartCalculator())) {
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
 	}
@@ -141,8 +141,8 @@ public class LineChart extends View {
 	public void setData(final Data data) {
 		mData = data;
 		mData.calculateRanges();
-		mChartCalculator.calculateAxesMargins(getContext(), mAxisRenderer, mData);
-		mChartCalculator.calculateViewport(mData);
+		getChartCalculator().calculateAxesMargins(getContext(), mAxisRenderer, mData);
+		getChartCalculator().calculateViewport(mData);
 		ViewCompat.postInvalidateOnAnimation(LineChart.this);
 	}
 
@@ -155,7 +155,7 @@ public class LineChart extends View {
 			animatedPoint.update(scale);
 		}
 		mData.calculateRanges();
-		mChartCalculator.calculateViewport(mData);
+		getChartCalculator().calculateViewport(mData);
 		ViewCompat.postInvalidateOnAnimation(LineChart.this);
 	}
 
@@ -178,14 +178,28 @@ public class LineChart extends View {
 		// }s
 	}
 
-	// Just empty listener to avoid NPE checks.
-	private static class DummyOnPointListener implements OnPointClickListener {
+	public LineChartRenderer getLineChartRenderer() {
+		return mLineChartRenderer;
+	}
 
-		@Override
-		public void onPointClick(int selectedSeriesIndex, int selectedValueIndex, float x, float y) {
-			// Do nothing.
-		}
+	public void setLineChartRenderer(LineChartRenderer lineChartRenderer) {
+		this.mLineChartRenderer = lineChartRenderer;
+	}
 
+	public ChartTouchHandler getTouchHandler() {
+		return mTouchHandler;
+	}
+
+	public void setTouchHandler(ChartTouchHandler touchHandler) {
+		this.mTouchHandler = touchHandler;
+	}
+
+	public ChartCalculator getChartCalculator() {
+		return mChartCalculator;
+	}
+
+	public void setChartCalculator(ChartCalculator chartCalculator) {
+		this.mChartCalculator = chartCalculator;
 	}
 
 }
