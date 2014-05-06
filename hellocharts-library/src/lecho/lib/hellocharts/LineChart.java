@@ -78,8 +78,8 @@ public class LineChart extends View {
 	protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
 		// TODO mPointRadus can change, recalculate in setter
-		getChartCalculator().calculateContentArea(this);
-		getChartCalculator().calculateViewport(mData);
+		mChartCalculator.calculateContentArea(this);
+		mChartCalculator.calculateViewport(mData);
 	}
 
 	// Automatically calculates Y axis values.
@@ -112,10 +112,10 @@ public class LineChart extends View {
 			mAxisRenderer.drawAxisY(getContext(), canvas, mData.axisY, getChartCalculator());
 		}
 		int clipRestoreCount = canvas.save();
-		getChartCalculator().calculateClippingArea();// only if zoom is enabled
-		canvas.clipRect(getChartCalculator().mClippingRect);
+		mChartCalculator.calculateClippingArea();// only if zoom is enabled
+		canvas.clipRect(mChartCalculator.mClippingRect);
 		// TODO: draw lines
-		getLineChartRenderer().drawLines(canvas);
+		mLineChartRenderer.drawLines(canvas);
 		canvas.restoreToCount(clipRestoreCount);
 		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
 	}
@@ -123,7 +123,7 @@ public class LineChart extends View {
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		super.onTouchEvent(event);
-		if (getTouchHandler().handleTouchEvent(event, mData, getChartCalculator())) {
+		if (mTouchHandler.handleTouchEvent(event, mData, mChartCalculator)) {
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
 		return true;
@@ -132,7 +132,7 @@ public class LineChart extends View {
 	@Override
 	public void computeScroll() {
 		super.computeScroll();
-		if (getTouchHandler().computeScroll(this, getChartCalculator())) {
+		if (mTouchHandler.computeScroll(this, mChartCalculator)) {
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
 	}
@@ -140,8 +140,8 @@ public class LineChart extends View {
 	public void setData(final Data data) {
 		mData = data;
 		mData.calculateRanges();
-		getChartCalculator().calculateAxesMargins(getContext(), mAxisRenderer, mData);
-		getChartCalculator().calculateViewport(mData);
+		mChartCalculator.calculateAxesMargins(getContext(), mAxisRenderer, mData);
+		mChartCalculator.calculateViewport(mData);
 		ViewCompat.postInvalidateOnAnimation(LineChart.this);
 	}
 
@@ -154,7 +154,7 @@ public class LineChart extends View {
 			animatedPoint.update(scale);
 		}
 		mData.calculateRanges();
-		getChartCalculator().calculateViewport(mData);
+		mChartCalculator.calculateViewport(mData);
 		ViewCompat.postInvalidateOnAnimation(LineChart.this);
 	}
 
