@@ -45,10 +45,10 @@ public class LineChart extends View {
 		initAttributes();
 		initPaints();
 		initAnimatiors();
-		setChartCalculator(new ChartCalculator(context));
+		mChartCalculator = new ChartCalculator(context);
 		mAxisRenderer = new AxesRenderer();
-		setLineChartRenderer(new LineChartRenderer(context));
-		setTouchHandler(new ChartTouchHandler(context, this));
+		mLineChartRenderer = new LineChartRenderer(context, this);
+		mTouchHandler = new ChartTouchHandler(context, this);
 	}
 
 	@SuppressLint("NewApi")

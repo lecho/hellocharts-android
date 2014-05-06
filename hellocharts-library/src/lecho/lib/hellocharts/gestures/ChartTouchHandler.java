@@ -101,6 +101,14 @@ public class ChartTouchHandler {
 		return needInvalidate;
 	}
 
+	public int getSelectedLineIndex() {
+		return mSelectedLineIndex;
+	}
+
+	public int getSelectedPointIndex() {
+		return mSelectedPointIndex;
+	}
+
 	private class ChartScaleGestureListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
 
 		@Override

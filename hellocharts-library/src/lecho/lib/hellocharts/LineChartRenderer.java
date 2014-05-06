@@ -34,9 +34,11 @@ public class LineChartRenderer {
 	private float mPointPressedRadius;
 	private float mTouchRadius;
 	private Context mContext;
+	private LineChart mChart;
 
-	public LineChartRenderer(Context context) {
+	public LineChartRenderer(Context context, LineChart chart) {
 		mContext = context;
+		mChart = chart;
 		mLineWidth = Utils.dp2px(context, DEFAULT_LINE_WIDTH_DP);
 		mPointRadius = Utils.dp2px(context, DEFAULT_POINT_RADIUS_DP);
 		mPointPressedRadius = Utils.dp2px(context, DEFAULT_POINT_PRESSED_RADIUS);
@@ -172,17 +174,19 @@ public class LineChartRenderer {
 				}
 			}
 		}
-		// if (mSelectedLineIndex >= 0 && mSelectedPointIndex >= 0) {
-		// final Line line = mData.lines.get(mSelectedLineIndex);
-		// final AnimatedPoint animatedPoint = line.animatedPoints.get(mSelectedPointIndex);
-		// final float rawValueX = chartCalculator.calculateRawX(animatedPoint.point.x);
-		// final float rawValueY = chartCalculator.calculateRawY(animatedPoint.point.y);
-		// mTextPaint.setColor(line.color);
-		// canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mTextPaint);
-		// // if (mPopupsOn) {
-		// // drawValuePopup(canvas, mPopupTextMargin, line, animatedPoint.point, rawValueX, rawValueY);
-		// // }
-		// }
+		final int selectedLineIndex = mChart.getTouchHandler().getSelectedLineIndex();
+		final int selectedPointIndex = mChart.getTouchHandler().getSelectedPointIndex();
+		if (selectedLineIndex >= 0 && selectedPointIndex >= 0) {
+			final Line line = mChart.getData().lines.get(selectedLineIndex);
+			final AnimatedPoint animatedPoint = line.animatedPoints.get(selectedPointIndex);
+			final float rawValueX = chartCalculator.calculateRawX(animatedPoint.point.x);
+			final float rawValueY = chartCalculator.calculateRawY(animatedPoint.point.y);
+			mPointAndPopupPaint.setColor(line.color);
+			canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mPointAndPopupPaint);
+			if (line.hasValuesPopups) {
+				drawValuePopup(chartCalculator, canvas, line, animatedPoint.point, rawValueX, rawValueY);
+			}
+		}
 	}
 
 	private void drawValuePopup(ChartCalculator chartCalculator, Canvas canvas, Line line, Point value,
