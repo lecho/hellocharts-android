@@ -115,7 +115,7 @@ public class LineChart extends View {
 		getChartCalculator().calculateClippingArea();// only if zoom is enabled
 		canvas.clipRect(getChartCalculator().mClippingRect);
 		// TODO: draw lines
-		getLineChartRenderer().drawLines(canvas, mData, getChartCalculator());
+		getLineChartRenderer().drawLines(canvas);
 		canvas.restoreToCount(clipRestoreCount);
 		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
 	}

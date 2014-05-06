@@ -54,22 +54,25 @@ public class LineChartRenderer {
 		mPointAndPopupPaint.setStrokeWidth(1);
 	}
 
-	public void drawLines(Canvas canvas, Data data, ChartCalculator chartCalculator) {
+	public void drawLines(Canvas canvas) {
+		final Data data = mChart.getData();
+		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		mLinePaint.setStrokeWidth(mLineWidth);
 		for (Line line : data.lines) {
 			if (line.isSmooth) {
-				drawSmoothPath(canvas, line, chartCalculator);
+				drawSmoothPath(canvas, line);
 			} else {
-				drawPath(canvas, line, chartCalculator);
+				drawPath(canvas, line);
 			}
 			if (line.hasPoints) {
-				drawPoints(canvas, data, chartCalculator);
+				drawPoints(canvas, data);
 			}
 			mLinePath.reset();
 		}
 	}
 
-	private void drawPath(Canvas canvas, final Line line, ChartCalculator chartCalculator) {
+	private void drawPath(Canvas canvas, final Line line) {
+		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		int valueIndex = 0;
 		for (AnimatedPoint animatedPoint : line.animatedPoints) {
 			final float rawValueX = chartCalculator.calculateRawX(animatedPoint.point.x);
@@ -85,11 +88,12 @@ public class LineChartRenderer {
 		canvas.drawPath(mLinePath, mLinePaint);
 
 		if (line.isFilled) {
-			drawArea(canvas, chartCalculator);
+			drawArea(canvas);
 		}
 	}
 
-	private void drawSmoothPath(Canvas canvas, final Line line, ChartCalculator chartCalculator) {
+	private void drawSmoothPath(Canvas canvas, final Line line) {
+		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final int lineSize = line.animatedPoints.size();
 		float previousPointX = Float.NaN;
 		float previousPointY = Float.NaN;
@@ -156,13 +160,14 @@ public class LineChartRenderer {
 		canvas.drawPath(mLinePath, mLinePaint);
 
 		if (line.isFilled) {
-			drawArea(canvas, chartCalculator);
+			drawArea(canvas);
 		}
 	}
 
 	// TODO Drawing points can be done in the same loop as drawing lines but it may cause problems in the future. Reuse
 	// calculated X/Y;
-	private void drawPoints(Canvas canvas, Data data, ChartCalculator chartCalculator) {
+	private void drawPoints(Canvas canvas, Data data) {
+		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		for (Line line : data.lines) {
 			mPointAndPopupPaint.setColor(line.color);
 			for (AnimatedPoint animatedPoint : line.animatedPoints) {
@@ -170,7 +175,7 @@ public class LineChartRenderer {
 				final float rawValueY = chartCalculator.calculateRawY(animatedPoint.point.y);
 				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointAndPopupPaint);
 				if (line.hasValuesPopups) {
-					drawValuePopup(chartCalculator, canvas, line, animatedPoint.point, rawValueX, rawValueY);
+					drawValuePopup(canvas, line, animatedPoint.point, rawValueX, rawValueY);
 				}
 			}
 		}
@@ -184,13 +189,13 @@ public class LineChartRenderer {
 			mPointAndPopupPaint.setColor(line.color);
 			canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mPointAndPopupPaint);
 			if (line.hasValuesPopups) {
-				drawValuePopup(chartCalculator, canvas, line, animatedPoint.point, rawValueX, rawValueY);
+				drawValuePopup(canvas, line, animatedPoint.point, rawValueX, rawValueY);
 			}
 		}
 	}
 
-	private void drawValuePopup(ChartCalculator chartCalculator, Canvas canvas, Line line, Point value,
-			float rawValueX, float rawValueY) {
+	private void drawValuePopup(Canvas canvas, Line line, Point value, float rawValueX, float rawValueY) {
+		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		mPointAndPopupPaint.setTextAlign(Align.LEFT);
 		mPointAndPopupPaint.setTextSize(Utils.sp2px(mContext, line.textSize));
 		final String text = line.formatter.formatValue(value);
@@ -216,7 +221,8 @@ public class LineChartRenderer {
 		mPointAndPopupPaint.setColor(color);
 	}
 
-	private void drawArea(Canvas canvas, ChartCalculator chartCalculator) {
+	private void drawArea(Canvas canvas) {
+		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		mLinePaint.setStyle(Paint.Style.FILL);
 		mLinePaint.setAlpha(DEFAULT_AREA_TRANSPARENCY);
 		mLinePath.lineTo(chartCalculator.mContentRect.right, chartCalculator.mContentRect.bottom);
