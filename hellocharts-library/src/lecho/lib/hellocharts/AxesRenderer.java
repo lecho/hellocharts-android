@@ -17,8 +17,12 @@ public class AxesRenderer {
 	public Paint mAxisTextPaint;
 	private Paint mAxisLinePaint;
 	private Path mAxisYNamePath;
+	private LineChart mChart;
+	private Context mContext;
 
-	public AxesRenderer() {
+	public AxesRenderer(Context context, LineChart chart) {
+		mContext = context;
+		mChart = chart;
 		mAxisLinePaint = new Paint();
 		mAxisLinePaint.setAntiAlias(true);
 		mAxisLinePaint.setStyle(Paint.Style.STROKE);
@@ -38,10 +42,11 @@ public class AxesRenderer {
 	 * @param axisX
 	 * @return height of axis values and axis name
 	 */
-	public Pair<Integer, Integer> getAxisXHeight(Context context, Axis axisX) {
+	public Pair<Integer, Integer> getAxisXHeight() {
+		final Axis axisX = mChart.getData().axisX;
 		// TODO: maybe get rid of Utils.sp2px
 		int valuesHeight = 0;
-		mAxisTextPaint.setTextSize(Utils.sp2px(context, axisX.textSize));
+		mAxisTextPaint.setTextSize(Utils.sp2px(mContext, axisX.textSize));
 		if (!axisX.values.isEmpty()) {
 			final Rect textBounds = new Rect();
 			final String text = axisX.formatter.formatValue(axisX.values.get(0));
@@ -59,9 +64,10 @@ public class AxesRenderer {
 		return new Pair<Integer, Integer>(valuesHeight, nameHeight);
 	}
 
-	public Pair<Integer, Integer> getAxisYWidth(Context context, Axis axisY) {
+	public Pair<Integer, Integer> getAxisYWidth() {
+		final Axis axisY = mChart.getData().axisY;
 		int valuesWidth = 0;
-		mAxisTextPaint.setTextSize(Utils.sp2px(context, axisY.textSize));
+		mAxisTextPaint.setTextSize(Utils.sp2px(mContext, axisY.textSize));
 		if (!axisY.values.isEmpty()) {
 			final Rect textBounds = new Rect();
 			final String text;
@@ -86,10 +92,12 @@ public class AxesRenderer {
 		return new Pair<Integer, Integer>(valuesWidth, nameWidth);
 	}
 
-	public void drawAxisX(Context context, Canvas canvas, Axis axisX, ChartCalculator chartCalculator) {
+	public void drawAxisX(Canvas canvas) {
+		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		final Axis axisX = mChart.getData().axisX;
 		mAxisLinePaint.setColor(axisX.color);
 		mAxisTextPaint.setColor(axisX.color);
-		mAxisTextPaint.setTextSize(Utils.sp2px(context, axisX.textSize));
+		mAxisTextPaint.setTextSize(Utils.sp2px(mContext, axisX.textSize));
 		mAxisTextPaint.setTextAlign(Align.CENTER);
 		canvas.drawLine(chartCalculator.mContentRectWithMargins.left, chartCalculator.mContentRect.bottom,
 				chartCalculator.mContentRectWithMargins.right, chartCalculator.mContentRect.bottom, mAxisLinePaint);
@@ -112,10 +120,12 @@ public class AxesRenderer {
 		}
 	}
 
-	public void drawAxisY(Context context, Canvas canvas, Axis axisY, ChartCalculator chartCalculator) {
+	public void drawAxisY(Canvas canvas) {
+		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		final Axis axisY = mChart.getData().axisY;
 		mAxisLinePaint.setColor(axisY.color);
 		mAxisTextPaint.setColor(axisY.color);
-		mAxisTextPaint.setTextSize(Utils.sp2px(context, axisY.textSize));
+		mAxisTextPaint.setTextSize(Utils.sp2px(mContext, axisY.textSize));
 		// drawing axis values
 		mAxisTextPaint.setTextAlign(Align.RIGHT);
 		float baseline = chartCalculator.mContentRectWithMargins.left;

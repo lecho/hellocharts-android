@@ -127,16 +127,15 @@ public class ChartCalculator {
 	}
 
 	public void calculateAxesMargins(Context context) {
-		final Data data = mChart.getData();
 		final AxesRenderer axesRenderer = mChart.getAxesRenderer();
-		mAxisXHeight = axesRenderer.getAxisXHeight(context, data.axisX);
+		mAxisXHeight = axesRenderer.getAxisXHeight();
 		mAxisXMargin = mAxisXHeight.first + mAxisXHeight.second;
 		if (mAxisXHeight.first > 0 && mAxisXHeight.second > 0) {
 			// Additional margin for separation axis name from axis values.
 			mAxisXMargin += mAxisNameMargin;
 		}
 
-		mAxisYWidth = axesRenderer.getAxisYWidth(context, data.axisY);
+		mAxisYWidth = axesRenderer.getAxisYWidth();
 		mAxisYMargin = mAxisYWidth.first + mAxisYWidth.second;
 		if (mAxisYWidth.first > 0 && mAxisYWidth.second > 0) {
 			// Additional margin for separation axis name from axis values.

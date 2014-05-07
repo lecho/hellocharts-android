@@ -46,7 +46,7 @@ public class LineChart extends View {
 		initPaints();
 		initAnimatiors();
 		mChartCalculator = new ChartCalculator(context, this);
-		mAxesRenderer = new AxesRenderer();
+		mAxesRenderer = new AxesRenderer(context, this);
 		mLineChartRenderer = new LineChartRenderer(context, this);
 		mTouchHandler = new ChartTouchHandler(context, this);
 	}
@@ -108,8 +108,8 @@ public class LineChart extends View {
 		long time = System.nanoTime();
 		super.onDraw(canvas);
 		if (mAxesOn) {
-			mAxesRenderer.drawAxisX(getContext(), canvas, mData.axisX, mChartCalculator);
-			mAxesRenderer.drawAxisY(getContext(), canvas, mData.axisY, mChartCalculator);
+			mAxesRenderer.drawAxisX(canvas);
+			mAxesRenderer.drawAxisY(canvas);
 		}
 		int clipRestoreCount = canvas.save();
 		mChartCalculator.calculateClippingArea();// only if zoom is enabled
