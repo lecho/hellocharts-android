@@ -30,7 +30,7 @@ public class ChartTouchHandler {
 		mChartZoomer = new ChartZoomer(context, ChartZoomer.ZOOM_HORIZONTAL_AND_VERTICAL);
 	}
 
-	public boolean computeScroll(LineChart chartr) {
+	public boolean computeScroll() {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		boolean needInvalidate = false;
 		if (mChartScroller.computeScrollOffset(chartCalculator)) {

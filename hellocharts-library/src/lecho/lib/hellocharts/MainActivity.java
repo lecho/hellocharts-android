@@ -8,7 +8,6 @@ import lecho.lib.hellocharts.model.Axis.AxisValue;
 import lecho.lib.hellocharts.model.Data;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.Point;
-import lecho.lib.hellocharts.utils.Utils;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;

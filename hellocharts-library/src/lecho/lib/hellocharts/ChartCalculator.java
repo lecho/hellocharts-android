@@ -20,6 +20,7 @@ public class ChartCalculator {
 	public int mAxisXMargin;
 	public Pair<Integer, Integer> mAxisXHeight = new Pair<Integer, Integer>(0, 0);
 	public Pair<Integer, Integer> mAxisYWidth = new Pair<Integer, Integer>(0, 0);
+	private LineChart mChart;
 	/**
 	 * The current area (in pixels) for chart data, including mCoomonMargin. Labels are drawn outside this area.
 	 */
@@ -42,7 +43,8 @@ public class ChartCalculator {
 	/**
 	 * Constructor
 	 */
-	public ChartCalculator(Context context) {
+	public ChartCalculator(Context context, LineChart chart) {
+		mChart = chart;
 		mCommonMargin = Utils.dp2px(context, DEFAULT_COMMON_MARGIN_DP);
 		mAxisNameMargin = Utils.dp2px(context, DEFAULT_AXIS_NAME_MARGIN_DP);
 	}
@@ -50,14 +52,16 @@ public class ChartCalculator {
 	/**
 	 * Calculates available width and height. Should be called when chart dimensions or chart data change.
 	 */
-	public void calculateContentArea(View chart) {
-		mContentRectWithMargins.set(chart.getPaddingLeft() + mAxisYMargin, chart.getPaddingTop(), chart.getWidth()
-				- chart.getPaddingRight(), chart.getHeight() - chart.getPaddingBottom() - mAxisXMargin);
+	public void calculateContentArea(View chartView) {
+		mContentRectWithMargins.set(chartView.getPaddingLeft() + mAxisYMargin, chartView.getPaddingTop(),
+				chartView.getWidth() - chartView.getPaddingRight(),
+				chartView.getHeight() - chartView.getPaddingBottom() - mAxisXMargin);
 		mContentRect.set(mContentRectWithMargins.left + mCommonMargin, mContentRectWithMargins.top + mCommonMargin,
 				mContentRectWithMargins.right - mCommonMargin, mContentRectWithMargins.bottom - mCommonMargin);
 	}
 
-	public void calculateViewport(Data data) {
+	public void calculateViewport() {
+		final Data data = mChart.getData();
 		mMaximumViewport.set(data.minXValue, data.minYValue, data.maxXValue, data.maxYValue);
 		// TODO: don't reset current viewport during animation if zoom is enabled
 		mCurrentViewport.set(mMaximumViewport);
@@ -122,7 +126,9 @@ public class ChartCalculator {
 		}
 	}
 
-	public void calculateAxesMargins(Context context, AxesRenderer axesRenderer, Data data) {
+	public void calculateAxesMargins(Context context) {
+		final Data data = mChart.getData();
+		final AxesRenderer axesRenderer = mChart.getAxesRenderer();
 		mAxisXHeight = axesRenderer.getAxisXHeight(context, data.axisX);
 		mAxisXMargin = mAxisXHeight.first + mAxisXHeight.second;
 		if (mAxisXHeight.first > 0 && mAxisXHeight.second > 0) {

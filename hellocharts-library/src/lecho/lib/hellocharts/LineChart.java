@@ -23,7 +23,7 @@ import android.view.View;
 public class LineChart extends View {
 	private static final String TAG = "LineChart";
 	private ChartCalculator mChartCalculator;
-	private AxesRenderer mAxisRenderer;
+	private AxesRenderer mAxesRenderer;
 	private LineChartRenderer mLineChartRenderer;
 	private ChartTouchHandler mTouchHandler;
 	private Paint mLinePaint = new Paint();
@@ -45,8 +45,8 @@ public class LineChart extends View {
 		initAttributes();
 		initPaints();
 		initAnimatiors();
-		mChartCalculator = new ChartCalculator(context);
-		mAxisRenderer = new AxesRenderer();
+		mChartCalculator = new ChartCalculator(context, this);
+		mAxesRenderer = new AxesRenderer();
 		mLineChartRenderer = new LineChartRenderer(context, this);
 		mTouchHandler = new ChartTouchHandler(context, this);
 	}
@@ -79,7 +79,7 @@ public class LineChart extends View {
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
 		// TODO mPointRadus can change, recalculate in setter
 		mChartCalculator.calculateContentArea(this);
-		mChartCalculator.calculateViewport(mData);
+		mChartCalculator.calculateViewport();
 	}
 
 	// Automatically calculates Y axis values.
@@ -108,8 +108,8 @@ public class LineChart extends View {
 		long time = System.nanoTime();
 		super.onDraw(canvas);
 		if (mAxesOn) {
-			mAxisRenderer.drawAxisX(getContext(), canvas, mData.axisX, mChartCalculator);
-			mAxisRenderer.drawAxisY(getContext(), canvas, mData.axisY, mChartCalculator);
+			mAxesRenderer.drawAxisX(getContext(), canvas, mData.axisX, mChartCalculator);
+			mAxesRenderer.drawAxisY(getContext(), canvas, mData.axisY, mChartCalculator);
 		}
 		int clipRestoreCount = canvas.save();
 		mChartCalculator.calculateClippingArea();// only if zoom is enabled
@@ -132,7 +132,7 @@ public class LineChart extends View {
 	@Override
 	public void computeScroll() {
 		super.computeScroll();
-		if (mTouchHandler.computeScroll(this)) {
+		if (mTouchHandler.computeScroll()) {
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
 	}
@@ -140,8 +140,8 @@ public class LineChart extends View {
 	public void setData(final Data data) {
 		mData = data;
 		mData.calculateRanges();
-		mChartCalculator.calculateAxesMargins(getContext(), mAxisRenderer, mData);
-		mChartCalculator.calculateViewport(mData);
+		mChartCalculator.calculateAxesMargins(getContext());
+		mChartCalculator.calculateViewport();
 		ViewCompat.postInvalidateOnAnimation(LineChart.this);
 	}
 
@@ -154,7 +154,7 @@ public class LineChart extends View {
 			animatedPoint.update(scale);
 		}
 		mData.calculateRanges();
-		mChartCalculator.calculateViewport(mData);
+		mChartCalculator.calculateViewport();
 		ViewCompat.postInvalidateOnAnimation(LineChart.this);
 	}
 
@@ -193,4 +193,7 @@ public class LineChart extends View {
 		this.mChartCalculator = chartCalculator;
 	}
 
+	public AxesRenderer getAxesRenderer() {
+		return mAxesRenderer;
+	}
 }
