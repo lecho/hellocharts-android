@@ -56,7 +56,6 @@ public class LineChartRenderer {
 
 	public void drawLines(Canvas canvas) {
 		final Data data = mChart.getData();
-		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		mLinePaint.setStrokeWidth(mLineWidth);
 		for (Line line : data.lines) {
 			if (line.isSmooth) {

@@ -42,16 +42,14 @@ public class ChartTouchHandler {
 	}
 
 	public boolean handleTouchEvent(MotionEvent event, Data data, ChartCalculator chartCalculator) {
-		boolean needInvalidate = false;
-		needInvalidate = mGestureDetector.onTouchEvent(event);
-		needInvalidate = mScaleGestureDetector.onTouchEvent(event);
+		boolean needInvalidate = mGestureDetector.onTouchEvent(event) || mScaleGestureDetector.onTouchEvent(event);
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
-			// Select only the first value within touched area.
-			// Reverse loop to starts with the line drawn on top.
-			for (int lineIndex = data.lines.size() - 1; lineIndex >= 0; --lineIndex) {
+			// Only one point will be selected even if there are few point in touch area.
+			int lineIndex = 0;
+			for (Line line : data.lines) {
 				int valueIndex = 0;
-				for (AnimatedPoint animatedPoint : data.lines.get(lineIndex).animatedPoints) {
+				for (AnimatedPoint animatedPoint : line.animatedPoints) {
 					final float rawX = chartCalculator.calculateRawX(animatedPoint.point.x);
 					final float rawY = chartCalculator.calculateRawY(animatedPoint.point.y);
 					if (mChart.getLineChartRenderer().isInArea(rawX, rawY, event.getX(), event.getY())) {
@@ -61,6 +59,7 @@ public class ChartTouchHandler {
 					}
 					++valueIndex;
 				}
+				++lineIndex;
 			}
 			break;
 		case MotionEvent.ACTION_UP:

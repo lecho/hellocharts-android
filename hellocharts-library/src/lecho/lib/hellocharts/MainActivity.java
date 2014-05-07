@@ -59,8 +59,8 @@ public class MainActivity extends Activity {
 		l2.isSmooth = true;
 		l2.isFilled = true;
 		List<Line> lines = new ArrayList<Line>();
-		lines.add(l1);
 		lines.add(l2);
+		lines.add(l1);
 		data.lines = lines;
 		Axis axisX = new Axis();
 		axisX.values = generateAxis(0.0f, 100.0f, 1.0f);
