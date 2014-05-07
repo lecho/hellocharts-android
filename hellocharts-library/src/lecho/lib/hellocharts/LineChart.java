@@ -108,8 +108,8 @@ public class LineChart extends View {
 		long time = System.nanoTime();
 		super.onDraw(canvas);
 		if (mAxesOn) {
-			mAxisRenderer.drawAxisX(getContext(), canvas, mData.axisX, getChartCalculator());
-			mAxisRenderer.drawAxisY(getContext(), canvas, mData.axisY, getChartCalculator());
+			mAxisRenderer.drawAxisX(getContext(), canvas, mData.axisX, mChartCalculator);
+			mAxisRenderer.drawAxisY(getContext(), canvas, mData.axisY, mChartCalculator);
 		}
 		int clipRestoreCount = canvas.save();
 		mChartCalculator.calculateClippingArea();// only if zoom is enabled
@@ -123,7 +123,7 @@ public class LineChart extends View {
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		super.onTouchEvent(event);
-		if (mTouchHandler.handleTouchEvent(event, mData, mChartCalculator)) {
+		if (mTouchHandler.handleTouchEvent(event)) {
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
 		return true;
@@ -132,7 +132,7 @@ public class LineChart extends View {
 	@Override
 	public void computeScroll() {
 		super.computeScroll();
-		if (mTouchHandler.computeScroll(this, mChartCalculator)) {
+		if (mTouchHandler.computeScroll(this)) {
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
 	}
@@ -181,16 +181,8 @@ public class LineChart extends View {
 		return mLineChartRenderer;
 	}
 
-	public void setLineChartRenderer(LineChartRenderer lineChartRenderer) {
-		this.mLineChartRenderer = lineChartRenderer;
-	}
-
 	public ChartTouchHandler getTouchHandler() {
 		return mTouchHandler;
-	}
-
-	public void setTouchHandler(ChartTouchHandler touchHandler) {
-		this.mTouchHandler = touchHandler;
 	}
 
 	public ChartCalculator getChartCalculator() {

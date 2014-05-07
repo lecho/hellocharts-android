@@ -30,7 +30,8 @@ public class ChartTouchHandler {
 		mChartZoomer = new ChartZoomer(context, ChartZoomer.ZOOM_HORIZONTAL_AND_VERTICAL);
 	}
 
-	public boolean computeScroll(LineChart chart, ChartCalculator chartCalculator) {
+	public boolean computeScroll(LineChart chartr) {
+		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		boolean needInvalidate = false;
 		if (mChartScroller.computeScrollOffset(chartCalculator)) {
 			needInvalidate = true;
@@ -41,7 +42,9 @@ public class ChartTouchHandler {
 		return needInvalidate;
 	}
 
-	public boolean handleTouchEvent(MotionEvent event, Data data, ChartCalculator chartCalculator) {
+	public boolean handleTouchEvent(MotionEvent event) {
+		final Data data = mChart.getData();
+		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		boolean needInvalidate = mGestureDetector.onTouchEvent(event) || mScaleGestureDetector.onTouchEvent(event);
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
