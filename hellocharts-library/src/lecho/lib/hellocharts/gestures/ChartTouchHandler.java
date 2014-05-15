@@ -55,7 +55,7 @@ public class ChartTouchHandler {
 				for (AnimatedPoint animatedPoint : line.animatedPoints) {
 					final float rawX = chartCalculator.calculateRawX(animatedPoint.point.x);
 					final float rawY = chartCalculator.calculateRawY(animatedPoint.point.y);
-					if (mChart.getLineChartRenderer().isInArea(rawX, rawY, event.getX(), event.getY())) {
+					if (mChart.getChartRenderer().isInArea(rawX, rawY, event.getX(), event.getY())) {
 						mSelectedLineIndex = lineIndex;
 						mSelectedPointIndex = valueIndex;
 						needInvalidate = true;
@@ -84,7 +84,7 @@ public class ChartTouchHandler {
 				final AnimatedPoint animatedPoint = line.animatedPoints.get(mSelectedPointIndex);
 				final float rawX = chartCalculator.calculateRawX(animatedPoint.point.x);
 				final float rawY = chartCalculator.calculateRawY(animatedPoint.point.y);
-				if (mChart.getLineChartRenderer().isInArea(rawX, rawY, event.getX(), event.getY())) {
+				if (mChart.getChartRenderer().isInArea(rawX, rawY, event.getX(), event.getY())) {
 					mSelectedLineIndex = Integer.MIN_VALUE;
 					mSelectedPointIndex = Integer.MIN_VALUE;
 					needInvalidate = true;

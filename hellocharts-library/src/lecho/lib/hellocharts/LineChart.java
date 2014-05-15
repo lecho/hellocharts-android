@@ -16,14 +16,9 @@ import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 
-public class LineChart extends View {
+public class LineChart extends AbstractChart {
 	private static final String TAG = "LineChart";
-	private ChartCalculator mChartCalculator;
-	private AxesRenderer mAxesRenderer;
-	private LineChartRenderer mLineChartRenderer;
-	private ChartTouchHandler mTouchHandler;
 	private LineChartData mData;
 	private boolean mAxesOn = true;
 	private ChartAnimator mAnimator;
@@ -42,7 +37,7 @@ public class LineChart extends View {
 		initAnimatiors();
 		mChartCalculator = new ChartCalculator(context, this);
 		mAxesRenderer = new AxesRenderer(context, this);
-		mLineChartRenderer = new LineChartRenderer(context, this);
+		mChartRenderer = new LineChartRenderer(context, this);
 		mTouchHandler = new ChartTouchHandler(context, this);
 	}
 
@@ -100,7 +95,7 @@ public class LineChart extends View {
 		mChartCalculator.calculateClippingArea();// only if zoom is enabled
 		canvas.clipRect(mChartCalculator.mClippingRect);
 		// TODO: draw lines
-		mLineChartRenderer.drawLines(canvas);
+		mChartRenderer.drawLines(canvas);
 		canvas.restoreToCount(clipRestoreCount);
 		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
 	}
@@ -162,23 +157,4 @@ public class LineChart extends View {
 		// }s
 	}
 
-	public LineChartRenderer getLineChartRenderer() {
-		return mLineChartRenderer;
-	}
-
-	public ChartTouchHandler getTouchHandler() {
-		return mTouchHandler;
-	}
-
-	public ChartCalculator getChartCalculator() {
-		return mChartCalculator;
-	}
-
-	public void setChartCalculator(ChartCalculator chartCalculator) {
-		this.mChartCalculator = chartCalculator;
-	}
-
-	public AxesRenderer getAxesRenderer() {
-		return mAxesRenderer;
-	}
 }
