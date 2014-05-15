@@ -11,8 +11,6 @@ import lecho.lib.hellocharts.model.Data;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Paint.Cap;
 import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
@@ -26,8 +24,6 @@ public class LineChart extends View {
 	private AxesRenderer mAxesRenderer;
 	private LineChartRenderer mLineChartRenderer;
 	private ChartTouchHandler mTouchHandler;
-	private Paint mLinePaint = new Paint();
-	private Paint mTextPaint = new Paint();
 	private Data mData;
 	private boolean mAxesOn = true;
 	private ChartAnimator mAnimator;
@@ -43,7 +39,6 @@ public class LineChart extends View {
 	public LineChart(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		initAttributes();
-		initPaints();
 		initAnimatiors();
 		mChartCalculator = new ChartCalculator(context, this);
 		mAxesRenderer = new AxesRenderer(context, this);
@@ -54,16 +49,6 @@ public class LineChart extends View {
 	@SuppressLint("NewApi")
 	private void initAttributes() {
 		setLayerType(LAYER_TYPE_SOFTWARE, null);
-	}
-
-	private void initPaints() {
-		mLinePaint.setAntiAlias(true);
-		mLinePaint.setStyle(Paint.Style.STROKE);
-		mLinePaint.setStrokeCap(Cap.ROUND);
-
-		mTextPaint.setAntiAlias(true);
-		mTextPaint.setStyle(Paint.Style.FILL);
-		mTextPaint.setStrokeWidth(1);
 	}
 
 	private void initAnimatiors() {
