@@ -3,38 +3,30 @@ package lecho.lib.hellocharts.model;
 import java.util.Collections;
 import java.util.List;
 
-public class LineChartData {
+public class LineChartData extends AbstractChartData {
 
 	public List<Line> lines = Collections.emptyList();
-	public Axis axisX = new Axis();
-	public Axis axisY = new Axis();
-	public float minXValue;
-	public float maxXValue;
-	public float minYValue;
-	public float maxYValue;
 
-	public LineChartData() {
-	}
-
-	public void calculateRanges() {
-		minXValue = Float.MAX_VALUE;
-		maxXValue = Float.MIN_VALUE;
-		minYValue = Float.MAX_VALUE;
-		maxYValue = Float.MIN_VALUE;
+	@Override
+	public void calculateBoundaries() {
+		if (mManualBoundaries) {
+			return;
+		}
+		mBoundaries.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
 		// TODO: optimize with 3/2 algo
 		for (Line line : lines) {
 			for (AnimatedPoint animatedPoint : line.animatedPoints) {
-				if (animatedPoint.point.x < minXValue) {
-					minXValue = animatedPoint.point.x;
+				if (animatedPoint.point.x < mBoundaries.left) {
+					mBoundaries.left = animatedPoint.point.x;
 				}
-				if (animatedPoint.point.x > maxXValue) {
-					maxXValue = animatedPoint.point.x;
+				if (animatedPoint.point.x > mBoundaries.right) {
+					mBoundaries.right = animatedPoint.point.x;
 				}
-				if (animatedPoint.point.y < minYValue) {
-					minYValue = animatedPoint.point.y;
+				if (animatedPoint.point.y < mBoundaries.bottom) {
+					mBoundaries.bottom = animatedPoint.point.y;
 				}
-				if (animatedPoint.point.y > maxYValue) {
-					maxYValue = animatedPoint.point.y;
+				if (animatedPoint.point.y > mBoundaries.top) {
+					mBoundaries.top = animatedPoint.point.y;
 				}
 
 			}

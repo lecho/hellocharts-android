@@ -43,7 +43,7 @@ public class AxesRenderer {
 	 * @return height of axis values and axis name
 	 */
 	public Pair<Integer, Integer> getAxisXHeight() {
-		final Axis axisX = mChart.getData().axisX;
+		final Axis axisX = mChart.getData().getAxisX();
 		// TODO: maybe get rid of Utils.sp2px
 		int valuesHeight = 0;
 		mAxisTextPaint.setTextSize(Utils.sp2px(mContext, axisX.textSize));
@@ -65,7 +65,7 @@ public class AxesRenderer {
 	}
 
 	public Pair<Integer, Integer> getAxisYWidth() {
-		final Axis axisY = mChart.getData().axisY;
+		final Axis axisY = mChart.getData().getAxisY();
 		int valuesWidth = 0;
 		mAxisTextPaint.setTextSize(Utils.sp2px(mContext, axisY.textSize));
 		if (!axisY.values.isEmpty()) {
@@ -94,7 +94,7 @@ public class AxesRenderer {
 
 	public void drawAxisX(Canvas canvas) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
-		final Axis axisX = mChart.getData().axisX;
+		final Axis axisX = mChart.getData().getAxisX();
 		mAxisLinePaint.setColor(axisX.color);
 		mAxisTextPaint.setColor(axisX.color);
 		mAxisTextPaint.setTextSize(Utils.sp2px(mContext, axisX.textSize));
@@ -122,7 +122,7 @@ public class AxesRenderer {
 
 	public void drawAxisY(Canvas canvas) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
-		final Axis axisY = mChart.getData().axisY;
+		final Axis axisY = mChart.getData().getAxisY();
 		mAxisLinePaint.setColor(axisY.color);
 		mAxisTextPaint.setColor(axisY.color);
 		mAxisTextPaint.setTextSize(Utils.sp2px(mContext, axisY.textSize));

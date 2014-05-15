@@ -124,7 +124,7 @@ public class LineChart extends View {
 
 	public void setData(final LineChartData data) {
 		mData = data;
-		mData.calculateRanges();
+		mData.calculateBoundaries();
 		mChartCalculator.calculateAxesMargins(getContext());
 		mChartCalculator.calculateViewport();
 		ViewCompat.postInvalidateOnAnimation(LineChart.this);
@@ -138,7 +138,7 @@ public class LineChart extends View {
 		for (AnimatedPoint animatedPoint : mData.lines.get(0).animatedPoints) {
 			animatedPoint.update(scale);
 		}
-		mData.calculateRanges();
+		mData.calculateBoundaries();
 		mChartCalculator.calculateViewport();
 		ViewCompat.postInvalidateOnAnimation(LineChart.this);
 	}

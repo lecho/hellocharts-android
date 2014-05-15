@@ -1,6 +1,5 @@
 package lecho.lib.hellocharts;
 
-import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.utils.Utils;
 import android.content.Context;
 import android.graphics.Point;
@@ -61,8 +60,8 @@ public class ChartCalculator {
 	}
 
 	public void calculateViewport() {
-		final LineChartData data = mChart.getData();
-		mMaximumViewport.set(data.minXValue, data.minYValue, data.maxXValue, data.maxYValue);
+		final RectF boundaries = mChart.getData().getBoundaries();
+		mMaximumViewport.set(boundaries.left, boundaries.bottom, boundaries.right, boundaries.top);
 		// TODO: don't reset current viewport during animation if zoom is enabled
 		mCurrentViewport.set(mMaximumViewport);
 	}

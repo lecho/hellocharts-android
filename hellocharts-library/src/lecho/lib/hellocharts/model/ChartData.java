@@ -4,7 +4,11 @@ import android.graphics.RectF;
 
 public interface ChartData {
 
+	public void setAxisX(Axis axisX);
+
 	public Axis getAxisX();
+
+	public void setAxisY(Axis axisY);
 
 	public Axis getAxisY();
 

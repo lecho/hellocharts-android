@@ -63,17 +63,17 @@ public class MainActivity extends Activity {
 		data.lines = lines;
 		Axis axisX = new Axis();
 		axisX.values = generateAxis(0.0f, 100.0f, 1.0f);
-		data.axisX = axisX;
-		data.axisX.name = "Axis X";
-		data.axisX.textSize = 14;
-		data.axisX.color = Color.parseColor("#FFBB33");
+		axisX.name = "Axis X";
+		axisX.textSize = 14;
+		axisX.color = Color.parseColor("#FFBB33");
+		data.setAxisX(axisX);
 
 		Axis axisY = new Axis();
 		axisY.values = generateAxis(0.0f, 100.0f, 15.0f);
-		data.axisY = axisY;
-		data.axisY.name = "Axis Y";
-		data.axisY.textSize = 14;
-		data.axisY.color = Color.parseColor("#99CC00");
+		axisY.name = "Axis Y";
+		axisY.textSize = 14;
+		axisY.color = Color.parseColor("#99CC00");
+		data.setAxisY(axisY);
 		chart.setData(data);
 		chart.setBackgroundColor(Color.WHITE);
 		// chart.setPadding(10, 10, 10, 20);

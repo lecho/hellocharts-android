@@ -8,8 +8,16 @@ public abstract class AbstractChartData implements ChartData {
 	protected RectF mBoundaries = new RectF();
 	protected boolean mManualBoundaries = false;
 
+	public void setAxisX(Axis axisX) {
+		mAxisX = axisX;
+	}
+
 	public Axis getAxisX() {
 		return mAxisX;
+	}
+
+	public void setAxisY(Axis axisY) {
+		mAxisY = axisY;
 	}
 
 	public Axis getAxisY() {
