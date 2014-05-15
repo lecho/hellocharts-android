@@ -15,4 +15,6 @@ public interface Chart {
 
 	public ChartTouchHandler getTouchHandler();
 
+	public void animationUpdate(float scale);
+
 }

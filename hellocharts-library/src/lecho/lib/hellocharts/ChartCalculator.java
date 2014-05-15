@@ -19,7 +19,7 @@ public class ChartCalculator {
 	public int mAxisXMargin;
 	public Pair<Integer, Integer> mAxisXHeight = new Pair<Integer, Integer>(0, 0);
 	public Pair<Integer, Integer> mAxisYWidth = new Pair<Integer, Integer>(0, 0);
-	private LineChart mChart;
+	private Chart mChart;
 	/**
 	 * The current area (in pixels) for chart data, including mCoomonMargin. Labels are drawn outside this area.
 	 */
@@ -42,7 +42,7 @@ public class ChartCalculator {
 	/**
 	 * Constructor
 	 */
-	public ChartCalculator(Context context, LineChart chart) {
+	public ChartCalculator(Context context, Chart chart) {
 		mChart = chart;
 		mCommonMargin = Utils.dp2px(context, DEFAULT_COMMON_MARGIN_DP);
 		mAxisNameMargin = Utils.dp2px(context, DEFAULT_AXIS_NAME_MARGIN_DP);

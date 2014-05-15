@@ -1,6 +1,6 @@
 package lecho.lib.hellocharts.anim;
 
-import lecho.lib.hellocharts.LineChart;
+import lecho.lib.hellocharts.Chart;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.animation.Interpolator;
@@ -9,7 +9,7 @@ import android.view.animation.LinearInterpolator;
 public class ChartAnimatorV8 implements ChartAnimator {
 
 	long mStart;
-	final LineChart mChart;
+	final Chart mChart;
 	final long mDuration;
 	final Handler mHandler;
 	final Interpolator mInterpolator = new LinearInterpolator();
@@ -29,11 +29,11 @@ public class ChartAnimatorV8 implements ChartAnimator {
 		}
 	};
 
-	public ChartAnimatorV8(final LineChart chart) {
+	public ChartAnimatorV8(final Chart chart) {
 		this(chart, DEFAULT_ANIMATION_DURATION);
 	}
 
-	public ChartAnimatorV8(final LineChart chart, final long duration) {
+	public ChartAnimatorV8(final Chart chart, final long duration) {
 		mChart = chart;
 		mDuration = duration;
 		mHandler = new Handler();

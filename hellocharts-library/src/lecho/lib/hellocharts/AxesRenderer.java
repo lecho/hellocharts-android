@@ -6,9 +6,9 @@ import lecho.lib.hellocharts.utils.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
 import android.graphics.Path;
 import android.graphics.Rect;
-import android.graphics.Paint.Align;
 import android.text.TextUtils;
 import android.util.Pair;
 
@@ -17,10 +17,10 @@ public class AxesRenderer {
 	public Paint mAxisTextPaint;
 	private Paint mAxisLinePaint;
 	private Path mAxisYNamePath;
-	private LineChart mChart;
+	private Chart mChart;
 	private Context mContext;
 
-	public AxesRenderer(Context context, LineChart chart) {
+	public AxesRenderer(Context context, Chart chart) {
 		mContext = context;
 		mChart = chart;
 		mAxisLinePaint = new Paint();
