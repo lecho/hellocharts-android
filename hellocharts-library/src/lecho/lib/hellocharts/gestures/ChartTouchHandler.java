@@ -45,7 +45,8 @@ public class ChartTouchHandler {
 	public boolean handleTouchEvent(MotionEvent event) {
 		final LineChartData data = mChart.getData();
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
-		boolean needInvalidate = mGestureDetector.onTouchEvent(event) || mScaleGestureDetector.onTouchEvent(event);
+		boolean needInvalidate = mScaleGestureDetector.onTouchEvent(event);
+		needInvalidate = mGestureDetector.onTouchEvent(event) || needInvalidate;
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			// Only one point will be selected even if there are few point in touch area.
