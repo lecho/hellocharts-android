@@ -1,7 +1,7 @@
 package lecho.lib.hellocharts;
 
 import lecho.lib.hellocharts.model.AnimatedPoint;
-import lecho.lib.hellocharts.model.Data;
+import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.Point;
 import lecho.lib.hellocharts.utils.Utils;
@@ -55,7 +55,7 @@ public class LineChartRenderer {
 	}
 
 	public void drawLines(Canvas canvas) {
-		final Data data = mChart.getData();
+		final LineChartData data = mChart.getData();
 		mLinePaint.setStrokeWidth(mLineWidth);
 		for (Line line : data.lines) {
 			if (line.isSmooth) {
@@ -165,7 +165,7 @@ public class LineChartRenderer {
 
 	// TODO Drawing points can be done in the same loop as drawing lines but it may cause problems in the future. Reuse
 	// calculated X/Y;
-	private void drawPoints(Canvas canvas, Data data) {
+	private void drawPoints(Canvas canvas, LineChartData data) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		for (Line line : data.lines) {
 			mPointAndPopupPaint.setColor(line.color);

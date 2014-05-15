@@ -4,7 +4,7 @@ import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.LineChart;
 import lecho.lib.hellocharts.OnPointClickListener;
 import lecho.lib.hellocharts.model.AnimatedPoint;
-import lecho.lib.hellocharts.model.Data;
+import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.Line;
 import android.content.Context;
 import android.view.GestureDetector;
@@ -43,7 +43,7 @@ public class ChartTouchHandler {
 	}
 
 	public boolean handleTouchEvent(MotionEvent event) {
-		final Data data = mChart.getData();
+		final LineChartData data = mChart.getData();
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		boolean needInvalidate = mGestureDetector.onTouchEvent(event) || mScaleGestureDetector.onTouchEvent(event);
 		switch (event.getAction()) {

@@ -5,7 +5,7 @@ import java.util.List;
 
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Axis.AxisValue;
-import lecho.lib.hellocharts.model.Data;
+import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.Point;
 import android.app.Activity;
@@ -45,7 +45,7 @@ public class MainActivity extends Activity {
 
 		LinearLayout layout = (LinearLayout) findViewById(R.id.layout);
 		chart = new LineChart(this);
-		final Data data = new Data();
+		final LineChartData data = new LineChartData();
 		List<Point> s1 = generateValues(NUM_OF_VALUES, 1.0f);
 		List<Point> s2 = generateValues(NUM_OF_VALUES, 1.0f);
 		Line l1 = new Line(s1);

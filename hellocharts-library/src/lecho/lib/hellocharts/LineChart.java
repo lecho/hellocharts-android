@@ -7,7 +7,7 @@ import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
 import lecho.lib.hellocharts.gestures.ChartTouchHandler;
 import lecho.lib.hellocharts.model.AnimatedPoint;
-import lecho.lib.hellocharts.model.Data;
+import lecho.lib.hellocharts.model.LineChartData;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -24,7 +24,7 @@ public class LineChart extends View {
 	private AxesRenderer mAxesRenderer;
 	private LineChartRenderer mLineChartRenderer;
 	private ChartTouchHandler mTouchHandler;
-	private Data mData;
+	private LineChartData mData;
 	private boolean mAxesOn = true;
 	private ChartAnimator mAnimator;
 
@@ -122,7 +122,7 @@ public class LineChart extends View {
 		}
 	}
 
-	public void setData(final Data data) {
+	public void setData(final LineChartData data) {
 		mData = data;
 		mData.calculateRanges();
 		mChartCalculator.calculateAxesMargins(getContext());
@@ -130,7 +130,7 @@ public class LineChart extends View {
 		ViewCompat.postInvalidateOnAnimation(LineChart.this);
 	}
 
-	public Data getData() {
+	public LineChartData getData() {
 		return mData;
 	}
 

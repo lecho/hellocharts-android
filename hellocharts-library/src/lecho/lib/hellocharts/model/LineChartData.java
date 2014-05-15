@@ -3,7 +3,7 @@ package lecho.lib.hellocharts.model;
 import java.util.Collections;
 import java.util.List;
 
-public class Data {
+public class LineChartData {
 
 	public List<Line> lines = Collections.emptyList();
 	public Axis axisX = new Axis();
@@ -13,7 +13,7 @@ public class Data {
 	public float minYValue;
 	public float maxYValue;
 
-	public Data() {
+	public LineChartData() {
 	}
 
 	public void calculateRanges() {
