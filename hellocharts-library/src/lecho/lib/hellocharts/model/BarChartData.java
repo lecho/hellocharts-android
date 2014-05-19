@@ -5,7 +5,7 @@ import java.util.List;
 
 public class BarChartData extends AbstractChartData {
 
-	public List<Line> lines = Collections.emptyList();
+	public List<Bar> bars = Collections.emptyList();
 
 	@Override
 	public void calculateBoundaries() {
@@ -14,8 +14,8 @@ public class BarChartData extends AbstractChartData {
 		}
 		mBoundaries.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
 		// TODO: optimize with 3/2 algo
-		for (Line line : lines) {
-			for (AnimatedPoint animatedPoint : line.animatedPoints) {
+		for (Bar bar : bars) {
+			for (AnimatedPointWithColor animatedPoint : bar.animatedPoints) {
 				if (animatedPoint.point.x < mBoundaries.left) {
 					mBoundaries.left = animatedPoint.point.x;
 				}
@@ -36,7 +36,7 @@ public class BarChartData extends AbstractChartData {
 	public void updateLineTarget(int index, List<Point> points) {
 		// TODO check if points have exactly the same size as line under index
 		int pointIndex = 0;
-		for (AnimatedPoint animatedPoint : lines.get(index).animatedPoints) {
+		for (AnimatedPointWithColor animatedPoint : bars.get(index).animatedPoints) {
 			animatedPoint.targetPoint.set(points.get(pointIndex));
 			++pointIndex;
 		}
@@ -45,7 +45,7 @@ public class BarChartData extends AbstractChartData {
 	public void updateLine(int index, List<Point> points) {
 		// TODO check if points have exactly the same size as line under index
 		int pointIndex = 0;
-		for (AnimatedPoint animatedPoint : lines.get(index).animatedPoints) {
+		for (AnimatedPointWithColor animatedPoint : bars.get(index).animatedPoints) {
 			animatedPoint.point.set(points.get(pointIndex));
 			++pointIndex;
 		}
