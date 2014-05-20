@@ -47,60 +47,60 @@ public class ChartGestureHandler {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		boolean needInvalidate = mScaleGestureDetector.onTouchEvent(event);
 		needInvalidate = mGestureDetector.onTouchEvent(event) || needInvalidate;
-		switch (event.getAction()) {
-		case MotionEvent.ACTION_DOWN:
-			// Only one point will be selected even if there are few point in touch area.
-			int lineIndex = 0;
-			for (Line line : data.lines) {
-				int valueIndex = 0;
-				for (AnimatedPoint animatedPoint : line.animatedPoints) {
-					final float rawX = chartCalculator.calculateRawX(animatedPoint.point.x);
-					final float rawY = chartCalculator.calculateRawY(animatedPoint.point.y);
-					if (mChart.getChartRenderer().isInArea(rawX, rawY, event.getX(), event.getY())) {
-						mSelectedLineIndex = lineIndex;
-						mSelectedPointIndex = valueIndex;
-						needInvalidate = true;
-					}
-					++valueIndex;
-				}
-				++lineIndex;
-			}
-			break;
-		case MotionEvent.ACTION_UP:
-			// If value was selected call click listener and clear selection.
-			if (mSelectedPointIndex >= 0) {
-				final Line line = data.lines.get(mSelectedLineIndex);
-				final AnimatedPoint animatedPoint = line.animatedPoints.get(mSelectedPointIndex);
-				mOnPointClickListener.onPointClick(mSelectedLineIndex, mSelectedPointIndex, animatedPoint.point.x,
-						animatedPoint.point.y);
-				mSelectedLineIndex = Integer.MIN_VALUE;
-				mSelectedPointIndex = Integer.MIN_VALUE;
-				needInvalidate = true;
-			}
-			break;
-		case MotionEvent.ACTION_MOVE:
-			// Clear selection if user is now touching outside touch area.
-			if (mSelectedPointIndex >= 0) {
-				final Line line = data.lines.get(mSelectedLineIndex);
-				final AnimatedPoint animatedPoint = line.animatedPoints.get(mSelectedPointIndex);
-				final float rawX = chartCalculator.calculateRawX(animatedPoint.point.x);
-				final float rawY = chartCalculator.calculateRawY(animatedPoint.point.y);
-				if (mChart.getChartRenderer().isInArea(rawX, rawY, event.getX(), event.getY())) {
-					mSelectedLineIndex = Integer.MIN_VALUE;
-					mSelectedPointIndex = Integer.MIN_VALUE;
-					needInvalidate = true;
-				}
-			}
-			break;
-		case MotionEvent.ACTION_CANCEL:
-			// Clear selection
-			if (mSelectedPointIndex >= 0) {
-				mSelectedLineIndex = Integer.MIN_VALUE;
-				mSelectedPointIndex = Integer.MIN_VALUE;
-				needInvalidate = true;
-			}
-			break;
-		}
+		// switch (event.getAction()) {
+		// case MotionEvent.ACTION_DOWN:
+		// // Only one point will be selected even if there are few point in touch area.
+		// int lineIndex = 0;
+		// for (Line line : data.lines) {
+		// int valueIndex = 0;
+		// for (AnimatedPoint animatedPoint : line.animatedPoints) {
+		// final float rawX = chartCalculator.calculateRawX(animatedPoint.point.x);
+		// final float rawY = chartCalculator.calculateRawY(animatedPoint.point.y);
+		// if (mChart.getChartRenderer().isInArea(rawX, rawY, event.getX(), event.getY())) {
+		// mSelectedLineIndex = lineIndex;
+		// mSelectedPointIndex = valueIndex;
+		// needInvalidate = true;
+		// }
+		// ++valueIndex;
+		// }
+		// ++lineIndex;
+		// }
+		// break;
+		// case MotionEvent.ACTION_UP:
+		// // If value was selected call click listener and clear selection.
+		// if (mSelectedPointIndex >= 0) {
+		// final Line line = data.lines.get(mSelectedLineIndex);
+		// final AnimatedPoint animatedPoint = line.animatedPoints.get(mSelectedPointIndex);
+		// mOnPointClickListener.onPointClick(mSelectedLineIndex, mSelectedPointIndex, animatedPoint.point.x,
+		// animatedPoint.point.y);
+		// mSelectedLineIndex = Integer.MIN_VALUE;
+		// mSelectedPointIndex = Integer.MIN_VALUE;
+		// needInvalidate = true;
+		// }
+		// break;
+		// case MotionEvent.ACTION_MOVE:
+		// // Clear selection if user is now touching outside touch area.
+		// if (mSelectedPointIndex >= 0) {
+		// final Line line = data.lines.get(mSelectedLineIndex);
+		// final AnimatedPoint animatedPoint = line.animatedPoints.get(mSelectedPointIndex);
+		// final float rawX = chartCalculator.calculateRawX(animatedPoint.point.x);
+		// final float rawY = chartCalculator.calculateRawY(animatedPoint.point.y);
+		// if (mChart.getChartRenderer().isInArea(rawX, rawY, event.getX(), event.getY())) {
+		// mSelectedLineIndex = Integer.MIN_VALUE;
+		// mSelectedPointIndex = Integer.MIN_VALUE;
+		// needInvalidate = true;
+		// }
+		// }
+		// break;
+		// case MotionEvent.ACTION_CANCEL:
+		// // Clear selection
+		// if (mSelectedPointIndex >= 0) {
+		// mSelectedLineIndex = Integer.MIN_VALUE;
+		// mSelectedPointIndex = Integer.MIN_VALUE;
+		// needInvalidate = true;
+		// }
+		// break;
+		// }
 		return needInvalidate;
 	}
 

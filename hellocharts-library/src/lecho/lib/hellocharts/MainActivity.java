@@ -5,9 +5,10 @@ import java.util.List;
 
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Axis.AxisValue;
-import lecho.lib.hellocharts.model.LineChartData;
-import lecho.lib.hellocharts.model.Line;
+import lecho.lib.hellocharts.model.Bar;
+import lecho.lib.hellocharts.model.BarChartData;
 import lecho.lib.hellocharts.model.Point;
+import lecho.lib.hellocharts.model.ValueWithColor;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -16,10 +17,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 public class MainActivity extends Activity {
-	private LineChart chart;
+	private BarChart chart;
 	private static final int NUM_OF_VALUES = 5;
 
 	@Override
@@ -33,10 +33,10 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				if (++counter % 2 != 0) {
-					List<Point> s1 = generateValues(NUM_OF_VALUES, 1.0f);
+					List<Point> s1 = generatePoints(NUM_OF_VALUES, 1.0f);
 					chart.animateSeries(0, s1);
 				} else {
-					List<Point> s2 = generateValues(NUM_OF_VALUES, 1.0f);
+					List<Point> s2 = generatePoints(NUM_OF_VALUES, 1.0f);
 					chart.animateSeries(0, s2);
 				}
 
@@ -44,25 +44,65 @@ public class MainActivity extends Activity {
 		});
 
 		LinearLayout layout = (LinearLayout) findViewById(R.id.layout);
-		chart = new LineChart(this);
-		final LineChartData data = new LineChartData();
-		List<Point> s1 = generateValues(NUM_OF_VALUES, 1.0f);
-		List<Point> s2 = generateValues(NUM_OF_VALUES, 1.0f);
-		Line l1 = new Line(s1);
-		l1.color = Color.parseColor("#FFBB33");
-		l1.hasPoints = true;
-		l1.isSmooth = true;
+		// chart = new LineChart(this);
+		// final LineChartData data = new LineChartData();
+		// List<Point> s1 = generateValues(NUM_OF_VALUES, 1.0f);
+		// List<Point> s2 = generateValues(NUM_OF_VALUES, 1.0f);
+		// Line l1 = new Line(s1);
+		// l1.color = Color.parseColor("#FFBB33");
+		// l1.hasPoints = true;
+		// l1.isSmooth = true;
+		// l1.hasValuesPopups = true;
+		// Line l2 = new Line(s2);
+		// l2.color = Color.parseColor("#99CC00");
+		// l2.isSmooth = true;
+		// l2.isFilled = true;
+		// List<Line> lines = new ArrayList<Line>();
+		// lines.add(l2);
+		// lines.add(l1);
+		// data.lines = lines;
+		// Axis axisX = new Axis();
+		// axisX.values = generateAxis(0.0f, 100.0f, 1.0f);
+		// axisX.name = "Axis X";
+		// axisX.textSize = 14;
+		// axisX.color = Color.parseColor("#FFBB33");
+		// data.setAxisX(axisX);
+		//
+		// Axis axisY = new Axis();
+		// axisY.values = generateAxis(0.0f, 100.0f, 15.0f);
+		// axisY.name = "Axis Y";
+		// axisY.textSize = 14;
+		// axisY.color = Color.parseColor("#99CC00");
+		// data.setAxisY(axisY);
+		// chart.setData(data);
+		// chart.setBackgroundColor(Color.WHITE);
+		// // chart.setPadding(10, 10, 10, 20);
+		// chart.setOnPointClickListener(new OnPointClickListener() {
+		//
+		// @Override
+		// public void onPointClick(int selectedSeriesIndex, int selectedValueIndex, float x, float y) {
+		// Toast.makeText(
+		// getApplicationContext(),
+		// "Series index: " + selectedSeriesIndex + " Value index: " + selectedValueIndex
+		// + " That gives point: x=" + x + ", y=" + y, Toast.LENGTH_SHORT).show();
+		//
+		// }
+		// });
+		// layout.addView(chart);
+
+		chart = new BarChart(this);
+		final BarChartData data = new BarChartData();
+		List<ValueWithColor> s1 = generateValues(1);
+		List<ValueWithColor> s2 = generateValues(1);
+		Bar l1 = new Bar(s1);
 		l1.hasValuesPopups = true;
-		Line l2 = new Line(s2);
-		l2.color = Color.parseColor("#99CC00");
-		l2.isSmooth = true;
-		l2.isFilled = true;
-		List<Line> lines = new ArrayList<Line>();
-		lines.add(l2);
-		lines.add(l1);
-		data.lines = lines;
+		Bar l2 = new Bar(s2);
+		List<Bar> bars = new ArrayList<Bar>();
+		bars.add(l2);
+		bars.add(l1);
+		data.bars = bars;
 		Axis axisX = new Axis();
-		axisX.values = generateAxis(0.0f, 100.0f, 1.0f);
+		axisX.values = generateAxis(0.0f, 2, 1.0f);
 		axisX.name = "Axis X";
 		axisX.textSize = 14;
 		axisX.color = Color.parseColor("#FFBB33");
@@ -76,20 +116,8 @@ public class MainActivity extends Activity {
 		data.setAxisY(axisY);
 		chart.setData(data);
 		chart.setBackgroundColor(Color.WHITE);
-		// chart.setPadding(10, 10, 10, 20);
-		chart.setOnPointClickListener(new OnPointClickListener() {
-
-			@Override
-			public void onPointClick(int selectedSeriesIndex, int selectedValueIndex, float x, float y) {
-				Toast.makeText(
-						getApplicationContext(),
-						"Series index: " + selectedSeriesIndex + " Value index: " + selectedValueIndex
-								+ " That gives point: x=" + x + ", y=" + y, Toast.LENGTH_SHORT).show();
-
-			}
-		});
+		// // chart.setPadding(10, 10, 10, 20);
 		layout.addView(chart);
-
 	}
 
 	@Override
@@ -104,7 +132,7 @@ public class MainActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private List<Point> generateValues(int num, float step) {
+	private List<Point> generatePoints(int num, float step) {
 		float x = 0.0f;
 		List<Point> result = new ArrayList<Point>();
 		for (float f = 0.0f; f < num; f += step) {
@@ -118,6 +146,15 @@ public class MainActivity extends Activity {
 		List<AxisValue> result = new ArrayList<AxisValue>();
 		for (float f = min; f <= max; f += step) {
 			result.add(new AxisValue(f));
+		}
+		return result;
+	}
+
+	private List<ValueWithColor> generateValues(int num) {
+		float x = 0.0f;
+		List<ValueWithColor> result = new ArrayList<ValueWithColor>();
+		for (int i = 0; i < num; ++i) {
+			result.add(new ValueWithColor((float) Math.random() * 100.0f, Color.parseColor("#99CC00")));
 		}
 		return result;
 	}

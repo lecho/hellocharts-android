@@ -8,7 +8,6 @@ import lecho.lib.hellocharts.gestures.ChartGestureHandler;
 public abstract class AbstractChart extends View implements Chart {
 	protected ChartCalculator mChartCalculator;
 	protected AxesRenderer mAxesRenderer;
-	protected LineChartRenderer mChartRenderer;
 	protected ChartGestureHandler mTouchHandler;
 
 	public AbstractChart(Context context) {
@@ -21,10 +20,6 @@ public abstract class AbstractChart extends View implements Chart {
 
 	public AbstractChart(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-	}
-
-	public LineChartRenderer getChartRenderer() {
-		return mChartRenderer;
 	}
 
 	public AxesRenderer getAxesRenderer() {

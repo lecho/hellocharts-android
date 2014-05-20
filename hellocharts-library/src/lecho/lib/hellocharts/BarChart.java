@@ -5,9 +5,7 @@ import java.util.List;
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
-import lecho.lib.hellocharts.gestures.ChartGestureHandler;
-import lecho.lib.hellocharts.model.AnimatedPoint;
-import lecho.lib.hellocharts.model.LineChartData;
+import lecho.lib.hellocharts.model.BarChartData;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -17,29 +15,29 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 
-public class LineChart extends AbstractChart {
+public class BarChart extends AbstractChart {
 	private static final String TAG = "LineChart";
-	private LineChartData mData;
+	private BarChartData mData;
 	private boolean mAxesOn = true;
 	private ChartAnimator mAnimator;
-	private LineChartRenderer mChartRenderer;
+	private BarChartRenderer mChartRenderer;
 
-	public LineChart(Context context) {
+	public BarChart(Context context) {
 		this(context, null, 0);
 	}
 
-	public LineChart(Context context, AttributeSet attrs) {
+	public BarChart(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
 	}
 
-	public LineChart(Context context, AttributeSet attrs, int defStyle) {
+	public BarChart(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		initAttributes();
 		initAnimatiors();
 		mChartCalculator = new ChartCalculator(context, this);
 		mAxesRenderer = new AxesRenderer(context, this);
-		mChartRenderer = new LineChartRenderer(context, this);
-		mTouchHandler = new ChartGestureHandler(context, this);
+		mChartRenderer = new BarChartRenderer(context, this);
+		// mTouchHandler = new ChartGestureHandler(context, this);
 	}
 
 	@SuppressLint("NewApi")
@@ -96,7 +94,7 @@ public class LineChart extends AbstractChart {
 		mChartCalculator.calculateClippingArea();// only if zoom is enabled
 		canvas.clipRect(mChartCalculator.mClippingRect);
 		// TODO: draw lines
-		mChartRenderer.drawLines(canvas);
+		mChartRenderer.draw(canvas);
 		canvas.restoreToCount(clipRestoreCount);
 		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
 	}
@@ -104,39 +102,39 @@ public class LineChart extends AbstractChart {
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		super.onTouchEvent(event);
-		if (mTouchHandler.handleTouchEvent(event)) {
-			ViewCompat.postInvalidateOnAnimation(this);
-		}
+		// if (mTouchHandler.handleTouchEvent(event)) {
+		// ViewCompat.postInvalidateOnAnimation(this);
+		// }
 		return true;
 	}
 
 	@Override
 	public void computeScroll() {
 		super.computeScroll();
-		if (mTouchHandler.computeScroll()) {
-			ViewCompat.postInvalidateOnAnimation(this);
-		}
+//		if (mTouchHandler.computeScroll()) {
+//			ViewCompat.postInvalidateOnAnimation(this);
+//		}
 	}
 
-	public void setData(final LineChartData data) {
+	public void setData(final BarChartData data) {
 		mData = data;
 		mData.calculateBoundaries();
 		mChartCalculator.calculateAxesMargins(getContext());
 		mChartCalculator.calculateViewport();
-		ViewCompat.postInvalidateOnAnimation(LineChart.this);
+		ViewCompat.postInvalidateOnAnimation(BarChart.this);
 	}
 
-	public LineChartData getData() {
+	public BarChartData getData() {
 		return mData;
 	}
 
 	public void animationUpdate(float scale) {
-		for (AnimatedPoint animatedPoint : mData.lines.get(0).animatedPoints) {
-			animatedPoint.update(scale);
-		}
-		mData.calculateBoundaries();
-		mChartCalculator.calculateViewport();
-		ViewCompat.postInvalidateOnAnimation(LineChart.this);
+		// for (AnimatedPoint animatedPoint : mData.lines.get(0).animatedPoints) {
+		// animatedPoint.update(scale);
+		// }
+		// mData.calculateBoundaries();
+		// mChartCalculator.calculateViewport();
+		// ViewCompat.postInvalidateOnAnimation(BarChart.this);
 	}
 
 	public void animateSeries(int index, List<lecho.lib.hellocharts.model.Point> points) {
@@ -147,7 +145,7 @@ public class LineChart extends AbstractChart {
 
 	public void updateSeries(int index, List<lecho.lib.hellocharts.model.Point> points) {
 		mData.updateLine(index, points);
-		ViewCompat.postInvalidateOnAnimation(LineChart.this);
+		ViewCompat.postInvalidateOnAnimation(BarChart.this);
 	}
 
 	public void setOnPointClickListener(OnPointClickListener listener) {
