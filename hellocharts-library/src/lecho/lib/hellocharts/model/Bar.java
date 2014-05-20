@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Bar {
 	private static final int DEFAULT_VALUE_TEXT_SIZE_DP = 10;
-	public List<AnimatedPointWithColor> animatedPoints = Collections.emptyList();
+	public List<AnimatedValueWithColor> animatedValues = Collections.emptyList();
 	public int textSize = DEFAULT_VALUE_TEXT_SIZE_DP;
 	public LineValueFormatter formatter = new DefaultLineValueFormatter();
 	public boolean hasValuesPopups = false;
@@ -16,10 +16,10 @@ public class Bar {
 	}
 
 	private void setValues(List<ValueWithColor> values) {
-		animatedPoints = new ArrayList<AnimatedPointWithColor>(values.size());
+		animatedValues = new ArrayList<AnimatedValueWithColor>(values.size());
 		int x = 0;
 		for (ValueWithColor valueWithColor : values) {
-			animatedPoints.add(new AnimatedPointWithColor(new Point(x, valueWithColor.y), valueWithColor.color));
+			animatedValues.add(new AnimatedValueWithColor(valueWithColor.y, valueWithColor.color));
 			++x;
 		}
 	}

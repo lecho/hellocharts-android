@@ -12,21 +12,11 @@ public class BarChartData extends AbstractChartData {
 		if (mManualBoundaries) {
 			return;
 		}
-		mBoundaries.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
-		// TODO: optimize with 3/2 algo
+		mBoundaries.set(-0.5f, Float.MIN_VALUE, bars.size() - 0.5f, 0);
 		for (Bar bar : bars) {
-			for (AnimatedPointWithColor animatedPoint : bar.animatedPoints) {
-				if (animatedPoint.point.x < mBoundaries.left) {
-					mBoundaries.left = animatedPoint.point.x;
-				}
-				if (animatedPoint.point.x > mBoundaries.right) {
-					mBoundaries.right = animatedPoint.point.x;
-				}
-				if (animatedPoint.point.y < mBoundaries.bottom) {
-					mBoundaries.bottom = animatedPoint.point.y;
-				}
-				if (animatedPoint.point.y > mBoundaries.top) {
-					mBoundaries.top = animatedPoint.point.y;
+			for (AnimatedValueWithColor animatedValue : bar.animatedValues) {
+				if (animatedValue.value > mBoundaries.top) {
+					mBoundaries.top = animatedValue.value;
 				}
 
 			}
@@ -35,19 +25,19 @@ public class BarChartData extends AbstractChartData {
 
 	public void updateLineTarget(int index, List<Point> points) {
 		// TODO check if points have exactly the same size as line under index
-		int pointIndex = 0;
-		for (AnimatedPointWithColor animatedPoint : bars.get(index).animatedPoints) {
-			animatedPoint.targetPoint.set(points.get(pointIndex));
-			++pointIndex;
-		}
+		// int pointIndex = 0;
+		// for (AnimatedValueWithColor animatedValues : bars.get(index).animatedValues) {
+		// animatedValues.targetPoint.set(points.get(pointIndex));
+		// ++pointIndex;
+		// }
 	}
 
 	public void updateLine(int index, List<Point> points) {
 		// TODO check if points have exactly the same size as line under index
-		int pointIndex = 0;
-		for (AnimatedPointWithColor animatedPoint : bars.get(index).animatedPoints) {
-			animatedPoint.point.set(points.get(pointIndex));
-			++pointIndex;
-		}
+		// int pointIndex = 0;
+		// for (AnimatedValueWithColor animatedValues : bars.get(index).animatedValues) {
+		// animatedValues.point.set(points.get(pointIndex));
+		// ++pointIndex;
+		// }
 	}
 }
