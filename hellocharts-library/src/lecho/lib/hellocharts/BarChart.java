@@ -5,8 +5,8 @@ import java.util.List;
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
+import lecho.lib.hellocharts.gestures.ChartZoomAndScrollHandler;
 import lecho.lib.hellocharts.model.BarChartData;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.os.Build;
@@ -32,18 +32,13 @@ public class BarChart extends AbstractChart {
 
 	public BarChart(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		initAttributes();
 		initAnimatiors();
 		mChartCalculator = new ChartCalculator(context, this);
 		mAxesRenderer = new AxesRenderer(context, this);
 		mChartRenderer = new BarChartRenderer(context, this);
-		// mTouchHandler = new ChartGestureHandler(context, this);
+		mTouchHandler = new ChartZoomAndScrollHandler(context, this);
 	}
 
-	@SuppressLint("NewApi")
-	private void initAttributes() {
-		setLayerType(LAYER_TYPE_SOFTWARE, null);
-	}
 
 	private void initAnimatiors() {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
@@ -102,18 +97,18 @@ public class BarChart extends AbstractChart {
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		super.onTouchEvent(event);
-		// if (mTouchHandler.handleTouchEvent(event)) {
-		// ViewCompat.postInvalidateOnAnimation(this);
-		// }
+		if (mTouchHandler.handleTouchEvent(event)) {
+			ViewCompat.postInvalidateOnAnimation(this);
+		}
 		return true;
 	}
 
 	@Override
 	public void computeScroll() {
 		super.computeScroll();
-//		if (mTouchHandler.computeScroll()) {
-//			ViewCompat.postInvalidateOnAnimation(this);
-//		}
+		if (mTouchHandler.computeScroll()) {
+			ViewCompat.postInvalidateOnAnimation(this);
+		}
 	}
 
 	public void setData(final BarChartData data) {
