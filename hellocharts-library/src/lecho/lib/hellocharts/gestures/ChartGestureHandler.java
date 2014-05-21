@@ -1,11 +1,8 @@
 package lecho.lib.hellocharts.gestures;
 
+import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartCalculator;
-import lecho.lib.hellocharts.LineChart;
 import lecho.lib.hellocharts.OnPointClickListener;
-import lecho.lib.hellocharts.model.AnimatedPoint;
-import lecho.lib.hellocharts.model.Line;
-import lecho.lib.hellocharts.model.LineChartData;
 import android.content.Context;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -17,12 +14,11 @@ public class ChartGestureHandler {
 	private int mSelectedPointIndex = Integer.MIN_VALUE;
 	private GestureDetector mGestureDetector;
 	private ScaleGestureDetector mScaleGestureDetector;
-	private OnPointClickListener mOnPointClickListener = new DummyOnPointListener();
 	private ChartScroller mChartScroller;
 	private ChartZoomer mChartZoomer;
-	private LineChart mChart;
+	private Chart mChart;
 
-	public ChartGestureHandler(Context context, LineChart chart) {
+	public ChartGestureHandler(Context context, Chart chart) {
 		mChart = chart;
 		mGestureDetector = new GestureDetector(context, new ChartGestureListener());
 		mScaleGestureDetector = new ScaleGestureDetector(context, new ChartScaleGestureListener());
@@ -43,8 +39,6 @@ public class ChartGestureHandler {
 	}
 
 	public boolean handleTouchEvent(MotionEvent event) {
-		final LineChartData data = mChart.getData();
-		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		boolean needInvalidate = mScaleGestureDetector.onTouchEvent(event);
 		needInvalidate = mGestureDetector.onTouchEvent(event) || needInvalidate;
 		// switch (event.getAction()) {
