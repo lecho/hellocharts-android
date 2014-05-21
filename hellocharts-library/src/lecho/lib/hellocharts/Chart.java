@@ -1,6 +1,6 @@
 package lecho.lib.hellocharts;
 
-import lecho.lib.hellocharts.gestures.ChartGestureHandler;
+import lecho.lib.hellocharts.gestures.ChartZoomAndScrollHandler;
 import lecho.lib.hellocharts.model.ChartData;
 
 public interface Chart {
@@ -11,7 +11,7 @@ public interface Chart {
 
 	public ChartCalculator getChartCalculator();
 
-	public ChartGestureHandler getTouchHandler();
+	public ChartZoomAndScrollHandler getTouchHandler();
 
 	public void animationUpdate(float scale);
 

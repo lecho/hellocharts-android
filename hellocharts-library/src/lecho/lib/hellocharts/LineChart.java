@@ -5,7 +5,7 @@ import java.util.List;
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
-import lecho.lib.hellocharts.gestures.ChartGestureHandler;
+import lecho.lib.hellocharts.gestures.ChartZoomAndScrollHandler;
 import lecho.lib.hellocharts.model.AnimatedPoint;
 import lecho.lib.hellocharts.model.LineChartData;
 import android.annotation.SuppressLint;
@@ -39,7 +39,7 @@ public class LineChart extends AbstractChart {
 		mChartCalculator = new ChartCalculator(context, this);
 		mAxesRenderer = new AxesRenderer(context, this);
 		mChartRenderer = new LineChartRenderer(context, this);
-		mTouchHandler = new ChartGestureHandler(context, this);
+		mTouchHandler = new ChartZoomAndScrollHandler(context, this);
 	}
 
 	@SuppressLint("NewApi")
