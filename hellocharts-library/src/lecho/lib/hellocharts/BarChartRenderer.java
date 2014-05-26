@@ -45,15 +45,29 @@ public class BarChartRenderer {
 	public void draw(Canvas canvas) {
 		final BarChartData data = mChart.getData();
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
-		final float barWidth = chartCalculator.mContentRect.width() / data.bars.size();
+		int numBarsWithinContentRect = Math.round(chartCalculator.mCurrentViewport.width());
+		if (numBarsWithinContentRect < 1) {
+			numBarsWithinContentRect = 1;
+		} else {
+			++numBarsWithinContentRect;
+		}
+		int barWidth = chartCalculator.mContentRect.width() / numBarsWithinContentRect;
+		if (barWidth < 1) {
+			barWidth = 1;
+		}
 		int barIndex = 0;
 		for (Bar bar : data.bars) {
 			for (AnimatedValueWithColor animatedValue : bar.animatedValues) {
 				final float rawValueX = chartCalculator.calculateRawX(barIndex);
 				final float rawValueY = chartCalculator.calculateRawY(animatedValue.value);
 				mBarPaint.setColor(animatedValue.color);
-				canvas.drawRect(rawValueX - (barWidth / 4), rawValueY, rawValueX + (barWidth / 4),
-						chartCalculator.mContentRect.bottom, mBarPaint);
+				if (barWidth > 1) {
+					canvas.drawRect(rawValueX - (barWidth / 2), rawValueY, rawValueX + (barWidth / 2),
+							chartCalculator.mContentRect.bottom, mBarPaint);
+				} else {
+					canvas.drawRect(rawValueX - barWidth, rawValueY, rawValueX, chartCalculator.mContentRect.bottom,
+							mBarPaint);
+				}
 			}
 			++barIndex;
 		}

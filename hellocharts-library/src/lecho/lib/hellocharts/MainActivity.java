@@ -9,6 +9,7 @@ import lecho.lib.hellocharts.model.Bar;
 import lecho.lib.hellocharts.model.BarChartData;
 import lecho.lib.hellocharts.model.Point;
 import lecho.lib.hellocharts.model.ValueWithColor;
+import android.R.color;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -92,24 +93,25 @@ public class MainActivity extends Activity {
 
 		chart = new BarChart(this);
 		final BarChartData data = new BarChartData();
-		List<ValueWithColor> s1 = generateValues(1);
-		List<ValueWithColor> s2 = generateValues(1);
-		Bar l1 = new Bar(s1);
-		l1.hasValuesPopups = true;
-		Bar l2 = new Bar(s2);
+		// List<ValueWithColor> s1 = generateValues(1);
+		// List<ValueWithColor> s2 = generateValues(1);
+		// Bar l1 = new Bar(s1);
+		// l1.hasValuesPopups = true;
+		// Bar l2 = new Bar(s2);
 		List<Bar> bars = new ArrayList<Bar>();
-		bars.add(l2);
-		bars.add(l1);
+		for (int i = 0; i < 1000; ++i) {
+			bars.add(generateBar());
+		}
 		data.bars = bars;
 		Axis axisX = new Axis();
-		axisX.values = generateAxis(0.0f, 2, 1.0f);
+		axisX.values = generateAxis(0.0f, 1000, 100.0f);
 		axisX.name = "Axis X";
 		axisX.textSize = 14;
 		axisX.color = Color.parseColor("#FFBB33");
 		data.setAxisX(axisX);
 
 		Axis axisY = new Axis();
-		axisY.values = generateAxis(0.0f, 100.0f, 15.0f);
+		axisY.values = generateAxis(0.0f, 100.0f, 10.0f);
 		axisY.name = "Axis Y";
 		axisY.textSize = 14;
 		axisY.color = Color.parseColor("#99CC00");
@@ -151,11 +153,27 @@ public class MainActivity extends Activity {
 	}
 
 	private List<ValueWithColor> generateValues(int num) {
+		int[] c = new int[8];
+		c[0] = Color.BLACK;
+		c[1] = Color.BLUE;
+		c[2] = Color.CYAN;
+		c[3] = Color.DKGRAY;
+		c[4] = Color.GREEN;
+		c[5] = Color.MAGENTA;
+		c[6] = Color.RED;
+		c[7] = Color.YELLOW;
 		float x = 0.0f;
 		List<ValueWithColor> result = new ArrayList<ValueWithColor>();
 		for (int i = 0; i < num; ++i) {
-			result.add(new ValueWithColor((float) Math.random() * 100.0f, Color.parseColor("#99CC00")));
+			result.add(new ValueWithColor((float) Math.random() * 100.0f, c[(int) Math.round(Math.random() * 7)]));
 		}
 		return result;
+	}
+
+	private Bar generateBar() {
+		List<ValueWithColor> s1 = generateValues(1);
+		Bar l1 = new Bar(s1);
+		l1.hasValuesPopups = true;
+		return l1;
 	}
 }
