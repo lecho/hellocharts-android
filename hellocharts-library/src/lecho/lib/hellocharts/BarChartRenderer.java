@@ -51,28 +51,32 @@ public class BarChartRenderer {
 		} else {
 			++numBarsWithinContentRect;
 		}
-		int barWidth = chartCalculator.mContentRect.width() / numBarsWithinContentRect;
-		if (barWidth < 1) {
-			barWidth = 1;
+		float barWidth = chartCalculator.mContentRect.width() / numBarsWithinContentRect;
+		if (barWidth < 1.0f) {
+			barWidth = 1.0f;
 		}
-		int barIndex = 0;
+		float barX = 0.0f;
 		for (Bar bar : data.bars) {
+			float subbarWidth = barWidth / bar.animatedValues.size();
+			final float rawValueX = chartCalculator.calculateRawX(barX);
+			float subbarX = rawValueX - (barWidth / 2);
 			for (AnimatedValueWithColor animatedValueWithColor : bar.animatedValues) {
-				final float rawValueX = chartCalculator.calculateRawX(barIndex);
+
 				final float rawValueY = chartCalculator.calculateRawY(animatedValueWithColor.value);
 				mBarPaint.setColor(animatedValueWithColor.color);
-				if (barWidth > 1) {
-					canvas.drawRect(rawValueX - (barWidth / 2), rawValueY, rawValueX + (barWidth / 2),
-							chartCalculator.mContentRect.bottom, mBarPaint);
-				} else {
-					canvas.drawRect(rawValueX - barWidth, rawValueY, rawValueX, chartCalculator.mContentRect.bottom,
-							mBarPaint);
-				}
+				// if (barWidth > 1.0f) {
+				canvas.drawRect(subbarX, rawValueY, subbarX + subbarWidth, chartCalculator.mContentRect.bottom,
+						mBarPaint);
+				// } else {
+				// canvas.drawRect(rawValueX - subbarWidth, rawValueY, rawValueX, chartCalculator.mContentRect.bottom,
+				// mBarPaint);
+				// }
 				if (bar.hasValuesPopups) {
 					drawValuePopup(canvas, bar, animatedValueWithColor, rawValueX, rawValueY);
 				}
+				subbarX += subbarWidth;
 			}
-			++barIndex;
+			barX += 1;
 		}
 	}
 
