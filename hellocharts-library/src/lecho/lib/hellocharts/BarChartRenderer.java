@@ -3,8 +3,6 @@ package lecho.lib.hellocharts;
 import lecho.lib.hellocharts.model.AnimatedValueWithColor;
 import lecho.lib.hellocharts.model.Bar;
 import lecho.lib.hellocharts.model.BarChartData;
-import lecho.lib.hellocharts.model.Line;
-import lecho.lib.hellocharts.model.Point;
 import lecho.lib.hellocharts.utils.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -41,6 +39,7 @@ public class BarChartRenderer {
 		mPointAndPopupPaint.setAntiAlias(true);
 		mPointAndPopupPaint.setStyle(Paint.Style.FILL);
 		mPointAndPopupPaint.setStrokeWidth(1);
+		mPointAndPopupPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
 	}
 
 	public void draw(Canvas canvas) {
@@ -81,7 +80,6 @@ public class BarChartRenderer {
 		mPointAndPopupPaint.setTextAlign(Align.LEFT);
 		mPointAndPopupPaint.setTextSize(Utils.sp2px(mContext, bar.textSize));
 		mPointAndPopupPaint.setColor(animatedValueWithColor.color);
-		mPointAndPopupPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
 		final String text = "77";// bar.formatter.formatValue(animatedValueWithColor);
 		final Rect textBounds = new Rect();
 		mPointAndPopupPaint.getTextBounds(text, 0, text.length(), textBounds);
