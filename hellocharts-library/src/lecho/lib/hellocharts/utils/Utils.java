@@ -1,8 +1,19 @@
 package lecho.lib.hellocharts.utils;
 
 import android.content.Context;
+import android.graphics.Color;
 
 public abstract class Utils {
+	public static final int COLOR_BLUE = Color.parseColor("#33B5E5");
+	public static final int COLOR_VIOLET = Color.parseColor("#AA66CC");
+	public static final int COLOR_GREEN = Color.parseColor("#99CC00");
+	public static final int COLOR_ORANGE = Color.parseColor("#FFBB33");
+	public static final int COLOR_RED = Color.parseColor("#FF4444");
+
+	public static final int pickColor() {
+		final int[] colors = new int[] { COLOR_BLUE, COLOR_VIOLET, COLOR_GREEN, COLOR_ORANGE, COLOR_RED };
+		return colors[(int) Math.round(Math.random() * (colors.length - 1))];
+	}
 
 	public static int dp2px(Context context, int dp) {
 		// Get the screen's density scale
