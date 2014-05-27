@@ -99,7 +99,7 @@ public class MainActivity extends Activity {
 		// l1.hasValuesPopups = true;
 		// Bar l2 = new Bar(s2);
 		List<Bar> bars = new ArrayList<Bar>();
-		for (int i = 0; i < 1000; ++i) {
+		for (int i = 0; i < 10; ++i) {
 			bars.add(generateBar());
 		}
 		data.bars = bars;

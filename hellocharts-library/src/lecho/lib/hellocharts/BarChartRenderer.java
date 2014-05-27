@@ -14,6 +14,7 @@ import android.graphics.Paint.Align;
 import android.graphics.Paint.Cap;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 
 public class BarChartRenderer {
 
@@ -57,10 +58,10 @@ public class BarChartRenderer {
 		}
 		int barIndex = 0;
 		for (Bar bar : data.bars) {
-			for (AnimatedValueWithColor animatedValue : bar.animatedValues) {
+			for (AnimatedValueWithColor animatedValueWithColor : bar.animatedValues) {
 				final float rawValueX = chartCalculator.calculateRawX(barIndex);
-				final float rawValueY = chartCalculator.calculateRawY(animatedValue.value);
-				mBarPaint.setColor(animatedValue.color);
+				final float rawValueY = chartCalculator.calculateRawY(animatedValueWithColor.value);
+				mBarPaint.setColor(animatedValueWithColor.color);
 				if (barWidth > 1) {
 					canvas.drawRect(rawValueX - (barWidth / 2), rawValueY, rawValueX + (barWidth / 2),
 							chartCalculator.mContentRect.bottom, mBarPaint);
@@ -68,29 +69,29 @@ public class BarChartRenderer {
 					canvas.drawRect(rawValueX - barWidth, rawValueY, rawValueX, chartCalculator.mContentRect.bottom,
 							mBarPaint);
 				}
+				drawValuePopup(canvas, bar, animatedValueWithColor, rawValueX, rawValueY);
 			}
 			++barIndex;
 		}
 	}
 
-	private void drawValuePopup(Canvas canvas, Line line, Point value, float rawValueX, float rawValueY) {
+	private void drawValuePopup(Canvas canvas, Bar bar, AnimatedValueWithColor animatedValueWithColor, float rawValueX,
+			float rawValueY) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		mPointAndPopupPaint.setTextAlign(Align.LEFT);
-		mPointAndPopupPaint.setTextSize(Utils.sp2px(mContext, line.textSize));
-		final String text = line.formatter.formatValue(value);
+		mPointAndPopupPaint.setTextSize(Utils.sp2px(mContext, bar.textSize));
+		mPointAndPopupPaint.setColor(animatedValueWithColor.color);
+		mPointAndPopupPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+		final String text = "77";// bar.formatter.formatValue(animatedValueWithColor);
 		final Rect textBounds = new Rect();
 		mPointAndPopupPaint.getTextBounds(text, 0, text.length(), textBounds);
-		float left = rawValueX + mPopupMargin;
-		float right = rawValueX + mPopupMargin + textBounds.width() + mPopupMargin * 2;
+		float left = rawValueX - (textBounds.width() / 2) - mPopupMargin;
+		float right = rawValueX + (textBounds.width() / 2) + mPopupMargin;
 		float top = rawValueY - mPopupMargin - textBounds.height() - mPopupMargin * 2;
 		float bottom = rawValueY - mPopupMargin;
 		if (top < chartCalculator.mContentRect.top) {
 			top = rawValueY + mPopupMargin;
 			bottom = rawValueY + mPopupMargin + textBounds.height() + mPopupMargin * 2;
-		}
-		if (right > chartCalculator.mContentRect.right) {
-			left = rawValueX - mPopupMargin - textBounds.width() - mPopupMargin * 2;
-			right = rawValueX - mPopupMargin;
 		}
 		final RectF popup = new RectF(left, top, right, bottom);
 		canvas.drawRoundRect(popup, mPopupMargin, mPopupMargin, mPointAndPopupPaint);
