@@ -57,7 +57,7 @@ public class BarChartRenderer {
 		}
 		float barX = 0.0f;
 		for (Bar bar : data.bars) {
-			float subbarWidth = barWidth / bar.animatedValues.size();
+			float subbarWidth = (barWidth - (2 * (bar.animatedValues.size() - 1))) / bar.animatedValues.size();
 			final float rawValueX = chartCalculator.calculateRawX(barX);
 			float subbarX = rawValueX - (barWidth / 2);
 			for (AnimatedValueWithColor animatedValueWithColor : bar.animatedValues) {
@@ -72,9 +72,9 @@ public class BarChartRenderer {
 				// mBarPaint);
 				// }
 				if (bar.hasValuesPopups) {
-					drawValuePopup(canvas, bar, animatedValueWithColor, rawValueX, rawValueY);
+					drawValuePopup(canvas, bar, animatedValueWithColor, subbarX + (subbarWidth / 2), rawValueY);
 				}
-				subbarX += subbarWidth;
+				subbarX += subbarWidth + 2;
 			}
 			barX += 1;
 		}
