@@ -9,6 +9,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Cap;
 import android.graphics.Path;
@@ -52,6 +53,7 @@ public class LineChartRenderer {
 		mPointAndPopupPaint.setAntiAlias(true);
 		mPointAndPopupPaint.setStyle(Paint.Style.FILL);
 		mPointAndPopupPaint.setStrokeWidth(1);
+		mPointAndPopupPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
 	}
 
 	public void drawLines(Canvas canvas) {
