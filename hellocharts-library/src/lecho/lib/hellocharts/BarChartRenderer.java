@@ -68,7 +68,9 @@ public class BarChartRenderer {
 					canvas.drawRect(rawValueX - barWidth, rawValueY, rawValueX, chartCalculator.mContentRect.bottom,
 							mBarPaint);
 				}
-				drawValuePopup(canvas, bar, animatedValueWithColor, rawValueX, rawValueY);
+				if (bar.hasValuesPopups) {
+					drawValuePopup(canvas, bar, animatedValueWithColor, rawValueX, rawValueY);
+				}
 			}
 			++barIndex;
 		}
