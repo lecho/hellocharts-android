@@ -80,7 +80,7 @@ public class BarChartRenderer {
 		mPointAndPopupPaint.setTextAlign(Align.LEFT);
 		mPointAndPopupPaint.setTextSize(Utils.sp2px(mContext, bar.textSize));
 		mPointAndPopupPaint.setColor(animatedValueWithColor.color);
-		final String text = "77";// bar.formatter.formatValue(animatedValueWithColor);
+		final String text = bar.formatter.formatValue(animatedValueWithColor.value);
 		final Rect textBounds = new Rect();
 		mPointAndPopupPaint.getTextBounds(text, 0, text.length(), textBounds);
 		float left = rawValueX - (textBounds.width() / 2) - mPopupMargin;
