@@ -15,7 +15,7 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 
 public class BarChartRenderer {
-
+	private static final float DEFAULT_BAR_FILL_RATIO = 0.75f;
 	private static final int DEFAULT_TOUCH_RADIUS_DP = 12;
 	private static final int DEFAULT_POPUP_MARGIN_DP = 4;
 	private static final int DEFAULT_TEXT_COLOR = Color.WHITE;
@@ -45,13 +45,8 @@ public class BarChartRenderer {
 	public void draw(Canvas canvas) {
 		final BarChartData data = mChart.getData();
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
-		int numBarsWithinContentRect = Math.round(chartCalculator.mCurrentViewport.width());
-		if (numBarsWithinContentRect < 1) {
-			numBarsWithinContentRect = 1;
-		} else {
-			++numBarsWithinContentRect;
-		}
-		float barWidth = chartCalculator.mContentRect.width() / numBarsWithinContentRect;
+		float barWidth = DEFAULT_BAR_FILL_RATIO * chartCalculator.mContentRect.width()
+				/ chartCalculator.mCurrentViewport.width();
 		if (barWidth < 1.0f) {
 			barWidth = 1.0f;
 		}
