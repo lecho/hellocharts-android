@@ -6,6 +6,7 @@ import java.util.List;
 public class BarChartData extends AbstractChartData {
 
 	public List<Bar> bars = Collections.emptyList();
+	public boolean isStacked = false;
 
 	@Override
 	public void calculateBoundaries() {
@@ -13,12 +14,32 @@ public class BarChartData extends AbstractChartData {
 			return;
 		}
 		mBoundaries.set(-0.5f, Float.MIN_VALUE, bars.size() - 0.5f, 0);
+		if (isStacked) {
+			calculateBoundariesStacked();
+		} else {
+			calculateBoundariesDefault();
+		}
+	}
+
+	public void calculateBoundariesDefault() {
 		for (Bar bar : bars) {
 			for (AnimatedValueWithColor animatedValue : bar.animatedValues) {
 				if (animatedValue.value > mBoundaries.top) {
 					mBoundaries.top = animatedValue.value;
 				}
 
+			}
+		}
+	}
+
+	public void calculateBoundariesStacked() {
+		for (Bar bar : bars) {
+			float sum = 0;
+			for (AnimatedValueWithColor animatedValue : bar.animatedValues) {
+				sum += animatedValue.value;
+			}
+			if (sum > mBoundaries.top) {
+				mBoundaries.top = sum;
 			}
 		}
 	}
