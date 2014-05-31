@@ -16,6 +16,7 @@ import android.graphics.Typeface;
 
 public class BarChartRenderer {
 	private static final float DEFAULT_BAR_FILL_RATIO = 0.75f;
+	private static final int DEFAULT_SUBBAR_SPACING_DP = 1;
 	private static final int DEFAULT_TOUCH_RADIUS_DP = 12;
 	private static final int DEFAULT_POPUP_MARGIN_DP = 4;
 	private static final int DEFAULT_TEXT_COLOR = Color.WHITE;
@@ -25,12 +26,14 @@ public class BarChartRenderer {
 	private float mTouchRadius;
 	private Context mContext;
 	private BarChart mChart;
+	private int mSubbarSpacing;
 
 	public BarChartRenderer(Context context, BarChart chart) {
 		mContext = context;
 		mChart = chart;
 		mPopupMargin = Utils.dp2px(context, DEFAULT_POPUP_MARGIN_DP);
 		mTouchRadius = Utils.dp2px(context, DEFAULT_TOUCH_RADIUS_DP);
+		mSubbarSpacing = Utils.dp2px(mContext, DEFAULT_SUBBAR_SPACING_DP);
 
 		mBarPaint.setAntiAlias(true);
 		mBarPaint.setStyle(Paint.Style.FILL);
@@ -45,33 +48,39 @@ public class BarChartRenderer {
 	public void draw(Canvas canvas) {
 		final BarChartData data = mChart.getData();
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		// barWidht should be at least 2 px
 		float barWidth = DEFAULT_BAR_FILL_RATIO * chartCalculator.mContentRect.width()
 				/ chartCalculator.mCurrentViewport.width();
-		if (barWidth < 1.0f) {
-			barWidth = 1.0f;
+		if (barWidth < 2) {
+			barWidth = 2;
 		}
-		float barX = 0.0f;
+		// Bars are indexes from 0 to n, bar index is also bar X value
+		int barIndex = 0;
 		for (Bar bar : data.bars) {
-			float subbarWidth = (barWidth - (2 * (bar.animatedValues.size() - 1))) / bar.animatedValues.size();
-			final float rawValueX = chartCalculator.calculateRawX(barX);
-			float subbarX = rawValueX - (barWidth / 2);
+			// For n subbars there will be n-1 spacing and there will be one subbar for every animatedValue
+			float subbarWidth = (barWidth - (mSubbarSpacing * (bar.animatedValues.size() - 1)))
+					/ bar.animatedValues.size();
+			if (subbarWidth < 1) {
+				subbarWidth = 1;
+			}
+			final float rawValueX = chartCalculator.calculateRawX(barIndex);
+			// First subbar will starts at the left edge of current bar, rawValueX is horizontal center of that bar
+			float subbarRawValueX = rawValueX - (barWidth / 2);
 			for (AnimatedValueWithColor animatedValueWithColor : bar.animatedValues) {
-
+				if (subbarRawValueX > rawValueX + (barWidth / 2)) {
+					// Bar with is to small to draw all subbars, rest of subbars will be skipped
+					break;
+				}
 				final float rawValueY = chartCalculator.calculateRawY(animatedValueWithColor.value);
 				mBarPaint.setColor(animatedValueWithColor.color);
-				// if (barWidth > 1.0f) {
-				canvas.drawRect(subbarX, rawValueY, subbarX + subbarWidth, chartCalculator.mContentRect.bottom,
-						mBarPaint);
-				// } else {
-				// canvas.drawRect(rawValueX - subbarWidth, rawValueY, rawValueX, chartCalculator.mContentRect.bottom,
-				// mBarPaint);
-				// }
+				canvas.drawRect(subbarRawValueX, rawValueY, subbarRawValueX + subbarWidth,
+						chartCalculator.mContentRect.bottom, mBarPaint);
 				if (bar.hasValuesPopups) {
-					drawValuePopup(canvas, bar, animatedValueWithColor, subbarX + (subbarWidth / 2), rawValueY);
+					drawValuePopup(canvas, bar, animatedValueWithColor, subbarRawValueX + (subbarWidth / 2), rawValueY);
 				}
-				subbarX += subbarWidth + 2;
+				subbarRawValueX += subbarWidth + mSubbarSpacing;
 			}
-			barX += 1;
+			++barIndex;
 		}
 	}
 
