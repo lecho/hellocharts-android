@@ -26,10 +26,12 @@ public class BarChartData extends AbstractChartData {
 	public void calculateBoundariesDefault() {
 		for (Bar bar : bars) {
 			for (AnimatedValueWithColor animatedValue : bar.animatedValues) {
-				if (animatedValue.value > mBoundaries.top) {
+				if (animatedValue.value >= 0 && animatedValue.value > mBoundaries.top) {
 					mBoundaries.top = animatedValue.value;
 				}
-
+				if (animatedValue.value < 0 && animatedValue.value < mBoundaries.bottom) {
+					mBoundaries.bottom = animatedValue.value;
+				}
 			}
 		}
 	}

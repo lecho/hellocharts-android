@@ -47,44 +47,43 @@ public class BarChartRenderer {
 	}
 
 	public void draw(Canvas canvas) {
-		drawStackedBar(canvas);
-		// final BarChartData data = mChart.getData();
-		// final ChartCalculator chartCalculator = mChart.getChartCalculator();
-		// // barWidht should be at least 2 px
-		// float barWidth = DEFAULT_BAR_FILL_RATIO * chartCalculator.mContentRect.width()
-		// / chartCalculator.mCurrentViewport.width();
-		// if (barWidth < 2) {
-		// barWidth = 2;
-		// }
-		// // Bars are indexes from 0 to n, bar index is also bar X value
-		// int barIndex = 0;
-		// for (Bar bar : data.bars) {
-		// // For n subbars there will be n-1 spacing and there will be one subbar for every animatedValue
-		// float subbarWidth = (barWidth - (mSubbarSpacing * (bar.animatedValues.size() - 1)))
-		// / bar.animatedValues.size();
-		// if (subbarWidth < 1) {
-		// subbarWidth = 1;
-		// }
-		// final float rawValueX = chartCalculator.calculateRawX(barIndex);
-		// // First subbar will starts at the left edge of current bar, rawValueX is horizontal center of that bar
-		// float subbarRawValueX = rawValueX - (barWidth / 2);
-		// for (AnimatedValueWithColor animatedValueWithColor : bar.animatedValues) {
-		// if (subbarRawValueX > rawValueX + (barWidth / 2)) {
-		// // Bar with is to small to draw all subbars, rest of subbars will be skipped
-		// break;
-		// }
-		// final float rawValueY = chartCalculator.calculateRawY(animatedValueWithColor.value);
-		// mBarPaint.setColor(animatedValueWithColor.color);
-		// // TODO: use 0 as baseline not the bottom of contentRect
-		// canvas.drawRect(subbarRawValueX, rawValueY, subbarRawValueX + subbarWidth,
-		// chartCalculator.mContentRect.bottom, mBarPaint);
-		// if (bar.hasValuesPopups) {
-		// drawValuePopup(canvas, bar, animatedValueWithColor, subbarRawValueX + (subbarWidth / 2), rawValueY);
-		// }
-		// subbarRawValueX += subbarWidth + mSubbarSpacing;
-		// }
-		// ++barIndex;
-		// }
+		// drawStackedBar(canvas);
+		final BarChartData data = mChart.getData();
+		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		// barWidht should be at least 2 px
+		float barWidth = DEFAULT_BAR_FILL_RATIO * chartCalculator.mContentRect.width()
+				/ chartCalculator.mCurrentViewport.width();
+		if (barWidth < 2) {
+			barWidth = 2;
+		}
+		// Bars are indexes from 0 to n, bar index is also bar X value
+		final float rawBaseValueY = chartCalculator.calculateRawY(DEFAULT_BASE_VALUE);
+		int barIndex = 0;
+		for (Bar bar : data.bars) {
+			// For n subbars there will be n-1 spacing and there will be one subbar for every animatedValue
+			float subbarWidth = (barWidth - (mSubbarSpacing * (bar.animatedValues.size() - 1)))
+					/ bar.animatedValues.size();
+			if (subbarWidth < 1) {
+				subbarWidth = 1;
+			}
+			final float rawValueX = chartCalculator.calculateRawX(barIndex);
+			// First subbar will starts at the left edge of current bar, rawValueX is horizontal center of that bar
+			float subbarRawValueX = rawValueX - (barWidth / 2);
+			for (AnimatedValueWithColor animatedValueWithColor : bar.animatedValues) {
+				if (subbarRawValueX > rawValueX + (barWidth / 2)) {
+					break;
+				}
+				final float rawValueY = chartCalculator.calculateRawY(animatedValueWithColor.value);
+				mBarPaint.setColor(animatedValueWithColor.color);
+				// TODO: use 0 as baseline not the bottom of contentRect
+				canvas.drawRect(subbarRawValueX, rawValueY, subbarRawValueX + subbarWidth, rawBaseValueY, mBarPaint);
+				if (bar.hasValuesPopups) {
+					drawValuePopup(canvas, bar, animatedValueWithColor, subbarRawValueX + (subbarWidth / 2), rawValueY);
+				}
+				subbarRawValueX += subbarWidth + mSubbarSpacing;
+			}
+			++barIndex;
+		}
 	}
 
 	public void drawStackedBar(Canvas canvas) {
@@ -101,7 +100,6 @@ public class BarChartRenderer {
 		int barIndex = 0;
 		for (Bar bar : data.bars) {
 			final float rawValueX = chartCalculator.calculateRawX(barIndex);
-			// TODO: use 0 as baseline not the bottom of contentRect
 			float mostPositiveValue = DEFAULT_BASE_VALUE;
 			float mostNegativeValue = DEFAULT_BASE_VALUE;
 			float baseValue = DEFAULT_BASE_VALUE;
