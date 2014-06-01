@@ -17,6 +17,7 @@ import android.graphics.Typeface;
 public class BarChartRenderer {
 	private static final float DEFAULT_BAR_FILL_RATIO = 0.75f;
 	private static final int DEFAULT_SUBBAR_SPACING_DP = 1;
+	private static final float DEFAULT_BASE_VALUE = 0.0f;
 	private static final int DEFAULT_TOUCH_RADIUS_DP = 12;
 	private static final int DEFAULT_POPUP_MARGIN_DP = 4;
 	private static final int DEFAULT_TEXT_COLOR = Color.WHITE;
@@ -101,17 +102,25 @@ public class BarChartRenderer {
 		for (Bar bar : data.bars) {
 			final float rawValueX = chartCalculator.calculateRawX(barIndex);
 			// TODO: use 0 as baseline not the bottom of contentRect
-			float mostPositiveValue = 0.0f;
-			float mostNegativeValue = 0.0f;
+			float mostPositiveValue = DEFAULT_BASE_VALUE;
+			float mostNegativeValue = DEFAULT_BASE_VALUE;
+			float baseValue = DEFAULT_BASE_VALUE;
 			for (AnimatedValueWithColor animatedValueWithColor : bar.animatedValues) {
 				mBarPaint.setColor(animatedValueWithColor.color);
-				final float rawValueY = chartCalculator.calculateRawY(mostPositiveValue + animatedValueWithColor.value);
-				final float baseRawValueY = chartCalculator.calculateRawY(mostPositiveValue);
+				if (animatedValueWithColor.value >= 0) {
+					// TODO: save raw value? IMO using values instead of raw pixels make code easier to follow
+					baseValue = mostPositiveValue;
+					mostPositiveValue += animatedValueWithColor.value;
+				} else {
+					baseValue = mostNegativeValue;
+					mostNegativeValue += animatedValueWithColor.value;
+				}
+				final float rawValueY = chartCalculator.calculateRawY(baseValue + animatedValueWithColor.value);
+				final float baseRawValueY = chartCalculator.calculateRawY(baseValue);
 				canvas.drawRect(rawValueX - halfBarWidth, rawValueY, rawValueX + halfBarWidth, baseRawValueY, mBarPaint);
 				if (bar.hasValuesPopups) {
 					drawValuePopup(canvas, bar, animatedValueWithColor, rawValueX, rawValueY);
 				}
-				mostPositiveValue = mostPositiveValue + animatedValueWithColor.value;
 			}
 			++barIndex;
 		}

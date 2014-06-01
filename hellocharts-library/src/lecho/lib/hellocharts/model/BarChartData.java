@@ -3,6 +3,8 @@ package lecho.lib.hellocharts.model;
 import java.util.Collections;
 import java.util.List;
 
+import android.util.Log;
+
 public class BarChartData extends AbstractChartData {
 
 	public List<Bar> bars = Collections.emptyList();
@@ -13,7 +15,7 @@ public class BarChartData extends AbstractChartData {
 		if (mManualBoundaries) {
 			return;
 		}
-		mBoundaries.set(-0.5f, Float.MIN_VALUE, bars.size() - 0.5f, 0);
+		mBoundaries.set(-0.5f, 0, bars.size() - 0.5f, 0);
 		if (isStacked) {
 			calculateBoundariesStacked();
 		} else {
@@ -34,14 +36,23 @@ public class BarChartData extends AbstractChartData {
 
 	public void calculateBoundariesStacked() {
 		for (Bar bar : bars) {
-			float sum = 0;
+			float sumPositive = 0;
+			float sumNegative = 0;
 			for (AnimatedValueWithColor animatedValue : bar.animatedValues) {
-				sum += animatedValue.value;
+				if (animatedValue.value >= 0) {
+					sumPositive += animatedValue.value;
+				} else {
+					sumNegative += animatedValue.value;
+				}
 			}
-			if (sum > mBoundaries.top) {
-				mBoundaries.top = sum;
+			if (sumPositive > mBoundaries.top) {
+				mBoundaries.top = sumPositive;
+			}
+			if (sumNegative < mBoundaries.bottom) {
+				mBoundaries.bottom = sumNegative;
 			}
 		}
+		Log.d("dupa", "boundaries: " + mBoundaries.toString());
 	}
 
 	public void updateLineTarget(int index, List<Point> points) {
