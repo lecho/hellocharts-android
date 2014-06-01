@@ -100,15 +100,18 @@ public class BarChartRenderer {
 		int barIndex = 0;
 		for (Bar bar : data.bars) {
 			final float rawValueX = chartCalculator.calculateRawX(barIndex);
-			float lastValue = 0.0f;
+			// TODO: use 0 as baseline not the bottom of contentRect
+			float mostPositiveValue = 0.0f;
+			float mostNegativeValue = 0.0f;
 			for (AnimatedValueWithColor animatedValueWithColor : bar.animatedValues) {
-				final float rawValueY = chartCalculator.calculateRawY(animatedValueWithColor.value + lastValue);
 				mBarPaint.setColor(animatedValueWithColor.color);
-				canvas.drawRect(rawValueX - halfBarWidth, rawValueY, rawValueX + halfBarWidth, lastValue, mBarPaint);
+				final float rawValueY = chartCalculator.calculateRawY(mostPositiveValue + animatedValueWithColor.value);
+				final float baseRawValueY = chartCalculator.calculateRawY(mostPositiveValue);
+				canvas.drawRect(rawValueX - halfBarWidth, rawValueY, rawValueX + halfBarWidth, baseRawValueY, mBarPaint);
 				if (bar.hasValuesPopups) {
 					drawValuePopup(canvas, bar, animatedValueWithColor, rawValueX, rawValueY);
 				}
-				lastValue = animatedValueWithColor.value;
+				mostPositiveValue = mostPositiveValue + animatedValueWithColor.value;
 			}
 			++barIndex;
 		}
