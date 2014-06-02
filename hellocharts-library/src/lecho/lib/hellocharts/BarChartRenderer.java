@@ -3,6 +3,7 @@ package lecho.lib.hellocharts;
 import lecho.lib.hellocharts.model.AnimatedValueWithColor;
 import lecho.lib.hellocharts.model.Bar;
 import lecho.lib.hellocharts.model.BarChartData;
+import lecho.lib.hellocharts.model.IntPair;
 import lecho.lib.hellocharts.utils.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -46,13 +47,14 @@ public class BarChartRenderer {
 	public void draw(Canvas canvas) {
 		final BarChartData data = mChart.getData();
 		if (data.isStacked) {
-			drawStackedBars(canvas, data);
+			drawStackedBars(canvas);
 		} else {
-			drawDefaultBars(canvas, data);
+			drawDefaultBars(canvas);
 		}
 	}
 
-	private void drawDefaultBars(Canvas canvas, final BarChartData data) {
+	private void drawDefaultBars(Canvas canvas) {
+		final BarChartData data = mChart.getData();
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final float barWidth = calculateBarhWidth(chartCalculator);
 		// Bars are indexes from 0 to n, bar index is also bar X value
@@ -88,7 +90,8 @@ public class BarChartRenderer {
 		}
 	}
 
-	private void drawStackedBars(Canvas canvas, final BarChartData data) {
+	private void drawStackedBars(Canvas canvas) {
+		final BarChartData data = mChart.getData();
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final float barWidth = calculateBarhWidth(chartCalculator);
 		final float halfBarWidth = barWidth / 2;
@@ -161,9 +164,52 @@ public class BarChartRenderer {
 		mPointAndPopupPaint.setColor(color);
 	}
 
-	public void checkPoint() {
-		float touchX = 0;
-		float touchY = 0;
+	public IntPair checkTouch(float touchX, float touchY) {
+		final BarChartData data = mChart.getData();
+		if (data.isStacked) {
+			return checkTouchForStacked(touchX, touchY);
+		} else {
+			return checkTouchForDefault(touchX, touchY);
+		}
+	}
+
+	public IntPair checkTouchForDefault(float touchX, float touchY) {
+		// TODO: extract common code with drawDefaultBars if possible
+		final BarChartData data = mChart.getData();
+		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		final float barWidth = calculateBarhWidth(chartCalculator);
+		final float halfBarWidth = barWidth / 2;
+		final float rawBaseValueY = chartCalculator.calculateRawY(DEFAULT_BASE_VALUE);
+		int barIndex = 0;
+		for (Bar bar : data.bars) {
+			float subbarWidth = (barWidth - (mSubbarSpacing * (bar.animatedValues.size() - 1)))
+					/ bar.animatedValues.size();
+			if (subbarWidth < 1) {
+				subbarWidth = 1;
+			}
+			final float rawValueX = chartCalculator.calculateRawX(barIndex);
+			float subbarRawValueX = rawValueX - (barWidth / 2);
+			if (touchX >= rawValueX - halfBarWidth && touchX <= rawValueX + halfBarWidth) {
+				int valueIndex = 0;
+				for (AnimatedValueWithColor animatedValueWithColor : bar.animatedValues) {
+					if (subbarRawValueX > rawValueX + (barWidth / 2)) {
+						break;
+					}
+					mBarPaint.setColor(animatedValueWithColor.color);
+					final float rawValueY = chartCalculator.calculateRawY(animatedValueWithColor.value);
+					if (touchY >= rawBaseValueY && touchY <= rawValueY) {
+						return new IntPair(barIndex, valueIndex);
+					}
+					subbarRawValueX += subbarWidth + mSubbarSpacing;
+					++valueIndex;
+				}
+			}
+			++barIndex;
+		}
+		return new IntPair(Integer.MIN_VALUE, Integer.MIN_VALUE);
+	}
+
+	public IntPair checkTouchForStacked(float touchX, float touchY) {
 		final BarChartData data = mChart.getData();
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final float barWidth = calculateBarhWidth(chartCalculator);
@@ -175,23 +221,26 @@ public class BarChartRenderer {
 				float mostPositiveValue = DEFAULT_BASE_VALUE;
 				float mostNegativeValue = DEFAULT_BASE_VALUE;
 				float baseValue = DEFAULT_BASE_VALUE;
+				int valueIndex = 0;
 				for (AnimatedValueWithColor animatedValueWithColor : bar.animatedValues) {
 					if (animatedValueWithColor.value >= 0) {
-						// IMO using values instead of raw pixels make code easier to follow
 						baseValue = mostPositiveValue;
 						mostPositiveValue += animatedValueWithColor.value;
 					} else {
 						baseValue = mostNegativeValue;
 						mostNegativeValue += animatedValueWithColor.value;
 					}
-					final float baseRawValueY = chartCalculator.calculateRawY(baseValue);
+					final float rawBaseValueY = chartCalculator.calculateRawY(baseValue);
 					final float rawValueY = chartCalculator.calculateRawY(baseValue + animatedValueWithColor.value);
-					if (touchY >= baseRawValueY && touchY <= rawValueY) {
-						// TODO:return value
+					if (touchY >= rawBaseValueY && touchY <= rawValueY) {
+						return new IntPair(barIndex, valueIndex);
 					}
+					++valueIndex;
 				}
 			}
 			++barIndex;
 		}
+		return new IntPair(Integer.MIN_VALUE, Integer.MIN_VALUE);
 	}
+
 }
