@@ -15,7 +15,7 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 
 public class BarChartRenderer {
-	private static final float DEFAULT_BAR_FILL_RATIO = 0.75f;
+	private static final float DEFAULT_FILL_RATIO = 0.75f;
 	private static final int DEFAULT_SUBBAR_SPACING_DP = 1;
 	private static final float DEFAULT_BASE_VALUE = 0.0f;
 	private static final int DEFAULT_TOUCH_RADIUS_DP = 12;
@@ -47,15 +47,17 @@ public class BarChartRenderer {
 	}
 
 	public void draw(Canvas canvas) {
-		// drawStackedBar(canvas);
 		final BarChartData data = mChart.getData();
-		final ChartCalculator chartCalculator = mChart.getChartCalculator();
-		// barWidht should be at least 2 px
-		float barWidth = DEFAULT_BAR_FILL_RATIO * chartCalculator.mContentRect.width()
-				/ chartCalculator.mCurrentViewport.width();
-		if (barWidth < 2) {
-			barWidth = 2;
+		if (data.isStacked) {
+			drawStackedBars(canvas, data);
+		} else {
+			drawDefaultBars(canvas, data);
 		}
+	}
+
+	private void drawDefaultBars(Canvas canvas, final BarChartData data) {
+		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		final float barWidth = calculateBarhWidth(chartCalculator);
 		// Bars are indexes from 0 to n, bar index is also bar X value
 		final float rawBaseValueY = chartCalculator.calculateRawY(DEFAULT_BASE_VALUE);
 		int barIndex = 0;
@@ -73,9 +75,8 @@ public class BarChartRenderer {
 				if (subbarRawValueX > rawValueX + (barWidth / 2)) {
 					break;
 				}
-				final float rawValueY = chartCalculator.calculateRawY(animatedValueWithColor.value);
 				mBarPaint.setColor(animatedValueWithColor.color);
-				// TODO: use 0 as baseline not the bottom of contentRect
+				final float rawValueY = chartCalculator.calculateRawY(animatedValueWithColor.value);
 				canvas.drawRect(subbarRawValueX, rawValueY, subbarRawValueX + subbarWidth, rawBaseValueY, mBarPaint);
 				if (bar.hasValuesPopups) {
 					drawValuePopup(canvas, bar, animatedValueWithColor, subbarRawValueX + (subbarWidth / 2), rawValueY);
@@ -86,15 +87,9 @@ public class BarChartRenderer {
 		}
 	}
 
-	public void drawStackedBar(Canvas canvas) {
-		final BarChartData data = mChart.getData();
+	private void drawStackedBars(Canvas canvas, final BarChartData data) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
-		// barWidht should be at least 2 px
-		float barWidth = DEFAULT_BAR_FILL_RATIO * chartCalculator.mContentRect.width()
-				/ chartCalculator.mCurrentViewport.width();
-		if (barWidth < 2) {
-			barWidth = 2;
-		}
+		final float barWidth = calculateBarhWidth(chartCalculator);
 		final float halfBarWidth = barWidth / 2;
 		// Bars are indexes from 0 to n, bar index is also bar X value
 		int barIndex = 0;
@@ -106,7 +101,7 @@ public class BarChartRenderer {
 			for (AnimatedValueWithColor animatedValueWithColor : bar.animatedValues) {
 				mBarPaint.setColor(animatedValueWithColor.color);
 				if (animatedValueWithColor.value >= 0) {
-					// TODO: save raw value? IMO using values instead of raw pixels make code easier to follow
+					// IMO using values instead of raw pixels make code easier to follow
 					baseValue = mostPositiveValue;
 					mostPositiveValue += animatedValueWithColor.value;
 				} else {
@@ -122,6 +117,16 @@ public class BarChartRenderer {
 			}
 			++barIndex;
 		}
+	}
+
+	private float calculateBarhWidth(final ChartCalculator chartCalculator) {
+		// barWidht should be at least 2 px
+		float barWidth = DEFAULT_FILL_RATIO * chartCalculator.mContentRect.width()
+				/ chartCalculator.mCurrentViewport.width();
+		if (barWidth < 2) {
+			barWidth = 2;
+		}
+		return barWidth;
 	}
 
 	private void drawValuePopup(Canvas canvas, Bar bar, AnimatedValueWithColor animatedValueWithColor, float rawValueX,
