@@ -18,13 +18,11 @@ public class BarChartRenderer {
 	private static final float DEFAULT_FILL_RATIO = 0.75f;
 	private static final int DEFAULT_SUBBAR_SPACING_DP = 1;
 	private static final float DEFAULT_BASE_VALUE = 0.0f;
-	private static final int DEFAULT_TOUCH_RADIUS_DP = 12;
 	private static final int DEFAULT_POPUP_MARGIN_DP = 4;
 	private static final int DEFAULT_TEXT_COLOR = Color.WHITE;
 	private int mPopupMargin;
 	private Paint mBarPaint = new Paint();
 	private Paint mPointAndPopupPaint = new Paint();
-	private float mTouchRadius;
 	private Context mContext;
 	private BarChart mChart;
 	private int mSubbarSpacing;
@@ -33,7 +31,6 @@ public class BarChartRenderer {
 		mContext = context;
 		mChart = chart;
 		mPopupMargin = Utils.dp2px(context, DEFAULT_POPUP_MARGIN_DP);
-		mTouchRadius = Utils.dp2px(context, DEFAULT_TOUCH_RADIUS_DP);
 		mSubbarSpacing = Utils.dp2px(mContext, DEFAULT_SUBBAR_SPACING_DP);
 
 		mBarPaint.setAntiAlias(true);
@@ -77,7 +74,11 @@ public class BarChartRenderer {
 				}
 				mBarPaint.setColor(animatedValueWithColor.color);
 				final float rawValueY = chartCalculator.calculateRawY(animatedValueWithColor.value);
-				canvas.drawRect(subbarRawValueX, rawValueY, subbarRawValueX + subbarWidth, rawBaseValueY, mBarPaint);
+				if (rawValueX <= rawBaseValueY) {
+					canvas.drawRect(subbarRawValueX, rawValueY, subbarRawValueX + subbarWidth, rawBaseValueY, mBarPaint);
+				} else {
+					canvas.drawRect(subbarRawValueX, rawBaseValueY, subbarRawValueX + subbarWidth, rawValueY, mBarPaint);
+				}
 				if (bar.hasValuesPopups) {
 					drawValuePopup(canvas, bar, animatedValueWithColor, subbarRawValueX + (subbarWidth / 2), rawValueY);
 				}
@@ -108,9 +109,15 @@ public class BarChartRenderer {
 					baseValue = mostNegativeValue;
 					mostNegativeValue += animatedValueWithColor.value;
 				}
+				final float rawBaseValueY = chartCalculator.calculateRawY(baseValue);
 				final float rawValueY = chartCalculator.calculateRawY(baseValue + animatedValueWithColor.value);
-				final float baseRawValueY = chartCalculator.calculateRawY(baseValue);
-				canvas.drawRect(rawValueX - halfBarWidth, rawValueY, rawValueX + halfBarWidth, baseRawValueY, mBarPaint);
+				if (rawValueX <= rawBaseValueY) {
+					canvas.drawRect(rawValueX - halfBarWidth, rawValueY, rawValueX + halfBarWidth, rawBaseValueY,
+							mBarPaint);
+				} else {
+					canvas.drawRect(rawValueX - halfBarWidth, rawBaseValueY, rawValueX + halfBarWidth, rawValueY,
+							mBarPaint);
+				}
 				if (bar.hasValuesPopups) {
 					drawValuePopup(canvas, bar, animatedValueWithColor, rawValueX, rawValueY);
 				}
@@ -154,10 +161,37 @@ public class BarChartRenderer {
 		mPointAndPopupPaint.setColor(color);
 	}
 
-	public boolean isInArea(float x, float y, float touchX, float touchY) {
-		float diffX = touchX - x;
-		float diffY = touchY - y;
-		return Math.pow(diffX, 2) + Math.pow(diffY, 2) <= 2 * Math.pow(mTouchRadius, 2);
+	public void checkPoint() {
+		float touchX = 0;
+		float touchY = 0;
+		final BarChartData data = mChart.getData();
+		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		final float barWidth = calculateBarhWidth(chartCalculator);
+		final float halfBarWidth = barWidth / 2;
+		int barIndex = 0;
+		for (Bar bar : data.bars) {
+			final float rawValueX = chartCalculator.calculateRawX(barIndex);
+			if (touchX >= rawValueX - halfBarWidth && touchX <= rawValueX + halfBarWidth) {
+				float mostPositiveValue = DEFAULT_BASE_VALUE;
+				float mostNegativeValue = DEFAULT_BASE_VALUE;
+				float baseValue = DEFAULT_BASE_VALUE;
+				for (AnimatedValueWithColor animatedValueWithColor : bar.animatedValues) {
+					if (animatedValueWithColor.value >= 0) {
+						// IMO using values instead of raw pixels make code easier to follow
+						baseValue = mostPositiveValue;
+						mostPositiveValue += animatedValueWithColor.value;
+					} else {
+						baseValue = mostNegativeValue;
+						mostNegativeValue += animatedValueWithColor.value;
+					}
+					final float baseRawValueY = chartCalculator.calculateRawY(baseValue);
+					final float rawValueY = chartCalculator.calculateRawY(baseValue + animatedValueWithColor.value);
+					if (touchY >= baseRawValueY && touchY <= rawValueY) {
+						// TODO:return value
+					}
+				}
+			}
+			++barIndex;
+		}
 	}
-
 }
