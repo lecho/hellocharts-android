@@ -15,7 +15,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 
-public class BarChartRenderer {
+public class BarChartRenderer implements ChartRenderer {
 	private static final float DEFAULT_FILL_RATIO = 0.75f;
 	private static final int DEFAULT_SUBBAR_SPACING_DP = 1;
 	private static final float DEFAULT_BASE_VALUE = 0.0f;
@@ -71,11 +71,15 @@ public class BarChartRenderer {
 			final float rawValueX = chartCalculator.calculateRawX(barIndex);
 			// First subbar will starts at the left edge of current bar, rawValueX is horizontal center of that bar
 			float subbarRawValueX = rawValueX - (barWidth / 2);
+			int valueIndex = 0;
 			for (AnimatedValueWithColor animatedValueWithColor : bar.animatedValues) {
 				if (subbarRawValueX > rawValueX + (barWidth / 2)) {
 					break;
 				}
 				mBarPaint.setColor(animatedValueWithColor.color);
+				if (mSelectedBarAndValue.first == barIndex && mSelectedBarAndValue.second == valueIndex) {
+					mBarPaint.setColor(Color.CYAN);
+				}
 				final float rawValueY = chartCalculator.calculateRawY(animatedValueWithColor.value);
 				if (rawValueX <= rawBaseValueY) {
 					canvas.drawRect(subbarRawValueX, rawValueY, subbarRawValueX + subbarWidth, rawBaseValueY, mBarPaint);
@@ -86,6 +90,7 @@ public class BarChartRenderer {
 					drawValuePopup(canvas, bar, animatedValueWithColor, subbarRawValueX + (subbarWidth / 2), rawValueY);
 				}
 				subbarRawValueX += subbarWidth + mSubbarSpacing;
+				++valueIndex;
 			}
 			++barIndex;
 		}

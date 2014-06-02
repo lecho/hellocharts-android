@@ -9,7 +9,7 @@ public abstract class AbstractChart extends View implements Chart {
 	protected ChartCalculator mChartCalculator;
 	protected AxesRenderer mAxesRenderer;
 	protected ChartZoomAndScrollHandler mTouchHandler;
-	private ChartRenderer mChartRenderer;
+	protected ChartRenderer mChartRenderer;
 
 	public AbstractChart(Context context) {
 		super(context);

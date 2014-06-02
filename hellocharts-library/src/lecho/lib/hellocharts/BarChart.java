@@ -20,7 +20,6 @@ public class BarChart extends AbstractChart {
 	private BarChartData mData;
 	private boolean mAxesOn = true;
 	private ChartAnimator mAnimator;
-	private BarChartRenderer mChartRenderer;
 
 	public BarChart(Context context) {
 		this(context, null, 0);
@@ -33,12 +32,11 @@ public class BarChart extends AbstractChart {
 	public BarChart(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		initAnimatiors();
+		mChartRenderer = new BarChartRenderer(context, this);
 		mChartCalculator = new ChartCalculator(context, this);
 		mAxesRenderer = new AxesRenderer(context, this);
-		mChartRenderer = new BarChartRenderer(context, this);
 		mTouchHandler = new ChartZoomAndScrollHandler(context, this);
 	}
-
 
 	private void initAnimatiors() {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {

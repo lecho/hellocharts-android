@@ -100,7 +100,7 @@ public class MainActivity extends Activity {
 		// l1.hasValuesPopups = true;
 		// Bar l2 = new Bar(s2);
 		List<Bar> bars = new ArrayList<Bar>();
-		for (int i = 0; i < 10; ++i) {
+		for (int i = 0; i < 4; ++i) {
 			bars.add(generateBar());
 		}
 		data.bars = bars;
@@ -166,7 +166,7 @@ public class MainActivity extends Activity {
 	}
 
 	private Bar generateBar() {
-		List<ValueWithColor> s1 = generateValues(3);
+		List<ValueWithColor> s1 = generateValues(2);
 		Bar l1 = new Bar(s1);
 		l1.hasValuesPopups = false;
 		return l1;
