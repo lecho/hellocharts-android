@@ -2,6 +2,7 @@ package lecho.lib.hellocharts.gestures;
 
 import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartCalculator;
+import lecho.lib.hellocharts.ChartRenderer;
 import lecho.lib.hellocharts.OnPointClickListener;
 import android.content.Context;
 import android.view.GestureDetector;
@@ -10,8 +11,6 @@ import android.view.ScaleGestureDetector;
 
 public class ChartZoomAndScrollHandler {
 
-	private int mSelectedLineIndex = Integer.MIN_VALUE;
-	private int mSelectedPointIndex = Integer.MIN_VALUE;
 	private GestureDetector mGestureDetector;
 	private ScaleGestureDetector mScaleGestureDetector;
 	private ChartScroller mChartScroller;
@@ -41,69 +40,34 @@ public class ChartZoomAndScrollHandler {
 	public boolean handleTouchEvent(MotionEvent event) {
 		boolean needInvalidate = mScaleGestureDetector.onTouchEvent(event);
 		needInvalidate = mGestureDetector.onTouchEvent(event) || needInvalidate;
-		// switch (event.getAction()) {
-		// case MotionEvent.ACTION_DOWN:
-		// // Only one point will be selected even if there are few point in touch area.
-		// int lineIndex = 0;
-		// for (Line line : data.lines) {
-		// int valueIndex = 0;
-		// for (AnimatedPoint animatedPoint : line.animatedPoints) {
-		// final float rawX = chartCalculator.calculateRawX(animatedPoint.point.x);
-		// final float rawY = chartCalculator.calculateRawY(animatedPoint.point.y);
-		// if (mChart.getChartRenderer().isInArea(rawX, rawY, event.getX(), event.getY())) {
-		// mSelectedLineIndex = lineIndex;
-		// mSelectedPointIndex = valueIndex;
-		// needInvalidate = true;
-		// }
-		// ++valueIndex;
-		// }
-		// ++lineIndex;
-		// }
-		// break;
-		// case MotionEvent.ACTION_UP:
-		// // If value was selected call click listener and clear selection.
-		// if (mSelectedPointIndex >= 0) {
-		// final Line line = data.lines.get(mSelectedLineIndex);
-		// final AnimatedPoint animatedPoint = line.animatedPoints.get(mSelectedPointIndex);
-		// mOnPointClickListener.onPointClick(mSelectedLineIndex, mSelectedPointIndex, animatedPoint.point.x,
-		// animatedPoint.point.y);
-		// mSelectedLineIndex = Integer.MIN_VALUE;
-		// mSelectedPointIndex = Integer.MIN_VALUE;
-		// needInvalidate = true;
-		// }
-		// break;
-		// case MotionEvent.ACTION_MOVE:
-		// // Clear selection if user is now touching outside touch area.
-		// if (mSelectedPointIndex >= 0) {
-		// final Line line = data.lines.get(mSelectedLineIndex);
-		// final AnimatedPoint animatedPoint = line.animatedPoints.get(mSelectedPointIndex);
-		// final float rawX = chartCalculator.calculateRawX(animatedPoint.point.x);
-		// final float rawY = chartCalculator.calculateRawY(animatedPoint.point.y);
-		// if (mChart.getChartRenderer().isInArea(rawX, rawY, event.getX(), event.getY())) {
-		// mSelectedLineIndex = Integer.MIN_VALUE;
-		// mSelectedPointIndex = Integer.MIN_VALUE;
-		// needInvalidate = true;
-		// }
-		// }
-		// break;
-		// case MotionEvent.ACTION_CANCEL:
-		// // Clear selection
-		// if (mSelectedPointIndex >= 0) {
-		// mSelectedLineIndex = Integer.MIN_VALUE;
-		// mSelectedPointIndex = Integer.MIN_VALUE;
-		// needInvalidate = true;
-		// }
-		// break;
-		// }
+		final ChartRenderer chartRenderer = mChart.getChartRenderer();
+		switch (event.getAction()) {
+		case MotionEvent.ACTION_DOWN:
+			needInvalidate = mChart.getChartRenderer().checkValueTouch(event.getX(), event.getY());
+			break;
+		case MotionEvent.ACTION_UP:
+			if (chartRenderer.isValueTouched()) {
+				needInvalidate = true;
+				// TODO: call touchListener!!!
+			}
+			break;
+		case MotionEvent.ACTION_MOVE:
+			// If value was touched and now touch point is outside of value area - clear touch and invalidate, user
+			// probably moved finger from value without leaving surface
+			if (chartRenderer.isValueTouched()) {
+				if (!chartRenderer.checkValueTouch(event.getX(), event.getY())) {
+					chartRenderer.clearValueTouch();
+					needInvalidate = true;
+				}
+			}
+			break;
+		case MotionEvent.ACTION_CANCEL:
+			if (chartRenderer.isValueTouched()) {
+				chartRenderer.clearValueTouch();
+			}
+			break;
+		}
 		return needInvalidate;
-	}
-
-	public int getSelectedLineIndex() {
-		return mSelectedLineIndex;
-	}
-
-	public int getSelectedPointIndex() {
-		return mSelectedPointIndex;
 	}
 
 	private class ChartScaleGestureListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {

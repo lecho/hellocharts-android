@@ -7,6 +7,8 @@ public interface Chart {
 
 	public ChartData getData();
 
+	public ChartRenderer getChartRenderer();
+
 	public AxesRenderer getAxesRenderer();
 
 	public ChartCalculator getChartCalculator();

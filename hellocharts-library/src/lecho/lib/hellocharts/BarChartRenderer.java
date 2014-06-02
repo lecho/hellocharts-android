@@ -27,6 +27,7 @@ public class BarChartRenderer {
 	private Context mContext;
 	private BarChart mChart;
 	private int mSubbarSpacing;
+	private IntPair mSelectedBarAndValue = new IntPair(Integer.MIN_VALUE, Integer.MIN_VALUE);
 
 	public BarChartRenderer(Context context, BarChart chart) {
 		mContext = context;
@@ -164,7 +165,7 @@ public class BarChartRenderer {
 		mPointAndPopupPaint.setColor(color);
 	}
 
-	public IntPair checkTouch(float touchX, float touchY) {
+	public boolean checkValueTouch(float touchX, float touchY) {
 		final BarChartData data = mChart.getData();
 		if (data.isStacked) {
 			return checkTouchForStacked(touchX, touchY);
@@ -173,7 +174,19 @@ public class BarChartRenderer {
 		}
 	}
 
-	public IntPair checkTouchForDefault(float touchX, float touchY) {
+	public boolean isValueTouched() {
+		if (mSelectedBarAndValue.first >= 0 && mSelectedBarAndValue.second >= 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public void clearValueTouch() {
+		mSelectedBarAndValue = new IntPair(Integer.MIN_VALUE, Integer.MIN_VALUE);
+	}
+
+	private boolean checkTouchForDefault(float touchX, float touchY) {
 		// TODO: extract common code with drawDefaultBars if possible
 		final BarChartData data = mChart.getData();
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
@@ -198,7 +211,8 @@ public class BarChartRenderer {
 					mBarPaint.setColor(animatedValueWithColor.color);
 					final float rawValueY = chartCalculator.calculateRawY(animatedValueWithColor.value);
 					if (touchY >= rawBaseValueY && touchY <= rawValueY) {
-						return new IntPair(barIndex, valueIndex);
+						mSelectedBarAndValue = new IntPair(barIndex, valueIndex);
+						return true;
 					}
 					subbarRawValueX += subbarWidth + mSubbarSpacing;
 					++valueIndex;
@@ -206,10 +220,10 @@ public class BarChartRenderer {
 			}
 			++barIndex;
 		}
-		return new IntPair(Integer.MIN_VALUE, Integer.MIN_VALUE);
+		return false;
 	}
 
-	public IntPair checkTouchForStacked(float touchX, float touchY) {
+	private boolean checkTouchForStacked(float touchX, float touchY) {
 		final BarChartData data = mChart.getData();
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final float barWidth = calculateBarhWidth(chartCalculator);
@@ -233,14 +247,15 @@ public class BarChartRenderer {
 					final float rawBaseValueY = chartCalculator.calculateRawY(baseValue);
 					final float rawValueY = chartCalculator.calculateRawY(baseValue + animatedValueWithColor.value);
 					if (touchY >= rawBaseValueY && touchY <= rawValueY) {
-						return new IntPair(barIndex, valueIndex);
+						mSelectedBarAndValue = new IntPair(barIndex, valueIndex);
+						return true;
 					}
 					++valueIndex;
 				}
 			}
 			++barIndex;
 		}
-		return new IntPair(Integer.MIN_VALUE, Integer.MIN_VALUE);
+		return false;
 	}
 
 }

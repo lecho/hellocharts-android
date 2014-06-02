@@ -9,6 +9,7 @@ public abstract class AbstractChart extends View implements Chart {
 	protected ChartCalculator mChartCalculator;
 	protected AxesRenderer mAxesRenderer;
 	protected ChartZoomAndScrollHandler mTouchHandler;
+	private ChartRenderer mChartRenderer;
 
 	public AbstractChart(Context context) {
 		super(context);
@@ -22,6 +23,10 @@ public abstract class AbstractChart extends View implements Chart {
 		super(context, attrs, defStyleAttr);
 	}
 
+	public ChartRenderer getChartRenderer() {
+		return mChartRenderer;
+	}
+
 	public AxesRenderer getAxesRenderer() {
 		return mAxesRenderer;
 	}
@@ -33,4 +38,5 @@ public abstract class AbstractChart extends View implements Chart {
 	public ChartZoomAndScrollHandler getTouchHandler() {
 		return mTouchHandler;
 	}
+
 }

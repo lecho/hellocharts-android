@@ -180,19 +180,19 @@ public class LineChartRenderer {
 				}
 			}
 		}
-		final int selectedLineIndex = mChart.getTouchHandler().getSelectedLineIndex();
-		final int selectedPointIndex = mChart.getTouchHandler().getSelectedPointIndex();
-		if (selectedLineIndex >= 0 && selectedPointIndex >= 0) {
-			final Line line = mChart.getData().lines.get(selectedLineIndex);
-			final AnimatedPoint animatedPoint = line.animatedPoints.get(selectedPointIndex);
-			final float rawValueX = chartCalculator.calculateRawX(animatedPoint.point.x);
-			final float rawValueY = chartCalculator.calculateRawY(animatedPoint.point.y);
-			mPointAndPopupPaint.setColor(line.color);
-			canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mPointAndPopupPaint);
-			if (line.hasValuesPopups) {
-				drawValuePopup(canvas, line, animatedPoint.point, rawValueX, rawValueY);
-			}
-		}
+		// final int selectedLineIndex = mChart.getTouchHandler().getSelectedLineIndex();
+		// final int selectedPointIndex = mChart.getTouchHandler().getSelectedPointIndex();
+		// if (selectedLineIndex >= 0 && selectedPointIndex >= 0) {
+		// final Line line = mChart.getData().lines.get(selectedLineIndex);
+		// final AnimatedPoint animatedPoint = line.animatedPoints.get(selectedPointIndex);
+		// final float rawValueX = chartCalculator.calculateRawX(animatedPoint.point.x);
+		// final float rawValueY = chartCalculator.calculateRawY(animatedPoint.point.y);
+		// mPointAndPopupPaint.setColor(line.color);
+		// canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mPointAndPopupPaint);
+		// if (line.hasValuesPopups) {
+		// drawValuePopup(canvas, line, animatedPoint.point, rawValueX, rawValueY);
+		// }
+		// }
 	}
 
 	private void drawValuePopup(Canvas canvas, Line line, Point value, float rawValueX, float rawValueY) {

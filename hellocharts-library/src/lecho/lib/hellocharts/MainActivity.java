@@ -9,6 +9,7 @@ import lecho.lib.hellocharts.model.Bar;
 import lecho.lib.hellocharts.model.BarChartData;
 import lecho.lib.hellocharts.model.Point;
 import lecho.lib.hellocharts.model.ValueWithColor;
+import lecho.lib.hellocharts.utils.Utils;
 import android.R.color;
 import android.app.Activity;
 import android.graphics.Color;
@@ -104,7 +105,7 @@ public class MainActivity extends Activity {
 		}
 		data.bars = bars;
 		Axis axisX = new Axis();
-		axisX.values = generateAxis(0.0f, 1000, 100.0f);
+		axisX.values = generateAxis(0.0f, 100, 1.0f);
 		axisX.name = "Axis X";
 		axisX.textSize = 14;
 		axisX.color = Color.parseColor("#FFBB33");
@@ -116,6 +117,7 @@ public class MainActivity extends Activity {
 		axisY.textSize = 14;
 		axisY.color = Color.parseColor("#99CC00");
 		data.setAxisY(axisY);
+		data.isStacked = false;
 		chart.setData(data);
 		chart.setBackgroundColor(Color.WHITE);
 		// // chart.setPadding(10, 10, 10, 20);
@@ -153,27 +155,20 @@ public class MainActivity extends Activity {
 	}
 
 	private List<ValueWithColor> generateValues(int num) {
-		int[] c = new int[8];
-		c[0] = Color.BLACK;
-		c[1] = Color.BLUE;
-		c[2] = Color.CYAN;
-		c[3] = Color.DKGRAY;
-		c[4] = Color.GREEN;
-		c[5] = Color.MAGENTA;
-		c[6] = Color.RED;
-		c[7] = Color.YELLOW;
 		float x = 0.0f;
+		int[] sign = new int[] { -1, 1 };
 		List<ValueWithColor> result = new ArrayList<ValueWithColor>();
 		for (int i = 0; i < num; ++i) {
-			result.add(new ValueWithColor((float) Math.random() * 100.0f, c[(int) Math.round(Math.random() * 7)]));
+
+			result.add(new ValueWithColor((float) Math.random() * 30.0f * sign[(int)Math.round(Math.random())], Utils.pickColor()));
 		}
 		return result;
 	}
 
 	private Bar generateBar() {
-		List<ValueWithColor> s1 = generateValues(1);
+		List<ValueWithColor> s1 = generateValues(3);
 		Bar l1 = new Bar(s1);
-		l1.hasValuesPopups = true;
+		l1.hasValuesPopups = false;
 		return l1;
 	}
 }
