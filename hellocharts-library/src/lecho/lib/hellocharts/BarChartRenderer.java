@@ -18,6 +18,7 @@ import android.graphics.Typeface;
 public class BarChartRenderer implements ChartRenderer {
 	private static final float DEFAULT_FILL_RATIO = 0.75f;
 	private static final int DEFAULT_SUBBAR_SPACING_DP = 1;
+	private static final int DEFAULT_TOUCH_STROKE_WIDTH_DP = 4;
 	private static final float DEFAULT_BASE_VALUE = 0.0f;
 	private static final int DEFAULT_POPUP_MARGIN_DP = 4;
 	private static final int DEFAULT_TEXT_COLOR = Color.WHITE;
@@ -37,11 +38,11 @@ public class BarChartRenderer implements ChartRenderer {
 
 		mBarPaint.setAntiAlias(true);
 		mBarPaint.setStyle(Paint.Style.FILL);
+		mBarPaint.setStrokeWidth(Utils.dp2px(mContext, DEFAULT_TOUCH_STROKE_WIDTH_DP));
 		mBarPaint.setStrokeCap(Cap.SQUARE);
 
 		mPointAndPopupPaint.setAntiAlias(true);
 		mPointAndPopupPaint.setStyle(Paint.Style.FILL);
-		mPointAndPopupPaint.setStrokeWidth(1);
 		mPointAndPopupPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
 	}
 
@@ -49,6 +50,9 @@ public class BarChartRenderer implements ChartRenderer {
 		final BarChartData data = mChart.getData();
 		if (data.isStacked) {
 			drawStackedBars(canvas);
+			if (isValueTouched()) {
+				redrawSelectedValueForStacked(canvas);
+			}
 		} else {
 			drawDefaultBars(canvas);
 		}
@@ -107,9 +111,6 @@ public class BarChartRenderer implements ChartRenderer {
 			int valueIndex = 0;
 			for (AnimatedValueWithColor animatedValueWithColor : bar.animatedValues) {
 				mBarPaint.setColor(animatedValueWithColor.color);
-				if (mSelectedBarAndValue.first == barIndex && mSelectedBarAndValue.second == valueIndex) {
-					mBarPaint.setColor(Color.CYAN);
-				}
 				if (animatedValueWithColor.value >= 0) {
 					// IMO using values instead of raw pixels make code easier to follow
 					baseValue = mostPositiveValue;
@@ -120,13 +121,68 @@ public class BarChartRenderer implements ChartRenderer {
 				}
 				final float rawBaseValueY = chartCalculator.calculateRawY(baseValue);
 				final float rawValueY = chartCalculator.calculateRawY(baseValue + animatedValueWithColor.value);
-				canvas.drawRect(rawValueX - halfBarWidth, rawValueY, rawValueX + halfBarWidth, rawBaseValueY, mBarPaint);
+				final RectF subbarArea = new RectF();
+				subbarArea.left = rawValueX - halfBarWidth;
+				subbarArea.right = rawValueX + halfBarWidth;
+				if (rawValueY <= rawBaseValueY) {
+					subbarArea.top = rawValueY;
+					subbarArea.bottom = rawBaseValueY;
+				} else {
+					subbarArea.bottom = rawValueY;
+					subbarArea.top = rawBaseValueY;
+				}
+				canvas.drawRect(subbarArea, mBarPaint);
 				if (bar.hasValuesPopups) {
 					drawValuePopup(canvas, bar, animatedValueWithColor, rawValueX, rawValueY);
 				}
 				++valueIndex;
 			}
 			++barIndex;
+		}
+	}
+
+	private void redrawSelectedValueForStacked(Canvas canvas) {
+		final BarChartData data = mChart.getData();
+		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		final float barWidth = calculateBarhWidth(chartCalculator);
+		final float halfBarWidth = barWidth / 2;
+		Bar bar = data.bars.get(mSelectedBarAndValue.first);
+		final float rawValueX = chartCalculator.calculateRawX(mSelectedBarAndValue.first);
+		float mostPositiveValue = DEFAULT_BASE_VALUE;
+		float mostNegativeValue = DEFAULT_BASE_VALUE;
+		float baseValue = DEFAULT_BASE_VALUE;
+		int valueIndex = 0;
+		for (AnimatedValueWithColor animatedValueWithColor : bar.animatedValues) {
+			mBarPaint.setColor(animatedValueWithColor.color);
+			if (animatedValueWithColor.value >= 0) {
+				// IMO using values instead of raw pixels make code easier to follow
+				baseValue = mostPositiveValue;
+				mostPositiveValue += animatedValueWithColor.value;
+			} else {
+				baseValue = mostNegativeValue;
+				mostNegativeValue += animatedValueWithColor.value;
+			}
+			final float rawBaseValueY = chartCalculator.calculateRawY(baseValue);
+			final float rawValueY = chartCalculator.calculateRawY(baseValue + animatedValueWithColor.value);
+			final RectF subbarArea = new RectF();
+			subbarArea.left = rawValueX - halfBarWidth;
+			subbarArea.right = rawValueX + halfBarWidth;
+			if (rawValueY <= rawBaseValueY) {
+				subbarArea.top = rawValueY;
+				subbarArea.bottom = rawBaseValueY;
+			} else {
+				subbarArea.bottom = rawValueY;
+				subbarArea.top = rawBaseValueY;
+			}
+			if (mSelectedBarAndValue.second == valueIndex) {
+				mBarPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+				canvas.drawRect(subbarArea, mBarPaint);
+				if (bar.hasValuesPopups) {
+					drawValuePopup(canvas, bar, animatedValueWithColor, rawValueX, rawValueY);
+				}
+				mBarPaint.setStyle(Paint.Style.FILL);
+			}
+			++valueIndex;
 		}
 	}
 
