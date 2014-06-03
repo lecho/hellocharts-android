@@ -81,11 +81,7 @@ public class BarChartRenderer implements ChartRenderer {
 					mBarPaint.setColor(Color.CYAN);
 				}
 				final float rawValueY = chartCalculator.calculateRawY(animatedValueWithColor.value);
-				if (rawValueX <= rawBaseValueY) {
-					canvas.drawRect(subbarRawValueX, rawValueY, subbarRawValueX + subbarWidth, rawBaseValueY, mBarPaint);
-				} else {
-					canvas.drawRect(subbarRawValueX, rawBaseValueY, subbarRawValueX + subbarWidth, rawValueY, mBarPaint);
-				}
+				canvas.drawRect(subbarRawValueX, rawValueY, subbarRawValueX + subbarWidth, rawBaseValueY, mBarPaint);
 				if (bar.hasValuesPopups) {
 					drawValuePopup(canvas, bar, animatedValueWithColor, subbarRawValueX + (subbarWidth / 2), rawValueY);
 				}
@@ -108,8 +104,12 @@ public class BarChartRenderer implements ChartRenderer {
 			float mostPositiveValue = DEFAULT_BASE_VALUE;
 			float mostNegativeValue = DEFAULT_BASE_VALUE;
 			float baseValue = DEFAULT_BASE_VALUE;
+			int valueIndex = 0;
 			for (AnimatedValueWithColor animatedValueWithColor : bar.animatedValues) {
 				mBarPaint.setColor(animatedValueWithColor.color);
+				if (mSelectedBarAndValue.first == barIndex && mSelectedBarAndValue.second == valueIndex) {
+					mBarPaint.setColor(Color.CYAN);
+				}
 				if (animatedValueWithColor.value >= 0) {
 					// IMO using values instead of raw pixels make code easier to follow
 					baseValue = mostPositiveValue;
@@ -120,16 +120,11 @@ public class BarChartRenderer implements ChartRenderer {
 				}
 				final float rawBaseValueY = chartCalculator.calculateRawY(baseValue);
 				final float rawValueY = chartCalculator.calculateRawY(baseValue + animatedValueWithColor.value);
-				if (rawValueX <= rawBaseValueY) {
-					canvas.drawRect(rawValueX - halfBarWidth, rawValueY, rawValueX + halfBarWidth, rawBaseValueY,
-							mBarPaint);
-				} else {
-					canvas.drawRect(rawValueX - halfBarWidth, rawBaseValueY, rawValueX + halfBarWidth, rawValueY,
-							mBarPaint);
-				}
+				canvas.drawRect(rawValueX - halfBarWidth, rawValueY, rawValueX + halfBarWidth, rawBaseValueY, mBarPaint);
 				if (bar.hasValuesPopups) {
 					drawValuePopup(canvas, bar, animatedValueWithColor, rawValueX, rawValueY);
 				}
+				++valueIndex;
 			}
 			++barIndex;
 		}
@@ -217,7 +212,7 @@ public class BarChartRenderer implements ChartRenderer {
 					final RectF subbarArea = new RectF();
 					subbarArea.left = subbarRawValueX;
 					subbarArea.right = subbarRawValueX + subbarWidth;
-					if (rawValueX <= rawBaseValueY) {
+					if (rawValueY <= rawBaseValueY) {
 						subbarArea.top = rawValueY;
 						subbarArea.bottom = rawBaseValueY;
 					} else {
@@ -260,7 +255,17 @@ public class BarChartRenderer implements ChartRenderer {
 					}
 					final float rawBaseValueY = chartCalculator.calculateRawY(baseValue);
 					final float rawValueY = chartCalculator.calculateRawY(baseValue + animatedValueWithColor.value);
-					if (touchY >= rawBaseValueY && touchY <= rawValueY) {
+					final RectF subbarArea = new RectF();
+					subbarArea.left = rawValueX - halfBarWidth;
+					subbarArea.right = rawValueX + halfBarWidth;
+					if (rawValueY <= rawBaseValueY) {
+						subbarArea.top = rawValueY;
+						subbarArea.bottom = rawBaseValueY;
+					} else {
+						subbarArea.bottom = rawValueY;
+						subbarArea.top = rawBaseValueY;
+					}
+					if (subbarArea.contains(touchX, touchY)) {
 						mSelectedBarAndValue = new IntPair(barIndex, valueIndex);
 						return true;
 					}
