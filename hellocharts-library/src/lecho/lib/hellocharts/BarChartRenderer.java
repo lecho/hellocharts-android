@@ -192,7 +192,7 @@ public class BarChartRenderer implements ChartRenderer {
 	}
 
 	private boolean checkTouchForDefault(float touchX, float touchY) {
-		// TODO: extract common code with drawDefaultBars if possible
+		// TODO: Extract common code with drawDefaultBars if possible.
 		final BarChartData data = mChart.getData();
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final float barWidth = calculateBarhWidth(chartCalculator);
@@ -213,9 +213,18 @@ public class BarChartRenderer implements ChartRenderer {
 					if (subbarRawValueX > rawValueX + (barWidth / 2)) {
 						break;
 					}
-					mBarPaint.setColor(animatedValueWithColor.color);
 					final float rawValueY = chartCalculator.calculateRawY(animatedValueWithColor.value);
-					if (touchY >= rawBaseValueY && touchY <= rawValueY) {
+					final RectF subbarArea = new RectF();
+					subbarArea.left = subbarRawValueX;
+					subbarArea.right = subbarRawValueX + subbarWidth;
+					if (rawValueX <= rawBaseValueY) {
+						subbarArea.top = rawValueY;
+						subbarArea.bottom = rawBaseValueY;
+					} else {
+						subbarArea.bottom = rawValueY;
+						subbarArea.top = rawBaseValueY;
+					}
+					if (subbarArea.contains(touchX, touchY)) {
 						mSelectedBarAndValue = new IntPair(barIndex, valueIndex);
 						return true;
 					}

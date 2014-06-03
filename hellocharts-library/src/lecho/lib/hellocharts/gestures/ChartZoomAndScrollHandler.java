@@ -47,6 +47,7 @@ public class ChartZoomAndScrollHandler {
 			break;
 		case MotionEvent.ACTION_UP:
 			if (chartRenderer.isValueTouched()) {
+				chartRenderer.clearValueTouch();
 				needInvalidate = true;
 				// TODO: call touchListener!!!
 			}
