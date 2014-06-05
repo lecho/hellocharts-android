@@ -65,6 +65,7 @@ public class BarChartRenderer implements ChartRenderer {
 		final BarChartData data = mChart.getData();
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final float barWidth = calculateBarhWidth(chartCalculator);
+		final float halfBarWidth = barWidth / 2;
 		// Bars are indexes from 0 to n, bar index is also bar X value
 		final float rawBaseValueY = chartCalculator.calculateRawY(DEFAULT_BASE_VALUE);
 		int barIndex = 0;
@@ -77,9 +78,9 @@ public class BarChartRenderer implements ChartRenderer {
 			}
 			final float rawValueX = chartCalculator.calculateRawX(barIndex);
 			// First subbar will starts at the left edge of current bar, rawValueX is horizontal center of that bar
-			float subbarRawValueX = rawValueX - (barWidth / 2);
+			float subbarRawValueX = rawValueX - halfBarWidth;
 			for (AnimatedValueWithColor animatedValueWithColor : bar.animatedValues) {
-				if (subbarRawValueX > rawValueX + (barWidth / 2)) {
+				if (subbarRawValueX > rawValueX + halfBarWidth) {
 					break;
 				}
 				mBarPaint.setColor(animatedValueWithColor.color);
@@ -108,6 +109,7 @@ public class BarChartRenderer implements ChartRenderer {
 		final BarChartData data = mChart.getData();
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final float barWidth = calculateBarhWidth(chartCalculator);
+		final float halfBarWidth = barWidth / 2;
 		// Bars are indexes from 0 to n, bar index is also bar X value
 		final float rawBaseValueY = chartCalculator.calculateRawY(DEFAULT_BASE_VALUE);
 		final Bar bar = data.bars.get(mSelectedBarAndValue.first);
@@ -118,10 +120,10 @@ public class BarChartRenderer implements ChartRenderer {
 		}
 		final float rawValueX = chartCalculator.calculateRawX(mSelectedBarAndValue.first);
 		// First subbar will starts at the left edge of current bar, rawValueX is horizontal center of that bar
-		float subbarRawValueX = rawValueX - (barWidth / 2);
+		float subbarRawValueX = rawValueX - halfBarWidth;
 		int valueIndex = 0;
 		for (AnimatedValueWithColor animatedValueWithColor : bar.animatedValues) {
-			if (subbarRawValueX > rawValueX + (barWidth / 2)) {
+			if (subbarRawValueX > rawValueX + halfBarWidth) {
 				break;
 			}
 			mBarPaint.setColor(animatedValueWithColor.color);
