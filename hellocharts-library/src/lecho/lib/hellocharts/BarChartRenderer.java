@@ -55,6 +55,9 @@ public class BarChartRenderer implements ChartRenderer {
 			}
 		} else {
 			drawDefaultBars(canvas);
+			if (isValueTouched()) {
+				redrawSelectedValueForDefault(canvas);
+			}
 		}
 	}
 
@@ -75,24 +78,74 @@ public class BarChartRenderer implements ChartRenderer {
 			final float rawValueX = chartCalculator.calculateRawX(barIndex);
 			// First subbar will starts at the left edge of current bar, rawValueX is horizontal center of that bar
 			float subbarRawValueX = rawValueX - (barWidth / 2);
-			int valueIndex = 0;
 			for (AnimatedValueWithColor animatedValueWithColor : bar.animatedValues) {
 				if (subbarRawValueX > rawValueX + (barWidth / 2)) {
 					break;
 				}
 				mBarPaint.setColor(animatedValueWithColor.color);
-				if (mSelectedBarAndValue.first == barIndex && mSelectedBarAndValue.second == valueIndex) {
-					mBarPaint.setColor(Color.CYAN);
-				}
 				final float rawValueY = chartCalculator.calculateRawY(animatedValueWithColor.value);
-				canvas.drawRect(subbarRawValueX, rawValueY, subbarRawValueX + subbarWidth, rawBaseValueY, mBarPaint);
+				final RectF subbarArea = new RectF();
+				subbarArea.left = subbarRawValueX;
+				subbarArea.right = subbarRawValueX + subbarWidth;
+				if (rawValueY <= rawBaseValueY) {
+					subbarArea.top = rawValueY;
+					subbarArea.bottom = rawBaseValueY;
+				} else {
+					subbarArea.bottom = rawValueY;
+					subbarArea.top = rawBaseValueY;
+				}
+				canvas.drawRect(subbarArea, mBarPaint);
 				if (bar.hasValuesPopups) {
-					drawValuePopup(canvas, bar, animatedValueWithColor, subbarRawValueX + (subbarWidth / 2), rawValueY);
+					drawValuePopup(canvas, bar, animatedValueWithColor, rawValueX, rawValueY);
 				}
 				subbarRawValueX += subbarWidth + mSubbarSpacing;
-				++valueIndex;
 			}
 			++barIndex;
+		}
+	}
+
+	private void redrawSelectedValueForDefault(Canvas canvas) {
+		final BarChartData data = mChart.getData();
+		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		final float barWidth = calculateBarhWidth(chartCalculator);
+		// Bars are indexes from 0 to n, bar index is also bar X value
+		final float rawBaseValueY = chartCalculator.calculateRawY(DEFAULT_BASE_VALUE);
+		final Bar bar = data.bars.get(mSelectedBarAndValue.first);
+		// For n subbars there will be n-1 spacing and there will be one subbar for every animatedValue
+		float subbarWidth = (barWidth - (mSubbarSpacing * (bar.animatedValues.size() - 1))) / bar.animatedValues.size();
+		if (subbarWidth < 1) {
+			subbarWidth = 1;
+		}
+		final float rawValueX = chartCalculator.calculateRawX(mSelectedBarAndValue.first);
+		// First subbar will starts at the left edge of current bar, rawValueX is horizontal center of that bar
+		float subbarRawValueX = rawValueX - (barWidth / 2);
+		int valueIndex = 0;
+		for (AnimatedValueWithColor animatedValueWithColor : bar.animatedValues) {
+			if (subbarRawValueX > rawValueX + (barWidth / 2)) {
+				break;
+			}
+			mBarPaint.setColor(animatedValueWithColor.color);
+			final float rawValueY = chartCalculator.calculateRawY(animatedValueWithColor.value);
+			final RectF subbarArea = new RectF();
+			subbarArea.left = subbarRawValueX;
+			subbarArea.right = subbarRawValueX + subbarWidth;
+			if (rawValueY <= rawBaseValueY) {
+				subbarArea.top = rawValueY;
+				subbarArea.bottom = rawBaseValueY;
+			} else {
+				subbarArea.bottom = rawValueY;
+				subbarArea.top = rawBaseValueY;
+			}
+			if (mSelectedBarAndValue.second == valueIndex) {
+				mBarPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+				canvas.drawRect(subbarArea, mBarPaint);
+				if (bar.hasValuesPopups) {
+					drawValuePopup(canvas, bar, animatedValueWithColor, rawValueX, rawValueY);
+				}
+				mBarPaint.setStyle(Paint.Style.FILL);
+			}
+			subbarRawValueX += subbarWidth + mSubbarSpacing;
+			++valueIndex;
 		}
 	}
 
@@ -108,7 +161,6 @@ public class BarChartRenderer implements ChartRenderer {
 			float mostPositiveValue = DEFAULT_BASE_VALUE;
 			float mostNegativeValue = DEFAULT_BASE_VALUE;
 			float baseValue = DEFAULT_BASE_VALUE;
-			int valueIndex = 0;
 			for (AnimatedValueWithColor animatedValueWithColor : bar.animatedValues) {
 				mBarPaint.setColor(animatedValueWithColor.color);
 				if (animatedValueWithColor.value >= 0) {
@@ -135,7 +187,6 @@ public class BarChartRenderer implements ChartRenderer {
 				if (bar.hasValuesPopups) {
 					drawValuePopup(canvas, bar, animatedValueWithColor, rawValueX, rawValueY);
 				}
-				++valueIndex;
 			}
 			++barIndex;
 		}
