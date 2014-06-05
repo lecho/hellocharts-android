@@ -10,7 +10,6 @@ import lecho.lib.hellocharts.model.BarChartData;
 import lecho.lib.hellocharts.model.Point;
 import lecho.lib.hellocharts.model.ValueWithColor;
 import lecho.lib.hellocharts.utils.Utils;
-import android.R.color;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -112,7 +111,7 @@ public class MainActivity extends Activity {
 		data.setAxisX(axisX);
 
 		Axis axisY = new Axis();
-		axisY.values = generateAxis(0.0f, 100.0f, 10.0f);
+		axisY.values = generateAxis(-100.0f, 100.0f, 5.0f);
 		axisY.name = "Axis Y";
 		axisY.textSize = 14;
 		axisY.color = Color.parseColor("#99CC00");
@@ -156,17 +155,18 @@ public class MainActivity extends Activity {
 
 	private List<ValueWithColor> generateValues(int num) {
 		float x = 0.0f;
-		int[] sign = new int[] { -1, 1 };
+		int[] sign = new int[] { 1, 1 };
 		List<ValueWithColor> result = new ArrayList<ValueWithColor>();
 		for (int i = 0; i < num; ++i) {
 
-			result.add(new ValueWithColor((float) Math.random() * 30.0f * sign[(int)Math.round(Math.random())], Utils.pickColor()));
+			result.add(new ValueWithColor((float) Math.random() * 30.0f * sign[(int) Math.round(Math.random())], Utils
+					.pickColor()));
 		}
 		return result;
 	}
 
 	private Bar generateBar() {
-		List<ValueWithColor> s1 = generateValues(2);
+		List<ValueWithColor> s1 = generateValues(3);
 		Bar l1 = new Bar(s1);
 		l1.hasValuesPopups = false;
 		return l1;

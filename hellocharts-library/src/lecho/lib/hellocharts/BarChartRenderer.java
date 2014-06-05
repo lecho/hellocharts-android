@@ -30,6 +30,7 @@ public class BarChartRenderer implements ChartRenderer {
 	private int mSubbarSpacing;
 	private IntPair mSelectedBarAndValue = new IntPair(Integer.MIN_VALUE, Integer.MIN_VALUE);
 	private RectF mRectToDraw = new RectF();
+	private Rect mTextBounds = new Rect();
 
 	public BarChartRenderer(Context context, BarChart chart) {
 		mContext = context;
@@ -103,12 +104,9 @@ public class BarChartRenderer implements ChartRenderer {
 			final float rawValueY = chartCalculator.calculateRawY(animatedValueWithColor.value);
 			calculateRectToDraw(subbarRawValueX, subbarRawValueX + subbarWidth, rawBaseValueY, rawValueY);
 			if (drawTouched) {
-				drawTouchedSubbar(canvas, valueIndex);
+				drawTouchedSubbar(canvas, bar, animatedValueWithColor, valueIndex);
 			} else {
-				canvas.drawRect(mRectToDraw, mBarPaint);
-			}
-			if (bar.hasValuesPopups) {
-				drawValuePopup(canvas, bar, animatedValueWithColor, rawValueX, rawValueY);
+				drawSubbar(canvas, bar, animatedValueWithColor, valueIndex);
 			}
 			subbarRawValueX += subbarWidth + mSubbarSpacing;
 			++valueIndex;
@@ -158,22 +156,29 @@ public class BarChartRenderer implements ChartRenderer {
 			final float rawValueY = chartCalculator.calculateRawY(baseValue + animatedValueWithColor.value);
 			calculateRectToDraw(rawValueX - halfBarWidth, rawValueX + halfBarWidth, rawBaseValueY, rawValueY);
 			if (drawTouched) {
-				drawTouchedSubbar(canvas, valueIndex);
+				drawTouchedSubbar(canvas, bar, animatedValueWithColor, valueIndex);
 			} else {
-				canvas.drawRect(mRectToDraw, mBarPaint);
-			}
-			if (bar.hasValuesPopups) {
-				drawValuePopup(canvas, bar, animatedValueWithColor, rawValueX, rawValueY);
+				drawSubbar(canvas, bar, animatedValueWithColor, valueIndex);
 			}
 			++valueIndex;
 		}
 	}
 
-	private void drawTouchedSubbar(Canvas canvas, int valueIndex) {
+	private void drawTouchedSubbar(Canvas canvas, Bar bar, AnimatedValueWithColor animatedValueWithColor, int valueIndex) {
 		if (mSelectedBarAndValue.second == valueIndex) {
 			mBarPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 			canvas.drawRect(mRectToDraw, mBarPaint);
 			mBarPaint.setStyle(Paint.Style.FILL);
+			if (bar.hasValuesPopups) {
+				drawValuePopup(canvas, bar, animatedValueWithColor);
+			}
+		}
+	}
+
+	private void drawSubbar(Canvas canvas, Bar bar, AnimatedValueWithColor animatedValueWithColor, int valueIndex) {
+		canvas.drawRect(mRectToDraw, mBarPaint);
+		if (bar.hasValuesPopups) {
+			drawValuePopup(canvas, bar, animatedValueWithColor);
 		}
 	}
 
@@ -199,22 +204,20 @@ public class BarChartRenderer implements ChartRenderer {
 		}
 	}
 
-	private void drawValuePopup(Canvas canvas, Bar bar, AnimatedValueWithColor animatedValueWithColor, float rawValueX,
-			float rawValueY) {
+	private void drawValuePopup(Canvas canvas, Bar bar, AnimatedValueWithColor animatedValueWithColor) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		mPointAndPopupPaint.setTextAlign(Align.LEFT);
 		mPointAndPopupPaint.setTextSize(Utils.sp2px(mContext, bar.textSize));
 		mPointAndPopupPaint.setColor(animatedValueWithColor.color);
 		final String text = bar.formatter.formatValue(animatedValueWithColor.value);
-		final Rect textBounds = new Rect();
-		mPointAndPopupPaint.getTextBounds(text, 0, text.length(), textBounds);
-		float left = rawValueX - (textBounds.width() / 2) - mPopupMargin;
-		float right = rawValueX + (textBounds.width() / 2) + mPopupMargin;
-		float top = rawValueY - mPopupMargin - textBounds.height() - mPopupMargin * 2;
-		float bottom = rawValueY - mPopupMargin;
+		mPointAndPopupPaint.getTextBounds(text, 0, text.length(), mTextBounds);
+		float left = mRectToDraw.centerX() - (mTextBounds.width() / 2) - mPopupMargin;
+		float right = mRectToDraw.centerX() + (mTextBounds.width() / 2) + mPopupMargin;
+		float top = mRectToDraw.top - mPopupMargin - mTextBounds.height() - mPopupMargin * 2;
+		float bottom = mRectToDraw.top - mPopupMargin;
 		if (top < chartCalculator.mContentRect.top) {
-			top = rawValueY + mPopupMargin;
-			bottom = rawValueY + mPopupMargin + textBounds.height() + mPopupMargin * 2;
+			top = mRectToDraw.top + mPopupMargin;
+			bottom = mRectToDraw.top + mPopupMargin + mTextBounds.height() + mPopupMargin * 2;
 		}
 		final RectF popup = new RectF(left, top, right, bottom);
 		canvas.drawRoundRect(popup, mPopupMargin, mPopupMargin, mPointAndPopupPaint);
