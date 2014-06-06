@@ -56,9 +56,9 @@ public class BarChartRenderer implements ChartRenderer {
 	public void draw(Canvas canvas) {
 		final BarChartData data = mChart.getData();
 		if (data.isStacked) {
-			drawStackedBars(canvas);
+			drawBarsForStacked(canvas);
 			if (isTouched()) {
-				drawTouchedBarForStacked(canvas);
+				highlightBarForStacked(canvas);
 			}
 		} else {
 			drawBarsForSubbars(canvas);
@@ -66,6 +66,28 @@ public class BarChartRenderer implements ChartRenderer {
 				highlightBarForSubbars(canvas);
 			}
 		}
+	}
+
+	public boolean checkTouch(float touchX, float touchY) {
+		final BarChartData data = mChart.getData();
+		if (data.isStacked) {
+			checkTouchForStacked(touchX, touchY);
+		} else {
+			checkTouchForSubbars(touchX, touchY);
+		}
+		return isTouched();
+	}
+
+	public boolean isTouched() {
+		if (mSelectedBarAndValue.first >= 0 && mSelectedBarAndValue.second >= 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public void clearTouch() {
+		mSelectedBarAndValue = new IntPair(Integer.MIN_VALUE, Integer.MIN_VALUE);
 	}
 
 	private void drawBarsForSubbars(Canvas canvas) {
@@ -140,29 +162,43 @@ public class BarChartRenderer implements ChartRenderer {
 		}
 	}
 
-	private void drawStackedBars(Canvas canvas) {
+	private void drawBarsForStacked(Canvas canvas) {
 		final BarChartData data = mChart.getData();
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final float barWidth = calculateBarhWidth(chartCalculator);
 		// Bars are indexes from 0 to n, bar index is also bar X value
 		int barIndex = 0;
 		for (Bar bar : data.bars) {
-			drawBarForStacked(canvas, chartCalculator, bar, barWidth, barIndex, false);
+			processBarForStacked(canvas, chartCalculator, bar, barWidth, barIndex, MODE_DRAW);
 			++barIndex;
 		}
 	}
 
-	private void drawTouchedBarForStacked(Canvas canvas) {
+	private void highlightBarForStacked(Canvas canvas) {
 		final BarChartData data = mChart.getData();
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final float barWidth = calculateBarhWidth(chartCalculator);
 		// Bars are indexes from 0 to n, bar index is also bar X value
 		Bar bar = data.bars.get(mSelectedBarAndValue.first);
-		drawBarForStacked(canvas, chartCalculator, bar, barWidth, mSelectedBarAndValue.first, true);
+		processBarForStacked(canvas, chartCalculator, bar, barWidth, mSelectedBarAndValue.first, MODE_HIGHLIGHT);
 	}
 
-	private void drawBarForStacked(Canvas canvas, ChartCalculator chartCalculator, Bar bar, float barWidth,
-			int barIndex, boolean drawTouched) {
+	private void checkTouchForStacked(float touchX, float touchY) {
+		mTouchedPoint.x = touchX;
+		mTouchedPoint.y = touchY;
+		final BarChartData data = mChart.getData();
+		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		final float barWidth = calculateBarhWidth(chartCalculator);
+		int barIndex = 0;
+		for (Bar bar : data.bars) {
+			// canvas is not needed for checking touch
+			processBarForStacked(null, chartCalculator, bar, barWidth, barIndex, MODE_CHECK_TOUCH);
+			++barIndex;
+		}
+	}
+
+	private void processBarForStacked(Canvas canvas, ChartCalculator chartCalculator, Bar bar, float barWidth,
+			int barIndex, int mode) {
 		final float rawValueX = chartCalculator.calculateRawX(barIndex);
 		final float halfBarWidth = barWidth / 2;
 		float mostPositiveValue = DEFAULT_BASE_VALUE;
@@ -182,10 +218,19 @@ public class BarChartRenderer implements ChartRenderer {
 			final float rawBaseValueY = chartCalculator.calculateRawY(baseValue);
 			final float rawValueY = chartCalculator.calculateRawY(baseValue + animatedValueWithColor.value);
 			calculateRectToDraw(rawValueX - halfBarWidth, rawValueX + halfBarWidth, rawBaseValueY, rawValueY);
-			if (drawTouched) {
-				highlightSubbar(canvas, bar, animatedValueWithColor, valueIndex);
-			} else {
+			switch (mode) {
+			case MODE_DRAW:
 				drawSubbar(canvas, bar, animatedValueWithColor);
+				break;
+			case MODE_HIGHLIGHT:
+				highlightSubbar(canvas, bar, animatedValueWithColor, valueIndex);
+				break;
+			case MODE_CHECK_TOUCH:
+				checkRectToDraw(barIndex, valueIndex);
+				break;
+			default:
+				// There no else, every case should be handled or exception will be thrown
+				throw new IllegalStateException("Cannot process bar in mode: " + mode);
 			}
 			++valueIndex;
 		}
@@ -260,64 +305,6 @@ public class BarChartRenderer implements ChartRenderer {
 		mPointAndPopupPaint.setColor(DEFAULT_TEXT_COLOR);
 		canvas.drawText(text, left + mPopupMargin, bottom - mPopupMargin, mPointAndPopupPaint);
 		mPointAndPopupPaint.setColor(color);
-	}
-
-	public boolean checkTouch(float touchX, float touchY) {
-		final BarChartData data = mChart.getData();
-		if (data.isStacked) {
-			return checkTouchForStacked(touchX, touchY);
-		} else {
-			checkTouchForSubbars(touchX, touchY);
-		}
-		return isTouched();
-	}
-
-	public boolean isTouched() {
-		if (mSelectedBarAndValue.first >= 0 && mSelectedBarAndValue.second >= 0) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	public void clearTouch() {
-		mSelectedBarAndValue = new IntPair(Integer.MIN_VALUE, Integer.MIN_VALUE);
-	}
-
-	private boolean checkTouchForStacked(float touchX, float touchY) {
-		final BarChartData data = mChart.getData();
-		final ChartCalculator chartCalculator = mChart.getChartCalculator();
-		final float barWidth = calculateBarhWidth(chartCalculator);
-		final float halfBarWidth = barWidth / 2;
-		int barIndex = 0;
-		for (Bar bar : data.bars) {
-			final float rawValueX = chartCalculator.calculateRawX(barIndex);
-			if (touchX >= rawValueX - halfBarWidth && touchX <= rawValueX + halfBarWidth) {
-				float mostPositiveValue = DEFAULT_BASE_VALUE;
-				float mostNegativeValue = DEFAULT_BASE_VALUE;
-				float baseValue = DEFAULT_BASE_VALUE;
-				int valueIndex = 0;
-				for (AnimatedValueWithColor animatedValueWithColor : bar.animatedValues) {
-					if (animatedValueWithColor.value >= 0) {
-						baseValue = mostPositiveValue;
-						mostPositiveValue += animatedValueWithColor.value;
-					} else {
-						baseValue = mostNegativeValue;
-						mostNegativeValue += animatedValueWithColor.value;
-					}
-					final float rawBaseValueY = chartCalculator.calculateRawY(baseValue);
-					final float rawValueY = chartCalculator.calculateRawY(baseValue + animatedValueWithColor.value);
-					calculateRectToDraw(rawValueX - halfBarWidth, rawValueX + halfBarWidth, rawBaseValueY, rawValueY);
-					if (mRectToDraw.contains(touchX, touchY)) {
-						mSelectedBarAndValue = new IntPair(barIndex, valueIndex);
-						return true;
-					}
-					++valueIndex;
-				}
-			}
-			++barIndex;
-		}
-		return false;
 	}
 
 }
