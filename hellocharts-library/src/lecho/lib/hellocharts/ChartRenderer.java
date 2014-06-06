@@ -6,10 +6,10 @@ public interface ChartRenderer {
 
 	public void draw(Canvas canvas);
 
-	public boolean checkValueTouch(float touchX, float touchY);
+	public boolean checkTouch(float touchX, float touchY);
 
-	public boolean isValueTouched();
+	public boolean isTouched();
 
-	public void clearValueTouch();
+	public void clearTouch();
 
 }

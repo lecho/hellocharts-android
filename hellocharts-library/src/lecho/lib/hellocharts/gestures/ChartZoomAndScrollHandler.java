@@ -43,11 +43,11 @@ public class ChartZoomAndScrollHandler {
 		final ChartRenderer chartRenderer = mChart.getChartRenderer();
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
-			needInvalidate = mChart.getChartRenderer().checkValueTouch(event.getX(), event.getY());
+			needInvalidate = mChart.getChartRenderer().checkTouch(event.getX(), event.getY());
 			break;
 		case MotionEvent.ACTION_UP:
-			if (chartRenderer.isValueTouched()) {
-				chartRenderer.clearValueTouch();
+			if (chartRenderer.isTouched()) {
+				chartRenderer.clearTouch();
 				needInvalidate = true;
 				// TODO: call touchListener!!!
 			}
@@ -55,16 +55,16 @@ public class ChartZoomAndScrollHandler {
 		case MotionEvent.ACTION_MOVE:
 			// If value was touched and now touch point is outside of value area - clear touch and invalidate, user
 			// probably moved finger from value without leaving surface
-			if (chartRenderer.isValueTouched()) {
-				if (!chartRenderer.checkValueTouch(event.getX(), event.getY())) {
-					chartRenderer.clearValueTouch();
+			if (chartRenderer.isTouched()) {
+				if (!chartRenderer.checkTouch(event.getX(), event.getY())) {
+					chartRenderer.clearTouch();
 					needInvalidate = true;
 				}
 			}
 			break;
 		case MotionEvent.ACTION_CANCEL:
-			if (chartRenderer.isValueTouched()) {
-				chartRenderer.clearValueTouch();
+			if (chartRenderer.isTouched()) {
+				chartRenderer.clearTouch();
 			}
 			break;
 		}
