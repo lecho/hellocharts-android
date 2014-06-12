@@ -1,15 +1,22 @@
 package lecho.sample.hellocharts;
 
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
+import java.util.ArrayList;
+import java.util.List;
+
+import lecho.lib.hellocharts.BarChart;
+import lecho.lib.hellocharts.model.Axis;
+import lecho.lib.hellocharts.model.Bar;
+import lecho.lib.hellocharts.model.BarChartData;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.os.Build;
+import android.widget.LinearLayout;
 
 public class ColumnChartActivity extends ActionBarActivity {
 
@@ -54,6 +61,38 @@ public class ColumnChartActivity extends ActionBarActivity {
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_column_chart, container, false);
+			LinearLayout layout = (LinearLayout) rootView.findViewById(R.id.layout);
+
+			BarChart chart = new BarChart(getActivity());
+			final BarChartData data = new BarChartData();
+			// List<ValueWithColor> s1 = generateValues(1);
+			// List<ValueWithColor> s2 = generateValues(1);
+			// Bar l1 = new Bar(s1);
+			// l1.hasValuesPopups = true;
+			// Bar l2 = new Bar(s2);
+			List<Bar> bars = new ArrayList<Bar>();
+			for (int i = 0; i < 4; ++i) {
+				bars.add(Utils.generateBar());
+			}
+			data.setBars(bars);
+			Axis axisX = new Axis();
+			axisX.values = Utils.generateAxis(0.0f, 100, 1.0f);
+			axisX.name = "Axis X";
+			axisX.textSize = 14;
+			axisX.color = Color.parseColor("#FFBB33");
+			data.setAxisX(axisX);
+
+			Axis axisY = new Axis();
+			axisY.values = Utils.generateAxis(-100.0f, 100.0f, 5.0f);
+			axisY.name = "Axis Y";
+			axisY.textSize = 14;
+			axisY.color = Color.parseColor("#99CC00");
+			data.setAxisY(axisY);
+			data.setStacked(false);
+			chart.setData(data);
+			// chart.setBackgroundColor(Color.WHITE);
+			// // chart.setPadding(10, 10, 10, 20);
+			layout.addView(chart);
 			return rootView;
 		}
 	}

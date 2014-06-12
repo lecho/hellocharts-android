@@ -3,12 +3,14 @@ package lecho.sample.hellocharts;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.os.Build;
 
 public class MainActivity extends ActionBarActivity {
@@ -54,6 +56,26 @@ public class MainActivity extends ActionBarActivity {
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+			Button lineChartButton = (Button) rootView.findViewById(R.id.line_chart);
+			lineChartButton.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View arg0) {
+					Intent intent = new Intent(getActivity(), LineChartActivity.class);
+					startActivity(intent);
+
+				}
+			});
+			Button columnChartButton = (Button) rootView.findViewById(R.id.column_chart);
+			columnChartButton.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View arg0) {
+					Intent intent = new Intent(getActivity(), ColumnChartActivity.class);
+					startActivity(intent);
+
+				}
+			});
 			return rootView;
 		}
 	}

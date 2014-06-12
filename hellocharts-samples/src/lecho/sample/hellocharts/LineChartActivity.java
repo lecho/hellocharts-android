@@ -1,15 +1,23 @@
 package lecho.sample.hellocharts;
 
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
+import java.util.ArrayList;
+import java.util.List;
+
+import lecho.lib.hellocharts.LineChart;
+import lecho.lib.hellocharts.model.Axis;
+import lecho.lib.hellocharts.model.Line;
+import lecho.lib.hellocharts.model.LineChartData;
+import lecho.lib.hellocharts.model.Point;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.os.Build;
+import android.widget.LinearLayout;
 
 public class LineChartActivity extends ActionBarActivity {
 
@@ -47,6 +55,7 @@ public class LineChartActivity extends ActionBarActivity {
 	 * A placeholder fragment containing a simple view.
 	 */
 	public static class PlaceholderFragment extends Fragment {
+		private static final int NUM_OF_VALUES = 5;
 
 		public PlaceholderFragment() {
 		}
@@ -54,6 +63,41 @@ public class LineChartActivity extends ActionBarActivity {
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_line_chart, container, false);
+			LinearLayout layout = (LinearLayout) rootView.findViewById(R.id.layout);
+
+			LineChart chart = new LineChart(getActivity());
+			final LineChartData data = new LineChartData();
+			List<Point> s1 = Utils.generatePoints(NUM_OF_VALUES, 1.0f);
+			List<Point> s2 = Utils.generatePoints(NUM_OF_VALUES, 1.0f);
+			Line l1 = new Line(s1);
+			l1.color = Color.parseColor("#FFBB33");
+			l1.hasPoints = true;
+			l1.isSmooth = true;
+			l1.hasValuesPopups = true;
+			Line l2 = new Line(s2);
+			l2.color = Color.parseColor("#99CC00");
+			l2.isSmooth = true;
+			l2.isFilled = true;
+			List<Line> lines = new ArrayList<Line>();
+			lines.add(l2);
+			lines.add(l1);
+			data.lines = lines;
+			Axis axisX = new Axis();
+			axisX.values = Utils.generateAxis(0.0f, 100.0f, 1.0f);
+			axisX.name = "Axis X";
+			axisX.textSize = 14;
+			axisX.color = Color.parseColor("#FFBB33");
+			data.setAxisX(axisX);
+
+			Axis axisY = new Axis();
+			axisY.values = Utils.generateAxis(0.0f, 100.0f, 15.0f);
+			axisY.name = "Axis Y";
+			axisY.textSize = 14;
+			axisY.color = Color.parseColor("#99CC00");
+			data.setAxisY(axisY);
+			chart.setData(data);
+			chart.setBackgroundColor(Color.WHITE);
+			layout.addView(chart);
 			return rootView;
 		}
 	}
