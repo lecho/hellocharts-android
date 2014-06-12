@@ -7,16 +7,32 @@ import android.util.Log;
 
 public class BarChartData extends AbstractChartData {
 
-	public List<Bar> bars = Collections.emptyList();
-	public boolean isStacked = false;
+	private List<Bar> mBars = Collections.emptyList();
+	private boolean mIsStacked = false;
+
+	public List<Bar> getBars() {
+		return mBars;
+	}
+
+	public void setBars(List<Bar> bars) {
+		this.mBars = bars;
+	}
+
+	public boolean isStacked() {
+		return mIsStacked;
+	}
+
+	public void setStacked(boolean isStacked) {
+		this.mIsStacked = isStacked;
+	}
 
 	@Override
 	public void calculateBoundaries() {
 		if (mManualBoundaries) {
 			return;
 		}
-		mBoundaries.set(-0.5f, 0, bars.size() - 0.5f, 0);
-		if (isStacked) {
+		mBoundaries.set(-0.5f, 0, mBars.size() - 0.5f, 0);
+		if (mIsStacked) {
 			calculateBoundariesStacked();
 		} else {
 			calculateBoundariesDefault();
@@ -24,7 +40,7 @@ public class BarChartData extends AbstractChartData {
 	}
 
 	public void calculateBoundariesDefault() {
-		for (Bar bar : bars) {
+		for (Bar bar : mBars) {
 			for (AnimatedValueWithColor animatedValue : bar.animatedValues) {
 				if (animatedValue.value >= 0 && animatedValue.value > mBoundaries.top) {
 					mBoundaries.top = animatedValue.value;
@@ -37,7 +53,7 @@ public class BarChartData extends AbstractChartData {
 	}
 
 	public void calculateBoundariesStacked() {
-		for (Bar bar : bars) {
+		for (Bar bar : mBars) {
 			float sumPositive = 0;
 			float sumNegative = 0;
 			for (AnimatedValueWithColor animatedValue : bar.animatedValues) {

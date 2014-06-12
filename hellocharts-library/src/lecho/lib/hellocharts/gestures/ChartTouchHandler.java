@@ -9,7 +9,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
-public class ChartZoomAndScrollHandler {
+public class ChartTouchHandler {
 
 	private GestureDetector mGestureDetector;
 	private ScaleGestureDetector mScaleGestureDetector;
@@ -17,7 +17,7 @@ public class ChartZoomAndScrollHandler {
 	private ChartZoomer mChartZoomer;
 	private Chart mChart;
 
-	public ChartZoomAndScrollHandler(Context context, Chart chart) {
+	public ChartTouchHandler(Context context, Chart chart) {
 		mChart = chart;
 		mGestureDetector = new GestureDetector(context, new ChartGestureListener());
 		mScaleGestureDetector = new ScaleGestureDetector(context, new ChartScaleGestureListener());

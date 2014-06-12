@@ -55,7 +55,7 @@ public class BarChartRenderer implements ChartRenderer {
 
 	public void draw(Canvas canvas) {
 		final BarChartData data = mChart.getData();
-		if (data.isStacked) {
+		if (data.isStacked()) {
 			drawBarsForStacked(canvas);
 			if (isTouched()) {
 				highlightBarForStacked(canvas);
@@ -70,7 +70,7 @@ public class BarChartRenderer implements ChartRenderer {
 
 	public boolean checkTouch(float touchX, float touchY) {
 		final BarChartData data = mChart.getData();
-		if (data.isStacked) {
+		if (data.isStacked()) {
 			checkTouchForStacked(touchX, touchY);
 		} else {
 			checkTouchForSubbars(touchX, touchY);
@@ -95,7 +95,7 @@ public class BarChartRenderer implements ChartRenderer {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final float barWidth = calculateBarhWidth(chartCalculator);
 		int barIndex = 0;
-		for (Bar bar : data.bars) {
+		for (Bar bar : data.getBars()) {
 			processBarForSubbars(canvas, chartCalculator, bar, barWidth, barIndex, MODE_DRAW);
 			++barIndex;
 		}
@@ -105,7 +105,7 @@ public class BarChartRenderer implements ChartRenderer {
 		final BarChartData data = mChart.getData();
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final float barWidth = calculateBarhWidth(chartCalculator);
-		Bar bar = data.bars.get(mSelectedBarAndValue.first);
+		Bar bar = data.getBars().get(mSelectedBarAndValue.first);
 		processBarForSubbars(canvas, chartCalculator, bar, barWidth, mSelectedBarAndValue.first, MODE_HIGHLIGHT);
 	}
 
@@ -116,7 +116,7 @@ public class BarChartRenderer implements ChartRenderer {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final float barWidth = calculateBarhWidth(chartCalculator);
 		int barIndex = 0;
-		for (Bar bar : data.bars) {
+		for (Bar bar : data.getBars()) {
 			// canvas is not needed for checking touch
 			processBarForSubbars(null, chartCalculator, bar, barWidth, barIndex, MODE_CHECK_TOUCH);
 			++barIndex;
@@ -168,7 +168,7 @@ public class BarChartRenderer implements ChartRenderer {
 		final float barWidth = calculateBarhWidth(chartCalculator);
 		// Bars are indexes from 0 to n, bar index is also bar X value
 		int barIndex = 0;
-		for (Bar bar : data.bars) {
+		for (Bar bar : data.getBars()) {
 			processBarForStacked(canvas, chartCalculator, bar, barWidth, barIndex, MODE_DRAW);
 			++barIndex;
 		}
@@ -179,7 +179,7 @@ public class BarChartRenderer implements ChartRenderer {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final float barWidth = calculateBarhWidth(chartCalculator);
 		// Bars are indexes from 0 to n, bar index is also bar X value
-		Bar bar = data.bars.get(mSelectedBarAndValue.first);
+		Bar bar = data.getBars().get(mSelectedBarAndValue.first);
 		processBarForStacked(canvas, chartCalculator, bar, barWidth, mSelectedBarAndValue.first, MODE_HIGHLIGHT);
 	}
 
@@ -190,7 +190,7 @@ public class BarChartRenderer implements ChartRenderer {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final float barWidth = calculateBarhWidth(chartCalculator);
 		int barIndex = 0;
-		for (Bar bar : data.bars) {
+		for (Bar bar : data.getBars()) {
 			// canvas is not needed for checking touch
 			processBarForStacked(null, chartCalculator, bar, barWidth, barIndex, MODE_CHECK_TOUCH);
 			++barIndex;

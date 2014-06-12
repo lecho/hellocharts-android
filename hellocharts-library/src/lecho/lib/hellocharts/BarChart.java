@@ -5,7 +5,7 @@ import java.util.List;
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
-import lecho.lib.hellocharts.gestures.ChartZoomAndScrollHandler;
+import lecho.lib.hellocharts.gestures.ChartTouchHandler;
 import lecho.lib.hellocharts.model.BarChartData;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -16,7 +16,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 public class BarChart extends AbstractChart {
-	private static final String TAG = "LineChart";
+	private static final String TAG = "BarChart";
 	private BarChartData mData;
 	private boolean mAxesOn = true;
 	private ChartAnimator mAnimator;
@@ -35,7 +35,7 @@ public class BarChart extends AbstractChart {
 		mChartRenderer = new BarChartRenderer(context, this);
 		mChartCalculator = new ChartCalculator(context, this);
 		mAxesRenderer = new AxesRenderer(context, this);
-		mTouchHandler = new ChartZoomAndScrollHandler(context, this);
+		mTouchHandler = new ChartTouchHandler(context, this);
 	}
 
 	private void initAnimatiors() {
@@ -86,7 +86,6 @@ public class BarChart extends AbstractChart {
 		int clipRestoreCount = canvas.save();
 		mChartCalculator.calculateClippingArea();// only if zoom is enabled
 		canvas.clipRect(mChartCalculator.mClippingRect);
-		// TODO: draw lines
 		mChartRenderer.draw(canvas);
 		canvas.restoreToCount(clipRestoreCount);
 		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
