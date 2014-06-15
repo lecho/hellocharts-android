@@ -3,7 +3,6 @@ package lecho.lib.hellocharts;
 import lecho.lib.hellocharts.model.AnimatedValueWithColor;
 import lecho.lib.hellocharts.model.Bar;
 import lecho.lib.hellocharts.model.BarChartData;
-import lecho.lib.hellocharts.model.IntPair;
 import lecho.lib.hellocharts.utils.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -32,7 +31,7 @@ public class BarChartRenderer implements ChartRenderer {
 	private Context mContext;
 	private BarChart mChart;
 	private int mSubbarSpacing;
-	private IntPair mSelectedBarAndValue = new IntPair(Integer.MIN_VALUE, Integer.MIN_VALUE);
+	private SelectedValue mSelectedValue = new SelectedValue();
 	private RectF mRectToDraw = new RectF();
 	private Rect mTextBounds = new Rect();
 	private PointF mTouchedPoint = new PointF();
@@ -79,7 +78,7 @@ public class BarChartRenderer implements ChartRenderer {
 	}
 
 	public boolean isTouched() {
-		if (mSelectedBarAndValue.first >= 0 && mSelectedBarAndValue.second >= 0) {
+		if (mSelectedValue.selectedBar >= 0 && mSelectedValue.selectedValue >= 0) {
 			return true;
 		} else {
 			return false;
@@ -87,7 +86,7 @@ public class BarChartRenderer implements ChartRenderer {
 	}
 
 	public void clearTouch() {
-		mSelectedBarAndValue = new IntPair(Integer.MIN_VALUE, Integer.MIN_VALUE);
+		mSelectedValue.clear();
 	}
 
 	private void drawBarsForSubbars(Canvas canvas) {
@@ -105,8 +104,8 @@ public class BarChartRenderer implements ChartRenderer {
 		final BarChartData data = mChart.getData();
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final float barWidth = calculateBarhWidth(chartCalculator);
-		Bar bar = data.getBars().get(mSelectedBarAndValue.first);
-		processBarForSubbars(canvas, chartCalculator, bar, barWidth, mSelectedBarAndValue.first, MODE_HIGHLIGHT);
+		Bar bar = data.getBars().get(mSelectedValue.selectedBar);
+		processBarForSubbars(canvas, chartCalculator, bar, barWidth, mSelectedValue.selectedBar, MODE_HIGHLIGHT);
 	}
 
 	private void checkTouchForSubbars(float touchX, float touchY) {
@@ -179,8 +178,8 @@ public class BarChartRenderer implements ChartRenderer {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final float barWidth = calculateBarhWidth(chartCalculator);
 		// Bars are indexes from 0 to n, bar index is also bar X value
-		Bar bar = data.getBars().get(mSelectedBarAndValue.first);
-		processBarForStacked(canvas, chartCalculator, bar, barWidth, mSelectedBarAndValue.first, MODE_HIGHLIGHT);
+		Bar bar = data.getBars().get(mSelectedValue.selectedBar);
+		processBarForStacked(canvas, chartCalculator, bar, barWidth, mSelectedValue.selectedBar, MODE_HIGHLIGHT);
 	}
 
 	private void checkTouchForStacked(float touchX, float touchY) {
@@ -246,7 +245,7 @@ public class BarChartRenderer implements ChartRenderer {
 
 	private void highlightSubbar(Canvas canvas, Bar bar, AnimatedValueWithColor animatedValueWithColor, int valueIndex) {
 		mBarPaint.setColor(animatedValueWithColor.color);
-		if (mSelectedBarAndValue.second == valueIndex) {
+		if (mSelectedValue.selectedValue == valueIndex) {
 			mBarPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 			canvas.drawRect(mRectToDraw, mBarPaint);
 			mBarPaint.setStyle(Paint.Style.FILL);
@@ -258,7 +257,8 @@ public class BarChartRenderer implements ChartRenderer {
 
 	private void checkRectToDraw(int barIndex, int valueIndex) {
 		if (mRectToDraw.contains(mTouchedPoint.x, mTouchedPoint.y)) {
-			mSelectedBarAndValue = new IntPair(barIndex, valueIndex);
+			mSelectedValue.selectedBar = barIndex;
+			mSelectedValue.selectedValue = valueIndex;
 		}
 	}
 
@@ -305,6 +305,21 @@ public class BarChartRenderer implements ChartRenderer {
 		mPointAndPopupPaint.setColor(DEFAULT_TEXT_COLOR);
 		canvas.drawText(text, left + mPopupMargin, bottom - mPopupMargin, mPointAndPopupPaint);
 		mPointAndPopupPaint.setColor(color);
+	}
+
+	private static class SelectedValue {
+		public int selectedBar;
+		public int selectedValue;
+
+		public SelectedValue() {
+			clear();
+		}
+
+		public void clear() {
+			this.selectedBar = Integer.MIN_VALUE;
+			this.selectedBar = Integer.MIN_VALUE;
+		}
+
 	}
 
 }
