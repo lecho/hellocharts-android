@@ -22,7 +22,6 @@ public class LineChart extends AbstractChart {
 	private LineChartData mData;
 	private boolean mAxesOn = true;
 	private ChartAnimator mAnimator;
-	private LineChartRenderer mChartRenderer;
 
 	public LineChart(Context context) {
 		this(context, null, 0);
@@ -96,7 +95,7 @@ public class LineChart extends AbstractChart {
 		mChartCalculator.calculateClippingArea();// only if zoom is enabled
 		canvas.clipRect(mChartCalculator.mClippingRect);
 		// TODO: draw lines
-		mChartRenderer.drawLines(canvas);
+		mChartRenderer.draw(canvas);
 		canvas.restoreToCount(clipRestoreCount);
 		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
 	}

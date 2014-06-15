@@ -1,22 +1,23 @@
 package lecho.lib.hellocharts;
 
 import lecho.lib.hellocharts.model.AnimatedPoint;
-import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.Line;
+import lecho.lib.hellocharts.model.LineChartData;
+import lecho.lib.hellocharts.model.PathCompat;
 import lecho.lib.hellocharts.model.Point;
 import lecho.lib.hellocharts.utils.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Cap;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 
-public class LineChartRenderer {
+public class LineChartRenderer implements ChartRenderer {
 
 	private static final float LINE_SMOOTHNES = 0.16f;
 	private static final int DEFAULT_LINE_WIDTH_DP = 3;
@@ -36,6 +37,8 @@ public class LineChartRenderer {
 	private float mTouchRadius;
 	private Context mContext;
 	private LineChart mChart;
+	private SelectedValue mSelectedValue = new SelectedValue();
+	private PathCompat mPathCompat = new PathCompat();
 
 	public LineChartRenderer(Context context, LineChart chart) {
 		mContext = context;
@@ -56,38 +59,23 @@ public class LineChartRenderer {
 		mPointAndPopupPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
 	}
 
-	public void drawLines(Canvas canvas) {
-		final LineChartData data = mChart.getData();
-		mLinePaint.setStrokeWidth(mLineWidth);
-		for (Line line : data.lines) {
-			if (line.isSmooth) {
-				drawSmoothPath(canvas, line);
-			} else {
-				drawPath(canvas, line);
-			}
-			if (line.hasPoints) {
-				drawPoints(canvas, data);
-			}
-			mLinePath.reset();
-		}
-	}
-
 	private void drawPath(Canvas canvas, final Line line) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		mPathCompat.reset(line.animatedPoints.size());
 		int valueIndex = 0;
 		for (AnimatedPoint animatedPoint : line.animatedPoints) {
 			final float rawValueX = chartCalculator.calculateRawX(animatedPoint.point.x);
 			final float rawValueY = chartCalculator.calculateRawY(animatedPoint.point.y);
 			if (valueIndex == 0) {
-				mLinePath.moveTo(rawValueX, rawValueY);
+				mPathCompat.moveTo(rawValueX, rawValueY);
 			} else {
-				mLinePath.lineTo(rawValueX, rawValueY);
+				mPathCompat.lineTo(rawValueX, rawValueY);
 			}
 			++valueIndex;
 		}
 		mLinePaint.setColor(line.color);
-		canvas.drawPath(mLinePath, mLinePaint);
-
+		// canvas.drawPath(mLinePath, mLinePaint);
+		mPathCompat.drawPath(canvas, mLinePaint);
 		if (line.isFilled) {
 			drawArea(canvas);
 		}
@@ -233,10 +221,67 @@ public class LineChartRenderer {
 		mLinePaint.setStyle(Paint.Style.STROKE);
 	}
 
-	public boolean isInArea(float x, float y, float touchX, float touchY) {
-		float diffX = touchX - x;
-		float diffY = touchY - y;
-		return Math.pow(diffX, 2) + Math.pow(diffY, 2) <= 2 * Math.pow(mTouchRadius, 2);
+	@Override
+	public void draw(Canvas canvas) {
+		final LineChartData data = mChart.getData();
+		mLinePaint.setStrokeWidth(mLineWidth);
+		for (Line line : data.lines) {
+			if (line.isSmooth) {
+				drawSmoothPath(canvas, line);
+			} else {
+				drawPath(canvas, line);
+			}
+			if (line.hasPoints) {
+				drawPoints(canvas, data);
+			}
+			mLinePath.reset();
+		}
+	}
+
+	@Override
+	public boolean checkTouch(float touchX, float touchY) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isTouched() {
+		return mSelectedValue.isSet();
+	}
+
+	@Override
+	public void clearTouch() {
+		mSelectedValue.clear();
+
+	}
+
+	// public boolean isInArea(float x, float y, float touchX, float touchY) {
+	// float diffX = touchX - x;
+	// float diffY = touchY - y;
+	// return Math.pow(diffX, 2) + Math.pow(diffY, 2) <= 2 * Math.pow(mTouchRadius, 2);
+	// }
+
+	private static class SelectedValue {
+		public int selectedLine;
+		public int selectedValue;
+
+		public SelectedValue() {
+			clear();
+		}
+
+		public void clear() {
+			this.selectedLine = Integer.MIN_VALUE;
+			this.selectedLine = Integer.MIN_VALUE;
+		}
+
+		public boolean isSet() {
+			if (selectedLine >= 0 && selectedValue >= 0) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
 	}
 
 }

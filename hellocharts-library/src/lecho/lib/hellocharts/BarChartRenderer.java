@@ -31,10 +31,10 @@ public class BarChartRenderer implements ChartRenderer {
 	private Context mContext;
 	private BarChart mChart;
 	private int mSubbarSpacing;
-	private SelectedValue mSelectedValue = new SelectedValue();
 	private RectF mRectToDraw = new RectF();
 	private Rect mTextBounds = new Rect();
 	private PointF mTouchedPoint = new PointF();
+	private SelectedValue mSelectedValue = new SelectedValue();
 
 	public BarChartRenderer(Context context, BarChart chart) {
 		mContext = context;
@@ -78,11 +78,7 @@ public class BarChartRenderer implements ChartRenderer {
 	}
 
 	public boolean isTouched() {
-		if (mSelectedValue.selectedBar >= 0 && mSelectedValue.selectedValue >= 0) {
-			return true;
-		} else {
-			return false;
-		}
+		return mSelectedValue.isSet();
 	}
 
 	public void clearTouch() {
@@ -318,6 +314,14 @@ public class BarChartRenderer implements ChartRenderer {
 		public void clear() {
 			this.selectedBar = Integer.MIN_VALUE;
 			this.selectedBar = Integer.MIN_VALUE;
+		}
+
+		public boolean isSet() {
+			if (selectedBar >= 0 && selectedValue >= 0) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 	}
