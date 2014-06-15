@@ -1,46 +1,38 @@
 package lecho.lib.hellocharts.model;
 
+import lecho.lib.hellocharts.ChartCalculator;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
 public class PathCompat {
-	private float[] mPoints;
+	// Preallocated place for one path segment to avoid allocation during onDraw().
+	private float[] mSegment = new float[4];
+
 	// TODO: add index validations
-	private int mIndex = 0;
-	private boolean mMoved = false;
 
-	public void moveTo(float x, float y) {
-		mPoints[mIndex++] = x;
-		mPoints[mIndex++] = y;
-		mMoved = true;
+	public void cubicTo(float firstControlPointX, float firstControlPointY, float secondControlPointX,
+			float secondControlPointY, float nextPointX, float nextPointY) {
+
 	}
 
-	public void lineTo(float x, float y) {
-		if (mMoved) {
-			mMoved = false;
-			mPoints[mIndex++] = x;
-			mPoints[mIndex++] = y;
-		} else {
-			int lastPointIndex = mIndex - 2;
-			mPoints[mIndex++] = mPoints[lastPointIndex++];
-			mPoints[mIndex++] = mPoints[lastPointIndex++];
-			mPoints[mIndex++] = x;
-			mPoints[mIndex++] = y;
+	public void drawPath(final Canvas canvas, ChartCalculator chartCalculator, final Line line, final Paint paint) {
+		int valueIndex = 0;
+		for (AnimatedPoint animatedPoint : line.animatedPoints) {
+			final float rawValueX = chartCalculator.calculateRawX(animatedPoint.point.x);
+			final float rawValueY = chartCalculator.calculateRawY(animatedPoint.point.y);
+			if (valueIndex == 0) {
+				mSegment[0] = rawValueX;
+				mSegment[1] = rawValueY;
+				mSegment[2] = rawValueX;
+				mSegment[3] = rawValueY;
+			} else {
+				mSegment[0] = mSegment[2];
+				mSegment[1] = mSegment[3];
+				mSegment[2] = rawValueX;
+				mSegment[3] = rawValueY;
+				canvas.drawLine(mSegment[0], mSegment[1], mSegment[2], mSegment[3], paint);
+			}
+			++valueIndex;
 		}
-	}
-
-	public void reset() {
-		mIndex = 0;
-		mMoved = false;
-	}
-
-	public void reset(int size) {
-		mIndex = 0;
-		mMoved = false;
-		mPoints = new float[(size - 1) * 4];
-	}
-
-	public void drawPath(final Canvas canvas, final Paint paint) {
-		canvas.drawLines(mPoints, paint);
 	}
 }

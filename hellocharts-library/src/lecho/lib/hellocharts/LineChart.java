@@ -43,7 +43,7 @@ public class LineChart extends AbstractChart {
 
 	@SuppressLint("NewApi")
 	private void initAttributes() {
-		setLayerType(LAYER_TYPE_SOFTWARE, null);
+		//setLayerType(LAYER_TYPE_SOFTWARE, null);
 	}
 
 	private void initAnimatiors() {

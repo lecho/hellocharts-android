@@ -61,21 +61,9 @@ public class LineChartRenderer implements ChartRenderer {
 
 	private void drawPath(Canvas canvas, final Line line) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
-		mPathCompat.reset(line.animatedPoints.size());
-		int valueIndex = 0;
-		for (AnimatedPoint animatedPoint : line.animatedPoints) {
-			final float rawValueX = chartCalculator.calculateRawX(animatedPoint.point.x);
-			final float rawValueY = chartCalculator.calculateRawY(animatedPoint.point.y);
-			if (valueIndex == 0) {
-				mPathCompat.moveTo(rawValueX, rawValueY);
-			} else {
-				mPathCompat.lineTo(rawValueX, rawValueY);
-			}
-			++valueIndex;
-		}
 		mLinePaint.setColor(line.color);
 		// canvas.drawPath(mLinePath, mLinePaint);
-		mPathCompat.drawPath(canvas, mLinePaint);
+		mPathCompat.drawPath(canvas, chartCalculator, line, mLinePaint);
 		if (line.isFilled) {
 			drawArea(canvas);
 		}
