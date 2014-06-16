@@ -31,8 +31,9 @@ public abstract class Utils {
 		return (int) (sp * scale + 0.5f);
 	}
 
-	public static float mm2px(Context context, int mm) {
-		return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, 1, context.getResources().getDisplayMetrics());
+	public static int mm2px(Context context, int mm) {
+		return (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, mm, context.getResources()
+				.getDisplayMetrics()) + 0.5f);
 	}
 
 	public static boolean isInArea(float x, float y, float touchX, float touchY, float radius) {
