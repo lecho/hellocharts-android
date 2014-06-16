@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 
 public class PathCompat {
+	private static final float LINE_SMOOTHNES = 0.16f;
 	// Preallocated place for one path segment to avoid allocation during onDraw().
 	private float[] mSegment = new float[4];
 
@@ -35,4 +36,20 @@ public class PathCompat {
 			++valueIndex;
 		}
 	}
+
+	private float calculateBezierValue(float x, float p0, float p1, float p2, float p3) {
+		final float u = 1 - x;
+		final float tt = x * x;
+		final float uu = u * u;
+		final float uuu = uu * u;
+		final float ttt = tt * x;
+
+		float result = uuu * p0; // first term
+		result += 3 * uu * x * p1; // second term
+		result += 3 * u * tt * p2; // third term
+		result += ttt * p3; // fourth term
+
+		return result;
+	}
+
 }
