@@ -2,6 +2,7 @@ package lecho.lib.hellocharts.utils;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.TypedValue;
 
 public abstract class Utils {
 	public static final int COLOR_BLUE = Color.parseColor("#33B5E5");
@@ -28,6 +29,10 @@ public abstract class Utils {
 		final float scale = context.getResources().getDisplayMetrics().scaledDensity;
 		// Convert the sps to pixels, based on scale density scale
 		return (int) (sp * scale + 0.5f);
+	}
+
+	public static float mm2px(Context context, int mm) {
+		return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, 1, context.getResources().getDisplayMetrics());
 	}
 
 	public static boolean isInArea(float x, float y, float touchX, float touchY, float radius) {
