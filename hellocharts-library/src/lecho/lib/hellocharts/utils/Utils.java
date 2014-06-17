@@ -36,12 +36,6 @@ public abstract class Utils {
 				.getDisplayMetrics()) + 0.5f);
 	}
 
-	public static boolean isInArea(float x, float y, float touchX, float touchY, float radius) {
-		float diffX = touchX - x;
-		float diffY = touchY - y;
-		return Math.pow(diffX, 2) + Math.pow(diffY, 2) <= 2 * Math.pow(radius, 2);
-	}
-
 	/**
 	 * Returns next bigger float value considering precision of the argument.
 	 * 

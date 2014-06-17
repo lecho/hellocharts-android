@@ -235,8 +235,30 @@ public class LineChartRenderer implements ChartRenderer {
 
 	@Override
 	public boolean checkTouch(float touchX, float touchY) {
-		// TODO Auto-generated method stub
-		return false;
+		final LineChartData data = mChart.getData();
+		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		mLinePaint.setStrokeWidth(mLineWidth);
+		int lineIndex = 0;
+		for (Line line : data.lines) {
+			int valueIndex = 0;
+			for (AnimatedPoint animatedPoint : line.animatedPoints) {
+				final float rawValueX = chartCalculator.calculateRawX(animatedPoint.point.x);
+				final float rawValueY = chartCalculator.calculateRawY(animatedPoint.point.y);
+				if (isInArea(rawValueX, rawValueY, touchX, touchY, mPointRadius)) {
+					mSelectedValue.selectedLine = lineIndex;
+					mSelectedValue.selectedValue = valueIndex;
+				}
+				++valueIndex;
+			}
+			++lineIndex;
+		}
+		return isTouched();
+	}
+
+	private boolean isInArea(float x, float y, float touchX, float touchY, float radius) {
+		float diffX = touchX - x;
+		float diffY = touchY - y;
+		return Math.pow(diffX, 2) + Math.pow(diffY, 2) <= 2 * Math.pow(radius, 2);
 	}
 
 	@Override
@@ -249,12 +271,6 @@ public class LineChartRenderer implements ChartRenderer {
 		mSelectedValue.clear();
 
 	}
-
-	// public boolean isInArea(float x, float y, float touchX, float touchY) {
-	// float diffX = touchX - x;
-	// float diffY = touchY - y;
-	// return Math.pow(diffX, 2) + Math.pow(diffY, 2) <= 2 * Math.pow(mTouchRadius, 2);
-	// }
 
 	private static class SelectedValue {
 		public int selectedLine;

@@ -1,7 +1,6 @@
 package lecho.lib.hellocharts.model;
 
 import lecho.lib.hellocharts.ChartCalculator;
-import lecho.lib.hellocharts.utils.Utils;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
