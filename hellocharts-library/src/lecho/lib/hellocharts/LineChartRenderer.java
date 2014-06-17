@@ -3,6 +3,7 @@ package lecho.lib.hellocharts;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.LinePoint;
+import lecho.lib.hellocharts.model.Line.LineStyle;
 import lecho.lib.hellocharts.utils.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -63,12 +64,14 @@ public class LineChartRenderer implements ChartRenderer {
 		mLinePaint.setStrokeWidth(mLineWidth);
 		int lineIndex = 0;
 		for (Line line : data.lines) {
-			if (line.isSmooth) {
-				drawSmoothPath(canvas, line);
-			} else {
-				drawPath(canvas, line);
+			if (line.getStyle().isHasLines()) {
+				if (line.getStyle().isSmooth()) {
+					drawSmoothPath(canvas, line);
+				} else {
+					drawPath(canvas, line);
+				}
 			}
-			if (line.hasPoints) {
+			if (line.getStyle().isHasPoints()) {
 				drawPoints(canvas, line, lineIndex, MODE_DRAW);
 			}
 			if (isTouched()) {
@@ -126,9 +129,9 @@ public class LineChartRenderer implements ChartRenderer {
 			}
 			++valueIndex;
 		}
-		mLinePaint.setColor(line.color);
+		mLinePaint.setColor(line.getStyle().getColor());
 		canvas.drawPath(mLinePath, mLinePaint);
-		if (line.isFilled) {
+		if (line.getStyle().isFilled()) {
 			drawArea(canvas);
 		}
 	}
@@ -197,10 +200,10 @@ public class LineChartRenderer implements ChartRenderer {
 			nextPointX = afterNextPointX;
 			nextPointY = afterNextPointY;
 		}
-		mLinePaint.setColor(line.color);
+		mLinePaint.setColor(line.getStyle().getColor());
 		canvas.drawPath(mLinePath, mLinePaint);
 
-		if (line.isFilled) {
+		if (line.getStyle().isFilled()) {
 			drawArea(canvas);
 		}
 	}
@@ -209,18 +212,18 @@ public class LineChartRenderer implements ChartRenderer {
 	// implementing point styles.
 	private void drawPoints(Canvas canvas, Line line, int lineIndex, int mode) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
-		mPointAndPopupPaint.setColor(line.color);
+		mPointAndPopupPaint.setColor(line.getStyle().getColor());
 		int valueIndex = 0;
 		for (LinePoint linePoint : line.points) {
 			final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
 			final float rawValueY = chartCalculator.calculateRawY(linePoint.getY());
 			if (MODE_DRAW == mode) {
 				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointAndPopupPaint);
-				if (line.hasValuesPopups) {
-					drawValuePopup(canvas, line, linePoint, rawValueX, rawValueY);
+				if (line.getStyle().isHasAnnotations()) {
+					drawValuePopup(canvas, line.getStyle(), linePoint, rawValueX, rawValueY);
 				}
 			} else if (MODE_HIGHLIGHT == mode) {
-				highlightPoint(canvas, line, linePoint, rawValueX, rawValueY, lineIndex, valueIndex);
+				highlightPoint(canvas, line.getStyle(), linePoint, rawValueX, rawValueY, lineIndex, valueIndex);
 			} else {
 				throw new IllegalStateException("Cannot process points in mode: " + mode);
 			}
@@ -228,21 +231,22 @@ public class LineChartRenderer implements ChartRenderer {
 		}
 	}
 
-	private void highlightPoint(Canvas canvas, Line line, LinePoint linePoint, float rawValueX, float rawValueY,
-			int lineIndex, int valueIndex) {
+	private void highlightPoint(Canvas canvas, LineStyle lineStyle, LinePoint linePoint, float rawValueX,
+			float rawValueY, int lineIndex, int valueIndex) {
 		if (mSelectedValue.selectedLine == lineIndex && mSelectedValue.selectedValue == valueIndex) {
 			canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mPointAndPopupPaint);
-			if (line.hasValuesPopups) {
-				drawValuePopup(canvas, line, linePoint, rawValueX, rawValueY);
+			if (lineStyle.isHasAnnotations()) {
+				drawValuePopup(canvas, lineStyle, linePoint, rawValueX, rawValueY);
 			}
 		}
 	}
 
-	private void drawValuePopup(Canvas canvas, Line line, LinePoint linePoint, float rawValueX, float rawValueY) {
+	private void drawValuePopup(Canvas canvas, LineStyle lineStyle, LinePoint linePoint, float rawValueX,
+			float rawValueY) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		mPointAndPopupPaint.setTextAlign(Align.LEFT);
-		mPointAndPopupPaint.setTextSize(Utils.sp2px(mContext, line.textSize));
-		final String text = line.formatter.formatValue(linePoint);
+		mPointAndPopupPaint.setTextSize(Utils.sp2px(mContext, lineStyle.getTextSize()));
+		final String text = lineStyle.getLineValueFormatter().formatValue(linePoint);
 		final Rect textBounds = new Rect();
 		mPointAndPopupPaint.getTextBounds(text, 0, text.length(), textBounds);
 		float left = rawValueX + mPopupMargin;
