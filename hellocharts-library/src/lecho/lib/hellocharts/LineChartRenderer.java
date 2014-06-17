@@ -91,7 +91,7 @@ public class LineChartRenderer implements ChartRenderer {
 		int lineIndex = 0;
 		for (Line line : data.lines) {
 			int valueIndex = 0;
-			for (LinePoint linePoint : line.points) {
+			for (LinePoint linePoint : line.getPoints()) {
 				final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
 				final float rawValueY = chartCalculator.calculateRawY(linePoint.getY());
 				if (isInArea(rawValueX, rawValueY, touchX, touchY, mTouchRadius)) {
@@ -119,7 +119,7 @@ public class LineChartRenderer implements ChartRenderer {
 	private void drawPath(Canvas canvas, final Line line) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		int valueIndex = 0;
-		for (LinePoint linePoint : line.points) {
+		for (LinePoint linePoint : line.getPoints()) {
 			final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
 			final float rawValueY = chartCalculator.calculateRawY(linePoint.getY());
 			if (valueIndex == 0) {
@@ -138,7 +138,7 @@ public class LineChartRenderer implements ChartRenderer {
 
 	private void drawSmoothPath(Canvas canvas, final Line line) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
-		final int lineSize = line.points.size();
+		final int lineSize = line.getPoints().size();
 		float previousPointX = Float.NaN;
 		float previousPointY = Float.NaN;
 		float currentPointX = Float.NaN;
@@ -147,13 +147,13 @@ public class LineChartRenderer implements ChartRenderer {
 		float nextPointY = Float.NaN;
 		for (int valueIndex = 0; valueIndex < lineSize - 1; ++valueIndex) {
 			if (Float.isNaN(currentPointX)) {
-				LinePoint linePoint = line.points.get(valueIndex);
+				LinePoint linePoint = line.getPoints().get(valueIndex);
 				currentPointX = chartCalculator.calculateRawX(linePoint.getX());
 				currentPointY = chartCalculator.calculateRawY(linePoint.getY());
 			}
 			if (Float.isNaN(previousPointX)) {
 				if (valueIndex > 0) {
-					LinePoint linePoint = line.points.get(valueIndex - 1);
+					LinePoint linePoint = line.getPoints().get(valueIndex - 1);
 					previousPointX = chartCalculator.calculateRawX(linePoint.getX());
 					previousPointY = chartCalculator.calculateRawY(linePoint.getY());
 				} else {
@@ -162,7 +162,7 @@ public class LineChartRenderer implements ChartRenderer {
 				}
 			}
 			if (Float.isNaN(nextPointX)) {
-				LinePoint linePoint = line.points.get(valueIndex + 1);
+				LinePoint linePoint = line.getPoints().get(valueIndex + 1);
 				nextPointX = chartCalculator.calculateRawX(linePoint.getX());
 				nextPointY = chartCalculator.calculateRawY(linePoint.getY());
 			}
@@ -170,7 +170,7 @@ public class LineChartRenderer implements ChartRenderer {
 			final float afterNextPointX;
 			final float afterNextPointY;
 			if (valueIndex < lineSize - 2) {
-				LinePoint linePoint = line.points.get(valueIndex + 2);
+				LinePoint linePoint = line.getPoints().get(valueIndex + 2);
 				afterNextPointX = chartCalculator.calculateRawX(linePoint.getX());
 				afterNextPointY = chartCalculator.calculateRawY(linePoint.getY());
 			} else {
@@ -214,7 +214,7 @@ public class LineChartRenderer implements ChartRenderer {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		mPointAndPopupPaint.setColor(line.getStyle().getColor());
 		int valueIndex = 0;
-		for (LinePoint linePoint : line.points) {
+		for (LinePoint linePoint : line.getPoints()) {
 			final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
 			final float rawValueY = chartCalculator.calculateRawY(linePoint.getY());
 			if (MODE_DRAW == mode) {

@@ -130,7 +130,7 @@ public class LineChart extends AbstractChart {
 	}
 
 	public void animationUpdate(float scale) {
-		for (LinePoint animatedPoint : mData.lines.get(0).points) {
+		for (LinePoint animatedPoint : mData.lines.get(0).getPoints()) {
 			animatedPoint.update(scale);
 		}
 		mData.calculateBoundaries();

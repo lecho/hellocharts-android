@@ -4,15 +4,19 @@ import java.util.Collections;
 import java.util.List;
 
 public class Line {
-	public List<LinePoint> points = Collections.emptyList();
+	private List<LinePoint> points = Collections.emptyList();
 	private LineStyle style = new LineStyle();
 
 	public Line(List<LinePoint> points) {
-		this.points = points;
+		setPoints(points);
 	}
 
 	public void setPoints(List<LinePoint> points) {
-		this.points = points;
+		if (null == points) {
+			this.points = Collections.emptyList();
+		} else {
+			this.points = points;
+		}
 	}
 
 	public List<LinePoint> getPoints() {

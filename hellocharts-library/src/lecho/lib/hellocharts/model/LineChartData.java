@@ -15,7 +15,7 @@ public class LineChartData extends AbstractChartData {
 		mBoundaries.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
 		// TODO: optimize with 3/2 algo
 		for (Line line : lines) {
-			for (LinePoint linePoint : line.points) {
+			for (LinePoint linePoint : line.getPoints()) {
 				if (linePoint.getX() < mBoundaries.left) {
 					mBoundaries.left = linePoint.getX();
 				}
