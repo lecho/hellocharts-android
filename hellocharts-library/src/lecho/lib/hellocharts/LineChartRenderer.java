@@ -56,6 +56,56 @@ public class LineChartRenderer implements ChartRenderer {
 		mPointAndPopupPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
 	}
 
+	@Override
+	public void draw(Canvas canvas) {
+		final LineChartData data = mChart.getData();
+		mLinePaint.setStrokeWidth(mLineWidth);
+		for (Line line : data.lines) {
+			if (line.isSmooth) {
+				drawSmoothPath(canvas, line);
+			} else {
+				drawPath(canvas, line);
+			}
+			if (line.hasPoints) {
+				drawPoints(canvas, data);
+			}
+			mLinePath.reset();
+		}
+	}
+
+	@Override
+	public boolean checkTouch(float touchX, float touchY) {
+		final LineChartData data = mChart.getData();
+		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		mLinePaint.setStrokeWidth(mLineWidth);
+		int lineIndex = 0;
+		for (Line line : data.lines) {
+			int valueIndex = 0;
+			for (AnimatedPoint animatedPoint : line.animatedPoints) {
+				final float rawValueX = chartCalculator.calculateRawX(animatedPoint.point.x);
+				final float rawValueY = chartCalculator.calculateRawY(animatedPoint.point.y);
+				if (isInArea(rawValueX, rawValueY, touchX, touchY, mPointRadius)) {
+					mSelectedValue.selectedLine = lineIndex;
+					mSelectedValue.selectedValue = valueIndex;
+				}
+				++valueIndex;
+			}
+			++lineIndex;
+		}
+		return isTouched();
+	}
+
+	@Override
+	public boolean isTouched() {
+		return mSelectedValue.isSet();
+	}
+
+	@Override
+	public void clearTouch() {
+		mSelectedValue.clear();
+
+	}
+
 	private void drawPath(Canvas canvas, final Line line) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		int valueIndex = 0;
@@ -216,60 +266,10 @@ public class LineChartRenderer implements ChartRenderer {
 		mLinePaint.setStyle(Paint.Style.STROKE);
 	}
 
-	@Override
-	public void draw(Canvas canvas) {
-		final LineChartData data = mChart.getData();
-		mLinePaint.setStrokeWidth(mLineWidth);
-		for (Line line : data.lines) {
-			if (line.isSmooth) {
-				drawSmoothPath(canvas, line);
-			} else {
-				drawPath(canvas, line);
-			}
-			if (line.hasPoints) {
-				drawPoints(canvas, data);
-			}
-			mLinePath.reset();
-		}
-	}
-
-	@Override
-	public boolean checkTouch(float touchX, float touchY) {
-		final LineChartData data = mChart.getData();
-		final ChartCalculator chartCalculator = mChart.getChartCalculator();
-		mLinePaint.setStrokeWidth(mLineWidth);
-		int lineIndex = 0;
-		for (Line line : data.lines) {
-			int valueIndex = 0;
-			for (AnimatedPoint animatedPoint : line.animatedPoints) {
-				final float rawValueX = chartCalculator.calculateRawX(animatedPoint.point.x);
-				final float rawValueY = chartCalculator.calculateRawY(animatedPoint.point.y);
-				if (isInArea(rawValueX, rawValueY, touchX, touchY, mPointRadius)) {
-					mSelectedValue.selectedLine = lineIndex;
-					mSelectedValue.selectedValue = valueIndex;
-				}
-				++valueIndex;
-			}
-			++lineIndex;
-		}
-		return isTouched();
-	}
-
 	private boolean isInArea(float x, float y, float touchX, float touchY, float radius) {
 		float diffX = touchX - x;
 		float diffY = touchY - y;
 		return Math.pow(diffX, 2) + Math.pow(diffY, 2) <= 2 * Math.pow(radius, 2);
-	}
-
-	@Override
-	public boolean isTouched() {
-		return mSelectedValue.isSet();
-	}
-
-	@Override
-	public void clearTouch() {
-		mSelectedValue.clear();
-
 	}
 
 	private static class SelectedValue {
