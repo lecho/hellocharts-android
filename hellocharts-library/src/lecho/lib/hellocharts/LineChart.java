@@ -43,14 +43,16 @@ public class LineChart extends AbstractChart {
 
 	@SuppressLint("NewApi")
 	private void initAttributes() {
-		setLayerType(LAYER_TYPE_SOFTWARE, null);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			setLayerType(LAYER_TYPE_SOFTWARE, null);
+		}
 	}
 
 	private void initAnimatiors() {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-			mAnimator = new ChartAnimatorV8(this);
-		} else {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			mAnimator = new ChartAnimatorV11(this);
+		} else {
+			mAnimator = new ChartAnimatorV8(this);
 		}
 	}
 
