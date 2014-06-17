@@ -25,6 +25,8 @@ public class LineChartRenderer implements ChartRenderer {
 	private static final int DEFAULT_POPUP_MARGIN_DP = 4;
 	private static final int DEFAULT_TEXT_COLOR = Color.WHITE;
 	private static final int DEFAULT_AREA_TRANSPARENCY = 64;
+	private static final int MODE_DRAW = 0;
+	private static final int MODE_HIGHLIGHT = 1;
 	private int mPopupMargin;
 	private Path mLinePath = new Path();
 	private Paint mLinePaint = new Paint();
@@ -60,6 +62,7 @@ public class LineChartRenderer implements ChartRenderer {
 	public void draw(Canvas canvas) {
 		final LineChartData data = mChart.getData();
 		mLinePaint.setStrokeWidth(mLineWidth);
+		int lineIndex = 0;
 		for (Line line : data.lines) {
 			if (line.isSmooth) {
 				drawSmoothPath(canvas, line);
@@ -67,9 +70,14 @@ public class LineChartRenderer implements ChartRenderer {
 				drawPath(canvas, line);
 			}
 			if (line.hasPoints) {
-				drawPoints(canvas, data);
+				drawPoints(canvas, line, lineIndex, MODE_DRAW);
+			}
+			if (isTouched()) {
+				// Redraw touched point to bring it to the front
+				drawPoints(canvas, line, lineIndex, MODE_HIGHLIGHT);
 			}
 			mLinePath.reset();
+			++lineIndex;
 		}
 	}
 
@@ -84,7 +92,7 @@ public class LineChartRenderer implements ChartRenderer {
 			for (AnimatedPoint animatedPoint : line.animatedPoints) {
 				final float rawValueX = chartCalculator.calculateRawX(animatedPoint.point.x);
 				final float rawValueY = chartCalculator.calculateRawY(animatedPoint.point.y);
-				if (isInArea(rawValueX, rawValueY, touchX, touchY, mPointRadius)) {
+				if (isInArea(rawValueX, rawValueY, touchX, touchY, mTouchRadius)) {
 					mSelectedValue.selectedLine = lineIndex;
 					mSelectedValue.selectedValue = valueIndex;
 				}
@@ -198,34 +206,40 @@ public class LineChartRenderer implements ChartRenderer {
 		}
 	}
 
-	// TODO Drawing points can be done in the same loop as drawing lines but it may cause problems in the future. Reuse
-	// calculated X/Y;
-	private void drawPoints(Canvas canvas, LineChartData data) {
+	// TODO Drawing points can be done in the same loop as drawing lines but it may cause problems in the future with
+	// implementing point styles.
+	private void drawPoints(Canvas canvas, Line line, int lineIndex, int mode) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
-		for (Line line : data.lines) {
-			mPointAndPopupPaint.setColor(line.color);
-			for (AnimatedPoint animatedPoint : line.animatedPoints) {
-				final float rawValueX = chartCalculator.calculateRawX(animatedPoint.point.x);
-				final float rawValueY = chartCalculator.calculateRawY(animatedPoint.point.y);
+		mPointAndPopupPaint.setColor(line.color);
+		int valueIndex = 0;
+		for (AnimatedPoint animatedPoint : line.animatedPoints) {
+			final float rawValueX = chartCalculator.calculateRawX(animatedPoint.point.x);
+			final float rawValueY = chartCalculator.calculateRawY(animatedPoint.point.y);
+			if (MODE_DRAW == mode) {
 				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointAndPopupPaint);
 				if (line.hasValuesPopups) {
 					drawValuePopup(canvas, line, animatedPoint.point, rawValueX, rawValueY);
 				}
+			} else if (MODE_HIGHLIGHT == mode) {
+				highlightPoint(canvas, line, animatedPoint, rawValueX, rawValueY, lineIndex, valueIndex);
+			} else {
+				throw new IllegalStateException("Cannot process points in mode: " + mode);
+			}
+			if (line.hasValuesPopups) {
+				drawValuePopup(canvas, line, animatedPoint.point, rawValueX, rawValueY);
+			}
+			++valueIndex;
+		}
+	}
+
+	private void highlightPoint(Canvas canvas, Line line, AnimatedPoint animatedPoint, float rawValueX,
+			float rawValueY, int lineIndex, int valueIndex) {
+		if (mSelectedValue.selectedLine == lineIndex && mSelectedValue.selectedValue == valueIndex) {
+			canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mPointAndPopupPaint);
+			if (line.hasValuesPopups) {
+				drawValuePopup(canvas, line, animatedPoint.point, rawValueX, rawValueY);
 			}
 		}
-		// final int selectedLineIndex = mChart.getTouchHandler().getSelectedLineIndex();
-		// final int selectedPointIndex = mChart.getTouchHandler().getSelectedPointIndex();
-		// if (selectedLineIndex >= 0 && selectedPointIndex >= 0) {
-		// final Line line = mChart.getData().lines.get(selectedLineIndex);
-		// final AnimatedPoint animatedPoint = line.animatedPoints.get(selectedPointIndex);
-		// final float rawValueX = chartCalculator.calculateRawX(animatedPoint.point.x);
-		// final float rawValueY = chartCalculator.calculateRawY(animatedPoint.point.y);
-		// mPointAndPopupPaint.setColor(line.color);
-		// canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mPointAndPopupPaint);
-		// if (line.hasValuesPopups) {
-		// drawValuePopup(canvas, line, animatedPoint.point, rawValueX, rawValueY);
-		// }
-		// }
 	}
 
 	private void drawValuePopup(Canvas canvas, Line line, Point value, float rawValueX, float rawValueY) {
