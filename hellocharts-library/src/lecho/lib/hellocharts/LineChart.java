@@ -1,13 +1,11 @@
 package lecho.lib.hellocharts;
 
-import java.util.List;
-
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
 import lecho.lib.hellocharts.gestures.ChartTouchHandler;
-import lecho.lib.hellocharts.model.AnimatedPoint;
 import lecho.lib.hellocharts.model.LineChartData;
+import lecho.lib.hellocharts.model.LinePoint;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -132,7 +130,7 @@ public class LineChart extends AbstractChart {
 	}
 
 	public void animationUpdate(float scale) {
-		for (AnimatedPoint animatedPoint : mData.lines.get(0).animatedPoints) {
+		for (LinePoint animatedPoint : mData.lines.get(0).points) {
 			animatedPoint.update(scale);
 		}
 		mData.calculateBoundaries();
@@ -140,16 +138,16 @@ public class LineChart extends AbstractChart {
 		ViewCompat.postInvalidateOnAnimation(LineChart.this);
 	}
 
-	public void animateSeries(int index, List<lecho.lib.hellocharts.model.Point> points) {
-		mAnimator.cancelAnimation();
-		mData.updateLineTarget(index, points);
-		mAnimator.startAnimation();
-	}
-
-	public void updateSeries(int index, List<lecho.lib.hellocharts.model.Point> points) {
-		mData.updateLine(index, points);
-		ViewCompat.postInvalidateOnAnimation(LineChart.this);
-	}
+	// public void animateSeries(int index, List<lecho.lib.hellocharts.model.Point> points) {
+	// mAnimator.cancelAnimation();
+	// mData.updateLineTarget(index, points);
+	// mAnimator.startAnimation();
+	// }
+	//
+	// public void updateSeries(int index, List<lecho.lib.hellocharts.model.Point> points) {
+	// mData.updateLine(index, points);
+	// ViewCompat.postInvalidateOnAnimation(LineChart.this);
+	// }
 
 	public void setOnPointClickListener(OnPointClickListener listener) {
 		// if (null == listener) {

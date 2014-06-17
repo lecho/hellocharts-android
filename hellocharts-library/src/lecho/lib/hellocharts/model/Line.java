@@ -1,6 +1,5 @@
 package lecho.lib.hellocharts.model;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -8,38 +7,39 @@ import android.graphics.Color;
 
 public class Line {
 	private static final int DEFAULT_LINE_VALUE_TEXT_SIZE_DP = 10;
-	public List<AnimatedPoint> animatedPoints = Collections.emptyList();
+	public List<LinePoint> points = Collections.emptyList();
 	public int color = Color.GREEN;
 	public int textSize = DEFAULT_LINE_VALUE_TEXT_SIZE_DP;
 	public LineValueFormatter formatter = new DefaultLineValueFormatter();
-	//TODO: replace boolean flags with something else
+	// TODO: replace boolean flags with something else
 	public boolean isFilled = false;
 	public boolean hasPoints = false;
 	public boolean hasValuesPopups = false;
 	public boolean isSmooth = false;
 
-	public Line(List<Point> points) {
-		setPoints(points);
+	public Line(List<LinePoint> points) {
+		this.points = points;
 	}
 
-	private void setPoints(List<Point> points) {
-		animatedPoints = new ArrayList<AnimatedPoint>(points.size());
-		for (Point point : points) {
-			animatedPoints.add(new AnimatedPoint(point));
-		}
+	public void setPoints(List<LinePoint> points) {
+		this.points = points;
+	}
+
+	public List<LinePoint> getPoints() {
+		return this.points;
 	}
 
 	public interface LineValueFormatter {
 		public static final String DEFAULT_LINE_VALUE_FORMAT = "%.0f";
 
-		public String formatValue(Point value);
+		public String formatValue(LinePoint linePoint);
 	}
 
 	public static class DefaultLineValueFormatter implements LineValueFormatter {
 
 		@Override
-		public String formatValue(Point value) {
-			return String.format(DEFAULT_LINE_VALUE_FORMAT, value.y);
+		public String formatValue(LinePoint linePoint) {
+			return String.format(DEFAULT_LINE_VALUE_FORMAT, linePoint.getY());
 		}
 
 	}

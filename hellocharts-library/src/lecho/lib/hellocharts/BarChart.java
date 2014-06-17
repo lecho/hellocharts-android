@@ -1,7 +1,5 @@
 package lecho.lib.hellocharts;
 
-import java.util.List;
-
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
@@ -129,16 +127,16 @@ public class BarChart extends AbstractChart {
 		// ViewCompat.postInvalidateOnAnimation(BarChart.this);
 	}
 
-	public void animateSeries(int index, List<lecho.lib.hellocharts.model.Point> points) {
-		mAnimator.cancelAnimation();
-		mData.updateLineTarget(index, points);
-		mAnimator.startAnimation();
-	}
-
-	public void updateSeries(int index, List<lecho.lib.hellocharts.model.Point> points) {
-		mData.updateLine(index, points);
-		ViewCompat.postInvalidateOnAnimation(BarChart.this);
-	}
+	// public void animateSeries(int index, List<lecho.lib.hellocharts.model.Point> points) {
+	// mAnimator.cancelAnimation();
+	// mData.updateLineTarget(index, points);
+	// mAnimator.startAnimation();
+	// }
+	//
+	// public void updateSeries(int index, List<lecho.lib.hellocharts.model.Point> points) {
+	// mData.updateLine(index, points);
+	// ViewCompat.postInvalidateOnAnimation(BarChart.this);
+	// }
 
 	public void setOnPointClickListener(OnPointClickListener listener) {
 		// if (null == listener) {

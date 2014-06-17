@@ -3,12 +3,11 @@ package lecho.sample.hellocharts;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.graphics.Color;
-
 import lecho.lib.hellocharts.model.Axis.AxisValue;
 import lecho.lib.hellocharts.model.Bar;
-import lecho.lib.hellocharts.model.Point;
+import lecho.lib.hellocharts.model.LinePoint;
 import lecho.lib.hellocharts.model.ValueWithColor;
+import android.graphics.Color;
 
 public class Utils {
 
@@ -23,11 +22,11 @@ public class Utils {
 		return colors[(int) Math.round(Math.random() * (colors.length - 1))];
 	}
 
-	public static List<Point> generatePoints(int num, float step) {
+	public static List<LinePoint> generatePoints(int num, float step) {
 		float x = 0.0f;
-		List<Point> result = new ArrayList<Point>();
+		List<LinePoint> result = new ArrayList<LinePoint>();
 		for (float f = 0.0f; f < num; f += step) {
-			result.add(new Point(x, (float) Math.random() * 100.0f));
+			result.add(new LinePoint(x, (float) Math.random() * 100.0f));
 			x += step;
 		}
 		return result;

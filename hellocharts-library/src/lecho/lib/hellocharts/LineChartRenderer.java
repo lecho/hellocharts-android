@@ -1,9 +1,8 @@
 package lecho.lib.hellocharts;
 
-import lecho.lib.hellocharts.model.AnimatedPoint;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
-import lecho.lib.hellocharts.model.Point;
+import lecho.lib.hellocharts.model.LinePoint;
 import lecho.lib.hellocharts.utils.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -89,9 +88,9 @@ public class LineChartRenderer implements ChartRenderer {
 		int lineIndex = 0;
 		for (Line line : data.lines) {
 			int valueIndex = 0;
-			for (AnimatedPoint animatedPoint : line.animatedPoints) {
-				final float rawValueX = chartCalculator.calculateRawX(animatedPoint.point.x);
-				final float rawValueY = chartCalculator.calculateRawY(animatedPoint.point.y);
+			for (LinePoint linePoint : line.points) {
+				final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
+				final float rawValueY = chartCalculator.calculateRawY(linePoint.getY());
 				if (isInArea(rawValueX, rawValueY, touchX, touchY, mTouchRadius)) {
 					mSelectedValue.selectedLine = lineIndex;
 					mSelectedValue.selectedValue = valueIndex;
@@ -117,9 +116,9 @@ public class LineChartRenderer implements ChartRenderer {
 	private void drawPath(Canvas canvas, final Line line) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		int valueIndex = 0;
-		for (AnimatedPoint animatedPoint : line.animatedPoints) {
-			final float rawValueX = chartCalculator.calculateRawX(animatedPoint.point.x);
-			final float rawValueY = chartCalculator.calculateRawY(animatedPoint.point.y);
+		for (LinePoint linePoint : line.points) {
+			final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
+			final float rawValueY = chartCalculator.calculateRawY(linePoint.getY());
 			if (valueIndex == 0) {
 				mLinePath.moveTo(rawValueX, rawValueY);
 			} else {
@@ -136,7 +135,7 @@ public class LineChartRenderer implements ChartRenderer {
 
 	private void drawSmoothPath(Canvas canvas, final Line line) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
-		final int lineSize = line.animatedPoints.size();
+		final int lineSize = line.points.size();
 		float previousPointX = Float.NaN;
 		float previousPointY = Float.NaN;
 		float currentPointX = Float.NaN;
@@ -145,32 +144,32 @@ public class LineChartRenderer implements ChartRenderer {
 		float nextPointY = Float.NaN;
 		for (int valueIndex = 0; valueIndex < lineSize - 1; ++valueIndex) {
 			if (Float.isNaN(currentPointX)) {
-				AnimatedPoint animatedPoint = line.animatedPoints.get(valueIndex);
-				currentPointX = chartCalculator.calculateRawX(animatedPoint.point.x);
-				currentPointY = chartCalculator.calculateRawY(animatedPoint.point.y);
+				LinePoint linePoint = line.points.get(valueIndex);
+				currentPointX = chartCalculator.calculateRawX(linePoint.getX());
+				currentPointY = chartCalculator.calculateRawY(linePoint.getY());
 			}
 			if (Float.isNaN(previousPointX)) {
 				if (valueIndex > 0) {
-					AnimatedPoint animatedPoint = line.animatedPoints.get(valueIndex - 1);
-					previousPointX = chartCalculator.calculateRawX(animatedPoint.point.x);
-					previousPointY = chartCalculator.calculateRawY(animatedPoint.point.y);
+					LinePoint linePoint = line.points.get(valueIndex - 1);
+					previousPointX = chartCalculator.calculateRawX(linePoint.getX());
+					previousPointY = chartCalculator.calculateRawY(linePoint.getY());
 				} else {
 					previousPointX = currentPointX;
 					previousPointY = currentPointY;
 				}
 			}
 			if (Float.isNaN(nextPointX)) {
-				AnimatedPoint animatedPoint = line.animatedPoints.get(valueIndex + 1);
-				nextPointX = chartCalculator.calculateRawX(animatedPoint.point.x);
-				nextPointY = chartCalculator.calculateRawY(animatedPoint.point.y);
+				LinePoint linePoint = line.points.get(valueIndex + 1);
+				nextPointX = chartCalculator.calculateRawX(linePoint.getX());
+				nextPointY = chartCalculator.calculateRawY(linePoint.getY());
 			}
 			// afterNextPoint is always new one or it is equal nextPoint.
 			final float afterNextPointX;
 			final float afterNextPointY;
 			if (valueIndex < lineSize - 2) {
-				AnimatedPoint animatedPoint = line.animatedPoints.get(valueIndex + 2);
-				afterNextPointX = chartCalculator.calculateRawX(animatedPoint.point.x);
-				afterNextPointY = chartCalculator.calculateRawY(animatedPoint.point.y);
+				LinePoint linePoint = line.points.get(valueIndex + 2);
+				afterNextPointX = chartCalculator.calculateRawX(linePoint.getX());
+				afterNextPointY = chartCalculator.calculateRawY(linePoint.getY());
 			} else {
 				afterNextPointX = nextPointX;
 				afterNextPointY = nextPointY;
@@ -212,41 +211,38 @@ public class LineChartRenderer implements ChartRenderer {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		mPointAndPopupPaint.setColor(line.color);
 		int valueIndex = 0;
-		for (AnimatedPoint animatedPoint : line.animatedPoints) {
-			final float rawValueX = chartCalculator.calculateRawX(animatedPoint.point.x);
-			final float rawValueY = chartCalculator.calculateRawY(animatedPoint.point.y);
+		for (LinePoint linePoint : line.points) {
+			final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
+			final float rawValueY = chartCalculator.calculateRawY(linePoint.getY());
 			if (MODE_DRAW == mode) {
 				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointAndPopupPaint);
 				if (line.hasValuesPopups) {
-					drawValuePopup(canvas, line, animatedPoint.point, rawValueX, rawValueY);
+					drawValuePopup(canvas, line, linePoint, rawValueX, rawValueY);
 				}
 			} else if (MODE_HIGHLIGHT == mode) {
-				highlightPoint(canvas, line, animatedPoint, rawValueX, rawValueY, lineIndex, valueIndex);
+				highlightPoint(canvas, line, linePoint, rawValueX, rawValueY, lineIndex, valueIndex);
 			} else {
 				throw new IllegalStateException("Cannot process points in mode: " + mode);
-			}
-			if (line.hasValuesPopups) {
-				drawValuePopup(canvas, line, animatedPoint.point, rawValueX, rawValueY);
 			}
 			++valueIndex;
 		}
 	}
 
-	private void highlightPoint(Canvas canvas, Line line, AnimatedPoint animatedPoint, float rawValueX,
-			float rawValueY, int lineIndex, int valueIndex) {
+	private void highlightPoint(Canvas canvas, Line line, LinePoint linePoint, float rawValueX, float rawValueY,
+			int lineIndex, int valueIndex) {
 		if (mSelectedValue.selectedLine == lineIndex && mSelectedValue.selectedValue == valueIndex) {
 			canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mPointAndPopupPaint);
 			if (line.hasValuesPopups) {
-				drawValuePopup(canvas, line, animatedPoint.point, rawValueX, rawValueY);
+				drawValuePopup(canvas, line, linePoint, rawValueX, rawValueY);
 			}
 		}
 	}
 
-	private void drawValuePopup(Canvas canvas, Line line, Point value, float rawValueX, float rawValueY) {
+	private void drawValuePopup(Canvas canvas, Line line, LinePoint linePoint, float rawValueX, float rawValueY) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		mPointAndPopupPaint.setTextAlign(Align.LEFT);
 		mPointAndPopupPaint.setTextSize(Utils.sp2px(mContext, line.textSize));
-		final String text = line.formatter.formatValue(value);
+		final String text = line.formatter.formatValue(linePoint);
 		final Rect textBounds = new Rect();
 		mPointAndPopupPaint.getTextBounds(text, 0, text.length(), textBounds);
 		float left = rawValueX + mPopupMargin;
