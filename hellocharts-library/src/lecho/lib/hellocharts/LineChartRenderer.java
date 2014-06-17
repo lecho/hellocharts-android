@@ -74,12 +74,12 @@ public class LineChartRenderer implements ChartRenderer {
 			if (line.getStyle().isHasPoints()) {
 				drawPoints(canvas, line, lineIndex, MODE_DRAW);
 			}
-			if (isTouched()) {
-				// Redraw touched point to bring it to the front
-				drawPoints(canvas, line, lineIndex, MODE_HIGHLIGHT);
-			}
 			mLinePath.reset();
 			++lineIndex;
+		}
+		if (isTouched()) {
+			// Redraw touched point to bring it to the front
+			highlightPoints(canvas);
 		}
 	}
 
@@ -229,6 +229,12 @@ public class LineChartRenderer implements ChartRenderer {
 			}
 			++valueIndex;
 		}
+	}
+
+	private void highlightPoints(Canvas canvas) {
+		int lineIndex = mSelectedValue.selectedLine;
+		Line line = mChart.getData().lines.get(lineIndex);
+		drawPoints(canvas, line, lineIndex, MODE_HIGHLIGHT);
 	}
 
 	private void highlightPoint(Canvas canvas, LineStyle lineStyle, LinePoint linePoint, float rawValueX,
