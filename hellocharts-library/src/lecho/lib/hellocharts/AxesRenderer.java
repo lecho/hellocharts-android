@@ -99,8 +99,10 @@ public class AxesRenderer {
 		mAxisTextPaint.setColor(axisX.color);
 		mAxisTextPaint.setTextSize(Utils.sp2px(mContext, axisX.textSize));
 		mAxisTextPaint.setTextAlign(Align.CENTER);
-		canvas.drawLine(chartCalculator.mContentRectWithMargins.left, chartCalculator.mContentRect.bottom,
-				chartCalculator.mContentRectWithMargins.right, chartCalculator.mContentRect.bottom, mAxisLinePaint);
+		if (axisX.values.size() > 0) {
+			canvas.drawLine(chartCalculator.mContentRectWithMargins.left, chartCalculator.mContentRect.bottom,
+					chartCalculator.mContentRectWithMargins.right, chartCalculator.mContentRect.bottom, mAxisLinePaint);
+		}
 		// drawing axis values
 		float baseline = chartCalculator.mContentRectWithMargins.bottom + chartCalculator.mAxisXHeight.first;
 		for (AxisValue axisValue : axisX.values) {
