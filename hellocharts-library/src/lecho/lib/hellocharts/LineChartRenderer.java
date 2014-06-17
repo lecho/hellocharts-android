@@ -3,7 +3,6 @@ package lecho.lib.hellocharts;
 import lecho.lib.hellocharts.model.AnimatedPoint;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
-import lecho.lib.hellocharts.model.PathCompat;
 import lecho.lib.hellocharts.model.Point;
 import lecho.lib.hellocharts.utils.Utils;
 import android.content.Context;
@@ -18,7 +17,6 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 
 public class LineChartRenderer implements ChartRenderer {
-
 	private static final float LINE_SMOOTHNES = 0.16f;
 	private static final int DEFAULT_LINE_WIDTH_DP = 3;
 	private static final int DEFAULT_POINT_RADIUS_DP = 6;
@@ -38,7 +36,6 @@ public class LineChartRenderer implements ChartRenderer {
 	private Context mContext;
 	private LineChart mChart;
 	private SelectedValue mSelectedValue = new SelectedValue();
-	private PathCompat mPathCompat = new PathCompat();
 
 	public LineChartRenderer(Context context, LineChart chart) {
 		mContext = context;
@@ -61,9 +58,19 @@ public class LineChartRenderer implements ChartRenderer {
 
 	private void drawPath(Canvas canvas, final Line line) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		int valueIndex = 0;
+		for (AnimatedPoint animatedPoint : line.animatedPoints) {
+			final float rawValueX = chartCalculator.calculateRawX(animatedPoint.point.x);
+			final float rawValueY = chartCalculator.calculateRawY(animatedPoint.point.y);
+			if (valueIndex == 0) {
+				mLinePath.moveTo(rawValueX, rawValueY);
+			} else {
+				mLinePath.lineTo(rawValueX, rawValueY);
+			}
+			++valueIndex;
+		}
 		mLinePaint.setColor(line.color);
-		// canvas.drawPath(mLinePath, mLinePaint);
-		mPathCompat.drawPath(canvas, chartCalculator, line, mLinePaint);
+		canvas.drawPath(mLinePath, mLinePaint);
 		if (line.isFilled) {
 			drawArea(canvas);
 		}
