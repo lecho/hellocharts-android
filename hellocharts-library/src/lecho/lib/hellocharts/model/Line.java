@@ -3,6 +3,8 @@ package lecho.lib.hellocharts.model;
 import java.util.Collections;
 import java.util.List;
 
+import android.graphics.Color;
+
 public class Line {
 	private List<LinePoint> points = Collections.emptyList();
 	private LineStyle style = new LineStyle();
@@ -51,9 +53,16 @@ public class Line {
 	}
 
 	public static class LineStyle {
-		private static final int DEFAULT_LINE_VALUE_TEXT_SIZE_DP = 10;
-		private int color;
-		private int textSize = DEFAULT_LINE_VALUE_TEXT_SIZE_DP;
+		public static final int DEFAULT_LINE_VALUE_TEXT_SIZE_SP = 10;
+		public static final int DEFAULT_LINE_WIDTH_DP = 3;
+		public static final int DEFAULT_POINT_RADIUS_DP = 6;
+		public static final int DEFAULT_AREA_TRANSPARENCY = 64;
+		private int color = Color.LTGRAY;
+		private int textColor = Color.WHITE;
+		private int textSize = DEFAULT_LINE_VALUE_TEXT_SIZE_SP;
+		private int lineWidth = DEFAULT_LINE_WIDTH_DP;
+		private int pointRadius = DEFAULT_POINT_RADIUS_DP;
+		private int areaTransparency = DEFAULT_AREA_TRANSPARENCY;
 		private boolean hasPoints = true;
 		private boolean hasLines = true;
 		private boolean hasAnnotations = false;
@@ -70,12 +79,48 @@ public class Line {
 			return this;
 		}
 
+		public int getTextColor() {
+			return textColor;
+		}
+
+		public LineStyle setTextColor(int textColor) {
+			this.textColor = textColor;
+			return this;
+		}
+
 		public int getTextSize() {
 			return textSize;
 		}
 
 		public LineStyle setTextSize(int textSize) {
 			this.textSize = textSize;
+			return this;
+		}
+
+		public int getLineWidth() {
+			return lineWidth;
+		}
+
+		public LineStyle setLineWidth(int lineWidth) {
+			this.lineWidth = lineWidth;
+			return this;
+		}
+
+		public int getPointRadius() {
+			return pointRadius;
+		}
+
+		public LineStyle setPointRadius(int pointRadius) {
+			this.pointRadius = pointRadius;
+			return this;
+		}
+
+		public int getAreaTransparency() {
+			return areaTransparency;
+		}
+
+		public LineStyle setAreaTransparency(int areaTransparency) {
+			this.areaTransparency = areaTransparency;
 			return this;
 		}
 
