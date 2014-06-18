@@ -11,9 +11,10 @@ import android.view.View;
 
 public class ChartCalculator {
 	// TODO: use getters/setters instead of public members
-	private static final int DEFAULT_COMMON_MARGIN_DP = 10;
-	private static final int DEFAULT_AXIS_NAME_MARGIN_DP = 4;
-	public int mCommonMargin;
+	public static final int DEFAULT_COMMON_MARGIN_DP = 4;
+	public static final int DEFAULT_AXIS_NAME_MARGIN_DP = 4;
+	private Context mContext;
+	private int mCommonMargin;
 	private int mAxisNameMargin;
 	public int mAxisYMargin;
 	public int mAxisXMargin;
@@ -43,6 +44,7 @@ public class ChartCalculator {
 	 * Constructor
 	 */
 	public ChartCalculator(Context context, Chart chart) {
+		mContext = context;
 		mChart = chart;
 		mCommonMargin = Utils.dp2px(context, DEFAULT_COMMON_MARGIN_DP);
 		mAxisNameMargin = Utils.dp2px(context, DEFAULT_AXIS_NAME_MARGIN_DP);
@@ -175,5 +177,9 @@ public class ChartCalculator {
 	public void computeScrollSurfaceSize(Point out) {
 		out.set((int) (mMaximumViewport.width() * mContentRect.width() / mCurrentViewport.width()),
 				(int) (mMaximumViewport.height() * mContentRect.height() / mCurrentViewport.height()));
+	}
+
+	public void setCommonMargin(int commonMargin) {
+		mCommonMargin = Utils.dp2px(mContext, commonMargin);
 	}
 }

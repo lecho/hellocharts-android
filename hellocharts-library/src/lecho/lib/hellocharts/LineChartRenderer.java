@@ -17,7 +17,7 @@ import android.graphics.Typeface;
 public class LineChartRenderer implements ChartRenderer {
 	private static final float LINE_SMOOTHNES = 0.16f;
 	private static final int DEFAULT_POPUP_MARGIN_DP = 4;
-	private static final int DEFAULT_TOUCH_TOLLERANCE_DP = 4;
+	public static final int DEFAULT_TOUCH_TOLLERANCE_DP = 4;
 	private static final int MODE_DRAW = 0;
 	private static final int MODE_HIGHLIGHT = 1;
 	private int mPopupMargin;
