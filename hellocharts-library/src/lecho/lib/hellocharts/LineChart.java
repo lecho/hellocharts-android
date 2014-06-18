@@ -94,7 +94,6 @@ public class LineChart extends AbstractChart {
 		int clipRestoreCount = canvas.save();
 		mChartCalculator.calculateClippingArea();// only if zoom is enabled
 		canvas.clipRect(mChartCalculator.mClippingRect);
-		// TODO: draw lines
 		mChartRenderer.draw(canvas);
 		canvas.restoreToCount(clipRestoreCount);
 		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);

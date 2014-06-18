@@ -1,16 +1,14 @@
 package lecho.lib.hellocharts;
 
 import lecho.lib.hellocharts.model.Line;
+import lecho.lib.hellocharts.model.Line.LineStyle;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.LinePoint;
-import lecho.lib.hellocharts.model.Line.LineStyle;
 import lecho.lib.hellocharts.utils.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
-import android.graphics.Paint.Cap;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -18,23 +16,15 @@ import android.graphics.Typeface;
 
 public class LineChartRenderer implements ChartRenderer {
 	private static final float LINE_SMOOTHNES = 0.16f;
-	private static final int DEFAULT_LINE_WIDTH_DP = 3;
-	private static final int DEFAULT_POINT_RADIUS_DP = 6;
-	private static final int DEFAULT_POINT_PRESSED_RADIUS = DEFAULT_POINT_RADIUS_DP + 4;
-	private static final int DEFAULT_TOUCH_RADIUS_DP = 12;
 	private static final int DEFAULT_POPUP_MARGIN_DP = 4;
-	private static final int DEFAULT_TEXT_COLOR = Color.WHITE;
-	private static final int DEFAULT_AREA_TRANSPARENCY = 64;
+	private static final int DEFAULT_TOUCH_TOLLERANCE_DP = 4;
 	private static final int MODE_DRAW = 0;
 	private static final int MODE_HIGHLIGHT = 1;
 	private int mPopupMargin;
 	private Path mLinePath = new Path();
 	private Paint mLinePaint = new Paint();
-	private Paint mPointAndPopupPaint = new Paint();
-	private float mLineWidth;
-	private float mPointRadius;
-	private float mPointPressedRadius;
-	private float mTouchRadius;
+	private Paint mPointPaint = new Paint();
+	private Paint popupPaint = new Paint();
 	private Context mContext;
 	private LineChart mChart;
 	private SelectedValue mSelectedValue = new SelectedValue();
@@ -42,26 +32,23 @@ public class LineChartRenderer implements ChartRenderer {
 	public LineChartRenderer(Context context, LineChart chart) {
 		mContext = context;
 		mChart = chart;
-		mLineWidth = Utils.dp2px(context, DEFAULT_LINE_WIDTH_DP);
-		mPointRadius = Utils.dp2px(context, DEFAULT_POINT_RADIUS_DP);
-		mPointPressedRadius = Utils.dp2px(context, DEFAULT_POINT_PRESSED_RADIUS);
 		mPopupMargin = Utils.dp2px(context, DEFAULT_POPUP_MARGIN_DP);
-		mTouchRadius = Utils.dp2px(context, DEFAULT_TOUCH_RADIUS_DP);
 
 		mLinePaint.setAntiAlias(true);
 		mLinePaint.setStyle(Paint.Style.STROKE);
-		mLinePaint.setStrokeCap(Cap.ROUND);
 
-		mPointAndPopupPaint.setAntiAlias(true);
-		mPointAndPopupPaint.setStyle(Paint.Style.FILL);
-		mPointAndPopupPaint.setStrokeWidth(1);
-		mPointAndPopupPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+		mPointPaint.setAntiAlias(true);
+		mPointPaint.setStyle(Paint.Style.FILL);
+
+		popupPaint.setAntiAlias(true);
+		popupPaint.setStyle(Paint.Style.FILL);
+		popupPaint.setTextAlign(Align.LEFT);
+		popupPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
 	}
 
 	@Override
 	public void draw(Canvas canvas) {
 		final LineChartData data = mChart.getData();
-		mLinePaint.setStrokeWidth(mLineWidth);
 		int lineIndex = 0;
 		for (Line line : data.lines) {
 			if (line.getStyle().hasLines()) {
@@ -87,14 +74,15 @@ public class LineChartRenderer implements ChartRenderer {
 	public boolean checkTouch(float touchX, float touchY) {
 		final LineChartData data = mChart.getData();
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
-		mLinePaint.setStrokeWidth(mLineWidth);
 		int lineIndex = 0;
 		for (Line line : data.lines) {
+			final int touchRadius = Utils.dp2px(mContext, line.getStyle().getPointRadius()
+					+ DEFAULT_TOUCH_TOLLERANCE_DP);
 			int valueIndex = 0;
 			for (LinePoint linePoint : line.getPoints()) {
 				final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
 				final float rawValueY = chartCalculator.calculateRawY(linePoint.getY());
-				if (isInArea(rawValueX, rawValueY, touchX, touchY, mTouchRadius)) {
+				if (isInArea(rawValueX, rawValueY, touchX, touchY, touchRadius)) {
 					mSelectedValue.selectedLine = lineIndex;
 					mSelectedValue.selectedValue = valueIndex;
 				}
@@ -118,6 +106,7 @@ public class LineChartRenderer implements ChartRenderer {
 
 	private void drawPath(Canvas canvas, final Line line) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		final LineStyle style = line.getStyle();
 		int valueIndex = 0;
 		for (LinePoint linePoint : line.getPoints()) {
 			final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
@@ -129,15 +118,17 @@ public class LineChartRenderer implements ChartRenderer {
 			}
 			++valueIndex;
 		}
-		mLinePaint.setColor(line.getStyle().getColor());
+		mLinePaint.setColor(style.getColor());
+		mLinePaint.setStrokeWidth(Utils.dp2px(mContext, style.getLineWidth()));
 		canvas.drawPath(mLinePath, mLinePaint);
-		if (line.getStyle().isFilled()) {
-			drawArea(canvas);
+		if (style.isFilled()) {
+			drawArea(canvas, style);
 		}
 	}
 
 	private void drawSmoothPath(Canvas canvas, final Line line) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		final LineStyle style = line.getStyle();
 		final int lineSize = line.getPoints().size();
 		float previousPointX = Float.NaN;
 		float previousPointY = Float.NaN;
@@ -200,11 +191,11 @@ public class LineChartRenderer implements ChartRenderer {
 			nextPointX = afterNextPointX;
 			nextPointY = afterNextPointY;
 		}
-		mLinePaint.setColor(line.getStyle().getColor());
+		mLinePaint.setColor(style.getColor());
+		mLinePaint.setStrokeWidth(Utils.dp2px(mContext, style.getLineWidth()));
 		canvas.drawPath(mLinePath, mLinePaint);
-
-		if (line.getStyle().isFilled()) {
-			drawArea(canvas);
+		if (style.isFilled()) {
+			drawArea(canvas, style);
 		}
 	}
 
@@ -212,18 +203,20 @@ public class LineChartRenderer implements ChartRenderer {
 	// implementing point styles.
 	private void drawPoints(Canvas canvas, Line line, int lineIndex, int mode) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
-		mPointAndPopupPaint.setColor(line.getStyle().getColor());
+		final LineStyle style = line.getStyle();
+		mPointPaint.setColor(style.getColor());
+		final int pointRadius = Utils.dp2px(mContext, style.getPointRadius());
 		int valueIndex = 0;
 		for (LinePoint linePoint : line.getPoints()) {
 			final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
 			final float rawValueY = chartCalculator.calculateRawY(linePoint.getY());
 			if (MODE_DRAW == mode) {
-				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointAndPopupPaint);
-				if (line.getStyle().hasAnnotations()) {
-					drawValuePopup(canvas, line.getStyle(), linePoint, rawValueX, rawValueY);
+				canvas.drawCircle(rawValueX, rawValueY, pointRadius, mPointPaint);
+				if (style.hasAnnotations()) {
+					drawValuePopup(canvas, style, linePoint, rawValueX, rawValueY);
 				}
 			} else if (MODE_HIGHLIGHT == mode) {
-				highlightPoint(canvas, line.getStyle(), linePoint, rawValueX, rawValueY, lineIndex, valueIndex);
+				highlightPoint(canvas, style, linePoint, rawValueX, rawValueY, lineIndex, valueIndex);
 			} else {
 				throw new IllegalStateException("Cannot process points in mode: " + mode);
 			}
@@ -240,21 +233,20 @@ public class LineChartRenderer implements ChartRenderer {
 	private void highlightPoint(Canvas canvas, LineStyle lineStyle, LinePoint linePoint, float rawValueX,
 			float rawValueY, int lineIndex, int valueIndex) {
 		if (mSelectedValue.selectedLine == lineIndex && mSelectedValue.selectedValue == valueIndex) {
-			canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mPointAndPopupPaint);
+			final int touchRadius = Utils.dp2px(mContext, lineStyle.getPointRadius() + DEFAULT_TOUCH_TOLLERANCE_DP);
+			canvas.drawCircle(rawValueX, rawValueY, touchRadius, mPointPaint);
 			if (lineStyle.hasAnnotations()) {
 				drawValuePopup(canvas, lineStyle, linePoint, rawValueX, rawValueY);
 			}
 		}
 	}
 
-	private void drawValuePopup(Canvas canvas, LineStyle lineStyle, LinePoint linePoint, float rawValueX,
-			float rawValueY) {
+	private void drawValuePopup(Canvas canvas, LineStyle style, LinePoint linePoint, float rawValueX, float rawValueY) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
-		mPointAndPopupPaint.setTextAlign(Align.LEFT);
-		mPointAndPopupPaint.setTextSize(Utils.sp2px(mContext, lineStyle.getTextSize()));
-		final String text = lineStyle.getLineValueFormatter().formatValue(linePoint);
+		final String text = style.getLineValueFormatter().formatValue(linePoint);
 		final Rect textBounds = new Rect();
-		mPointAndPopupPaint.getTextBounds(text, 0, text.length(), textBounds);
+		popupPaint.setTextSize(Utils.sp2px(mContext, style.getTextSize()));
+		popupPaint.getTextBounds(text, 0, text.length(), textBounds);
 		float left = rawValueX + mPopupMargin;
 		float right = rawValueX + mPopupMargin + textBounds.width() + mPopupMargin * 2;
 		float top = rawValueY - mPopupMargin - textBounds.height() - mPopupMargin * 2;
@@ -268,20 +260,19 @@ public class LineChartRenderer implements ChartRenderer {
 			right = rawValueX - mPopupMargin;
 		}
 		final RectF popup = new RectF(left, top, right, bottom);
-		canvas.drawRoundRect(popup, mPopupMargin, mPopupMargin, mPointAndPopupPaint);
-		final int color = mPointAndPopupPaint.getColor();
-		mPointAndPopupPaint.setColor(DEFAULT_TEXT_COLOR);
-		canvas.drawText(text, left + mPopupMargin, bottom - mPopupMargin, mPointAndPopupPaint);
-		mPointAndPopupPaint.setColor(color);
+		popupPaint.setColor(style.getColor());
+		canvas.drawRoundRect(popup, mPopupMargin, mPopupMargin, popupPaint);
+		popupPaint.setColor(style.getTextColor());
+		canvas.drawText(text, left + mPopupMargin, bottom - mPopupMargin, popupPaint);
 	}
 
-	private void drawArea(Canvas canvas) {
+	private void drawArea(Canvas canvas, LineStyle style) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
-		mLinePaint.setStyle(Paint.Style.FILL);
-		mLinePaint.setAlpha(DEFAULT_AREA_TRANSPARENCY);
 		mLinePath.lineTo(chartCalculator.mContentRect.right, chartCalculator.mContentRect.bottom);
 		mLinePath.lineTo(chartCalculator.mContentRect.left, chartCalculator.mContentRect.bottom);
 		mLinePath.close();
+		mLinePaint.setStyle(Paint.Style.FILL);
+		mLinePaint.setAlpha(style.getAreaTransparency());
 		canvas.drawPath(mLinePath, mLinePaint);
 		mLinePaint.setStyle(Paint.Style.STROKE);
 	}
