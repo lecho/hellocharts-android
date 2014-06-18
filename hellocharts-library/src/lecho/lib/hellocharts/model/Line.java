@@ -65,68 +65,76 @@ public class Line {
 			return color;
 		}
 
-		public void setColor(int color) {
+		public LineStyle setColor(int color) {
 			this.color = color;
+			return this;
 		}
 
 		public int getTextSize() {
 			return textSize;
 		}
 
-		public void setTextSize(int textSize) {
+		public LineStyle setTextSize(int textSize) {
 			this.textSize = textSize;
+			return this;
 		}
 
-		public boolean isHasPoints() {
+		public boolean hasPoints() {
 			return hasPoints;
 		}
 
-		public void setHasPoints(boolean hasPoints) {
+		public LineStyle setHasPoints(boolean hasPoints) {
 			this.hasPoints = hasPoints;
+			return this;
 		}
 
-		public boolean isHasLines() {
+		public boolean hasLines() {
 			return hasLines;
 		}
 
-		public void setHasLines(boolean hasLines) {
+		public LineStyle setHasLines(boolean hasLines) {
 			this.hasLines = hasLines;
+			return this;
 		}
 
-		public boolean isHasAnnotations() {
+		public boolean hasAnnotations() {
 			return hasAnnotations;
 		}
 
-		public void setHasAnnotations(boolean hasAnnotations) {
+		public LineStyle setHasAnnotations(boolean hasAnnotations) {
 			this.hasAnnotations = hasAnnotations;
+			return this;
 		}
 
 		public boolean isSmooth() {
 			return isSmooth;
 		}
 
-		public void setSmooth(boolean isSmooth) {
+		public LineStyle setSmooth(boolean isSmooth) {
 			this.isSmooth = isSmooth;
+			return this;
 		}
 
 		public boolean isFilled() {
 			return isFilled;
 		}
 
-		public void setFilled(boolean isFilled) {
+		public LineStyle setFilled(boolean isFilled) {
 			this.isFilled = isFilled;
+			return this;
 		}
 
 		public LineValueFormatter getLineValueFormatter() {
 			return lineValueFormatter;
 		}
 
-		public void setLineValueFormatter(LineValueFormatter lineValueFormatter) {
+		public LineStyle setLineValueFormatter(LineValueFormatter lineValueFormatter) {
 			if (null == lineValueFormatter) {
 				this.lineValueFormatter = new DefaultLineValueFormatter();
 			} else {
 				this.lineValueFormatter = lineValueFormatter;
 			}
+			return this;
 		}
 
 	}

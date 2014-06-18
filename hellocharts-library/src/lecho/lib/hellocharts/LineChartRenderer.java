@@ -64,14 +64,14 @@ public class LineChartRenderer implements ChartRenderer {
 		mLinePaint.setStrokeWidth(mLineWidth);
 		int lineIndex = 0;
 		for (Line line : data.lines) {
-			if (line.getStyle().isHasLines()) {
+			if (line.getStyle().hasLines()) {
 				if (line.getStyle().isSmooth()) {
 					drawSmoothPath(canvas, line);
 				} else {
 					drawPath(canvas, line);
 				}
 			}
-			if (line.getStyle().isHasPoints()) {
+			if (line.getStyle().hasPoints()) {
 				drawPoints(canvas, line, lineIndex, MODE_DRAW);
 			}
 			mLinePath.reset();
@@ -219,7 +219,7 @@ public class LineChartRenderer implements ChartRenderer {
 			final float rawValueY = chartCalculator.calculateRawY(linePoint.getY());
 			if (MODE_DRAW == mode) {
 				canvas.drawCircle(rawValueX, rawValueY, mPointRadius, mPointAndPopupPaint);
-				if (line.getStyle().isHasAnnotations()) {
+				if (line.getStyle().hasAnnotations()) {
 					drawValuePopup(canvas, line.getStyle(), linePoint, rawValueX, rawValueY);
 				}
 			} else if (MODE_HIGHLIGHT == mode) {
@@ -241,7 +241,7 @@ public class LineChartRenderer implements ChartRenderer {
 			float rawValueY, int lineIndex, int valueIndex) {
 		if (mSelectedValue.selectedLine == lineIndex && mSelectedValue.selectedValue == valueIndex) {
 			canvas.drawCircle(rawValueX, rawValueY, mPointPressedRadius, mPointAndPopupPaint);
-			if (lineStyle.isHasAnnotations()) {
+			if (lineStyle.hasAnnotations()) {
 				drawValuePopup(canvas, lineStyle, linePoint, rawValueX, rawValueY);
 			}
 		}
