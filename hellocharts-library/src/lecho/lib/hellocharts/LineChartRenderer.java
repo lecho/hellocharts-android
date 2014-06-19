@@ -13,18 +13,21 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.util.Log;
 
 public class LineChartRenderer implements ChartRenderer {
 	private static final float LINE_SMOOTHNES = 0.16f;
-	private static final int DEFAULT_POPUP_MARGIN_DP = 4;
+	private static final int DEFAULT_ANNOTATION_MARGIN_DP = 4;
 	public static final int DEFAULT_TOUCH_TOLLERANCE_DP = 4;
 	private static final int MODE_DRAW = 0;
 	private static final int MODE_HIGHLIGHT = 1;
-	private int mPopupMargin;
+	private int mAnnotationMargin;
 	private Path mLinePath = new Path();
 	private Paint mLinePaint = new Paint();
 	private Paint mPointPaint = new Paint();
-	private Paint popupPaint = new Paint();
+	private Paint annotationPaint = new Paint();
+	private RectF annotationRect = new RectF();
+	private Rect textBoundsRect = new Rect();
 	private Context mContext;
 	private LineChart mChart;
 	private SelectedValue mSelectedValue = new SelectedValue();
@@ -32,7 +35,7 @@ public class LineChartRenderer implements ChartRenderer {
 	public LineChartRenderer(Context context, LineChart chart) {
 		mContext = context;
 		mChart = chart;
-		mPopupMargin = Utils.dp2px(context, DEFAULT_POPUP_MARGIN_DP);
+		mAnnotationMargin = Utils.dp2px(context, DEFAULT_ANNOTATION_MARGIN_DP);
 
 		mLinePaint.setAntiAlias(true);
 		mLinePaint.setStyle(Paint.Style.STROKE);
@@ -40,10 +43,10 @@ public class LineChartRenderer implements ChartRenderer {
 		mPointPaint.setAntiAlias(true);
 		mPointPaint.setStyle(Paint.Style.FILL);
 
-		popupPaint.setAntiAlias(true);
-		popupPaint.setStyle(Paint.Style.FILL);
-		popupPaint.setTextAlign(Align.LEFT);
-		popupPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+		annotationPaint.setAntiAlias(true);
+		annotationPaint.setStyle(Paint.Style.FILL);
+		annotationPaint.setTextAlign(Align.LEFT);
+		annotationPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
 	}
 
 	@Override
@@ -213,7 +216,7 @@ public class LineChartRenderer implements ChartRenderer {
 			if (MODE_DRAW == mode) {
 				canvas.drawCircle(rawValueX, rawValueY, pointRadius, mPointPaint);
 				if (style.hasAnnotations()) {
-					drawValuePopup(canvas, style, linePoint, rawValueX, rawValueY);
+					drawAnnotation(canvas, style, linePoint, rawValueX, rawValueY);
 				}
 			} else if (MODE_HIGHLIGHT == mode) {
 				highlightPoint(canvas, style, linePoint, rawValueX, rawValueY, lineIndex, valueIndex);
@@ -236,34 +239,38 @@ public class LineChartRenderer implements ChartRenderer {
 			final int touchRadius = Utils.dp2px(mContext, lineStyle.getPointRadius() + DEFAULT_TOUCH_TOLLERANCE_DP);
 			canvas.drawCircle(rawValueX, rawValueY, touchRadius, mPointPaint);
 			if (lineStyle.hasAnnotations()) {
-				drawValuePopup(canvas, lineStyle, linePoint, rawValueX, rawValueY);
+				drawAnnotation(canvas, lineStyle, linePoint, rawValueX, rawValueY);
 			}
 		}
 	}
 
-	private void drawValuePopup(Canvas canvas, LineStyle style, LinePoint linePoint, float rawValueX, float rawValueY) {
+	private void drawAnnotation(Canvas canvas, LineStyle style, LinePoint linePoint, float rawValueX, float rawValueY) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		final float offset = Utils.dp2px(mContext, style.getPointRadius());
 		final String text = style.getLineValueFormatter().formatValue(linePoint);
-		final Rect textBounds = new Rect();
-		popupPaint.setTextSize(Utils.sp2px(mContext, style.getTextSize()));
-		popupPaint.getTextBounds(text, 0, text.length(), textBounds);
-		float left = rawValueX + mPopupMargin;
-		float right = rawValueX + mPopupMargin + textBounds.width() + mPopupMargin * 2;
-		float top = rawValueY - mPopupMargin - textBounds.height() - mPopupMargin * 2;
-		float bottom = rawValueY - mPopupMargin;
+		annotationPaint.setTextSize(Utils.sp2px(mContext, style.getTextSize()));
+		annotationPaint.getTextBounds(text, 0, text.length(), textBoundsRect);
+		float left = rawValueX - textBoundsRect.width() / 2 - mAnnotationMargin;
+		float right = rawValueX + textBoundsRect.width() / 2 + mAnnotationMargin;
+		float top = rawValueY - offset - textBoundsRect.height() - mAnnotationMargin * 2;
+		float bottom = rawValueY - offset;
 		if (top < chartCalculator.mContentRect.top) {
-			top = rawValueY + mPopupMargin;
-			bottom = rawValueY + mPopupMargin + textBounds.height() + mPopupMargin * 2;
+			top = rawValueY + offset;
+			bottom = rawValueY + offset + textBoundsRect.height() + mAnnotationMargin * 2;
+		}
+		if (right < chartCalculator.mContentRect.left) {
+			left = rawValueX;
+			right = rawValueX + textBoundsRect.width() + mAnnotationMargin * 2;
 		}
 		if (right > chartCalculator.mContentRect.right) {
-			left = rawValueX - mPopupMargin - textBounds.width() - mPopupMargin * 2;
-			right = rawValueX - mPopupMargin;
+			left = rawValueX - textBoundsRect.width() - mAnnotationMargin * 2;
+			right = rawValueX;
 		}
-		final RectF popup = new RectF(left, top, right, bottom);
-		popupPaint.setColor(style.getColor());
-		canvas.drawRoundRect(popup, mPopupMargin, mPopupMargin, popupPaint);
-		popupPaint.setColor(style.getTextColor());
-		canvas.drawText(text, left + mPopupMargin, bottom - mPopupMargin, popupPaint);
+		annotationRect.set(left, top, right, bottom);
+		annotationPaint.setColor(style.getColor());
+		canvas.drawRoundRect(annotationRect, mAnnotationMargin, mAnnotationMargin, annotationPaint);
+		annotationPaint.setColor(style.getTextColor());
+		canvas.drawText(text, left + mAnnotationMargin, bottom - mAnnotationMargin, annotationPaint);
 	}
 
 	private void drawArea(Canvas canvas, LineStyle style) {
