@@ -4,6 +4,7 @@ import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.Line.LineStyle;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.LinePoint;
+import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.utils.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -85,8 +86,8 @@ public class LineChartRenderer implements ChartRenderer {
 				final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
 				final float rawValueY = chartCalculator.calculateRawY(linePoint.getY());
 				if (isInArea(rawValueX, rawValueY, touchX, touchY, touchRadius)) {
-					mSelectedValue.selectedLine = lineIndex;
-					mSelectedValue.selectedValue = valueIndex;
+					mSelectedValue.firstIndex = lineIndex;
+					mSelectedValue.secondIndex = valueIndex;
 				}
 				++valueIndex;
 			}
@@ -108,8 +109,11 @@ public class LineChartRenderer implements ChartRenderer {
 
 	@Override
 	public void callTouchListener() {
-		// TODO Auto-generated method stub
+		mChart.callTouchListener(mSelectedValue);
+	}
 
+	public SelectedValue getSelectedValue() {
+		return mSelectedValue;
 	}
 
 	private void drawPath(Canvas canvas, final Line line) {
@@ -233,14 +237,14 @@ public class LineChartRenderer implements ChartRenderer {
 	}
 
 	private void highlightPoints(Canvas canvas) {
-		int lineIndex = mSelectedValue.selectedLine;
+		int lineIndex = mSelectedValue.firstIndex;
 		Line line = mChart.getData().lines.get(lineIndex);
 		drawPoints(canvas, line, lineIndex, MODE_HIGHLIGHT);
 	}
 
 	private void highlightPoint(Canvas canvas, LineStyle lineStyle, LinePoint linePoint, float rawValueX,
 			float rawValueY, int lineIndex, int valueIndex) {
-		if (mSelectedValue.selectedLine == lineIndex && mSelectedValue.selectedValue == valueIndex) {
+		if (mSelectedValue.firstIndex == lineIndex && mSelectedValue.secondIndex == valueIndex) {
 			final int touchRadius = Utils.dp2px(mContext, lineStyle.getPointRadius() + DEFAULT_TOUCH_TOLLERANCE_DP);
 			canvas.drawCircle(rawValueX, rawValueY, touchRadius, mPointPaint);
 			if (lineStyle.hasAnnotations()) {
@@ -293,29 +297,6 @@ public class LineChartRenderer implements ChartRenderer {
 		float diffX = touchX - x;
 		float diffY = touchY - y;
 		return Math.pow(diffX, 2) + Math.pow(diffY, 2) <= 2 * Math.pow(radius, 2);
-	}
-
-	private static class SelectedValue {
-		public int selectedLine;
-		public int selectedValue;
-
-		public SelectedValue() {
-			clear();
-		}
-
-		public void clear() {
-			this.selectedLine = Integer.MIN_VALUE;
-			this.selectedLine = Integer.MIN_VALUE;
-		}
-
-		public boolean isSet() {
-			if (selectedLine >= 0 && selectedValue >= 0) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-
 	}
 
 }

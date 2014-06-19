@@ -5,6 +5,7 @@ import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
 import lecho.lib.hellocharts.gestures.ChartTouchHandler;
 import lecho.lib.hellocharts.model.BarChartData;
+import lecho.lib.hellocharts.model.SelectedValue;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.os.Build;
@@ -147,7 +148,7 @@ public class BarChart extends AbstractChart {
 	}
 
 	@Override
-	public void callTouchListener() {
+	public void callTouchListener(SelectedValue selectedValue) {
 		// TODO Auto-generated method stub
 
 	}

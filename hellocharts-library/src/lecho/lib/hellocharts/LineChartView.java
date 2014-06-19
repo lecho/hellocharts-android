@@ -7,6 +7,7 @@ import lecho.lib.hellocharts.gestures.ChartTouchHandler;
 import lecho.lib.hellocharts.gestures.ChartZoomer;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.LinePoint;
+import lecho.lib.hellocharts.model.SelectedValue;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -140,9 +141,9 @@ public class LineChartView extends AbstractChart {
 	}
 
 	@Override
-	public void callTouchListener() {
-		// TODO Auto-generated method stub
-
+	public void callTouchListener(SelectedValue selectedValue) {
+		LinePoint point = mData.lines.get(selectedValue.firstIndex).getPoints().get(selectedValue.secondIndex);
+		style.getTouchListener().onPointTouched(selectedValue.firstIndex, selectedValue.secondIndex, point);
 	}
 
 	// public void animateSeries(int index, List<lecho.lib.hellocharts.model.Point> points) {
@@ -228,7 +229,7 @@ public class LineChartView extends AbstractChart {
 
 			@Override
 			public void onPointTouched(int selectedLine, int selectedValue, LinePoint point) {
-				// Do nothing
+				Log.e(TAG, "touched: "+ selectedLine + " " + selectedValue + " " + point.getY());
 			}
 		}
 	}

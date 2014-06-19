@@ -2,6 +2,7 @@ package lecho.lib.hellocharts;
 
 import lecho.lib.hellocharts.gestures.ChartTouchHandler;
 import lecho.lib.hellocharts.model.ChartData;
+import lecho.lib.hellocharts.model.SelectedValue;
 
 public interface Chart {
 
@@ -17,5 +18,5 @@ public interface Chart {
 
 	public void animationUpdate(float scale);
 
-	public void callTouchListener();
+	public void callTouchListener(SelectedValue selectedValue);
 }

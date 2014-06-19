@@ -3,7 +3,6 @@ package lecho.lib.hellocharts.gestures;
 import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.ChartRenderer;
-import lecho.lib.hellocharts.OnPointClickListener;
 import android.content.Context;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -47,8 +46,8 @@ public class ChartTouchHandler {
 			break;
 		case MotionEvent.ACTION_UP:
 			if (chartRenderer.isTouched()) {
-				chartRenderer.clearTouch();
 				chartRenderer.callTouchListener();
+				chartRenderer.clearTouch();
 				needInvalidate = true;
 			}
 			break;
@@ -65,6 +64,7 @@ public class ChartTouchHandler {
 		case MotionEvent.ACTION_CANCEL:
 			if (chartRenderer.isTouched()) {
 				chartRenderer.clearTouch();
+				needInvalidate = true;
 			}
 			break;
 		}
