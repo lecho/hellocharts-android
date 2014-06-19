@@ -13,15 +13,14 @@ import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.util.Log;
 
 public class LineChartRenderer implements ChartRenderer {
+	public static final int DEFAULT_TOUCH_TOLLERANCE_DP = 4;
 	private static final float LINE_SMOOTHNES = 0.16f;
 	private static final int DEFAULT_ANNOTATION_MARGIN_DP = 4;
-	public static final int DEFAULT_TOUCH_TOLLERANCE_DP = 4;
 	private static final int MODE_DRAW = 0;
 	private static final int MODE_HIGHLIGHT = 1;
-	private int mAnnotationMargin;
+	private final int mAnnotationMargin;
 	private Path mLinePath = new Path();
 	private Paint mLinePaint = new Paint();
 	private Paint mPointPaint = new Paint();
@@ -29,10 +28,10 @@ public class LineChartRenderer implements ChartRenderer {
 	private RectF annotationRect = new RectF();
 	private Rect textBoundsRect = new Rect();
 	private Context mContext;
-	private LineChart mChart;
+	private LineChartView mChart;
 	private SelectedValue mSelectedValue = new SelectedValue();
 
-	public LineChartRenderer(Context context, LineChart chart) {
+	public LineChartRenderer(Context context, LineChartView chart) {
 		mContext = context;
 		mChart = chart;
 		mAnnotationMargin = Utils.dp2px(context, DEFAULT_ANNOTATION_MARGIN_DP);
@@ -104,6 +103,12 @@ public class LineChartRenderer implements ChartRenderer {
 	@Override
 	public void clearTouch() {
 		mSelectedValue.clear();
+
+	}
+
+	@Override
+	public void callTouchListener() {
+		// TODO Auto-generated method stub
 
 	}
 

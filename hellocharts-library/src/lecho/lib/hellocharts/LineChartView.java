@@ -15,21 +15,21 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 
-public class LineChart extends AbstractChart {
+public class LineChartView extends AbstractChart {
 	private static final String TAG = "LineChart";
 	private LineChartData mData;
 	private boolean mAxesOn = true;
 	private ChartAnimator mAnimator;
 
-	public LineChart(Context context) {
+	public LineChartView(Context context) {
 		this(context, null, 0);
 	}
 
-	public LineChart(Context context, AttributeSet attrs) {
+	public LineChartView(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
 	}
 
-	public LineChart(Context context, AttributeSet attrs, int defStyle) {
+	public LineChartView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		initAttributes();
 		initAnimatiors();
@@ -124,7 +124,7 @@ public class LineChart extends AbstractChart {
 		mChartCalculator.calculateAxesMargins(getContext());
 		mChartCalculator.calculateViewport();
 		mChartCalculator.calculateContentArea(this);
-		ViewCompat.postInvalidateOnAnimation(LineChart.this);
+		ViewCompat.postInvalidateOnAnimation(LineChartView.this);
 	}
 
 	public LineChartData getData() {
@@ -137,7 +137,7 @@ public class LineChart extends AbstractChart {
 		}
 		mData.calculateBoundaries();
 		mChartCalculator.calculateViewport();
-		ViewCompat.postInvalidateOnAnimation(LineChart.this);
+		ViewCompat.postInvalidateOnAnimation(LineChartView.this);
 	}
 
 	// public void animateSeries(int index, List<lecho.lib.hellocharts.model.Point> points) {

@@ -85,6 +85,12 @@ public class BarChartRenderer implements ChartRenderer {
 		mSelectedValue.clear();
 	}
 
+	@Override
+	public void callTouchListener() {
+		// TODO Auto-generated method stub
+
+	}
+
 	private void drawBarsForSubbars(Canvas canvas) {
 		final BarChartData data = mChart.getData();
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();

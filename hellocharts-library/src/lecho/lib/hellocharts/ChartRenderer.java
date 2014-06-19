@@ -11,5 +11,7 @@ public interface ChartRenderer {
 	public boolean isTouched();
 
 	public void clearTouch();
+	
+	public void callTouchListener();
 
 }
