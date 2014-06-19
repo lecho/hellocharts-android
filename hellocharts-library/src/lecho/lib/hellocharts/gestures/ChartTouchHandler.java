@@ -48,8 +48,8 @@ public class ChartTouchHandler {
 		case MotionEvent.ACTION_UP:
 			if (chartRenderer.isTouched()) {
 				chartRenderer.clearTouch();
+				chartRenderer.callTouchListener();
 				needInvalidate = true;
-				// TODO: call touchListener!!!
 			}
 			break;
 		case MotionEvent.ACTION_MOVE:
@@ -104,15 +104,5 @@ public class ChartTouchHandler {
 			mChartScroller.fling((int) -velocityX, (int) -velocityY, mChart.getChartCalculator());
 			return true;
 		}
-	}
-
-	// Just empty listener to avoid NPE checks.
-	private static class DummyOnPointListener implements OnPointClickListener {
-
-		@Override
-		public void onPointClick(int selectedSeriesIndex, int selectedValueIndex, float x, float y) {
-			// Do nothing.
-		}
-
 	}
 }

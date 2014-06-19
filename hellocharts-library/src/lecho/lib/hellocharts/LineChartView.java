@@ -4,6 +4,7 @@ import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
 import lecho.lib.hellocharts.gestures.ChartTouchHandler;
+import lecho.lib.hellocharts.gestures.ChartZoomer;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.LinePoint;
 import android.annotation.SuppressLint;
@@ -18,8 +19,8 @@ import android.view.MotionEvent;
 public class LineChartView extends AbstractChart {
 	private static final String TAG = "LineChart";
 	private LineChartData mData;
-	private boolean mAxesOn = true;
 	private ChartAnimator mAnimator;
+	private LineChartStyle style = new LineChartStyle();
 
 	public LineChartView(Context context) {
 		this(context, null, 0);
@@ -88,10 +89,8 @@ public class LineChartView extends AbstractChart {
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
 		super.onDraw(canvas);
-		if (mAxesOn) {
-			mAxesRenderer.drawAxisX(canvas);
-			mAxesRenderer.drawAxisY(canvas);
-		}
+		mAxesRenderer.drawAxisX(canvas);
+		mAxesRenderer.drawAxisY(canvas);
 		int clipRestoreCount = canvas.save();
 		mChartCalculator.calculateClippingArea();// only if zoom is enabled
 		canvas.clipRect(mChartCalculator.mClippingRect);
@@ -140,6 +139,12 @@ public class LineChartView extends AbstractChart {
 		ViewCompat.postInvalidateOnAnimation(LineChartView.this);
 	}
 
+	@Override
+	public void callTouchListener() {
+		// TODO Auto-generated method stub
+
+	}
+
 	// public void animateSeries(int index, List<lecho.lib.hellocharts.model.Point> points) {
 	// mAnimator.cancelAnimation();
 	// mData.updateLineTarget(index, points);
@@ -151,12 +156,80 @@ public class LineChartView extends AbstractChart {
 	// ViewCompat.postInvalidateOnAnimation(LineChart.this);
 	// }
 
-	public void setOnPointClickListener(OnPointClickListener listener) {
-		// if (null == listener) {
-		// mOnPointClickListener = new DummyOnPointListener();
-		// } else {
-		// mOnPointClickListener = listener;
-		// }s
+	public LineChartStyle getStyle() {
+		return style;
 	}
 
+	public void setStyle(LineChartStyle style) {
+		if (null == style) {
+			this.style = new LineChartStyle();
+		} else {
+			this.style = style;
+		}
+	}
+
+	public interface LineChartTouchListener {
+		public void onPointTouched(int selectedLine, int selectedValue, LinePoint point);
+	}
+
+	public static class LineChartStyle {
+		private boolean isInteractive = true;
+		private boolean isZoomEnable = true;
+		private boolean isTouchEnable = true;
+		private int zoomMode = ChartZoomer.ZOOM_HORIZONTAL_AND_VERTICAL;
+		private LineChartTouchListener touchListener = new DummyTouchListener();
+
+		public boolean isInteractive() {
+			return isInteractive;
+		}
+
+		public LineChartStyle setInteractive(boolean isInteractive) {
+			this.isInteractive = isInteractive;
+			return this;
+		}
+
+		public boolean isZoomEnable() {
+			return isZoomEnable;
+		}
+
+		public LineChartStyle setZoomEnable(boolean isZoomEnable) {
+			this.isZoomEnable = isZoomEnable;
+			return this;
+		}
+
+		public boolean isTouchEnable() {
+			return isTouchEnable;
+		}
+
+		public LineChartStyle setTouchEnable(boolean isTouchEnable) {
+			this.isTouchEnable = isTouchEnable;
+			return this;
+		}
+
+		public int getZoomMode() {
+			return zoomMode;
+		}
+
+		public LineChartStyle setZoomMode(int zoomMode) {
+			this.zoomMode = zoomMode;
+			return this;
+		}
+
+		public LineChartTouchListener getTouchListener() {
+			return touchListener;
+		}
+
+		public LineChartStyle setTouchListener(LineChartTouchListener touchListener) {
+			this.touchListener = touchListener;
+			return this;
+		}
+
+		private static class DummyTouchListener implements LineChartTouchListener {
+
+			@Override
+			public void onPointTouched(int selectedLine, int selectedValue, LinePoint point) {
+				// Do nothing
+			}
+		}
+	}
 }

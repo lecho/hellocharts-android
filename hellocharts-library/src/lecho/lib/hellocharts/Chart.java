@@ -17,4 +17,5 @@ public interface Chart {
 
 	public void animationUpdate(float scale);
 
+	public void callTouchListener();
 }

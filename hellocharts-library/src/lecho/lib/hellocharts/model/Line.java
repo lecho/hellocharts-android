@@ -44,14 +44,6 @@ public class Line {
 		public String formatValue(LinePoint linePoint);
 	}
 
-	public static class DefaultLineValueFormatter implements LineValueFormatter {
-
-		@Override
-		public String formatValue(LinePoint linePoint) {
-			return String.format(DEFAULT_LINE_VALUE_FORMAT, linePoint.getY());
-		}
-	}
-
 	public static class LineStyle {
 		public static final int DEFAULT_LINE_VALUE_TEXT_SIZE_SP = 10;
 		public static final int DEFAULT_LINE_WIDTH_DP = 3;
@@ -182,6 +174,13 @@ public class Line {
 			return this;
 		}
 
+		public static class DefaultLineValueFormatter implements LineValueFormatter {
+
+			@Override
+			public String formatValue(LinePoint linePoint) {
+				return String.format(DEFAULT_LINE_VALUE_FORMAT, linePoint.getY());
+			}
+		}
 	}
 
 }

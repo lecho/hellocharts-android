@@ -146,4 +146,10 @@ public class BarChart extends AbstractChart {
 		// }s
 	}
 
+	@Override
+	public void callTouchListener() {
+		// TODO Auto-generated method stub
+
+	}
+
 }
