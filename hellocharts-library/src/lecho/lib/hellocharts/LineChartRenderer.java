@@ -267,7 +267,7 @@ public class LineChartRenderer implements ChartRenderer {
 			top = rawValueY + offset;
 			bottom = rawValueY + offset + textBoundsRect.height() + mAnnotationMargin * 2;
 		}
-		if (right < chartCalculator.mContentRect.left) {
+		if (left < chartCalculator.mContentRect.left) {
 			left = rawValueX;
 			right = rawValueX + textBoundsRect.width() + mAnnotationMargin * 2;
 		}
