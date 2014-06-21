@@ -1,10 +1,12 @@
 package lecho.lib.hellocharts;
 
+import lecho.lib.hellocharts.LineChartView.LineChartOnValueTouchListener;
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
 import lecho.lib.hellocharts.gestures.DefaultTouchHandler;
 import lecho.lib.hellocharts.model.BarChartData;
+import lecho.lib.hellocharts.model.LinePoint;
 import lecho.lib.hellocharts.model.SelectedValue;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -17,8 +19,8 @@ import android.view.MotionEvent;
 public class BarChart extends AbstractChart {
 	private static final String TAG = "BarChart";
 	private BarChartData mData;
-	private boolean mAxesOn = true;
 	private ChartAnimator mAnimator;
+	private BarChartOnValueTouchListener onValueTouchListener = new DummyOnValueTouchListener();
 
 	public BarChart(Context context) {
 		this(context, null, 0);
@@ -78,10 +80,8 @@ public class BarChart extends AbstractChart {
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
 		super.onDraw(canvas);
-		if (mAxesOn) {
-			mAxesRenderer.drawAxisX(canvas);
-			mAxesRenderer.drawAxisY(canvas);
-		}
+		mAxesRenderer.drawAxisX(canvas);
+		mAxesRenderer.drawAxisY(canvas);
 		int clipRestoreCount = canvas.save();
 		mChartCalculator.calculateClippingArea();// only if zoom is enabled
 		canvas.clipRect(mChartCalculator.mClippingRect);
@@ -139,18 +139,34 @@ public class BarChart extends AbstractChart {
 	// ViewCompat.postInvalidateOnAnimation(BarChart.this);
 	// }
 
-	public void setOnPointClickListener(OnPointClickListener listener) {
-		// if (null == listener) {
-		// mOnPointClickListener = new DummyOnPointListener();
-		// } else {
-		// mOnPointClickListener = listener;
-		// }s
-	}
-
 	@Override
 	public void callTouchListener(SelectedValue selectedValue) {
-		// TODO Auto-generated method stub
+		// TODO
 
+	}
+
+	public BarChartOnValueTouchListener getOnValueTouchListener() {
+		return onValueTouchListener;
+	}
+
+	public void setOnValueTouchListener(BarChartOnValueTouchListener touchListener) {
+		if (null == touchListener) {
+			this.onValueTouchListener = new DummyOnValueTouchListener();
+		} else {
+			this.onValueTouchListener = touchListener;
+		}
+	}
+
+	public interface BarChartOnValueTouchListener {
+		public void onValueTouched(int selectedLine, int selectedValue, LinePoint point);
+	}
+
+	private static class DummyOnValueTouchListener implements BarChartOnValueTouchListener {
+
+		@Override
+		public void onValueTouched(int selectedLine, int selectedValue, LinePoint point) {
+			// do nothing
+		}
 	}
 
 }
