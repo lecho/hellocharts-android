@@ -1,9 +1,9 @@
 package lecho.lib.hellocharts;
 
+import lecho.lib.hellocharts.gestures.ChartTouchHandler;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
-import lecho.lib.hellocharts.gestures.ChartTouchHandler;
 
 public abstract class AbstractChart extends View implements Chart {
 	protected ChartCalculator mChartCalculator;

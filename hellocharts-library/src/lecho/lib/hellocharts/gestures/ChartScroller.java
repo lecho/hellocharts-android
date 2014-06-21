@@ -16,12 +16,13 @@ public class ChartScroller {
 		mScroller = ScrollerCompat.create(context);
 	}
 
-	public void startScroll(ChartCalculator chartCalculator) {
+	public boolean startScroll(ChartCalculator chartCalculator) {
 		mScroller.abortAnimation();
 		mScrollerStartViewport.set(chartCalculator.mCurrentViewport);
+		return true;
 	}
 
-	public void scroll(float distanceX, float distanceY, ChartCalculator chartCalculator) {
+	public boolean scroll(float distanceX, float distanceY, ChartCalculator chartCalculator) {
 		// Scrolling uses math based on the viewport (as opposed to math using pixels).
 		/**
 		 * Pixel offset is the offset in screen pixels, while viewport offset is the offset within the current viewport.
@@ -36,6 +37,7 @@ public class ChartScroller {
 		chartCalculator.computeScrollSurfaceSize(mSurfaceSizeBuffer);
 		chartCalculator.setViewportBottomLeft(chartCalculator.mCurrentViewport.left + viewportOffsetX,
 				chartCalculator.mCurrentViewport.bottom + viewportOffsetY);
+		return true;
 	}
 
 	public boolean computeScrollOffset(ChartCalculator chartCalculator) {
@@ -53,7 +55,7 @@ public class ChartScroller {
 		return false;
 	}
 
-	public void fling(int velocityX, int velocityY, ChartCalculator chartCalculator) {
+	public boolean fling(int velocityX, int velocityY, ChartCalculator chartCalculator) {
 		// Flings use math in pixels (as opposed to math based on the viewport).
 		chartCalculator.computeScrollSurfaceSize(mSurfaceSizeBuffer);
 		mScrollerStartViewport.set(chartCalculator.mCurrentViewport);
@@ -68,6 +70,7 @@ public class ChartScroller {
 				mSurfaceSizeBuffer.x - chartCalculator.mContentRect.width(), 0, mSurfaceSizeBuffer.y
 						- chartCalculator.mContentRect.height(), chartCalculator.mContentRect.width() / 2,
 				chartCalculator.mContentRect.height() / 2);
+		return true;
 	}
 
 }

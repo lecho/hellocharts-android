@@ -3,8 +3,8 @@ package lecho.lib.hellocharts;
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
-import lecho.lib.hellocharts.gestures.ChartTouchHandler;
-import lecho.lib.hellocharts.gestures.ChartZoomer;
+import lecho.lib.hellocharts.gestures.DefaultTouchHandler;
+import lecho.lib.hellocharts.gestures.ZoomMode;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.LinePoint;
 import lecho.lib.hellocharts.model.SelectedValue;
@@ -38,7 +38,7 @@ public class LineChartView extends AbstractChart {
 		mChartCalculator = new ChartCalculator(context, this);
 		mAxesRenderer = new AxesRenderer(context, this);
 		mChartRenderer = new LineChartRenderer(context, this);
-		mTouchHandler = new ChartTouchHandler(context, this);
+		mTouchHandler = new DefaultTouchHandler(context, this);
 	}
 
 	@SuppressLint("NewApi")
@@ -177,7 +177,7 @@ public class LineChartView extends AbstractChart {
 		private boolean isInteractive = true;
 		private boolean isZoomEnable = true;
 		private boolean isTouchEnable = true;
-		private int zoomMode = ChartZoomer.ZOOM_HORIZONTAL_AND_VERTICAL;
+		private ZoomMode zoomMode = ZoomMode.HORIZONTAL_AND_VERTICAL;
 		private LineChartTouchListener touchListener = new DummyTouchListener();
 
 		public boolean isInteractive() {
@@ -207,11 +207,11 @@ public class LineChartView extends AbstractChart {
 			return this;
 		}
 
-		public int getZoomMode() {
+		public ZoomMode getZoomMode() {
 			return zoomMode;
 		}
 
-		public LineChartStyle setZoomMode(int zoomMode) {
+		public LineChartStyle setZoomMode(ZoomMode zoomMode) {
 			this.zoomMode = zoomMode;
 			return this;
 		}
@@ -229,7 +229,7 @@ public class LineChartView extends AbstractChart {
 
 			@Override
 			public void onPointTouched(int selectedLine, int selectedValue, LinePoint point) {
-				Log.e(TAG, "touched: "+ selectedLine + " " + selectedValue + " " + point.getY());
+				Log.e(TAG, "touched: " + selectedLine + " " + selectedValue + " " + point.getY());
 			}
 		}
 	}

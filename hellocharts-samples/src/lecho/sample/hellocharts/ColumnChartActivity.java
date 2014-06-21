@@ -71,19 +71,19 @@ public class ColumnChartActivity extends ActionBarActivity {
 			// l1.hasValuesPopups = true;
 			// Bar l2 = new Bar(s2);
 			List<Bar> bars = new ArrayList<Bar>();
-			for (int i = 0; i < 4; ++i) {
+			for (int i = 0; i < 8; ++i) {
 				bars.add(Utils.generateBar());
 			}
 			data.setBars(bars);
 			Axis axisX = new Axis();
-			axisX.values = Utils.generateAxis(0.0f, 100, 1.0f);
+			axisX.values = Utils.generateAxis(0.0f, 30.0f, 1.0f);
 			axisX.name = "Axis X";
 			axisX.textSize = 14;
 			axisX.color = Color.parseColor("#FFBB33");
 			data.setAxisX(axisX);
 
 			Axis axisY = new Axis();
-			axisY.values = Utils.generateAxis(-100.0f, 100.0f, 5.0f);
+			axisY.values = Utils.generateAxis(0.0f, 30.0f, 5.0f);
 			axisY.name = "Axis Y";
 			axisY.textSize = 14;
 			axisY.color = Color.parseColor("#99CC00");

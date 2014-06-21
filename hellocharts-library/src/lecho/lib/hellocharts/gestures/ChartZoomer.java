@@ -8,27 +8,25 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
 public class ChartZoomer {
-	public static final int ZOOM_HORIZONTAL_AND_VERTICAL = 0;
-	public static final int ZOOM_HORIZONTAL = 1;
-	public static final int ZOOM_VERTICAL = 2;
 	private static final float ZOOM_AMOUNT = 0.25f;
 	private ZoomerCompat mZoomer;
-	private int mZoomType = ZOOM_HORIZONTAL_AND_VERTICAL;
+	private ZoomMode mZoomMode;
 	private PointF mZoomFocalPoint = new PointF();// Used for double tap zoom
 	private PointF mViewportFocus = new PointF();
 	public RectF mScrollerStartViewport = new RectF(); // Used only for zooms and flings
 
-	public ChartZoomer(Context context, int zoomType) {
+	public ChartZoomer(Context context, ZoomMode zoomType) {
 		mZoomer = new ZoomerCompat(context);
-		mZoomType = zoomType;
+		mZoomMode = zoomType;
 	}
 
-	public void startZoom(MotionEvent e, ChartCalculator chartCalculator) {
+	public boolean startZoom(MotionEvent e, ChartCalculator chartCalculator) {
 		mZoomer.forceFinished(true);
 		mScrollerStartViewport.set(chartCalculator.mCurrentViewport);
 		if (chartCalculator.rawPixelsToDataPoint(e.getX(), e.getY(), mZoomFocalPoint)) {
 			mZoomer.startZoom(ZOOM_AMOUNT);
 		}
+		return true;
 	}
 
 	public boolean computeZoom(ChartCalculator chartCalculator) {
@@ -52,7 +50,7 @@ public class ChartZoomer {
 		return false;
 	}
 
-	public void scale(ScaleGestureDetector detector, ChartCalculator chartCalculator) {
+	public boolean scale(ScaleGestureDetector detector, ChartCalculator chartCalculator) {
 		/**
 		 * Smaller viewport means bigger zoom so for zoomIn scale should have value <1, for zoomOout >1
 		 */
@@ -70,18 +68,26 @@ public class ChartZoomer {
 		float right = chartCalculator.mCurrentViewport.left + newWidth;
 		float bottom = chartCalculator.mCurrentViewport.top + newHeight;
 		setCurrentViewport(chartCalculator, left, top, right, bottom);
+		return true;
 	}
 
 	private void setCurrentViewport(ChartCalculator chartCalculator, float left, float top, float right, float bottom) {
-		if (mZoomType == ZOOM_HORIZONTAL_AND_VERTICAL || mZoomType == ZOOM_HORIZONTAL) {
+		if (mZoomMode.equals(ZoomMode.HORIZONTAL_AND_VERTICAL) || mZoomMode.equals(ZoomMode.HORIZONTAL)) {
 			chartCalculator.mCurrentViewport.left = left;
 			chartCalculator.mCurrentViewport.right = right;
 		}
-		if (mZoomType == ZOOM_HORIZONTAL_AND_VERTICAL || mZoomType == ZOOM_VERTICAL) {
+		if (mZoomMode.equals(ZoomMode.HORIZONTAL_AND_VERTICAL) || mZoomMode.equals(ZoomMode.VERTICAL)) {
 			chartCalculator.mCurrentViewport.top = top;
 			chartCalculator.mCurrentViewport.bottom = bottom;
 		}
 		chartCalculator.constrainViewport();
 	}
 
+	public ZoomMode getZoomMode() {
+		return mZoomMode;
+	}
+
+	public void setZoomMode(ZoomMode zoomMode) {
+		this.mZoomMode = zoomMode;
+	}
 }

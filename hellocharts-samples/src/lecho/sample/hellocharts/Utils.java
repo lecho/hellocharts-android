@@ -53,7 +53,7 @@ public class Utils {
 	}
 
 	public static Bar generateBar() {
-		List<ValueWithColor> s1 = generateValues(3);
+		List<ValueWithColor> s1 = generateValues(1);
 		Bar l1 = new Bar(s1);
 		l1.hasValuesPopups = false;
 		return l1;

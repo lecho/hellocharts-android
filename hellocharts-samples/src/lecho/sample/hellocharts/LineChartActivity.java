@@ -3,7 +3,7 @@ package lecho.sample.hellocharts;
 import java.util.ArrayList;
 import java.util.List;
 
-import lecho.lib.hellocharts.LineChart;
+import lecho.lib.hellocharts.LineChartView;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
@@ -65,20 +65,18 @@ public class LineChartActivity extends ActionBarActivity {
 			View rootView = inflater.inflate(R.layout.fragment_line_chart, container, false);
 			LinearLayout layout = (LinearLayout) rootView.findViewById(R.id.layout);
 
-			LineChart chart = new LineChart(getActivity());
+			LineChartView chart = new LineChartView(getActivity());
 			final LineChartData data = new LineChartData();
 			List<LinePoint> s1 = Utils.generatePoints(NUM_OF_VALUES, 1.0f);
 			List<LinePoint> s2 = Utils.generatePoints(NUM_OF_VALUES, 1.0f);
 			Line l1 = new Line(s1);
 			l1.getStyle().setColor(Color.parseColor("#FFBB33"));
-			l1.getStyle().setFilled(true);
+			l1.getStyle().setFilled(false);
 			l1.getStyle().setHasLines(true);
 			l1.getStyle().setSmooth(true);
 			Line l2 = new Line(s2);
-			l2.getStyle().setColor(Color.parseColor("#99CC00"));
-			l2.getStyle().setFilled(false);
-			l2.getStyle().setHasLines(false);
-			l2.getStyle().setSmooth(true);
+			l2.getStyle().setColor(Color.parseColor("#99CC00")).setFilled(false).setHasLines(true).setSmooth(true)
+					.setHasAnnotations(true);
 			List<Line> lines = new ArrayList<Line>();
 			lines.add(l2);
 			lines.add(l1);

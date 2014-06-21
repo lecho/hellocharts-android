@@ -3,7 +3,7 @@ package lecho.lib.hellocharts;
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
-import lecho.lib.hellocharts.gestures.ChartTouchHandler;
+import lecho.lib.hellocharts.gestures.DefaultTouchHandler;
 import lecho.lib.hellocharts.model.BarChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
 import android.content.Context;
@@ -34,7 +34,7 @@ public class BarChart extends AbstractChart {
 		mChartRenderer = new BarChartRenderer(context, this);
 		mChartCalculator = new ChartCalculator(context, this);
 		mAxesRenderer = new AxesRenderer(context, this);
-		mTouchHandler = new ChartTouchHandler(context, this);
+		mTouchHandler = new DefaultTouchHandler(context, this);
 	}
 
 	private void initAnimatiors() {
