@@ -28,7 +28,7 @@ public class DummyTouchHandler implements ChartTouchHandler {
 	}
 
 	@Override
-	public void setTouchEnabled(boolean isTouchEnabled) {
+	public void setValueTouchEnabled(boolean isTouchEnabled) {
 		// do nothing
 
 	}

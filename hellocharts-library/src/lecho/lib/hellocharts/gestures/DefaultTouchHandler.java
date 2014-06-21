@@ -17,7 +17,7 @@ public class DefaultTouchHandler implements ChartTouchHandler {
 	private Chart mChart;
 	// TODO: consider using dummy zoomer and scroller instead of boolean flags
 	private boolean isZoomEnabled = true;
-	private boolean isTouchEnabled = true;
+	private boolean isValueTouchEnabled = true;
 
 	public DefaultTouchHandler(Context context, Chart chart) {
 		mChart = chart;
@@ -45,7 +45,7 @@ public class DefaultTouchHandler implements ChartTouchHandler {
 			needInvalidate = mScaleGestureDetector.onTouchEvent(event);
 			needInvalidate = mGestureDetector.onTouchEvent(event) || needInvalidate;
 		}
-		if (isTouchEnabled) {
+		if (isValueTouchEnabled) {
 			needInvalidate = computeTouch(event) || needInvalidate;
 		}
 		return needInvalidate;
@@ -97,8 +97,8 @@ public class DefaultTouchHandler implements ChartTouchHandler {
 	}
 
 	@Override
-	public void setTouchEnabled(boolean isTouchEnable) {
-		this.isTouchEnabled = isTouchEnable;
+	public void setValueTouchEnabled(boolean isValueTouchEnable) {
+		this.isValueTouchEnabled = isValueTouchEnable;
 	}
 
 	private class ChartScaleGestureListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
