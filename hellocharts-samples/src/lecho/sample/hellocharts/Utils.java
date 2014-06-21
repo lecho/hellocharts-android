@@ -5,8 +5,8 @@ import java.util.List;
 
 import lecho.lib.hellocharts.model.Axis.AxisValue;
 import lecho.lib.hellocharts.model.Bar;
+import lecho.lib.hellocharts.model.BarValue;
 import lecho.lib.hellocharts.model.LinePoint;
-import lecho.lib.hellocharts.model.ValueWithColor;
 import android.graphics.Color;
 
 public class Utils {
@@ -40,22 +40,22 @@ public class Utils {
 		return result;
 	}
 
-	public static List<ValueWithColor> generateValues(int num) {
+	public static List<BarValue> generateValues(int num) {
 		float x = 0.0f;
 		int[] sign = new int[] { 1, 1 };
-		List<ValueWithColor> result = new ArrayList<ValueWithColor>();
+		List<BarValue> result = new ArrayList<BarValue>();
 		for (int i = 0; i < num; ++i) {
 
-			result.add(new ValueWithColor((float) Math.random() * 30.0f * sign[(int) Math.round(Math.random())], Utils
+			result.add(new BarValue((float) Math.random() * 30.0f * sign[(int) Math.round(Math.random())], Utils
 					.pickColor()));
 		}
 		return result;
 	}
 
 	public static Bar generateBar() {
-		List<ValueWithColor> s1 = generateValues(1);
+		List<BarValue> s1 = generateValues(1);
 		Bar l1 = new Bar(s1);
-		l1.hasValuesPopups = false;
+		l1.setHasAnnotations(false);
 		return l1;
 	}
 

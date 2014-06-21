@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 public class LineChartActivity extends ActionBarActivity {
 
@@ -95,6 +96,16 @@ public class LineChartActivity extends ActionBarActivity {
 			axisY.color = Color.parseColor("#99CC00");
 			data.setAxisY(axisY);
 			chart.setData(data);
+			chart.setOnValueTouchListener(new LineChartView.LineChartOnValueTouchListener() {
+
+				@Override
+				public void onValueTouched(int selectedLine, int selectedValue, LinePoint point) {
+					Toast.makeText(getActivity(),
+							"" + selectedLine + " " + selectedValue + " " + point.getX() + " " + point.getY(),
+							Toast.LENGTH_SHORT).show();
+
+				}
+			});
 			// chart.setBackgroundColor(Color.WHITE);
 			layout.addView(chart);
 			return rootView;

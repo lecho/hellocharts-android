@@ -1,12 +1,11 @@
 package lecho.lib.hellocharts;
 
-import lecho.lib.hellocharts.LineChartView.LineChartOnValueTouchListener;
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
 import lecho.lib.hellocharts.gestures.DefaultTouchHandler;
 import lecho.lib.hellocharts.model.BarChartData;
-import lecho.lib.hellocharts.model.LinePoint;
+import lecho.lib.hellocharts.model.BarValue;
 import lecho.lib.hellocharts.model.SelectedValue;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -141,7 +140,8 @@ public class BarChart extends AbstractChart {
 
 	@Override
 	public void callTouchListener(SelectedValue selectedValue) {
-		// TODO
+		BarValue value = mData.getBars().get(selectedValue.firstIndex).getValues().get(selectedValue.secondIndex);
+		onValueTouchListener.onValueTouched(selectedValue.firstIndex, selectedValue.secondIndex, value);
 
 	}
 
@@ -158,13 +158,13 @@ public class BarChart extends AbstractChart {
 	}
 
 	public interface BarChartOnValueTouchListener {
-		public void onValueTouched(int selectedLine, int selectedValue, LinePoint point);
+		public void onValueTouched(int selectedLine, int selectedValue, BarValue point);
 	}
 
 	private static class DummyOnValueTouchListener implements BarChartOnValueTouchListener {
 
 		@Override
-		public void onValueTouched(int selectedLine, int selectedValue, LinePoint point) {
+		public void onValueTouched(int selectedLine, int selectedValue, BarValue point) {
 			// do nothing
 		}
 	}
