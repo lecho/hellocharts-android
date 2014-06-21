@@ -4,7 +4,6 @@ import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
 import lecho.lib.hellocharts.gestures.DefaultTouchHandler;
-import lecho.lib.hellocharts.gestures.ZoomMode;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.LinePoint;
 import lecho.lib.hellocharts.model.SelectedValue;
@@ -21,7 +20,7 @@ public class LineChartView extends AbstractChart {
 	private static final String TAG = "LineChart";
 	private LineChartData mData;
 	private ChartAnimator mAnimator;
-	private LineChartStyle style = new LineChartStyle();
+	private LineChartTouchListener touchListener = new DummyTouchListener();
 
 	public LineChartView(Context context) {
 		this(context, null, 0);
@@ -143,7 +142,7 @@ public class LineChartView extends AbstractChart {
 	@Override
 	public void callTouchListener(SelectedValue selectedValue) {
 		LinePoint point = mData.lines.get(selectedValue.firstIndex).getPoints().get(selectedValue.secondIndex);
-		style.getTouchListener().onPointTouched(selectedValue.firstIndex, selectedValue.secondIndex, point);
+		touchListener.onPointTouched(selectedValue.firstIndex, selectedValue.secondIndex, point);
 	}
 
 	// public void animateSeries(int index, List<lecho.lib.hellocharts.model.Point> points) {
@@ -157,15 +156,15 @@ public class LineChartView extends AbstractChart {
 	// ViewCompat.postInvalidateOnAnimation(LineChart.this);
 	// }
 
-	public LineChartStyle getStyle() {
-		return style;
+	public LineChartTouchListener getTouchListener() {
+		return touchListener;
 	}
 
-	public void setStyle(LineChartStyle style) {
-		if (null == style) {
-			this.style = new LineChartStyle();
+	public void setTouchListener(LineChartTouchListener touchListener) {
+		if (null == touchListener) {
+			this.touchListener = new DummyTouchListener();
 		} else {
-			this.style = style;
+			this.touchListener = touchListener;
 		}
 	}
 
@@ -173,64 +172,11 @@ public class LineChartView extends AbstractChart {
 		public void onPointTouched(int selectedLine, int selectedValue, LinePoint point);
 	}
 
-	public static class LineChartStyle {
-		private boolean isInteractive = true;
-		private boolean isZoomEnable = true;
-		private boolean isTouchEnable = true;
-		private ZoomMode zoomMode = ZoomMode.HORIZONTAL_AND_VERTICAL;
-		private LineChartTouchListener touchListener = new DummyTouchListener();
+	private static class DummyTouchListener implements LineChartTouchListener {
 
-		public boolean isInteractive() {
-			return isInteractive;
-		}
-
-		public LineChartStyle setInteractive(boolean isInteractive) {
-			this.isInteractive = isInteractive;
-			return this;
-		}
-
-		public boolean isZoomEnable() {
-			return isZoomEnable;
-		}
-
-		public LineChartStyle setZoomEnable(boolean isZoomEnable) {
-			this.isZoomEnable = isZoomEnable;
-			return this;
-		}
-
-		public boolean isTouchEnable() {
-			return isTouchEnable;
-		}
-
-		public LineChartStyle setTouchEnable(boolean isTouchEnable) {
-			this.isTouchEnable = isTouchEnable;
-			return this;
-		}
-
-		public ZoomMode getZoomMode() {
-			return zoomMode;
-		}
-
-		public LineChartStyle setZoomMode(ZoomMode zoomMode) {
-			this.zoomMode = zoomMode;
-			return this;
-		}
-
-		public LineChartTouchListener getTouchListener() {
-			return touchListener;
-		}
-
-		public LineChartStyle setTouchListener(LineChartTouchListener touchListener) {
-			this.touchListener = touchListener;
-			return this;
-		}
-
-		private static class DummyTouchListener implements LineChartTouchListener {
-
-			@Override
-			public void onPointTouched(int selectedLine, int selectedValue, LinePoint point) {
-				Log.e(TAG, "touched: " + selectedLine + " " + selectedValue + " " + point.getY());
-			}
+		@Override
+		public void onPointTouched(int selectedLine, int selectedValue, LinePoint point) {
+			// do nothing
 		}
 	}
 }
