@@ -20,7 +20,7 @@ public class LineChartView extends AbstractChart {
 	private static final String TAG = "LineChart";
 	private LineChartData mData;
 	private ChartAnimator mAnimator;
-	private LineChartTouchListener touchListener = new DummyTouchListener();
+	private LineChartOnValueTouchListener onValueTouchListener = new DummyOnValueTouchListener();
 
 	public LineChartView(Context context) {
 		this(context, null, 0);
@@ -142,7 +142,7 @@ public class LineChartView extends AbstractChart {
 	@Override
 	public void callTouchListener(SelectedValue selectedValue) {
 		LinePoint point = mData.lines.get(selectedValue.firstIndex).getPoints().get(selectedValue.secondIndex);
-		touchListener.onPointTouched(selectedValue.firstIndex, selectedValue.secondIndex, point);
+		onValueTouchListener.onValueTouched(selectedValue.firstIndex, selectedValue.secondIndex, point);
 	}
 
 	// public void animateSeries(int index, List<lecho.lib.hellocharts.model.Point> points) {
@@ -156,26 +156,26 @@ public class LineChartView extends AbstractChart {
 	// ViewCompat.postInvalidateOnAnimation(LineChart.this);
 	// }
 
-	public LineChartTouchListener getTouchListener() {
-		return touchListener;
+	public LineChartOnValueTouchListener getOnValueTouchListener() {
+		return onValueTouchListener;
 	}
 
-	public void setTouchListener(LineChartTouchListener touchListener) {
+	public void setOnValueTouchListener(LineChartOnValueTouchListener touchListener) {
 		if (null == touchListener) {
-			this.touchListener = new DummyTouchListener();
+			this.onValueTouchListener = new DummyOnValueTouchListener();
 		} else {
-			this.touchListener = touchListener;
+			this.onValueTouchListener = touchListener;
 		}
 	}
 
-	public interface LineChartTouchListener {
-		public void onPointTouched(int selectedLine, int selectedValue, LinePoint point);
+	public interface LineChartOnValueTouchListener {
+		public void onValueTouched(int selectedLine, int selectedValue, LinePoint point);
 	}
 
-	private static class DummyTouchListener implements LineChartTouchListener {
+	private static class DummyOnValueTouchListener implements LineChartOnValueTouchListener {
 
 		@Override
-		public void onPointTouched(int selectedLine, int selectedValue, LinePoint point) {
+		public void onValueTouched(int selectedLine, int selectedValue, LinePoint point) {
 			// do nothing
 		}
 	}
