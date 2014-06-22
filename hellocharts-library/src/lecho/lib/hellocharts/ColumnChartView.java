@@ -4,8 +4,8 @@ import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
 import lecho.lib.hellocharts.gestures.DefaultTouchHandler;
-import lecho.lib.hellocharts.model.BarChartData;
-import lecho.lib.hellocharts.model.BarValue;
+import lecho.lib.hellocharts.model.ColumnChartData;
+import lecho.lib.hellocharts.model.ColumnValue;
 import lecho.lib.hellocharts.model.SelectedValue;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -15,24 +15,24 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 
-public class BarChart extends AbstractChart {
+public class ColumnChartView extends AbstractChart {
 	private static final String TAG = "BarChart";
-	private BarChartData mData;
+	private ColumnChartData mData;
 	private ChartAnimator mAnimator;
 	private BarChartOnValueTouchListener onValueTouchListener = new DummyOnValueTouchListener();
 
-	public BarChart(Context context) {
+	public ColumnChartView(Context context) {
 		this(context, null, 0);
 	}
 
-	public BarChart(Context context, AttributeSet attrs) {
+	public ColumnChartView(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
 	}
 
-	public BarChart(Context context, AttributeSet attrs, int defStyle) {
+	public ColumnChartView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		initAnimatiors();
-		mChartRenderer = new BarChartRenderer(context, this);
+		mChartRenderer = new ColumnChartRenderer(context, this);
 		mChartCalculator = new ChartCalculator(context, this);
 		mAxesRenderer = new AxesRenderer(context, this);
 		mTouchHandler = new DefaultTouchHandler(context, this);
@@ -106,15 +106,15 @@ public class BarChart extends AbstractChart {
 		}
 	}
 
-	public void setData(final BarChartData data) {
+	public void setData(final ColumnChartData data) {
 		mData = data;
 		mData.calculateBoundaries();
 		mChartCalculator.calculateAxesMargins(getContext());
 		mChartCalculator.calculateViewport();
-		ViewCompat.postInvalidateOnAnimation(BarChart.this);
+		ViewCompat.postInvalidateOnAnimation(ColumnChartView.this);
 	}
 
-	public BarChartData getData() {
+	public ColumnChartData getData() {
 		return mData;
 	}
 
@@ -140,7 +140,7 @@ public class BarChart extends AbstractChart {
 
 	@Override
 	public void callTouchListener(SelectedValue selectedValue) {
-		BarValue value = mData.getBars().get(selectedValue.firstIndex).getValues().get(selectedValue.secondIndex);
+		ColumnValue value = mData.getColumns().get(selectedValue.firstIndex).getValues().get(selectedValue.secondIndex);
 		onValueTouchListener.onValueTouched(selectedValue.firstIndex, selectedValue.secondIndex, value);
 
 	}
@@ -158,13 +158,13 @@ public class BarChart extends AbstractChart {
 	}
 
 	public interface BarChartOnValueTouchListener {
-		public void onValueTouched(int selectedLine, int selectedValue, BarValue point);
+		public void onValueTouched(int selectedLine, int selectedValue, ColumnValue point);
 	}
 
 	private static class DummyOnValueTouchListener implements BarChartOnValueTouchListener {
 
 		@Override
-		public void onValueTouched(int selectedLine, int selectedValue, BarValue point) {
+		public void onValueTouched(int selectedLine, int selectedValue, ColumnValue point) {
 			// do nothing
 		}
 	}

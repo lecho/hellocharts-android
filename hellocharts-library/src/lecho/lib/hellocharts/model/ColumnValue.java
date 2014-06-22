@@ -2,19 +2,19 @@ package lecho.lib.hellocharts.model;
 
 import android.graphics.Color;
 
-public class BarValue {
+public class ColumnValue {
 
 	private float value;
 	private float targetValue = Color.LTGRAY;
 	private int color;
 
-	public BarValue(float value) {
+	public ColumnValue(float value) {
 		// point and targetPoint have to be different objects
 		this.value = value;
 		this.targetValue = value;
 	}
 
-	public BarValue(float value, int color) {
+	public ColumnValue(float value, int color) {
 		// point and targetPoint have to be different objects
 		this.value = value;
 		this.targetValue = value;

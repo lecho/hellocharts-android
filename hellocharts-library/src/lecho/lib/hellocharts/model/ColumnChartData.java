@@ -5,9 +5,9 @@ import java.util.List;
 
 import android.util.Log;
 
-public class BarChartData extends AbstractChartData {
+public class ColumnChartData extends AbstractChartData {
 	public static final float DEFAULT_FILL_RATIO = 0.75f;
-	private List<Bar> bars = new ArrayList<Bar>();
+	private List<Column> columns = new ArrayList<Column>();
 	private boolean mIsStacked = false;
 	private float fillRatio = DEFAULT_FILL_RATIO;
 
@@ -16,7 +16,7 @@ public class BarChartData extends AbstractChartData {
 		if (mManualBoundaries) {
 			return;
 		}
-		mBoundaries.set(-0.5f, 0, bars.size() - 0.5f, 0);
+		mBoundaries.set(-0.5f, 0, columns.size() - 0.5f, 0);
 		if (mIsStacked) {
 			calculateBoundariesStacked();
 		} else {
@@ -25,23 +25,23 @@ public class BarChartData extends AbstractChartData {
 	}
 
 	public void calculateBoundariesDefault() {
-		for (Bar bar : bars) {
-			for (BarValue barValue : bar.getValues()) {
-				if (barValue.getValue() >= 0 && barValue.getValue() > mBoundaries.top) {
-					mBoundaries.top = barValue.getValue();
+		for (Column column : columns) {
+			for (ColumnValue columnValue : column.getValues()) {
+				if (columnValue.getValue() >= 0 && columnValue.getValue() > mBoundaries.top) {
+					mBoundaries.top = columnValue.getValue();
 				}
-				if (barValue.getValue() < 0 && barValue.getValue() < mBoundaries.bottom) {
-					mBoundaries.bottom = barValue.getValue();
+				if (columnValue.getValue() < 0 && columnValue.getValue() < mBoundaries.bottom) {
+					mBoundaries.bottom = columnValue.getValue();
 				}
 			}
 		}
 	}
 
 	public void calculateBoundariesStacked() {
-		for (Bar bar : bars) {
+		for (Column column : columns) {
 			float sumPositive = 0;
 			float sumNegative = 0;
-			for (BarValue animatedValue : bar.getValues()) {
+			for (ColumnValue animatedValue : column.getValues()) {
 				if (animatedValue.getValue() >= 0) {
 					sumPositive += animatedValue.getValue();
 				} else {
@@ -58,15 +58,15 @@ public class BarChartData extends AbstractChartData {
 		Log.d("dupa", "boundaries: " + mBoundaries.toString());
 	}
 
-	public List<Bar> getBars() {
-		return bars;
+	public List<Column> getColumns() {
+		return columns;
 	}
 
-	public void setBars(List<Bar> bars) {
-		if (null == bars) {
-			this.bars = new ArrayList<Bar>();
+	public void setColumns(List<Column> columns) {
+		if (null == columns) {
+			this.columns = new ArrayList<Column>();
 		} else {
-			this.bars = bars;
+			this.columns = columns;
 		}
 	}
 

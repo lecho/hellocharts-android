@@ -6,28 +6,28 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 
-public class Bar {
+public class Column {
 	public static final int DEFAULT_VALUE_TEXT_SIZE_SP = 10;
 	public static final int DEFAULT_AREA_TRANSPARENCY = 255;
 	private int textColor = Color.WHITE;
 	private int textSize = DEFAULT_VALUE_TEXT_SIZE_SP;
 	private int areaTransparency = DEFAULT_AREA_TRANSPARENCY;
 	private boolean hasAnnotations = false;
-	private BarValueFormatter formatter = new DefaultBarValueFormatter();
+	private ColumnValueFormatter formatter = new DefaultColumnValueFormatter();
 	// TODO: consider Collections.emptyList()
-	private List<BarValue> values = new ArrayList<BarValue>();
+	private List<ColumnValue> values = new ArrayList<ColumnValue>();
 
-	public Bar(List<BarValue> values) {
+	public Column(List<ColumnValue> values) {
 		setValues(values);
 	}
 
-	public List<BarValue> getValues() {
+	public List<ColumnValue> getValues() {
 		return values;
 	}
 
-	public void setValues(List<BarValue> values) {
+	public void setValues(List<ColumnValue> values) {
 		if (null == values) {
-			this.values = new ArrayList<BarValue>();
+			this.values = new ArrayList<ColumnValue>();
 		} else {
 			this.values = values;
 		}
@@ -37,7 +37,7 @@ public class Bar {
 		return textColor;
 	}
 
-	public Bar setTextColor(int textColor) {
+	public Column setTextColor(int textColor) {
 		this.textColor = textColor;
 		return this;
 	}
@@ -46,7 +46,7 @@ public class Bar {
 		return textSize;
 	}
 
-	public Bar setTextSize(int textSize) {
+	public Column setTextSize(int textSize) {
 		this.textSize = textSize;
 		return this;
 	}
@@ -55,7 +55,7 @@ public class Bar {
 		return areaTransparency;
 	}
 
-	public Bar setAreaTransparency(int areaTransparency) {
+	public Column setAreaTransparency(int areaTransparency) {
 		this.areaTransparency = areaTransparency;
 		return this;
 	}
@@ -64,34 +64,34 @@ public class Bar {
 		return hasAnnotations;
 	}
 
-	public Bar setHasAnnotations(boolean hasAnnotations) {
+	public Column setHasAnnotations(boolean hasAnnotations) {
 		this.hasAnnotations = hasAnnotations;
 		return this;
 	}
 
-	public BarValueFormatter getFormatter() {
+	public ColumnValueFormatter getFormatter() {
 		return formatter;
 	}
 
-	public void setFormatter(BarValueFormatter formatter) {
+	public void setFormatter(ColumnValueFormatter formatter) {
 		if (null == formatter) {
-			this.formatter = new DefaultBarValueFormatter();
+			this.formatter = new DefaultColumnValueFormatter();
 		} else {
 			this.formatter = formatter;
 		}
 	}
 
-	public interface BarValueFormatter {
+	public interface ColumnValueFormatter {
 		public static final String DEFAULT_VALUE_FORMAT = "%.0f";
 
-		public String formatValue(BarValue value);
+		public String formatValue(ColumnValue value);
 	}
 
-	public static class DefaultBarValueFormatter implements BarValueFormatter {
+	public static class DefaultColumnValueFormatter implements ColumnValueFormatter {
 
 		@SuppressLint("DefaultLocale")
 		@Override
-		public String formatValue(BarValue value) {
+		public String formatValue(ColumnValue value) {
 			return String.format(DEFAULT_VALUE_FORMAT, value.getValue());
 		}
 
