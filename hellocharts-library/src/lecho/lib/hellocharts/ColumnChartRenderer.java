@@ -7,7 +7,6 @@ import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.utils.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Cap;
@@ -20,26 +19,26 @@ public class ColumnChartRenderer implements ChartRenderer {
 	private static final int DEFAULT_SUBCOLUMN_SPACING_DP = 1;
 	private static final int DEFAULT_TOUCH_STROKE_WIDTH_DP = 4;
 	private static final float DEFAULT_BASE_VALUE = 0.0f;
-	private static final int DEFAULT_POPUP_MARGIN_DP = 4;
-	private static final int DEFAULT_TEXT_COLOR = Color.WHITE;
+	private static final int DEFAULT_LABEL_MARGIN_DP = 2;
 	private static final int MODE_DRAW = 0;
 	private static final int MODE_CHECK_TOUCH = 1;
 	private static final int MODE_HIGHLIGHT = 2;
-	private int mPopupMargin;
+	private int mLabelMargin;
 	private Paint mColumnPaint = new Paint();
-	private Paint mPointAndPopupPaint = new Paint();
+	private Paint labelPaint = new Paint();
 	private Context mContext;
 	private ColumnChartView mChart;
 	private int mSubcolumnSpacing;
 	private RectF mRectToDraw = new RectF();
 	private Rect mTextBounds = new Rect();
 	private PointF mTouchedPoint = new PointF();
+	private RectF labelRect = new RectF();
 	private SelectedValue mSelectedValue = new SelectedValue();
 
 	public ColumnChartRenderer(Context context, ColumnChartView chart) {
 		mContext = context;
 		mChart = chart;
-		mPopupMargin = Utils.dp2px(context, DEFAULT_POPUP_MARGIN_DP);
+		mLabelMargin = Utils.dp2px(context, DEFAULT_LABEL_MARGIN_DP);
 		mSubcolumnSpacing = Utils.dp2px(mContext, DEFAULT_SUBCOLUMN_SPACING_DP);
 
 		mColumnPaint.setAntiAlias(true);
@@ -47,9 +46,10 @@ public class ColumnChartRenderer implements ChartRenderer {
 		mColumnPaint.setStrokeWidth(Utils.dp2px(mContext, DEFAULT_TOUCH_STROKE_WIDTH_DP));
 		mColumnPaint.setStrokeCap(Cap.SQUARE);
 
-		mPointAndPopupPaint.setAntiAlias(true);
-		mPointAndPopupPaint.setStyle(Paint.Style.FILL);
-		mPointAndPopupPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+		labelPaint.setAntiAlias(true);
+		labelPaint.setStyle(Paint.Style.FILL);
+		labelPaint.setTextAlign(Align.LEFT);
+		labelPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
 	}
 
 	public void draw(Canvas canvas) {
@@ -107,7 +107,8 @@ public class ColumnChartRenderer implements ChartRenderer {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final float columnWidth = calculateColumnWidth(chartCalculator, data.getFillRatio());
 		Column column = data.getColumns().get(mSelectedValue.firstIndex);
-		processColumnForSubcolumns(canvas, chartCalculator, column, columnWidth, mSelectedValue.firstIndex, MODE_HIGHLIGHT);
+		processColumnForSubcolumns(canvas, chartCalculator, column, columnWidth, mSelectedValue.firstIndex,
+				MODE_HIGHLIGHT);
 	}
 
 	private void checkTouchForSubcolumns(float touchX, float touchY) {
@@ -124,10 +125,11 @@ public class ColumnChartRenderer implements ChartRenderer {
 		}
 	}
 
-	private void processColumnForSubcolumns(Canvas canvas, ChartCalculator chartCalculator, Column column, float columnWidth,
-			int columnIndex, int mode) {
+	private void processColumnForSubcolumns(Canvas canvas, ChartCalculator chartCalculator, Column column,
+			float columnWidth, int columnIndex, int mode) {
 		// For n subcolumns there will be n-1 spacing and there will be one subcolumn for every columnValue
-		float subcolumnWidth = (columnWidth - (mSubcolumnSpacing * (column.getValues().size() - 1))) / column.getValues().size();
+		float subcolumnWidth = (columnWidth - (mSubcolumnSpacing * (column.getValues().size() - 1)))
+				/ column.getValues().size();
 		if (subcolumnWidth < 1) {
 			subcolumnWidth = 1;
 		}
@@ -143,10 +145,11 @@ public class ColumnChartRenderer implements ChartRenderer {
 				break;
 			}
 			final float rawValueY = chartCalculator.calculateRawY(columnValue.getValue());
-			calculateRectToDraw(subcolumnRawValueX, subcolumnRawValueX + subcolumnWidth, rawBaseValueY, rawValueY);
+			calculateRectToDraw(columnValue, subcolumnRawValueX, subcolumnRawValueX + subcolumnWidth, rawBaseValueY,
+					rawValueY);
 			switch (mode) {
 			case MODE_DRAW:
-				drawSubcolumn(canvas, column, columnValue);
+				drawSubcolumn(canvas, column, columnValue, false);
 				break;
 			case MODE_HIGHLIGHT:
 				highlightSubcolumn(canvas, column, columnValue, valueIndex);
@@ -198,8 +201,8 @@ public class ColumnChartRenderer implements ChartRenderer {
 		}
 	}
 
-	private void processColumnForStacked(Canvas canvas, ChartCalculator chartCalculator, Column column, float columnWidth,
-			int columnIndex, int mode) {
+	private void processColumnForStacked(Canvas canvas, ChartCalculator chartCalculator, Column column,
+			float columnWidth, int columnIndex, int mode) {
 		final float rawValueX = chartCalculator.calculateRawX(columnIndex);
 		final float halfColumnWidth = columnWidth / 2;
 		float mostPositiveValue = DEFAULT_BASE_VALUE;
@@ -218,10 +221,11 @@ public class ColumnChartRenderer implements ChartRenderer {
 			}
 			final float rawBaseValueY = chartCalculator.calculateRawY(baseValue);
 			final float rawValueY = chartCalculator.calculateRawY(baseValue + columnValue.getValue());
-			calculateRectToDraw(rawValueX - halfColumnWidth, rawValueX + halfColumnWidth, rawBaseValueY, rawValueY);
+			calculateRectToDraw(columnValue, rawValueX - halfColumnWidth, rawValueX + halfColumnWidth, rawBaseValueY,
+					rawValueY);
 			switch (mode) {
 			case MODE_DRAW:
-				drawSubcolumn(canvas, column, columnValue);
+				drawSubcolumn(canvas, column, columnValue, true);
 				break;
 			case MODE_HIGHLIGHT:
 				highlightSubcolumn(canvas, column, columnValue, valueIndex);
@@ -237,11 +241,11 @@ public class ColumnChartRenderer implements ChartRenderer {
 		}
 	}
 
-	private void drawSubcolumn(Canvas canvas, Column column, ColumnValue columnValue) {
+	private void drawSubcolumn(Canvas canvas, Column column, ColumnValue columnValue, boolean isStacked) {
 		mColumnPaint.setColor(columnValue.getColor());
 		canvas.drawRect(mRectToDraw, mColumnPaint);
-		if (column.hasAnnotations()) {
-			drawValueAnnotation(canvas, column, columnValue);
+		if (column.hasLabels()) {
+			drawLabel(canvas, column, columnValue, !isStacked);
 		}
 	}
 
@@ -251,8 +255,8 @@ public class ColumnChartRenderer implements ChartRenderer {
 			mColumnPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 			canvas.drawRect(mRectToDraw, mColumnPaint);
 			mColumnPaint.setStyle(Paint.Style.FILL);
-			if (column.hasAnnotations()) {
-				drawValueAnnotation(canvas, column, columnValue);
+			if (column.hasLabels()) {
+				drawLabel(canvas, column, columnValue, false);
 			}
 		}
 	}
@@ -273,39 +277,56 @@ public class ColumnChartRenderer implements ChartRenderer {
 		return columnWidth;
 	}
 
-	private void calculateRectToDraw(float left, float right, float rawBaseValueY, float rawValueY) {
+	private void calculateRectToDraw(ColumnValue columnValue, float left, float right, float rawBaseValueY,
+			float rawValueY) {
 		mRectToDraw.left = left;
 		mRectToDraw.right = right;
-		if (rawValueY <= rawBaseValueY) {
+		if (columnValue.getValue() >= DEFAULT_BASE_VALUE) {
 			mRectToDraw.top = rawValueY;
-			mRectToDraw.bottom = rawBaseValueY;
+			mRectToDraw.bottom = rawBaseValueY - DEFAULT_SUBCOLUMN_SPACING_DP;
 		} else {
 			mRectToDraw.bottom = rawValueY;
-			mRectToDraw.top = rawBaseValueY;
+			mRectToDraw.top = rawBaseValueY + DEFAULT_SUBCOLUMN_SPACING_DP;
 		}
 	}
 
-	private void drawValueAnnotation(Canvas canvas, Column column, ColumnValue columnValue) {
-		final ChartCalculator chartCalculator = mChart.getChartCalculator();
-		mPointAndPopupPaint.setTextAlign(Align.LEFT);
-		mPointAndPopupPaint.setTextSize(Utils.sp2px(mContext, column.getTextSize()));
-		mPointAndPopupPaint.setColor(columnValue.getColor());
+	private void drawLabel(Canvas canvas, Column column, ColumnValue columnValue, boolean labelForSmallValue) {
+		labelPaint.setTextSize(Utils.sp2px(mContext, column.getTextSize()));
 		final String text = column.getFormatter().formatValue(columnValue);
-		mPointAndPopupPaint.getTextBounds(text, 0, text.length(), mTextBounds);
-		float left = mRectToDraw.centerX() - (mTextBounds.width() / 2) - mPopupMargin;
-		float right = mRectToDraw.centerX() + (mTextBounds.width() / 2) + mPopupMargin;
-		float top = mRectToDraw.top - mPopupMargin - mTextBounds.height() - mPopupMargin * 2;
-		float bottom = mRectToDraw.top - mPopupMargin;
-		if (top < chartCalculator.mContentRect.top) {
-			top = mRectToDraw.top + mPopupMargin;
-			bottom = mRectToDraw.top + mPopupMargin + mTextBounds.height() + mPopupMargin * 2;
+		labelPaint.getTextBounds(text, 0, text.length(), mTextBounds);
+		final float maringX2 = mLabelMargin * 2;
+		float left = mRectToDraw.centerX() - (mTextBounds.width() / 2) - mLabelMargin;
+		float right = mRectToDraw.centerX() + (mTextBounds.width() / 2) + mLabelMargin;
+		boolean drawBackgroundRect = false;
+		boolean drawText = false;
+		float top;
+		float bottom;
+		if (columnValue.getValue() >= DEFAULT_BASE_VALUE) {
+			top = mRectToDraw.top;
+			bottom = mRectToDraw.top + mTextBounds.height() + maringX2;
+		} else {
+			top = mRectToDraw.bottom - mTextBounds.height() - maringX2;
+			bottom = mRectToDraw.bottom;
 		}
-		final RectF popup = new RectF(left, top, right, bottom);
-		canvas.drawRoundRect(popup, mPopupMargin, mPopupMargin, mPointAndPopupPaint);
-		final int color = mPointAndPopupPaint.getColor();
-		mPointAndPopupPaint.setColor(DEFAULT_TEXT_COLOR);
-		canvas.drawText(text, left + mPopupMargin, bottom - mPopupMargin, mPointAndPopupPaint);
-		mPointAndPopupPaint.setColor(color);
+		if (mTextBounds.height() < mRectToDraw.height() - maringX2) {
+			drawText = true;
+			if (mTextBounds.width() > mRectToDraw.width() - maringX2) {
+				drawBackgroundRect = true;
+			}
+		} else if (labelForSmallValue) {
+			top = mRectToDraw.top - mTextBounds.height() - maringX2 - mLabelMargin;
+			bottom = mRectToDraw.top - mLabelMargin;
+			drawText = true;
+			drawBackgroundRect = true;
+		}
+		labelRect.set(left, top, right, bottom);
+		if (drawText) {
+			if (drawBackgroundRect) {
+				labelPaint.setColor(columnValue.getColor());
+				canvas.drawRoundRect(labelRect, mLabelMargin, mLabelMargin, labelPaint);
+			}
+			labelPaint.setColor(column.getTextColor());
+			canvas.drawText(text, left + mLabelMargin, bottom - mLabelMargin, labelPaint);
+		}
 	}
-
 }

@@ -12,7 +12,7 @@ public class Column {
 	private int textColor = Color.WHITE;
 	private int textSize = DEFAULT_VALUE_TEXT_SIZE_SP;
 	private int areaTransparency = DEFAULT_AREA_TRANSPARENCY;
-	private boolean hasAnnotations = false;
+	private boolean hasLabels = false;
 	private ColumnValueFormatter formatter = new DefaultColumnValueFormatter();
 	// TODO: consider Collections.emptyList()
 	private List<ColumnValue> values = new ArrayList<ColumnValue>();
@@ -60,12 +60,12 @@ public class Column {
 		return this;
 	}
 
-	public boolean hasAnnotations() {
-		return hasAnnotations;
+	public boolean hasLabels() {
+		return hasLabels;
 	}
 
-	public Column setHasAnnotations(boolean hasAnnotations) {
-		this.hasAnnotations = hasAnnotations;
+	public Column setHasLabels(boolean hasLabels) {
+		this.hasLabels = hasLabels;
 		return this;
 	}
 
@@ -82,7 +82,7 @@ public class Column {
 	}
 
 	public interface ColumnValueFormatter {
-		public static final String DEFAULT_VALUE_FORMAT = "%.0f";
+		public static final String DEFAULT_VALUE_FORMAT = "%.1f";
 
 		public String formatValue(ColumnValue value);
 	}

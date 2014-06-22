@@ -3,8 +3,6 @@ package lecho.lib.hellocharts.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.util.Log;
-
 public class ColumnChartData extends AbstractChartData {
 	public static final float DEFAULT_FILL_RATIO = 0.75f;
 	private List<Column> columns = new ArrayList<Column>();
@@ -55,7 +53,6 @@ public class ColumnChartData extends AbstractChartData {
 				mBoundaries.bottom = sumNegative;
 			}
 		}
-		Log.d("dupa", "boundaries: " + mBoundaries.toString());
 	}
 
 	public List<Column> getColumns() {
