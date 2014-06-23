@@ -164,8 +164,8 @@ public class ChartCalculator {
 		if (!mContentRect.contains((int) x, (int) y)) {
 			return false;
 		}
-		dest.set(mCurrentViewport.left + (x - mContentRect.left) * (mCurrentViewport.width() / mContentRect.width()),
-				mCurrentViewport.top + (y - mContentRect.bottom) * (mCurrentViewport.height() / -mContentRect.height()));
+		dest.set(mCurrentViewport.left + (x - mContentRect.left) * mCurrentViewport.width() / mContentRect.width(),
+				mCurrentViewport.top + (y - mContentRect.bottom) * mCurrentViewport.height() / -mContentRect.height());
 		return true;
 	}
 

@@ -65,8 +65,8 @@ public class ChartZoomer {
 				* (newWidth / chartCalculator.mContentRect.width());
 		float top = mViewportFocus.y - (chartCalculator.mContentRect.bottom - focusY)
 				* (newHeight / chartCalculator.mContentRect.height());
-		float right = chartCalculator.mCurrentViewport.left + newWidth;
-		float bottom = chartCalculator.mCurrentViewport.top + newHeight;
+		float right = left + newWidth;
+		float bottom = top + newHeight;
 		setCurrentViewport(chartCalculator, left, top, right, bottom);
 		return true;
 	}
