@@ -50,7 +50,8 @@ public class ColumnChartView extends AbstractChart {
 	protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
 		// TODO mPointRadus can change, recalculate in setter
-		mChartCalculator.calculateContentArea(this);
+		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
+				getPaddingRight(), getPaddingBottom());
 		mChartCalculator.calculateViewport();
 	}
 

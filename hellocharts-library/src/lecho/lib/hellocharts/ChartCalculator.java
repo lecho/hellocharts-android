@@ -7,7 +7,6 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.Pair;
-import android.view.View;
 
 public class ChartCalculator {
 	// TODO: use getters/setters instead of public members
@@ -53,10 +52,10 @@ public class ChartCalculator {
 	/**
 	 * Calculates available width and height. Should be called when chart dimensions or chart data change.
 	 */
-	public void calculateContentArea(View chartView) {
-		mContentRectWithMargins.set(chartView.getPaddingLeft() + mAxisYMargin, chartView.getPaddingTop(),
-				chartView.getWidth() - chartView.getPaddingRight(),
-				chartView.getHeight() - chartView.getPaddingBottom() - mAxisXMargin);
+	public void calculateContentArea(int width, int height, int paddingLeft, int paddingTop, int paddingRight,
+			int paddingBottom) {
+		mContentRectWithMargins.set(paddingLeft + mAxisYMargin, paddingTop, width - paddingRight, height
+				- paddingBottom - mAxisXMargin);
 		mContentRect.set(mContentRectWithMargins.left + mCommonMargin, mContentRectWithMargins.top + mCommonMargin,
 				mContentRectWithMargins.right - mCommonMargin, mContentRectWithMargins.bottom - mCommonMargin);
 	}

@@ -18,15 +18,15 @@ import android.graphics.Typeface;
 public class LineChartRenderer implements ChartRenderer {
 	public static final int DEFAULT_TOUCH_TOLLERANCE_DP = 4;
 	private static final float LINE_SMOOTHNES = 0.16f;
-	private static final int DEFAULT_ANNOTATION_MARGIN_DP = 4;
+	private static final int DEFAULT_LABEL_MARGIN_DP = 2;
 	private static final int MODE_DRAW = 0;
 	private static final int MODE_HIGHLIGHT = 1;
-	private final int mAnnotationMargin;
+	private final int mLabelMargin;
 	private Path mLinePath = new Path();
 	private Paint mLinePaint = new Paint();
 	private Paint mPointPaint = new Paint();
-	private Paint annotationPaint = new Paint();
-	private RectF annotationRect = new RectF();
+	private Paint labelPaint = new Paint();
+	private RectF labelRect = new RectF();
 	private Rect textBoundsRect = new Rect();
 	private Context mContext;
 	private LineChartView mChart;
@@ -35,7 +35,7 @@ public class LineChartRenderer implements ChartRenderer {
 	public LineChartRenderer(Context context, LineChartView chart) {
 		mContext = context;
 		mChart = chart;
-		mAnnotationMargin = Utils.dp2px(context, DEFAULT_ANNOTATION_MARGIN_DP);
+		mLabelMargin = Utils.dp2px(context, DEFAULT_LABEL_MARGIN_DP);
 
 		mLinePaint.setAntiAlias(true);
 		mLinePaint.setStyle(Paint.Style.STROKE);
@@ -43,10 +43,10 @@ public class LineChartRenderer implements ChartRenderer {
 		mPointPaint.setAntiAlias(true);
 		mPointPaint.setStyle(Paint.Style.FILL);
 
-		annotationPaint.setAntiAlias(true);
-		annotationPaint.setStyle(Paint.Style.FILL);
-		annotationPaint.setTextAlign(Align.LEFT);
-		annotationPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+		labelPaint.setAntiAlias(true);
+		labelPaint.setStyle(Paint.Style.FILL);
+		labelPaint.setTextAlign(Align.LEFT);
+		labelPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
 	}
 
 	@Override
@@ -257,29 +257,29 @@ public class LineChartRenderer implements ChartRenderer {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final float offset = Utils.dp2px(mContext, style.getPointRadius());
 		final String text = style.getLineValueFormatter().formatValue(linePoint);
-		annotationPaint.setTextSize(Utils.sp2px(mContext, style.getTextSize()));
-		annotationPaint.getTextBounds(text, 0, text.length(), textBoundsRect);
-		float left = rawValueX - textBoundsRect.width() / 2 - mAnnotationMargin;
-		float right = rawValueX + textBoundsRect.width() / 2 + mAnnotationMargin;
-		float top = rawValueY - offset - textBoundsRect.height() - mAnnotationMargin * 2;
+		labelPaint.setTextSize(Utils.sp2px(mContext, style.getTextSize()));
+		labelPaint.getTextBounds(text, 0, text.length(), textBoundsRect);
+		float left = rawValueX - textBoundsRect.width() / 2 - mLabelMargin;
+		float right = rawValueX + textBoundsRect.width() / 2 + mLabelMargin;
+		float top = rawValueY - offset - textBoundsRect.height() - mLabelMargin * 2;
 		float bottom = rawValueY - offset;
 		if (top < chartCalculator.mContentRect.top) {
 			top = rawValueY + offset;
-			bottom = rawValueY + offset + textBoundsRect.height() + mAnnotationMargin * 2;
+			bottom = rawValueY + offset + textBoundsRect.height() + mLabelMargin * 2;
 		}
 		if (left < chartCalculator.mContentRect.left) {
 			left = rawValueX;
-			right = rawValueX + textBoundsRect.width() + mAnnotationMargin * 2;
+			right = rawValueX + textBoundsRect.width() + mLabelMargin * 2;
 		}
 		if (right > chartCalculator.mContentRect.right) {
-			left = rawValueX - textBoundsRect.width() - mAnnotationMargin * 2;
+			left = rawValueX - textBoundsRect.width() - mLabelMargin * 2;
 			right = rawValueX;
 		}
-		annotationRect.set(left, top, right, bottom);
-		annotationPaint.setColor(style.getColor());
-		canvas.drawRoundRect(annotationRect, mAnnotationMargin, mAnnotationMargin, annotationPaint);
-		annotationPaint.setColor(style.getTextColor());
-		canvas.drawText(text, left + mAnnotationMargin, bottom - mAnnotationMargin, annotationPaint);
+		labelRect.set(left, top, right, bottom);
+		labelPaint.setColor(style.getColor());
+		canvas.drawRoundRect(labelRect, mLabelMargin, mLabelMargin, labelPaint);
+		labelPaint.setColor(style.getTextColor());
+		canvas.drawText(text, left + mLabelMargin, bottom - mLabelMargin, labelPaint);
 	}
 
 	private void drawArea(Canvas canvas, LineStyle style) {
