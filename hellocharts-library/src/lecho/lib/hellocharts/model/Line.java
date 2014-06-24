@@ -57,7 +57,7 @@ public class Line {
 		private int areaTransparency = DEFAULT_AREA_TRANSPARENCY;
 		private boolean hasPoints = true;
 		private boolean hasLines = true;
-		private boolean hasAnnotations = false;
+		private boolean hasLabels = false;
 		private boolean isSmooth = false;
 		private boolean isFilled = false;
 		private LineValueFormatter lineValueFormatter = new DefaultLineValueFormatter();
@@ -134,12 +134,12 @@ public class Line {
 			return this;
 		}
 
-		public boolean hasAnnotations() {
-			return hasAnnotations;
+		public boolean hasLabels() {
+			return hasLabels;
 		}
 
-		public LineStyle setHasAnnotations(boolean hasAnnotations) {
-			this.hasAnnotations = hasAnnotations;
+		public LineStyle setHasLabels(boolean hasLabels) {
+			this.hasLabels = hasLabels;
 			return this;
 		}
 

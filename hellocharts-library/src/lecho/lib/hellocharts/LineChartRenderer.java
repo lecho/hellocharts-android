@@ -217,6 +217,7 @@ public class LineChartRenderer implements ChartRenderer {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final LineStyle style = line.getStyle();
 		mPointPaint.setColor(style.getColor());
+		labelPaint.setTextSize(Utils.sp2px(mContext, style.getTextSize()));
 		final int pointRadius = Utils.dp2px(mContext, style.getPointRadius());
 		int valueIndex = 0;
 		for (LinePoint linePoint : line.getPoints()) {
@@ -224,8 +225,8 @@ public class LineChartRenderer implements ChartRenderer {
 			final float rawValueY = chartCalculator.calculateRawY(linePoint.getY());
 			if (MODE_DRAW == mode) {
 				canvas.drawCircle(rawValueX, rawValueY, pointRadius, mPointPaint);
-				if (style.hasAnnotations()) {
-					drawAnnotation(canvas, style, linePoint, rawValueX, rawValueY);
+				if (style.hasLabels()) {
+					drawLabel(canvas, style, linePoint, rawValueX, rawValueY);
 				}
 			} else if (MODE_HIGHLIGHT == mode) {
 				highlightPoint(canvas, style, linePoint, rawValueX, rawValueY, lineIndex, valueIndex);
@@ -247,17 +248,16 @@ public class LineChartRenderer implements ChartRenderer {
 		if (mSelectedValue.firstIndex == lineIndex && mSelectedValue.secondIndex == valueIndex) {
 			final int touchRadius = Utils.dp2px(mContext, lineStyle.getPointRadius() + DEFAULT_TOUCH_TOLLERANCE_DP);
 			canvas.drawCircle(rawValueX, rawValueY, touchRadius, mPointPaint);
-			if (lineStyle.hasAnnotations()) {
-				drawAnnotation(canvas, lineStyle, linePoint, rawValueX, rawValueY);
+			if (lineStyle.hasLabels()) {
+				drawLabel(canvas, lineStyle, linePoint, rawValueX, rawValueY);
 			}
 		}
 	}
 
-	private void drawAnnotation(Canvas canvas, LineStyle style, LinePoint linePoint, float rawValueX, float rawValueY) {
+	private void drawLabel(Canvas canvas, LineStyle style, LinePoint linePoint, float rawValueX, float rawValueY) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final float offset = Utils.dp2px(mContext, style.getPointRadius());
 		final String text = style.getLineValueFormatter().formatValue(linePoint);
-		labelPaint.setTextSize(Utils.sp2px(mContext, style.getTextSize()));
 		labelPaint.getTextBounds(text, 0, text.length(), textBoundsRect);
 		float left = rawValueX - textBoundsRect.width() / 2 - mLabelMargin;
 		float right = rawValueX + textBoundsRect.width() / 2 + mLabelMargin;
@@ -277,7 +277,7 @@ public class LineChartRenderer implements ChartRenderer {
 		}
 		labelRect.set(left, top, right, bottom);
 		labelPaint.setColor(style.getColor());
-		canvas.drawRoundRect(labelRect, mLabelMargin, mLabelMargin, labelPaint);
+		canvas.drawRect(left, top, right, bottom, labelPaint);
 		labelPaint.setColor(style.getTextColor());
 		canvas.drawText(text, left + mLabelMargin, bottom - mLabelMargin, labelPaint);
 	}
