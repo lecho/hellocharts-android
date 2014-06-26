@@ -25,7 +25,6 @@ public class ChartCalculator {
 	 */
 	public Rect mContentRect = new Rect();
 	public Rect mContentRectWithMargins = new Rect();
-	public Rect mClippingRect = new Rect();
 	/**
 	 * This rectangle represents the currently visible chart values ranges. The currently visible chart X values are
 	 * from this rectangle's left to its right. The currently visible chart Y values are from this rectangle's top to
@@ -94,36 +93,6 @@ public class ChartCalculator {
 		x = Math.max(mMaximumViewport.left, Math.min(x, mMaximumViewport.right - curWidth));
 		y = Math.max(mMaximumViewport.top + curHeight, Math.min(y, mMaximumViewport.bottom));
 		mCurrentViewport.set(x, y - curHeight, x + curWidth, y);
-	}
-
-	/**
-	 * Prevents dot clipping when user scroll to the one of ends of chart or zoom out. calculating pixel value helps to
-	 * avoid float rounding error.
-	 */
-	public void calculateClippingArea() {
-		if ((int) calculateRawX(mCurrentViewport.left) == (int) calculateRawX(mMaximumViewport.left)) {
-			mClippingRect.left = mContentRectWithMargins.left;
-		} else {
-			mClippingRect.left = mContentRect.left;
-		}
-
-		if ((int) calculateRawY(mCurrentViewport.top) == (int) calculateRawY(mMaximumViewport.top)) {
-			mClippingRect.bottom = mContentRectWithMargins.bottom;
-		} else {
-			mClippingRect.bottom = mContentRect.bottom;
-		}
-
-		if ((int) calculateRawX(mCurrentViewport.right) == (int) calculateRawX(mMaximumViewport.right)) {
-			mClippingRect.right = mContentRectWithMargins.right;
-		} else {
-			mClippingRect.right = mContentRect.right;
-		}
-
-		if ((int) calculateRawY(mCurrentViewport.bottom) == (int) calculateRawY(mMaximumViewport.bottom)) {
-			mClippingRect.top = mContentRectWithMargins.top;
-		} else {
-			mClippingRect.top = mContentRect.top;
-		}
 	}
 
 	public void calculateAxesMargins(Context context) {

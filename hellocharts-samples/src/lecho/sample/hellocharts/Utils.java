@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lecho.lib.hellocharts.model.Axis.AxisValue;
-import lecho.lib.hellocharts.model.Bar;
-import lecho.lib.hellocharts.model.BarValue;
+import lecho.lib.hellocharts.model.Column;
+import lecho.lib.hellocharts.model.ColumnValue;
 import lecho.lib.hellocharts.model.LinePoint;
 import android.graphics.Color;
 
@@ -40,22 +40,22 @@ public class Utils {
 		return result;
 	}
 
-	public static List<BarValue> generateValues(int num) {
+	public static List<ColumnValue> generateValues(int num) {
 		float x = 0.0f;
-		int[] sign = new int[] { 1, 1 };
-		List<BarValue> result = new ArrayList<BarValue>();
+		int[] sign = new int[] { -1, 1 };
+		List<ColumnValue> result = new ArrayList<ColumnValue>();
 		for (int i = 0; i < num; ++i) {
 
-			result.add(new BarValue((float) Math.random() * 30.0f * sign[(int) Math.round(Math.random())], Utils
+			result.add(new ColumnValue((float) Math.random() * 10.0f * sign[(int) Math.round(Math.random())], Utils
 					.pickColor()));
 		}
 		return result;
 	}
 
-	public static Bar generateBar() {
-		List<BarValue> s1 = generateValues(1);
-		Bar l1 = new Bar(s1);
-		l1.setHasAnnotations(false);
+	public static Column generateColumns() {
+		List<ColumnValue> s1 = generateValues(2);
+		Column l1 = new Column(s1);
+		l1.setHasLabels(true);
 		return l1;
 	}
 

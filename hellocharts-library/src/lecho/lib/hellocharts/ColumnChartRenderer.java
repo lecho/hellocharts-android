@@ -69,6 +69,11 @@ public class ColumnChartRenderer implements ChartRenderer {
 		}
 	}
 
+	@Override
+	public void drawUnclipped(Canvas canvas) {
+		// Do nothing
+	}
+
 	public boolean checkTouch(float touchX, float touchY) {
 		final ColumnChartData data = mChart.getData();
 		if (data.isStacked()) {
@@ -130,7 +135,8 @@ public class ColumnChartRenderer implements ChartRenderer {
 	private void processColumnForSubcolumns(Canvas canvas, ChartCalculator chartCalculator, Column column,
 			float columnWidth, int columnIndex, int mode) {
 		labelPaint.setTextSize(Utils.sp2px(mContext, column.getTextSize()));
-		// For n subcolumns there will be n-1 spacing and there will be one subcolumn for every columnValue
+		// For n subcolumns there will be n-1 spacing and there will be one
+		// subcolumn for every columnValue
 		float subcolumnWidth = (columnWidth - (mSubcolumnSpacing * (column.getValues().size() - 1)))
 				/ column.getValues().size();
 		if (subcolumnWidth < 1) {
@@ -140,7 +146,8 @@ public class ColumnChartRenderer implements ChartRenderer {
 		final float rawValueX = chartCalculator.calculateRawX(columnIndex);
 		final float halfColumnWidth = columnWidth / 2;
 		final float rawBaseValueY = chartCalculator.calculateRawY(DEFAULT_BASE_VALUE);
-		// First subcolumn will starts at the left edge of current column, rawValueX is horizontal center of that column
+		// First subcolumn will starts at the left edge of current column,
+		// rawValueX is horizontal center of that column
 		float subcolumnRawValueX = rawValueX - halfColumnWidth;
 		int valueIndex = 0;
 		for (ColumnValue columnValue : column.getValues()) {
@@ -161,7 +168,8 @@ public class ColumnChartRenderer implements ChartRenderer {
 				checkRectToDraw(columnIndex, valueIndex);
 				break;
 			default:
-				// There no else, every case should be handled or exception will be thrown
+				// There no else, every case should be handled or exception will
+				// be thrown
 				throw new IllegalStateException("Cannot process column in mode: " + mode);
 			}
 			subcolumnRawValueX += subcolumnWidth + mSubcolumnSpacing;
@@ -216,7 +224,8 @@ public class ColumnChartRenderer implements ChartRenderer {
 		for (ColumnValue columnValue : column.getValues()) {
 			mColumnPaint.setColor(columnValue.getColor());
 			if (columnValue.getValue() >= DEFAULT_BASE_VALUE) {
-				// Using values instead of raw pixels make code easier to understand(for me)
+				// Using values instead of raw pixels make code easier to
+				// understand(for me)
 				baseValue = mostPositiveValue;
 				mostPositiveValue += columnValue.getValue();
 			} else {
@@ -238,7 +247,8 @@ public class ColumnChartRenderer implements ChartRenderer {
 				checkRectToDraw(columnIndex, valueIndex);
 				break;
 			default:
-				// There no else, every case should be handled or exception will be thrown
+				// There no else, every case should be handled or exception will
+				// be thrown
 				throw new IllegalStateException("Cannot process column in mode: " + mode);
 			}
 			++valueIndex;

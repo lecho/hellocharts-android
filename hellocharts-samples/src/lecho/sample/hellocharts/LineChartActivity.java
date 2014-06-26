@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lecho.lib.hellocharts.LineChartView;
+import lecho.lib.hellocharts.gestures.ZoomMode;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
@@ -77,7 +78,7 @@ public class LineChartActivity extends ActionBarActivity {
 			l1.getStyle().setSmooth(true);
 			Line l2 = new Line(s2);
 			l2.getStyle().setColor(Color.parseColor("#99CC00")).setFilled(false).setHasLines(true).setSmooth(true)
-					.setHasAnnotations(true);
+					.setHasLabels(true);
 			List<Line> lines = new ArrayList<Line>();
 			lines.add(l2);
 			lines.add(l1);
@@ -96,6 +97,7 @@ public class LineChartActivity extends ActionBarActivity {
 			axisY.color = Color.parseColor("#99CC00");
 			data.setAxisY(axisY);
 			chart.setData(data);
+			chart.setZoomMode(ZoomMode.HORIZONTAL);
 			chart.setOnValueTouchListener(new LineChartView.LineChartOnValueTouchListener() {
 
 				@Override

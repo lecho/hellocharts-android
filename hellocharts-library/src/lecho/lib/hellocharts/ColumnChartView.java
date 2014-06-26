@@ -58,14 +58,16 @@ public class ColumnChartView extends AbstractChart {
 	// Automatically calculates Y axis values.
 	// private Axis calculateYAxis(int numberOfSteps) {
 	// if (numberOfSteps < 2) {
-	// throw new IllegalArgumentException("Number or steps have to be grater or equal 2");
+	// throw new
+	// IllegalArgumentException("Number or steps have to be grater or equal 2");
 	// }
 	// List<Float> values = new ArrayList<Float>();
 	// final float range = mData.getMaxYValue() - mData.getMinYValue();
 	// final float tickRange = range / (numberOfSteps - 1);
 	// final float x = (float) Math.ceil(Math.log10(tickRange) - 1);
 	// final float pow10x = (float) Math.pow(10, x);
-	// final float roundedTickRange = (float) Math.ceil(tickRange / pow10x) * pow10x;
+	// final float roundedTickRange = (float) Math.ceil(tickRange / pow10x) *
+	// pow10x;
 	// float value = mData.getMinYValue();
 	// while (value <= mData.getMaxYValue()) {
 	// values.add(value);
@@ -83,8 +85,7 @@ public class ColumnChartView extends AbstractChart {
 		mAxesRenderer.drawAxisX(canvas);
 		mAxesRenderer.drawAxisY(canvas);
 		int clipRestoreCount = canvas.save();
-		mChartCalculator.calculateClippingArea();// only if zoom is enabled
-		canvas.clipRect(mChartCalculator.mClippingRect);
+		canvas.clipRect(mChartCalculator.mContentRect);
 		mChartRenderer.draw(canvas);
 		canvas.restoreToCount(clipRestoreCount);
 		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
@@ -120,7 +121,8 @@ public class ColumnChartView extends AbstractChart {
 	}
 
 	public void animationUpdate(float scale) {
-		// for (AnimatedPoint animatedPoint : mData.lines.get(0).animatedPoints) {
+		// for (AnimatedPoint animatedPoint : mData.lines.get(0).animatedPoints)
+		// {
 		// animatedPoint.update(scale);
 		// }
 		// mData.calculateBoundaries();
@@ -128,13 +130,15 @@ public class ColumnChartView extends AbstractChart {
 		// ViewCompat.postInvalidateOnAnimation(BarChart.this);
 	}
 
-	// public void animateSeries(int index, List<lecho.lib.hellocharts.model.Point> points) {
+	// public void animateSeries(int index,
+	// List<lecho.lib.hellocharts.model.Point> points) {
 	// mAnimator.cancelAnimation();
 	// mData.updateLineTarget(index, points);
 	// mAnimator.startAnimation();
 	// }
 	//
-	// public void updateSeries(int index, List<lecho.lib.hellocharts.model.Point> points) {
+	// public void updateSeries(int index,
+	// List<lecho.lib.hellocharts.model.Point> points) {
 	// mData.updateLine(index, points);
 	// ViewCompat.postInvalidateOnAnimation(BarChart.this);
 	// }
