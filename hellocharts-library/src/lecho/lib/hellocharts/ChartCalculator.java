@@ -147,6 +147,15 @@ public class ChartCalculator {
 				(int) (mMaximumViewport.height() * mContentRect.height() / mCurrentViewport.height()));
 	}
 
+	public boolean isWithinContentRect(int x, int y) {
+		if (x >= mContentRect.left && x <= mContentRect.right) {
+			if (y >= mContentRect.top && y <= mContentRect.bottom) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void setCommonMargin(int commonMargin) {
 		mCommonMargin = Utils.dp2px(mContext, commonMargin);
 	}
