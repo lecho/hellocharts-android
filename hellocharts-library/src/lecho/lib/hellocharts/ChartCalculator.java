@@ -13,7 +13,6 @@ public class ChartCalculator {
 	public static final int DEFAULT_COMMON_MARGIN_DP = 4;
 	public static final int DEFAULT_AXIS_NAME_MARGIN_DP = 4;
 	private Context mContext;
-	private int mCommonMargin;
 	private int mAxisNameMargin;
 	public int mAxisYMargin;
 	public int mAxisXMargin;
@@ -44,7 +43,6 @@ public class ChartCalculator {
 	public ChartCalculator(Context context, Chart chart) {
 		mContext = context;
 		mChart = chart;
-		mCommonMargin = Utils.dp2px(context, DEFAULT_COMMON_MARGIN_DP);
 		mAxisNameMargin = Utils.dp2px(context, DEFAULT_AXIS_NAME_MARGIN_DP);
 	}
 
@@ -55,8 +53,20 @@ public class ChartCalculator {
 			int paddingBottom) {
 		mContentRectWithMargins.set(paddingLeft + mAxisYMargin, paddingTop, width - paddingRight, height
 				- paddingBottom - mAxisXMargin);
-		mContentRect.set(mContentRectWithMargins.left + mCommonMargin, mContentRectWithMargins.top + mCommonMargin,
-				mContentRectWithMargins.right - mCommonMargin, mContentRectWithMargins.bottom - mCommonMargin);
+		int margin = Utils.dp2px(mContext, DEFAULT_COMMON_MARGIN_DP);
+		mContentRect.set(mContentRectWithMargins.left + margin, mContentRectWithMargins.top + margin,
+				mContentRectWithMargins.right - margin, mContentRectWithMargins.bottom - margin);
+	}
+
+	public void setInternalMargin(int marginLeft, int marginTop, int marginRight, int marginBottom) {
+		int margin = Utils.dp2px(mContext, marginLeft);
+		mContentRect.left = mContentRectWithMargins.left + margin;
+		margin = Utils.dp2px(mContext, marginTop);
+		mContentRect.top = mContentRectWithMargins.top + margin;
+		margin = Utils.dp2px(mContext, marginRight);
+		mContentRect.right = mContentRectWithMargins.right - margin;
+		margin = Utils.dp2px(mContext, marginBottom);
+		mContentRect.bottom = mContentRectWithMargins.bottom - margin;
 	}
 
 	public void calculateViewport() {
@@ -156,7 +166,4 @@ public class ChartCalculator {
 		return false;
 	}
 
-	public void setCommonMargin(int commonMargin) {
-		mCommonMargin = Utils.dp2px(mContext, commonMargin);
-	}
 }

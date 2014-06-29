@@ -88,6 +88,7 @@ public class ColumnChartView extends AbstractChart {
 		canvas.clipRect(mChartCalculator.mContentRect);
 		mChartRenderer.draw(canvas);
 		canvas.restoreToCount(clipRestoreCount);
+		mChartRenderer.drawUnclipped(canvas);
 		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
 	}
 
@@ -113,6 +114,8 @@ public class ColumnChartView extends AbstractChart {
 		mData.calculateBoundaries();
 		mChartCalculator.calculateAxesMargins(getContext());
 		mChartCalculator.calculateViewport();
+		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
+				getPaddingRight(), getPaddingBottom());
 		ViewCompat.postInvalidateOnAnimation(ColumnChartView.this);
 	}
 

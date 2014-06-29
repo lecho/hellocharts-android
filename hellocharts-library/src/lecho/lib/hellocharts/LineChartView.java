@@ -63,6 +63,8 @@ public class LineChartView extends AbstractChart {
 		mChartCalculator.calculateViewport();
 		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
+		int margin = mData.getPointAdditionalMargin();
+		mChartCalculator.setInternalMargin(margin, margin, margin, margin);
 	}
 
 	// Automatically calculates Y axis values.
@@ -94,11 +96,11 @@ public class LineChartView extends AbstractChart {
 		super.onDraw(canvas);
 		mAxesRenderer.drawAxisX(canvas);
 		mAxesRenderer.drawAxisY(canvas);
-		mChartRenderer.drawUnclipped(canvas);
 		int clipRestoreCount = canvas.save();
 		canvas.clipRect(mChartCalculator.mContentRect);
 		mChartRenderer.draw(canvas);
 		canvas.restoreToCount(clipRestoreCount);
+		mChartRenderer.drawUnclipped(canvas);
 		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
 	}
 
@@ -122,11 +124,12 @@ public class LineChartView extends AbstractChart {
 	public void setData(final LineChartData data) {
 		mData = data;
 		mData.calculateBoundaries();
-		mChartCalculator.setCommonMargin(mData.getPointAdditionalMargin());
 		mChartCalculator.calculateAxesMargins(getContext());
 		mChartCalculator.calculateViewport();
 		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
+		int margin = mData.getPointAdditionalMargin();
+		mChartCalculator.setInternalMargin(margin, margin, margin, margin);
 		ViewCompat.postInvalidateOnAnimation(LineChartView.this);
 	}
 
