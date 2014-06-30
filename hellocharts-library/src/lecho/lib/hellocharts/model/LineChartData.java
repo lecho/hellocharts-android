@@ -47,8 +47,8 @@ public class LineChartData extends AbstractChartData {
 	private void calculatePointAdditionalMargin() {
 		pointAdditionalMargin = ChartCalculator.DEFAULT_COMMON_MARGIN_DP;
 		for (Line line : lines) {
-			if (line.getStyle().hasPoints()) {
-				int pointMargin = line.getStyle().getPointRadius() + LineChartRenderer.DEFAULT_TOUCH_TOLLERANCE_DP;
+			if (line.hasPoints()) {
+				int pointMargin = line.getPointRadius() + LineChartRenderer.DEFAULT_TOUCH_TOLLERANCE_DP;
 				if (pointMargin > this.pointAdditionalMargin) {
 					this.pointAdditionalMargin = pointMargin;
 				}

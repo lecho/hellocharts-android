@@ -42,18 +42,18 @@ public class Utils {
 
 	public static List<ColumnValue> generateValues(int num) {
 		float x = 0.0f;
-		int[] sign = new int[] { -1, 1 };
+		int[] sign = new int[] { 1, 1 };
 		List<ColumnValue> result = new ArrayList<ColumnValue>();
 		for (int i = 0; i < num; ++i) {
 
-			result.add(new ColumnValue((float) Math.random() * 10.0f * sign[(int) Math.round(Math.random())], Utils
+			result.add(new ColumnValue((float) Math.random() * 3.0f * sign[(int) Math.round(Math.random())], Utils
 					.pickColor()));
 		}
 		return result;
 	}
 
 	public static Column generateColumns() {
-		List<ColumnValue> s1 = generateValues(2);
+		List<ColumnValue> s1 = generateValues(3);
 		Column l1 = new Column(s1);
 		l1.setHasLabels(true);
 		return l1;

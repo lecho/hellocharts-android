@@ -72,12 +72,12 @@ public class LineChartActivity extends ActionBarActivity {
 			List<LinePoint> s1 = Utils.generatePoints(NUM_OF_VALUES, 1.0f);
 			List<LinePoint> s2 = Utils.generatePoints(NUM_OF_VALUES, 1.0f);
 			Line l1 = new Line(s1);
-			l1.getStyle().setColor(Color.parseColor("#FFBB33"));
-			l1.getStyle().setFilled(false);
-			l1.getStyle().setHasLines(true);
-			l1.getStyle().setSmooth(true);
+			l1.setColor(Color.parseColor("#FFBB33"));
+			l1.setFilled(false);
+			l1.setHasLines(true);
+			l1.setSmooth(true);
 			Line l2 = new Line(s2);
-			l2.getStyle().setColor(Color.parseColor("#99CC00")).setFilled(false).setHasLines(true).setSmooth(true)
+			l2.setColor(Color.parseColor("#99CC00")).setFilled(false).setHasLines(true).setSmooth(true)
 					.setHasLabels(true);
 			List<Line> lines = new ArrayList<Line>();
 			lines.add(l2);
