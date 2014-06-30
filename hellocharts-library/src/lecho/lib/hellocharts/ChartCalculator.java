@@ -58,6 +58,14 @@ public class ChartCalculator {
 				mContentRectWithMargins.right - margin, mContentRectWithMargins.bottom - margin);
 	}
 
+	public void setInternalMargin(int margin) {
+		int marginPx = Utils.dp2px(mContext, margin);
+		mContentRect.left = mContentRectWithMargins.left + marginPx;
+		mContentRect.top = mContentRectWithMargins.top + marginPx;
+		mContentRect.right = mContentRectWithMargins.right - marginPx;
+		mContentRect.bottom = mContentRectWithMargins.bottom - marginPx;
+	}
+
 	public void setInternalMargin(int marginLeft, int marginTop, int marginRight, int marginBottom) {
 		int margin = Utils.dp2px(mContext, marginLeft);
 		mContentRect.left = mContentRectWithMargins.left + margin;
