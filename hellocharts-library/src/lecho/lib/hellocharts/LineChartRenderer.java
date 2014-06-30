@@ -293,7 +293,7 @@ public class LineChartRenderer implements ChartRenderer {
 			right = rawValueX;
 		}
 		labelRect.set(left, top, right, bottom);
-		labelPaint.setColor(style.getColor());
+		labelPaint.setColor(Utils.darkenColor(style.getColor()));
 		canvas.drawRect(left, top, right, bottom, labelPaint);
 		labelPaint.setColor(style.getTextColor());
 		canvas.drawText(text, left + mLabelMargin, bottom - mLabelMargin, labelPaint);

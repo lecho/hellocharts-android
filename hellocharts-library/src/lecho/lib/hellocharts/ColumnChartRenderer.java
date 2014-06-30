@@ -306,6 +306,7 @@ public class ColumnChartRenderer implements ChartRenderer {
 	}
 
 	private void drawLabel(Canvas canvas, Column column, ColumnValue columnValue, boolean isStacked, float offset) {
+		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final String text = column.getFormatter().formatValue(columnValue);
 		labelPaint.getTextBounds(text, 0, text.length(), mTextBounds);
 		float left = mRectToDraw.centerX() - (mTextBounds.width() / 2) - mLabelMargin;
@@ -314,23 +315,33 @@ public class ColumnChartRenderer implements ChartRenderer {
 		float bottom;
 		if (isStacked && mTextBounds.height() < mRectToDraw.height()) {
 			if (columnValue.getValue() >= DEFAULT_BASE_VALUE) {
-				top = mRectToDraw.top + offset;
-				bottom = mRectToDraw.top + offset + mTextBounds.height() + mLabelMargin * 2;
+				top = mRectToDraw.top;
+				bottom = mRectToDraw.top + mTextBounds.height() + mLabelMargin * 2;
 			} else {
-				top = mRectToDraw.bottom - offset - mTextBounds.height() - mLabelMargin * 2;
-				bottom = mRectToDraw.bottom - offset;
+				top = mRectToDraw.bottom - mTextBounds.height() - mLabelMargin * 2;
+				bottom = mRectToDraw.bottom;
 			}
 			labelPaint.setColor(column.getTextColor());
 			canvas.drawText(text, left + mLabelMargin, bottom - mLabelMargin, labelPaint);
 		} else if (!isStacked) {
 			if (columnValue.getValue() >= DEFAULT_BASE_VALUE) {
 				top = mRectToDraw.top - offset - mTextBounds.height() - mLabelMargin * 2;
-				bottom = mRectToDraw.top - offset;
+				if (top < chartCalculator.mContentRect.top) {
+					top = mRectToDraw.top + offset;
+					bottom = mRectToDraw.top + offset + mTextBounds.height() + mLabelMargin * 2;
+				} else {
+					bottom = mRectToDraw.top - offset;
+				}
 			} else {
-				top = mRectToDraw.bottom + offset;
 				bottom = mRectToDraw.bottom + offset + mTextBounds.height() + mLabelMargin * 2;
+				if (bottom > chartCalculator.mContentRect.bottom) {
+					top = mRectToDraw.bottom - offset - mTextBounds.height() - mLabelMargin * 2;
+					bottom = mRectToDraw.bottom - offset;
+				} else {
+					top = mRectToDraw.bottom + offset;
+				}
 			}
-			labelPaint.setColor(columnValue.getColor());
+			labelPaint.setColor(Utils.darkenColor(columnValue.getColor()));
 			canvas.drawRect(left, top, right, bottom, labelPaint);
 			labelPaint.setColor(column.getTextColor());
 			canvas.drawText(text, left + mLabelMargin, bottom - mLabelMargin, labelPaint);
