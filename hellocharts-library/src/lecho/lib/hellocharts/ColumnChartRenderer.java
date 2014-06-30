@@ -17,7 +17,7 @@ import android.graphics.Typeface;
 
 public class ColumnChartRenderer implements ChartRenderer {
 	private static final int DEFAULT_SUBCOLUMN_SPACING_DP = 1;
-	private static final int DEFAULT_TOUCH_STROKE_WIDTH_DP = 4;
+	private static final int DEFAULT_TOUCH_ADDITIONAL_WIDTH_DP = 2;
 	private static final int DEFAULT_LABEL_MARGIN_DP = 4;
 	private static final int DEFAULT_LABEL_OFFSET_DP = 4;
 	private static final float DEFAULT_BASE_VALUE = 0.0f;
@@ -26,6 +26,7 @@ public class ColumnChartRenderer implements ChartRenderer {
 	private static final int MODE_HIGHLIGHT = 2;
 	private int mLabelMargin;
 	private int labelOffset;
+	private int touchAdditionalWidth;
 	private Paint mColumnPaint = new Paint();
 	private Paint labelPaint = new Paint();
 	private Context mContext;
@@ -42,10 +43,10 @@ public class ColumnChartRenderer implements ChartRenderer {
 		labelOffset = Utils.dp2px(context, DEFAULT_LABEL_OFFSET_DP);
 		mLabelMargin = Utils.dp2px(context, DEFAULT_LABEL_MARGIN_DP);
 		mSubcolumnSpacing = Utils.dp2px(mContext, DEFAULT_SUBCOLUMN_SPACING_DP);
+		touchAdditionalWidth = Utils.dp2px(context, DEFAULT_TOUCH_ADDITIONAL_WIDTH_DP);
 
 		mColumnPaint.setAntiAlias(true);
 		mColumnPaint.setStyle(Paint.Style.FILL);
-		mColumnPaint.setStrokeWidth(Utils.dp2px(mContext, DEFAULT_TOUCH_STROKE_WIDTH_DP));
 		mColumnPaint.setStrokeCap(Cap.SQUARE);
 
 		labelPaint.setAntiAlias(true);
@@ -267,9 +268,9 @@ public class ColumnChartRenderer implements ChartRenderer {
 			boolean isStacked) {
 		mColumnPaint.setColor(columnValue.getColor());
 		if (mSelectedValue.secondIndex == valueIndex) {
-			mColumnPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-			canvas.drawRect(mRectToDraw, mColumnPaint);
-			mColumnPaint.setStyle(Paint.Style.FILL);
+			mColumnPaint.setColor(Utils.darkenColor(columnValue.getColor()));
+			canvas.drawRect(mRectToDraw.left - touchAdditionalWidth, mRectToDraw.top, mRectToDraw.right
+					+ touchAdditionalWidth, mRectToDraw.bottom, mColumnPaint);
 			if (column.hasLabels()) {
 				drawLabel(canvas, column, columnValue, isStacked, labelOffset);
 			}

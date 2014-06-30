@@ -10,8 +10,8 @@ public abstract class Utils {
 	public static final int COLOR_GREEN = Color.parseColor("#99CC00");
 	public static final int COLOR_ORANGE = Color.parseColor("#FFBB33");
 	public static final int COLOR_RED = Color.parseColor("#FF4444");
-	private static final float SATURATION_ADJUST = 1.3f;
-	private static final float INTENSITY_ADJUST = 0.8f;
+	private static final float SATURATION_DARKEN = 1.1f;
+	private static final float INTENSITY_DARKEN = 0.9f;
 	private static float[] hsv = new float[3];
 
 	public static final int pickColor() {
@@ -39,10 +39,11 @@ public abstract class Utils {
 				.getDisplayMetrics()) + 0.5f);
 	}
 
+	// TODO: that's not threat safe, should it be?(I hope not).
 	public static int darkenColor(int color) {
 		Color.colorToHSV(color, hsv);
-		hsv[1] = Math.min(hsv[1] * SATURATION_ADJUST, 1.0f);
-		hsv[2] = hsv[2] * INTENSITY_ADJUST;
+		hsv[1] = Math.min(hsv[1] * SATURATION_DARKEN, 1.0f);
+		hsv[2] = hsv[2] * INTENSITY_DARKEN;
 		return Color.HSVToColor(hsv);
 	}
 
