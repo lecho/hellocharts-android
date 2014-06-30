@@ -3,7 +3,7 @@ package lecho.sample.hellocharts;
 import java.util.ArrayList;
 import java.util.List;
 
-import lecho.lib.hellocharts.model.Axis.AxisValue;
+import lecho.lib.hellocharts.model.AxisValue;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnValue;
 import lecho.lib.hellocharts.model.LinePoint;

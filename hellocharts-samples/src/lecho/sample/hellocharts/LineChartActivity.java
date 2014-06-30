@@ -84,17 +84,17 @@ public class LineChartActivity extends ActionBarActivity {
 			lines.add(l1);
 			data.lines = lines;
 			Axis axisX = new Axis();
-			axisX.values = Utils.generateAxis(0.0f, 100.0f, 1.0f);
-			axisX.name = "Axis X";
-			axisX.textSize = 14;
-			axisX.color = Color.parseColor("#FFBB33");
+			axisX.setValues(Utils.generateAxis(0.0f, 100.0f, 1.0f));
+			axisX.setName("Axis X");
+			axisX.setTextSize(14);
+			axisX.setColor(Color.parseColor("#FFBB33"));
 			data.setAxisX(axisX);
 
 			Axis axisY = new Axis();
-			axisY.values = Utils.generateAxis(0.0f, 100.0f, 15.0f);
-			axisY.name = "Axis Y";
-			axisY.textSize = 14;
-			axisY.color = Color.parseColor("#99CC00");
+			axisY.setValues(Utils.generateAxis(0.0f, 100.0f, 15.0f));
+			axisY.setName("Axis Y");
+			axisY.setTextSize(14);
+			axisY.setColor(Color.parseColor("#99CC00"));
 			data.setAxisY(axisY);
 			chart.setData(data);
 			chart.setZoomMode(ZoomMode.HORIZONTAL);

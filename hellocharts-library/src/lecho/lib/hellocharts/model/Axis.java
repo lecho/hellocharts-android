@@ -1,6 +1,6 @@
 package lecho.lib.hellocharts.model;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import android.graphics.Color;
@@ -8,11 +8,11 @@ import android.graphics.Color;
 public class Axis {
 	private static final int DEFAULT_AXIS_TEXT_SIZE_SP = 10;
 	private static final int DEFAULT_AXIS_COLOR = Color.LTGRAY;
-	public List<AxisValue> values = Collections.emptyList();
-	public String name = "";
-	public int color = DEFAULT_AXIS_COLOR;
-	public int textSize = DEFAULT_AXIS_TEXT_SIZE_SP;
-	public AxisValueFormatter formatter = new DefaultAxisValueFormatter();
+	private List<AxisValue> values = new ArrayList<AxisValue>();
+	private String name;
+	private int color = DEFAULT_AXIS_COLOR;
+	private int textSize = DEFAULT_AXIS_TEXT_SIZE_SP;
+	private AxisValueFormatter formatter = new DefaultAxisValueFormatter();
 
 	public Axis() {
 
@@ -22,18 +22,53 @@ public class Axis {
 		this.values = values;
 	}
 
-	public static class AxisValue {
-		public float value;
-		public String valueName;
+	public List<AxisValue> getValues() {
+		return values;
+	}
 
-		public AxisValue(float value) {
-			this(value, null);
-		}
+	public Axis setValues(List<AxisValue> values) {
+		this.values = values;
+		return this;
+	}
 
-		public AxisValue(float value, String valueName) {
-			this.value = value;
-			this.valueName = valueName;
+	public String getName() {
+		return name;
+	}
+
+	public Axis setName(String name) {
+		this.name = name;
+		return this;
+	}
+
+	public int getColor() {
+		return color;
+	}
+
+	public Axis setColor(int color) {
+		this.color = color;
+		return this;
+	}
+
+	public int getTextSize() {
+		return textSize;
+	}
+
+	public Axis setTextSize(int textSize) {
+		this.textSize = textSize;
+		return this;
+	}
+
+	public AxisValueFormatter getFormatter() {
+		return formatter;
+	}
+
+	public Axis setFormatter(AxisValueFormatter formatter) {
+		if (null == formatter) {
+			this.formatter = new DefaultAxisValueFormatter();
+		} else {
+			this.formatter = formatter;
 		}
+		return this;
 	}
 
 	public interface AxisValueFormatter {
@@ -46,7 +81,7 @@ public class Axis {
 
 		@Override
 		public String formatValue(AxisValue axisValue) {
-			return String.format(DEFAULT_AXES_FORMAT, axisValue.value);
+			return String.format(DEFAULT_AXES_FORMAT, axisValue.getValue());
 		}
 
 	}
