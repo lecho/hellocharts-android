@@ -1,4 +1,4 @@
-package lecho.lib.hellocharts.gestures;
+package lecho.lib.hellocharts.gesture;
 
 import android.view.MotionEvent;
 

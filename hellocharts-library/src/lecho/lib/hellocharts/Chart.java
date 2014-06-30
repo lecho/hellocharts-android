@@ -1,9 +1,11 @@
 package lecho.lib.hellocharts;
 
-import lecho.lib.hellocharts.gestures.ChartTouchHandler;
-import lecho.lib.hellocharts.gestures.ZoomMode;
+import lecho.lib.hellocharts.gesture.ChartTouchHandler;
+import lecho.lib.hellocharts.gesture.ZoomMode;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
+import lecho.lib.hellocharts.renderer.AxesRenderer;
+import lecho.lib.hellocharts.renderer.ChartRenderer;
 
 public interface Chart {
 

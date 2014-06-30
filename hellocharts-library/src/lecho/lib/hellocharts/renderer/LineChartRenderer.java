@@ -1,10 +1,12 @@
-package lecho.lib.hellocharts;
+package lecho.lib.hellocharts.renderer;
 
+import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.LinePoint;
 import lecho.lib.hellocharts.model.SelectedValue;
-import lecho.lib.hellocharts.utils.Utils;
+import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.view.LineChartView;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;

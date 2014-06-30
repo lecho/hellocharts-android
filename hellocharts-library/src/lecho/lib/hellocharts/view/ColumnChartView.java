@@ -1,12 +1,15 @@
-package lecho.lib.hellocharts;
+package lecho.lib.hellocharts.view;
 
+import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
-import lecho.lib.hellocharts.gestures.DefaultTouchHandler;
+import lecho.lib.hellocharts.gesture.DefaultTouchHandler;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.ColumnValue;
 import lecho.lib.hellocharts.model.SelectedValue;
+import lecho.lib.hellocharts.renderer.AxesRenderer;
+import lecho.lib.hellocharts.renderer.ColumnChartRenderer;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.os.Build;
@@ -15,7 +18,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 
-public class ColumnChartView extends AbstractChart {
+public class ColumnChartView extends AbstractChartView {
 	private static final String TAG = "BarChart";
 	private ColumnChartData mData;
 	private ChartAnimator mAnimator;

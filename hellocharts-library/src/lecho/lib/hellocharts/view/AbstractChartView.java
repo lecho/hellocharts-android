@@ -1,12 +1,16 @@
-package lecho.lib.hellocharts;
+package lecho.lib.hellocharts.view;
 
-import lecho.lib.hellocharts.gestures.ChartTouchHandler;
-import lecho.lib.hellocharts.gestures.ZoomMode;
+import lecho.lib.hellocharts.Chart;
+import lecho.lib.hellocharts.ChartCalculator;
+import lecho.lib.hellocharts.gesture.ChartTouchHandler;
+import lecho.lib.hellocharts.gesture.ZoomMode;
+import lecho.lib.hellocharts.renderer.AxesRenderer;
+import lecho.lib.hellocharts.renderer.ChartRenderer;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 
-public abstract class AbstractChart extends View implements Chart {
+public abstract class AbstractChartView extends View implements Chart {
 	protected ChartCalculator mChartCalculator;
 	protected AxesRenderer mAxesRenderer;
 	protected ChartTouchHandler mTouchHandler;
@@ -16,15 +20,15 @@ public abstract class AbstractChart extends View implements Chart {
 	protected boolean isValueTouchEnabled = true;
 	protected ZoomMode zoomMode = ZoomMode.HORIZONTAL_AND_VERTICAL;
 
-	public AbstractChart(Context context) {
+	public AbstractChartView(Context context) {
 		super(context);
 	}
 
-	public AbstractChart(Context context, AttributeSet attrs) {
+	public AbstractChartView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 
-	public AbstractChart(Context context, AttributeSet attrs, int defStyleAttr) {
+	public AbstractChartView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 	}
 

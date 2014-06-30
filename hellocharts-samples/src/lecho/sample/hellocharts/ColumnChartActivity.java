@@ -3,10 +3,10 @@ package lecho.sample.hellocharts;
 import java.util.ArrayList;
 import java.util.List;
 
-import lecho.lib.hellocharts.ColumnChartView;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
+import lecho.lib.hellocharts.view.ColumnChartView;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -88,7 +88,7 @@ public class ColumnChartActivity extends ActionBarActivity {
 			axisY.textSize = 14;
 			axisY.color = Color.parseColor("#99CC00");
 			data.setAxisY(axisY);
-			data.setStacked(true);
+			//data.setStacked(true);
 
 			chart.setData(data);
 			// chart.setBackgroundColor(Color.WHITE);

@@ -1,6 +1,7 @@
 package lecho.lib.hellocharts;
 
-import lecho.lib.hellocharts.utils.Utils;
+import lecho.lib.hellocharts.renderer.AxesRenderer;
+import lecho.lib.hellocharts.util.Utils;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.PointF;

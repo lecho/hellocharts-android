@@ -1,8 +1,8 @@
-package lecho.lib.hellocharts.gestures;
+package lecho.lib.hellocharts.gesture;
 
 import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartCalculator;
-import lecho.lib.hellocharts.ChartRenderer;
+import lecho.lib.hellocharts.renderer.ChartRenderer;
 import android.content.Context;
 import android.view.GestureDetector;
 import android.view.MotionEvent;

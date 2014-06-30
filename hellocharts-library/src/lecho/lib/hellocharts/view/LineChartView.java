@@ -1,12 +1,15 @@
-package lecho.lib.hellocharts;
+package lecho.lib.hellocharts.view;
 
+import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
-import lecho.lib.hellocharts.gestures.DefaultTouchHandler;
+import lecho.lib.hellocharts.gesture.DefaultTouchHandler;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.LinePoint;
 import lecho.lib.hellocharts.model.SelectedValue;
+import lecho.lib.hellocharts.renderer.AxesRenderer;
+import lecho.lib.hellocharts.renderer.LineChartRenderer;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -16,7 +19,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 
-public class LineChartView extends AbstractChart {
+public class LineChartView extends AbstractChartView {
 	private static final String TAG = "LineChart";
 	private LineChartData mData;
 	private ChartAnimator mAnimator;

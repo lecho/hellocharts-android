@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import lecho.lib.hellocharts.ChartCalculator;
-import lecho.lib.hellocharts.LineChartRenderer;
+import lecho.lib.hellocharts.renderer.LineChartRenderer;
 
 public class LineChartData extends AbstractChartData {
 

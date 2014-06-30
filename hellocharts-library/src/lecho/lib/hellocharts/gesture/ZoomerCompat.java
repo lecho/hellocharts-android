@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package lecho.lib.hellocharts.gestures;
+package lecho.lib.hellocharts.gesture;
 
 import android.content.Context;
 import android.os.SystemClock;

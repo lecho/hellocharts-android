@@ -1,4 +1,4 @@
-package lecho.lib.hellocharts;
+package lecho.lib.hellocharts.renderer;
 
 import android.graphics.Canvas;
 

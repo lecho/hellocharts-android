@@ -3,12 +3,12 @@ package lecho.sample.hellocharts;
 import java.util.ArrayList;
 import java.util.List;
 
-import lecho.lib.hellocharts.LineChartView;
-import lecho.lib.hellocharts.gestures.ZoomMode;
+import lecho.lib.hellocharts.gesture.ZoomMode;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.LinePoint;
+import lecho.lib.hellocharts.view.LineChartView;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

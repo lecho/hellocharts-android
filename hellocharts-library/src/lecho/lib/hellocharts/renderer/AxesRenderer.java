@@ -1,8 +1,10 @@
-package lecho.lib.hellocharts;
+package lecho.lib.hellocharts.renderer;
 
+import lecho.lib.hellocharts.Chart;
+import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Axis.AxisValue;
-import lecho.lib.hellocharts.utils.Utils;
+import lecho.lib.hellocharts.util.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;

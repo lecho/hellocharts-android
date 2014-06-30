@@ -53,7 +53,7 @@ public class Utils {
 	}
 
 	public static Column generateColumns() {
-		List<ColumnValue> s1 = generateValues(3);
+		List<ColumnValue> s1 = generateValues(1);
 		Column l1 = new Column(s1);
 		l1.setHasLabels(true);
 		return l1;

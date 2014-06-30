@@ -1,4 +1,4 @@
-package lecho.lib.hellocharts.utils;
+package lecho.lib.hellocharts.util;
 
 import android.content.Context;
 import android.graphics.Color;
