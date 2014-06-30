@@ -259,6 +259,7 @@ public class LineChartRenderer implements ChartRenderer {
 		if (mSelectedValue.firstIndex == lineIndex && mSelectedValue.secondIndex == valueIndex) {
 			final float touchRadius = Utils.dp2px(mContext, line.getPointRadius() + DEFAULT_TOUCH_TOLLERANCE_DP);
 			final float pointRadius = Utils.dp2px(mContext, line.getPointRadius());
+			mPointPaint.setColor(Utils.darkenColor(line.getColor()));
 			canvas.drawCircle(rawValueX, rawValueY, touchRadius, mPointPaint);
 			if (line.hasLabels()) {
 				drawLabel(canvas, line, linePoint, rawValueX, rawValueY, pointRadius + labelOffset);
