@@ -7,18 +7,15 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.util.Pair;
 
 public class ChartCalculator {
 	// TODO: use getters/setters instead of public members
 	public static final int DEFAULT_COMMON_MARGIN_DP = 4;
-	public static final int DEFAULT_AXIS_NAME_MARGIN_DP = 4;
 	private Context mContext;
-	private int mAxisNameMargin;
 	public int mAxisYMargin;
 	public int mAxisXMargin;
-	public Pair<Integer, Integer> mAxisXHeight = new Pair<Integer, Integer>(0, 0);
-	public Pair<Integer, Integer> mAxisYWidth = new Pair<Integer, Integer>(0, 0);
+	// public Pair<Integer, Integer> mAxisXHeight = new Pair<Integer, Integer>(0, 0);
+	// public Pair<Integer, Integer> mAxisYWidth = new Pair<Integer, Integer>(0, 0);
 	private Chart mChart;
 	/**
 	 * The current area (in pixels) for chart data, including mCoomonMargin. Labels are drawn outside this area.
@@ -44,7 +41,6 @@ public class ChartCalculator {
 	public ChartCalculator(Context context, Chart chart) {
 		mContext = context;
 		mChart = chart;
-		mAxisNameMargin = Utils.dp2px(context, DEFAULT_AXIS_NAME_MARGIN_DP);
 	}
 
 	/**
@@ -116,19 +112,8 @@ public class ChartCalculator {
 
 	public void calculateAxesMargins(Context context) {
 		final AxesRenderer axesRenderer = mChart.getAxesRenderer();
-		mAxisXHeight = axesRenderer.getAxisXHeight();
-		mAxisXMargin = mAxisXHeight.first + mAxisXHeight.second;
-		if (mAxisXHeight.first > 0 && mAxisXHeight.second > 0) {
-			// Additional margin for separation axis name from axis values.
-			mAxisXMargin += mAxisNameMargin;
-		}
-
-		mAxisYWidth = axesRenderer.getAxisYWidth();
-		mAxisYMargin = mAxisYWidth.first + mAxisYWidth.second;
-		if (mAxisYWidth.first > 0 && mAxisYWidth.second > 0) {
-			// Additional margin for separation axis name from axis values.
-			mAxisYMargin += mAxisNameMargin;
-		}
+		mAxisXMargin = axesRenderer.getAxisXHeight(0);
+		mAxisYMargin = axesRenderer.getAxisYWidth(0);
 	}
 
 	public float calculateRawX(float valueX) {
