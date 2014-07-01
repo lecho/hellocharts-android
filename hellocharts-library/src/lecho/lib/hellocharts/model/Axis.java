@@ -3,6 +3,7 @@ package lecho.lib.hellocharts.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 
 public class Axis {
@@ -77,6 +78,7 @@ public class Axis {
 		public String formatValue(AxisValue value);
 	}
 
+	@SuppressLint("DefaultLocale")
 	public static class DefaultAxisValueFormatter implements AxisValueFormatter {
 
 		@Override

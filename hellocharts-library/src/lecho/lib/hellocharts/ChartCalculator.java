@@ -1,6 +1,5 @@
 package lecho.lib.hellocharts;
 
-import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.util.Utils;
 import android.content.Context;
 import android.graphics.Point;
@@ -12,10 +11,6 @@ public class ChartCalculator {
 	// TODO: use getters/setters instead of public members
 	public static final int DEFAULT_COMMON_MARGIN_DP = 4;
 	private Context mContext;
-	public int mAxisYMargin;
-	public int mAxisXMargin;
-	// public Pair<Integer, Integer> mAxisXHeight = new Pair<Integer, Integer>(0, 0);
-	// public Pair<Integer, Integer> mAxisYWidth = new Pair<Integer, Integer>(0, 0);
 	private Chart mChart;
 	/**
 	 * The current area (in pixels) for chart data, including mCoomonMargin. Labels are drawn outside this area.
@@ -48,8 +43,7 @@ public class ChartCalculator {
 	 */
 	public void calculateContentArea(int width, int height, int paddingLeft, int paddingTop, int paddingRight,
 			int paddingBottom) {
-		mContentRectWithMargins.set(paddingLeft + mAxisYMargin, paddingTop, width - paddingRight, height
-				- paddingBottom - mAxisXMargin);
+		mContentRectWithMargins.set(paddingLeft, paddingTop, width - paddingRight, height - paddingBottom);
 		int margin = Utils.dp2px(mContext, DEFAULT_COMMON_MARGIN_DP);
 		mContentRect.set(mContentRectWithMargins.left + margin, mContentRectWithMargins.top + margin,
 				mContentRectWithMargins.right - margin, mContentRectWithMargins.bottom - margin);
@@ -72,6 +66,13 @@ public class ChartCalculator {
 		mContentRect.right = mContentRectWithMargins.right - margin;
 		margin = Utils.dp2px(mContext, marginBottom);
 		mContentRect.bottom = mContentRectWithMargins.bottom - margin;
+	}
+
+	public void setAxesMargin(int axisXMargin, int axisYMargin) {
+		mContentRectWithMargins.left = mContentRectWithMargins.left + axisXMargin;
+		mContentRectWithMargins.bottom = mContentRectWithMargins.bottom - axisYMargin;
+		mContentRect.left = mContentRect.left + axisXMargin;
+		mContentRect.bottom = mContentRect.bottom - axisYMargin;
 	}
 
 	public void calculateViewport() {
@@ -108,12 +109,6 @@ public class ChartCalculator {
 		x = Math.max(mMaximumViewport.left, Math.min(x, mMaximumViewport.right - curWidth));
 		y = Math.max(mMaximumViewport.top + curHeight, Math.min(y, mMaximumViewport.bottom));
 		mCurrentViewport.set(x, y - curHeight, x + curWidth, y);
-	}
-
-	public void calculateAxesMargins(Context context) {
-		final AxesRenderer axesRenderer = mChart.getAxesRenderer();
-		mAxisXMargin = axesRenderer.getAxisXHeight(0);
-		mAxisYMargin = axesRenderer.getAxisYWidth(0);
 	}
 
 	public float calculateRawX(float valueX) {

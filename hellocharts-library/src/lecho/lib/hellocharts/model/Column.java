@@ -87,9 +87,9 @@ public class Column {
 		public String formatValue(ColumnValue value);
 	}
 
+	@SuppressLint("DefaultLocale")
 	public static class DefaultColumnValueFormatter implements ColumnValueFormatter {
 
-		@SuppressLint("DefaultLocale")
 		@Override
 		public String formatValue(ColumnValue value) {
 			return String.format(DEFAULT_VALUE_FORMAT, value.getValue());
