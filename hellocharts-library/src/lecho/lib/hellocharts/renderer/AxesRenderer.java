@@ -12,7 +12,6 @@ import android.graphics.Paint.Align;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.text.TextUtils;
-import android.util.Log;
 
 public class AxesRenderer {
 	private static final int DEFAULT_AXIS_MARGIN_DP = 2;
@@ -29,6 +28,8 @@ public class AxesRenderer {
 	private Rect textBounds = new Rect();
 	private float[] axisXDrawBuffer;
 	private float[] axisYDrawBuffer;
+	private final AxisStops axisXStopsBuffer = new AxisStops();
+	private final AxisStops axisYStopsBuffer = new AxisStops();
 
 	public AxesRenderer(Context context, Chart chart) {
 		mContext = context;
@@ -149,5 +150,15 @@ public class AxesRenderer {
 			canvas.drawTextOnPath(axisY.getName(), mAxisYNamePath, 0, 0, mAxisTextPaint);
 			mAxisYNamePath.reset();
 		}
+	}
+
+	/**
+	 * A simple class representing axis label values used only for auto generated axes.
+	 * 
+	 */
+	private static class AxisStops {
+		float[] stops = new float[] {};
+		int numStops;
+		int decimals;
 	}
 }
