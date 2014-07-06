@@ -131,6 +131,7 @@ public class LineChartView extends AbstractChartView {
 				getPaddingRight(), getPaddingBottom());
 		mChartCalculator.setInternalMargin(mData.getPointAdditionalMargin());
 		mChartCalculator.setAxesMargin(mAxesRenderer.getAxisXHeight(0), mAxesRenderer.getAxisYWidth(0));
+		mAxesRenderer.initRenderer();
 		ViewCompat.postInvalidateOnAnimation(LineChartView.this);
 	}
 

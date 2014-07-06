@@ -91,7 +91,7 @@ public class LineChartActivity extends ActionBarActivity {
 			data.setAxisX(axisX);
 
 			Axis axisY = new Axis();
-			axisY.setValues(Utils.generateAxis(0.0f, 100.0f, 15.0f));
+			axisY.setValues(Utils.generateAxis(0.0f, 95.0f, 5.0f));
 			axisY.setName("Axis Y");
 			axisY.setTextSize(14);
 			axisY.setColor(Color.parseColor("#99CC00"));
