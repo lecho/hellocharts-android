@@ -56,7 +56,7 @@ public class ColumnChartView extends AbstractChartView {
 		mChartCalculator.calculateViewport();
 		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
-		mChartCalculator.setAxesMargin(mAxesRenderer.getAxisXHeight(0), mAxesRenderer.getAxisYWidth(0));
+		mChartCalculator.setAxesMargin(mAxesRenderer.getAxisXHeight(), mAxesRenderer.getAxisYWidth());
 	}
 
 	// Automatically calculates Y axis values.
@@ -119,7 +119,8 @@ public class ColumnChartView extends AbstractChartView {
 		mChartCalculator.calculateViewport();
 		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
-		mChartCalculator.setAxesMargin(mAxesRenderer.getAxisXHeight(0), mAxesRenderer.getAxisYWidth(0));
+		mAxesRenderer.initRenderer();
+		mChartCalculator.setAxesMargin(mAxesRenderer.getAxisXHeight(), mAxesRenderer.getAxisYWidth());
 		ViewCompat.postInvalidateOnAnimation(ColumnChartView.this);
 	}
 
