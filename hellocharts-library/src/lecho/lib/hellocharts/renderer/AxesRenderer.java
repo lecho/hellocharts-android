@@ -52,7 +52,7 @@ public class AxesRenderer {
 		axisYDrawBuffer = new float[mChart.getData().getAxisY().getValues().size() * 4];
 	}
 
-	public int getAxisXHeight(int foo) {
+	public int getAxisXHeight() {
 		final Axis axisX = mChart.getData().getAxisX();
 		axisXValueHeight = 0;
 		if (!axisX.getValues().isEmpty()) {
@@ -65,7 +65,7 @@ public class AxesRenderer {
 		return axisXValueHeight + axisXNameHeight + axisMargin;
 	}
 
-	public int getAxisYWidth(int foo) {
+	public int getAxisYWidth() {
 		final Axis axisY = mChart.getData().getAxisY();
 		mAxisTextPaint.setTextSize(Utils.sp2px(mContext, axisY.getTextSize()));
 		axisYValueWidth = 0;

@@ -66,7 +66,7 @@ public class LineChartView extends AbstractChartView {
 		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
 		mChartCalculator.setInternalMargin(mData.getPointAdditionalMargin());
-		mChartCalculator.setAxesMargin(mAxesRenderer.getAxisXHeight(0), mAxesRenderer.getAxisYWidth(0));
+		mChartCalculator.setAxesMargin(mAxesRenderer.getAxisXHeight(), mAxesRenderer.getAxisYWidth());
 	}
 
 	// Automatically calculates Y axis values.
@@ -130,8 +130,8 @@ public class LineChartView extends AbstractChartView {
 		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
 		mChartCalculator.setInternalMargin(mData.getPointAdditionalMargin());
-		mChartCalculator.setAxesMargin(mAxesRenderer.getAxisXHeight(0), mAxesRenderer.getAxisYWidth(0));
 		mAxesRenderer.initRenderer();
+		mChartCalculator.setAxesMargin(mAxesRenderer.getAxisXHeight(), mAxesRenderer.getAxisYWidth());
 		ViewCompat.postInvalidateOnAnimation(LineChartView.this);
 	}
 
