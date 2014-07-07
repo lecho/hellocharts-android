@@ -77,6 +77,35 @@ public abstract class Utils {
 	}
 
 	/**
+	 * Returns next bigger double value considering precision of the argument.
+	 * 
+	 */
+	public static double nextUp(double d) {
+		if (Double.isNaN(d) || d == Double.POSITIVE_INFINITY) {
+			return d;
+		} else {
+			d += 0.0;
+			return Double.longBitsToDouble(Double.doubleToRawLongBits(d) + ((d >= 0.0) ? +1 : -1));
+		}
+	}
+
+	/**
+	 * Returns next smaller float value considering precision of the argument.
+	 * 
+	 */
+	public static double nextDown(double d) {
+		if (Double.isNaN(d) || d == Double.NEGATIVE_INFINITY) {
+			return d;
+		} else {
+			if (d == 0.0f) {
+				return -Float.MIN_VALUE;
+			} else {
+				return Double.longBitsToDouble(Double.doubleToRawLongBits(d) + ((d > 0.0f) ? -1 : +1));
+			}
+		}
+	}
+
+	/**
 	 * Checks how many "representable floats" exists between 'a' and 'b' and returns true if that number is less then
 	 * maxUlps. If maxUlps = 1 this will have the same results as nextDawnF(a) >= a <= nextUpF(a)
 	 * 
@@ -94,5 +123,17 @@ public abstract class Utils {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Rounds the given number to the given number of significant digits. Based on an answer on <a
+	 * href="http://stackoverflow.com/questions/202302">Stack Overflow</a>.
+	 */
+	public static float roundToOneSignificantFigure(double num) {
+		final float d = (float) Math.ceil((float) Math.log10(num < 0 ? -num : num));
+		final int power = 1 - (int) d;
+		final float magnitude = (float) Math.pow(10, power);
+		final long shifted = Math.round(num * magnitude);
+		return shifted / magnitude;
 	}
 }
