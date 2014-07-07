@@ -9,15 +9,13 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
-import android.graphics.Path;
 import android.graphics.Rect;
 import android.text.TextUtils;
 
 public class AxesRenderer {
-	private static final int DEFAULT_AXIS_MARGIN_DP = 2;
+	private static final int DEFAULT_AXIS_MARGIN_DP = 4;
 	private Paint mAxisTextPaint;
 	private Paint mAxisLinePaint;
-	private Path mAxisYNamePath;
 	private Chart mChart;
 	private Context mContext;
 	private int axisXValueHeight;
@@ -44,7 +42,6 @@ public class AxesRenderer {
 		mAxisTextPaint.setStyle(Paint.Style.FILL);
 		mAxisTextPaint.setStrokeWidth(1);
 
-		mAxisYNamePath = new Path();
 		axisMargin = Utils.dp2px(mContext, DEFAULT_AXIS_MARGIN_DP);
 	}
 
@@ -145,10 +142,10 @@ public class AxesRenderer {
 		mAxisTextPaint.setTextAlign(Align.CENTER);
 		if (!TextUtils.isEmpty(axisY.getName())) {
 			rawX = chartCalculator.mContentRectWithMargins.left - axisYValueWidth - axisMargin;
-			mAxisYNamePath.moveTo(rawX, chartCalculator.mContentRect.bottom);
-			mAxisYNamePath.lineTo(rawX, chartCalculator.mContentRect.top);
-			canvas.drawTextOnPath(axisY.getName(), mAxisYNamePath, 0, 0, mAxisTextPaint);
-			mAxisYNamePath.reset();
+			canvas.save();
+			canvas.rotate(-90, chartCalculator.mContentRect.centerY(), chartCalculator.mContentRect.centerY());
+			canvas.drawText(axisY.getName(), chartCalculator.mContentRect.centerY(), rawX, mAxisTextPaint);
+			canvas.restore();
 		}
 	}
 
