@@ -28,6 +28,8 @@ public class AxesRenderer {
 	private float[] axisYDrawBuffer;
 	private final AxisStops axisXStopsBuffer = new AxisStops();
 	private final AxisStops axisYStopsBuffer = new AxisStops();
+	private int mMaxLabelWidth;
+	private int mLabelHeight;
 
 	public AxesRenderer(Context context, Chart chart) {
 		mContext = context;
@@ -43,6 +45,9 @@ public class AxesRenderer {
 		mAxisTextPaint.setStrokeWidth(1);
 
 		axisMargin = Utils.dp2px(mContext, DEFAULT_AXIS_MARGIN_DP);
+
+		// mLabelHeight = (int) Math.abs(mLabelTextPaint.getFontMetrics().top);
+		// mMaxLabelWidth = (int) mLabelTextPaint.measureText("0000");
 	}
 
 	public void initRenderer() {
@@ -146,6 +151,140 @@ public class AxesRenderer {
 			canvas.rotate(-90, chartCalculator.mContentRect.centerY(), chartCalculator.mContentRect.centerY());
 			canvas.drawText(axisY.getName(), chartCalculator.mContentRect.centerY(), rawX, mAxisTextPaint);
 			canvas.restore();
+		}
+	}
+
+	// /**
+	// * Draws the chart axes and labels onto the canvas.
+	// */
+	// private void drawAxes(Canvas canvas) {
+	// // Computes axis stops (in terms of numerical value and position on screen)
+	// int i;
+	//
+	// computeAxisStops(mCurrentViewport.left, mCurrentViewport.right, mContentRect.width() / mMaxLabelWidth / 2,
+	// mXStopsBuffer);
+	// computeAxisStops(mCurrentViewport.top, mCurrentViewport.bottom, mContentRect.height() / mLabelHeight / 2,
+	// mYStopsBuffer);
+	//
+	// // Avoid unnecessary allocations during drawing. Re-use allocated
+	// // arrays and only reallocate if the number of stops grows.
+	// if (mAxisXPositionsBuffer.length < mXStopsBuffer.numStops) {
+	// mAxisXPositionsBuffer = new float[mXStopsBuffer.numStops];
+	// }
+	// if (mAxisYPositionsBuffer.length < mYStopsBuffer.numStops) {
+	// mAxisYPositionsBuffer = new float[mYStopsBuffer.numStops];
+	// }
+	// if (mAxisXLinesBuffer.length < mXStopsBuffer.numStops * 4) {
+	// mAxisXLinesBuffer = new float[mXStopsBuffer.numStops * 4];
+	// }
+	// if (mAxisYLinesBuffer.length < mYStopsBuffer.numStops * 4) {
+	// mAxisYLinesBuffer = new float[mYStopsBuffer.numStops * 4];
+	// }
+	//
+	// // Compute positions
+	// for (i = 0; i < mXStopsBuffer.numStops; i++) {
+	// mAxisXPositionsBuffer[i] = getDrawX(mXStopsBuffer.stops[i]);
+	// }
+	// for (i = 0; i < mYStopsBuffer.numStops; i++) {
+	// mAxisYPositionsBuffer[i] = getDrawY(mYStopsBuffer.stops[i]);
+	// }
+	//
+	// // Draws grid lines using drawLines (faster than individual drawLine calls)
+	// for (i = 0; i < mXStopsBuffer.numStops; i++) {
+	// mAxisXLinesBuffer[i * 4 + 0] = (float) Math.floor(mAxisXPositionsBuffer[i]);
+	// mAxisXLinesBuffer[i * 4 + 1] = mContentRect.top;
+	// mAxisXLinesBuffer[i * 4 + 2] = (float) Math.floor(mAxisXPositionsBuffer[i]);
+	// mAxisXLinesBuffer[i * 4 + 3] = mContentRect.bottom;
+	// }
+	// canvas.drawLines(mAxisXLinesBuffer, 0, mXStopsBuffer.numStops * 4, mGridPaint);
+	//
+	// for (i = 0; i < mYStopsBuffer.numStops; i++) {
+	// mAxisYLinesBuffer[i * 4 + 0] = mContentRect.left;
+	// mAxisYLinesBuffer[i * 4 + 1] = (float) Math.floor(mAxisYPositionsBuffer[i]);
+	// mAxisYLinesBuffer[i * 4 + 2] = mContentRect.right;
+	// mAxisYLinesBuffer[i * 4 + 3] = (float) Math.floor(mAxisYPositionsBuffer[i]);
+	// }
+	// canvas.drawLines(mAxisYLinesBuffer, 0, mYStopsBuffer.numStops * 4, mGridPaint);
+	//
+	// // Draws X labels
+	// int labelOffset;
+	// int labelLength;
+	// mLabelTextPaint.setTextAlign(Paint.Align.CENTER);
+	// for (i = 0; i < mXStopsBuffer.numStops; i++) {
+	// // Do not use String.format in high-performance code such as onDraw code.
+	// labelLength = formatFloat(mLabelBuffer, mXStopsBuffer.stops[i], mXStopsBuffer.decimals);
+	// labelOffset = mLabelBuffer.length - labelLength;
+	// canvas.drawText(mLabelBuffer, labelOffset, labelLength, mAxisXPositionsBuffer[i], mContentRect.bottom
+	// + mLabelHeight + mLabelSeparation, mLabelTextPaint);
+	// }
+	//
+	// // Draws Y labels
+	// mLabelTextPaint.setTextAlign(Paint.Align.RIGHT);
+	// for (i = 0; i < mYStopsBuffer.numStops; i++) {
+	// // Do not use String.format in high-performance code such as onDraw code.
+	// labelLength = formatFloat(mLabelBuffer, mYStopsBuffer.stops[i], mYStopsBuffer.decimals);
+	// labelOffset = mLabelBuffer.length - labelLength;
+	// canvas.drawText(mLabelBuffer, labelOffset, labelLength, mContentRect.left - mLabelSeparation,
+	// mAxisYPositionsBuffer[i] + mLabelHeight / 2, mLabelTextPaint);
+	// }
+	// }
+
+	/**
+	 * Computes the set of axis labels to show given start and stop boundaries and an ideal number of stops between
+	 * these boundaries.
+	 * 
+	 * @param start
+	 *            The minimum extreme (e.g. the left edge) for the axis.
+	 * @param stop
+	 *            The maximum extreme (e.g. the right edge) for the axis.
+	 * @param steps
+	 *            The ideal number of stops to create. This should be based on available screen space; the more space
+	 *            there is, the more stops should be shown.
+	 * @param outStops
+	 *            The destination {@link AxisStops} object to populate.
+	 */
+	private static void computeAxisStops(float start, float stop, int steps, AxisStops outStops) {
+		double range = stop - start;
+		if (steps == 0 || range <= 0) {
+			outStops.stops = new float[] {};
+			outStops.numStops = 0;
+			return;
+		}
+
+		double rawInterval = range / steps;
+		double interval = Utils.roundToOneSignificantFigure(rawInterval);
+		double intervalMagnitude = Math.pow(10, (int) Math.log10(interval));
+		int intervalSigDigit = (int) (interval / intervalMagnitude);
+		if (intervalSigDigit > 5) {
+			// Use one order of magnitude higher, to avoid intervals like 0.9 or 90
+			interval = Math.floor(10 * intervalMagnitude);
+		}
+
+		double first = Math.ceil(start / interval) * interval;
+		double last = Utils.nextUp(Math.floor(stop / interval) * interval);
+
+		double f;
+		int i;
+		int n = 0;
+		for (f = first; f <= last; f += interval) {
+			++n;
+		}
+
+		outStops.numStops = n;
+
+		if (outStops.stops.length < n) {
+			// Ensure stops contains at least numStops elements.
+			outStops.stops = new float[n];
+		}
+
+		for (f = first, i = 0; i < n; f += interval, ++i) {
+			outStops.stops[i] = (float) f;
+		}
+
+		if (interval < 1) {
+			outStops.decimals = (int) Math.ceil(-Math.log10(interval));
+		} else {
+			outStops.decimals = 0;
 		}
 	}
 
