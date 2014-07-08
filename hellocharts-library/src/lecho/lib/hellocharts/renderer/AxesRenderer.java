@@ -24,9 +24,10 @@ public class AxesRenderer {
 	private int axisYNameHeight;
 	private int axisMargin;
 	private Rect textBounds = new Rect();
-	private float[] axisXDrawBuffer;
-	private float[] axisYDrawBuffer;
+	// For now don't draw lines for X axis
+	// private float[] axisXDrawBuffer;
 	private final AxisStops axisXStopsBuffer = new AxisStops();
+	private float[] axisYDrawBuffer;
 	private final AxisStops axisYStopsBuffer = new AxisStops();
 	private int mMaxLabelWidth;
 	private int mLabelHeight;
@@ -43,16 +44,18 @@ public class AxesRenderer {
 		mAxisTextPaint.setAntiAlias(true);
 		mAxisTextPaint.setStyle(Paint.Style.FILL);
 		mAxisTextPaint.setStrokeWidth(1);
+		mAxisLinePaint.setTextSize(32);
 
 		axisMargin = Utils.dp2px(mContext, DEFAULT_AXIS_MARGIN_DP);
 
-		// mLabelHeight = (int) Math.abs(mLabelTextPaint.getFontMetrics().top);
-		// mMaxLabelWidth = (int) mLabelTextPaint.measureText("0000");
 	}
 
 	public void initRenderer() {
 		// I draw lines only for Y axis so initialize drawValues only for that axis.
 		axisYDrawBuffer = new float[mChart.getData().getAxisY().getValues().size() * 4];
+		mAxisLinePaint.setTextSize(Utils.dp2px(mContext, 16));
+		mLabelHeight = (int) Math.abs(mAxisTextPaint.getFontMetrics().top);
+		mMaxLabelWidth = (int) mAxisTextPaint.measureText("0000");
 	}
 
 	public int getAxisXHeight() {
@@ -100,24 +103,25 @@ public class AxesRenderer {
 		mAxisTextPaint.setColor(axisX.getColor());
 		mAxisTextPaint.setTextSize(Utils.sp2px(mContext, axisX.getTextSize()));
 		mAxisTextPaint.setTextAlign(Align.CENTER);
-		if (axisX.getValues().size() > 0) {
-			canvas.drawLine(chartCalculator.mContentRectWithMargins.left, chartCalculator.mContentRect.bottom,
-					chartCalculator.mContentRectWithMargins.right, chartCalculator.mContentRect.bottom, mAxisLinePaint);
-			// drawing axis values
-			float baseline = chartCalculator.mContentRectWithMargins.bottom + axisXValueHeight;
-			for (AxisValue axisValue : axisX.getValues()) {
-				final float rawX = chartCalculator.calculateRawX(axisValue.getValue());
-				if (rawX >= chartCalculator.mContentRect.left && rawX <= chartCalculator.mContentRect.right) {
-					canvas.drawText(axisX.getFormatter().formatValue(axisValue), rawX, baseline, mAxisTextPaint);
-				}
-			}
-		}
-		// drawing axis name
-		if (!TextUtils.isEmpty(axisX.getName())) {
-			float baseline = chartCalculator.mContentRectWithMargins.bottom + axisXValueHeight + axisXNameHeight
-					+ axisMargin;
-			canvas.drawText(axisX.getName(), chartCalculator.mContentRect.centerX(), baseline, mAxisTextPaint);
-		}
+		drawAxisXAuto(canvas);
+		// if (axisX.getValues().size() > 0) {
+		// canvas.drawLine(chartCalculator.mContentRectWithMargins.left, chartCalculator.mContentRect.bottom,
+		// chartCalculator.mContentRectWithMargins.right, chartCalculator.mContentRect.bottom, mAxisLinePaint);
+		// // drawing axis values
+		// float baseline = chartCalculator.mContentRectWithMargins.bottom + axisXValueHeight;
+		// for (AxisValue axisValue : axisX.getValues()) {
+		// final float rawX = chartCalculator.calculateRawX(axisValue.getValue());
+		// if (rawX >= chartCalculator.mContentRect.left && rawX <= chartCalculator.mContentRect.right) {
+		// canvas.drawText(axisX.getFormatter().formatValue(axisValue), rawX, baseline, mAxisTextPaint);
+		// }
+		// }
+		// }
+		// // drawing axis name
+		// if (!TextUtils.isEmpty(axisX.getName())) {
+		// float baseline = chartCalculator.mContentRectWithMargins.bottom + axisXValueHeight + axisXNameHeight
+		// + axisMargin;
+		// canvas.drawText(axisX.getName(), chartCalculator.mContentRect.centerX(), baseline, mAxisTextPaint);
+		// }
 	}
 
 	public void drawAxisY(Canvas canvas) {
@@ -151,6 +155,26 @@ public class AxesRenderer {
 			canvas.rotate(-90, chartCalculator.mContentRect.centerY(), chartCalculator.mContentRect.centerY());
 			canvas.drawText(axisY.getName(), chartCalculator.mContentRect.centerY(), rawX, mAxisTextPaint);
 			canvas.restore();
+		}
+	}
+
+	private void drawAxisXAuto(Canvas canvas) {
+		ChartCalculator chartCalculator = mChart.getChartCalculator();
+		final Axis axisX = mChart.getData().getAxisX();
+		computeAxisStops(chartCalculator.mCurrentViewport.left, chartCalculator.mCurrentViewport.right,
+				chartCalculator.mContentRect.width() / mMaxLabelWidth / 2, axisXStopsBuffer);
+		mAxisTextPaint.setTextAlign(Paint.Align.CENTER);
+		float rawY = chartCalculator.mContentRectWithMargins.bottom + axisXValueHeight;
+		int i;
+		for (i = 0; i < axisXStopsBuffer.numStops; ++i) {
+			float rawX = chartCalculator.calculateRawX(axisXStopsBuffer.stops[i]);
+			String text = axisX.getFormatter().formatValue(new AxisValue(axisXStopsBuffer.stops[i]));
+			canvas.drawText(text, rawX, rawY, mAxisTextPaint);
+		}
+		// drawing axis name
+		if (!TextUtils.isEmpty(axisX.getName())) {
+			rawY = chartCalculator.mContentRectWithMargins.bottom + axisXValueHeight + axisXNameHeight + axisMargin;
+			canvas.drawText(axisX.getName(), chartCalculator.mContentRect.centerX(), rawY, mAxisTextPaint);
 		}
 	}
 

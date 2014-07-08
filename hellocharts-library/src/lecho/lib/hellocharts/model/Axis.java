@@ -82,7 +82,7 @@ public class Axis {
 	}
 
 	public interface AxisValueFormatter {
-		public static final String DEFAULT_AXES_FORMAT = "%.0f";
+		public static final String DEFAULT_AXES_FORMAT = "%.1f";
 
 		public String formatValue(AxisValue value);
 	}
