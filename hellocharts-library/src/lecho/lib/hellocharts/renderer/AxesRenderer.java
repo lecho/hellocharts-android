@@ -242,22 +242,22 @@ public class AxesRenderer {
 		double first = Math.ceil(start / interval) * interval;
 		double last = Utils.nextUp(Math.floor(stop / interval) * interval);
 
-		double f;
-		int i;
-		int n = 0;
-		for (f = first; f <= last; f += interval) {
-			++n;
+		double intervalValue;
+		int stopIndex;
+		int numStops = 0;
+		for (intervalValue = first; intervalValue <= last; intervalValue += interval) {
+			++numStops;
 		}
 
-		outStops.numStops = n;
+		outStops.numStops = numStops;
 
-		if (outStops.stops.length < n) {
+		if (outStops.stops.length < numStops) {
 			// Ensure stops contains at least numStops elements.
-			outStops.stops = new float[n];
+			outStops.stops = new float[numStops];
 		}
 
-		for (f = first, i = 0; i < n; f += interval, ++i) {
-			outStops.stops[i] = (float) f;
+		for (intervalValue = first, stopIndex = 0; stopIndex < numStops; intervalValue += interval, ++stopIndex) {
+			outStops.stops[stopIndex] = (float) intervalValue;
 		}
 
 		if (interval < 1) {
