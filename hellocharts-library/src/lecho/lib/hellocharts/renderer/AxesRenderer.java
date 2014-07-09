@@ -126,11 +126,12 @@ public class AxesRenderer {
 	private void drawAxisX(Canvas canvas, ChartCalculator chartCalculator, Axis axisX) {
 		if (axisX.getValues().size() > 0) {
 			// drawing axis values
-			float baseline = chartCalculator.mContentRectWithMargins.bottom + axisXValueHeight;
+			float rawY = chartCalculator.mContentRectWithMargins.bottom + axisXValueHeight;
 			for (AxisValue axisValue : axisX.getValues()) {
-				final float rawX = chartCalculator.calculateRawX(axisValue.getValue());
-				if (rawX >= chartCalculator.mContentRect.left && rawX <= chartCalculator.mContentRect.right) {
-					canvas.drawText(axisX.getFormatter().formatValue(axisValue), rawX, baseline, mAxisTextPaint);
+				final float value = axisValue.getValue();
+				if (value >= chartCalculator.mCurrentViewport.left && value <= chartCalculator.mCurrentViewport.right) {
+					final float rawX = chartCalculator.calculateRawX(axisValue.getValue());
+					canvas.drawText(axisX.getFormatter().formatValue(axisValue), rawX, rawY, mAxisTextPaint);
 				}
 			}
 		}
