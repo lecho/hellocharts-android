@@ -86,8 +86,7 @@ public class ColumnChartView extends AbstractChartView {
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
 		super.onDraw(canvas);
-		mAxesRenderer.drawAxisX(canvas);
-		mAxesRenderer.drawAxisY(canvas);
+		mAxesRenderer.draw(canvas);
 		int clipRestoreCount = canvas.save();
 		canvas.clipRect(mChartCalculator.mContentRect);
 		mChartRenderer.draw(canvas);

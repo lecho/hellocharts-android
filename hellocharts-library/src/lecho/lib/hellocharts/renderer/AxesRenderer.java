@@ -94,7 +94,13 @@ public class AxesRenderer {
 		return axisYValueWidth + axisYNameHeight + axisMargin;
 	}
 
-	public void drawAxisX(Canvas canvas) {
+	public void draw(Canvas canvas) {
+		// Draw axisY first to prevent X axis overdrawing.
+		drawAxisY(canvas);
+		drawAxisX(canvas);
+	}
+
+	private void drawAxisX(Canvas canvas) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final Axis axisX = mChart.getData().getAxisX();
 		mAxisLinePaint.setColor(axisX.getColor());
@@ -106,6 +112,7 @@ public class AxesRenderer {
 		} else {
 			drawAxisX(canvas, chartCalculator, axisX);
 		}
+		// Draw separation line
 		canvas.drawLine(chartCalculator.mContentRectWithMargins.left, chartCalculator.mContentRect.bottom,
 				chartCalculator.mContentRectWithMargins.right, chartCalculator.mContentRect.bottom, mAxisLinePaint);
 		// Drawing axis name
@@ -143,7 +150,7 @@ public class AxesRenderer {
 		}
 	}
 
-	public void drawAxisY(Canvas canvas) {
+	private void drawAxisY(Canvas canvas) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final Axis axisY = mChart.getData().getAxisY();
 		mAxisLinePaint.setColor(axisY.getColor());

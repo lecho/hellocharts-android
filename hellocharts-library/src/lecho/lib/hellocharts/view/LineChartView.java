@@ -69,35 +69,11 @@ public class LineChartView extends AbstractChartView {
 		mChartCalculator.setAxesMargin(mAxesRenderer.getAxisXHeight(), mAxesRenderer.getAxisYWidth());
 	}
 
-	// Automatically calculates Y axis values.
-	// private Axis calculateYAxis(int numberOfSteps) {
-	// if (numberOfSteps < 2) {
-	// throw new
-	// IllegalArgumentException("Number or steps have to be grater or equal 2");
-	// }
-	// List<Float> values = new ArrayList<Float>();
-	// final float range = mData.getMaxYValue() - mData.getMinYValue();
-	// final float tickRange = range / (numberOfSteps - 1);
-	// final float x = (float) Math.ceil(Math.log10(tickRange) - 1);
-	// final float pow10x = (float) Math.pow(10, x);
-	// final float roundedTickRange = (float) Math.ceil(tickRange / pow10x) *
-	// pow10x;
-	// float value = mData.getMinYValue();
-	// while (value <= mData.getMaxYValue()) {
-	// values.add(value);
-	// value += roundedTickRange;
-	// }
-	// Axis yAxis = new Axis();
-	// yAxis.setValues(values);
-	// return yAxis;
-	// }
-
 	@Override
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
 		super.onDraw(canvas);
-		mAxesRenderer.drawAxisX(canvas);
-		mAxesRenderer.drawAxisY(canvas);
+		mAxesRenderer.draw(canvas);
 		int clipRestoreCount = canvas.save();
 		canvas.clipRect(mChartCalculator.mContentRect);
 		mChartRenderer.draw(canvas);
