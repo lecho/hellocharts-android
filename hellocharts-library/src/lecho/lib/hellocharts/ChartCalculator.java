@@ -69,10 +69,10 @@ public class ChartCalculator {
 	}
 
 	public void setAxesMargin(int axisXMargin, int axisYMargin) {
-		mContentRectWithMargins.left = mContentRectWithMargins.left + axisXMargin;
-		mContentRectWithMargins.bottom = mContentRectWithMargins.bottom - axisYMargin;
-		mContentRect.left = mContentRect.left + axisXMargin;
-		mContentRect.bottom = mContentRect.bottom - axisYMargin;
+		mContentRectWithMargins.bottom = mContentRectWithMargins.bottom - axisXMargin;
+		mContentRectWithMargins.left = mContentRectWithMargins.left + axisYMargin;
+		mContentRect.left = mContentRect.left + axisYMargin;
+		mContentRect.bottom = mContentRect.bottom - axisXMargin;
 	}
 
 	public void calculateViewport() {
