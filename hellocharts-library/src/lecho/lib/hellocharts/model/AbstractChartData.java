@@ -1,5 +1,6 @@
 package lecho.lib.hellocharts.model;
 
+import android.graphics.Color;
 import android.graphics.RectF;
 
 public abstract class AbstractChartData implements ChartData {
@@ -7,6 +8,10 @@ public abstract class AbstractChartData implements ChartData {
 	protected Axis mAxisY = new Axis();
 	protected RectF mBoundaries = new RectF();
 	protected boolean mManualBoundaries = false;
+	protected int axesColor = Color.LTGRAY;
+	protected int axesTextSize;
+	protected int labelsTextColor = Color.WHITE;
+	protected int labelsTextSize;
 
 	public void setAxisX(Axis axisX) {
 		mAxisX = axisX;
@@ -35,6 +40,38 @@ public abstract class AbstractChartData implements ChartData {
 
 	public RectF getBoundaries() {
 		return mBoundaries;
+	}
+
+	public int getAxesColor() {
+		return axesColor;
+	}
+
+	public void setAxesColor(int axesColor) {
+		this.axesColor = axesColor;
+	}
+
+	public int getAxesTextSize() {
+		return axesTextSize;
+	}
+
+	public void setAxesTextSize(int axesTextSize) {
+		this.axesTextSize = axesTextSize;
+	}
+
+	public int getLabelsTextColor() {
+		return labelsTextColor;
+	}
+
+	public void setLabelsTextColor(int labelsTextColor) {
+		this.labelsTextColor = labelsTextColor;
+	}
+
+	public int getLabelsTextSize() {
+		return labelsTextSize;
+	}
+
+	public void setLabelsTextSize(int labelsTextSize) {
+		this.labelsTextSize = labelsTextSize;
 	}
 
 }
