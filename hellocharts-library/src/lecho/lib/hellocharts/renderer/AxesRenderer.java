@@ -27,6 +27,7 @@ public class AxesRenderer {
 	private int axesLabelMaxWidth = 12;
 	private int axesTextHeight = 12;
 	private FontMetricsInt fontMetrics = new FontMetricsInt();
+	private char[] labelBuffer = new char[32];
 
 	public AxesRenderer(Context context, Chart chart) {
 		mContext = context;
@@ -72,16 +73,18 @@ public class AxesRenderer {
 			axesLabelMaxWidth = (int) mAxisTextPaint.measureText("0000");
 			result += axesLabelMaxWidth;
 		} else if (!axisY.getValues().isEmpty()) {
-			final String text;
+			final int numChars;
 			// to simplify I assume that the widest value will be the first or the last.
 			if (Math.abs(axisY.getValues().get(0).getValue()) >= Math.abs(axisY.getValues()
 					.get(axisY.getValues().size() - 1).getValue())) {
-				text = axisY.getFormatter().formatValue(axisY.getValues().get(0));
+				numChars = axisY.getFormatter().formatValue(labelBuffer, axisY.getValues().get(0).getValue());
 			} else {
-				text = axisY.getFormatter().formatValue(axisY.getValues().get(axisY.getValues().size() - 1));
+				numChars = axisY.getFormatter().formatValue(labelBuffer,
+						axisY.getValues().get(axisY.getValues().size() - 1).getValue());
 			}
-			if (!TextUtils.isEmpty(text)) {
-				axesLabelMaxWidth = (int) mAxisTextPaint.measureText(text);
+			if (numChars > 0) {
+				axesLabelMaxWidth = (int) mAxisTextPaint.measureText(labelBuffer, labelBuffer.length - numChars,
+						numChars);
 				result += axesLabelMaxWidth;
 			}
 		}
@@ -125,7 +128,8 @@ public class AxesRenderer {
 				final float value = axisValue.getValue();
 				if (value >= chartCalculator.mCurrentViewport.left && value <= chartCalculator.mCurrentViewport.right) {
 					final float rawX = chartCalculator.calculateRawX(axisValue.getValue());
-					canvas.drawText(axisX.getFormatter().formatValue(axisValue), rawX, rawY, mAxisTextPaint);
+					final int nummChars = axisX.getFormatter().formatValue(labelBuffer, axisValue.getValue());
+					canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY, mAxisTextPaint);
 				}
 			}
 		}
@@ -140,8 +144,9 @@ public class AxesRenderer {
 		for (i = 0; i < axisXStopsBuffer.numStops; ++i) {
 			// TODO: Should I draw vertical lines for X axis, that doesn't look good but sometimes it is useful.
 			float rawX = chartCalculator.calculateRawX(axisXStopsBuffer.stops[i]);
-			String text = axisX.getFormatter().formatValue(new AxisValue(axisXStopsBuffer.stops[i]));
-			canvas.drawText(text, rawX, rawY, mAxisTextPaint);
+			final int nummChars = axisX.getFormatter().formatValue(labelBuffer, axisXStopsBuffer.stops[i],
+					axisYStopsBuffer.decimals);
+			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY, mAxisTextPaint);
 		}
 	}
 
@@ -180,8 +185,8 @@ public class AxesRenderer {
 				axisYDrawBuffer[i++] = rawY;
 				axisYDrawBuffer[i++] = chartCalculator.mContentRectWithMargins.right;
 				axisYDrawBuffer[i++] = rawY;
-
-				canvas.drawText(axisY.getFormatter().formatValue(axisValue), rawX, rawY, mAxisTextPaint);
+				final int nummChars = axisY.getFormatter().formatValue(labelBuffer, axisValue.getValue());
+				canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY, mAxisTextPaint);
 			}
 		}
 		canvas.drawLines(axisYDrawBuffer, 0, i, mAxisLinePaint);
@@ -201,8 +206,9 @@ public class AxesRenderer {
 			axisYDrawBuffer[i * 4 + 1] = rawY;
 			axisYDrawBuffer[i * 4 + 2] = chartCalculator.mContentRectWithMargins.right;
 			axisYDrawBuffer[i * 4 + 3] = rawY;
-			canvas.drawText(axisY.getFormatter().formatValue(new AxisValue(axisYStopsBuffer.stops[i])), rawX, rawY,
-					mAxisTextPaint);
+			final int nummChars = axisY.getFormatter().formatValue(labelBuffer, axisYStopsBuffer.stops[i],
+					axisYStopsBuffer.decimals);
+			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY, mAxisTextPaint);
 		}
 		canvas.drawLines(axisYDrawBuffer, 0, axisYStopsBuffer.numStops * 4, mAxisLinePaint);
 	}
