@@ -11,8 +11,8 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
+import android.graphics.Paint.FontMetricsInt;
 import android.graphics.Path;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 
@@ -30,11 +30,11 @@ public class LineChartRenderer implements ChartRenderer {
 	private Paint mPointPaint = new Paint();
 	private Paint labelPaint = new Paint();
 	private RectF labelRect = new RectF();
-	private Rect textBoundsRect = new Rect();
 	private Context mContext;
 	private LineChartView mChart;
 	private SelectedValue mSelectedValue = new SelectedValue();
 	private char[] labelBuffer = new char[32];
+	private FontMetricsInt fontMetrics = new FontMetricsInt();
 
 	public LineChartRenderer(Context context, LineChartView chart) {
 		mContext = context;
@@ -273,21 +273,23 @@ public class LineChartRenderer implements ChartRenderer {
 	private void drawLabel(Canvas canvas, Line line, LinePoint linePoint, float rawValueX, float rawValueY, float offset) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final int nummChars = line.getFormatter().formatValue(labelBuffer, linePoint.getY());
-		labelPaint.getTextBounds(labelBuffer, labelBuffer.length - nummChars, nummChars, textBoundsRect);
-		float left = rawValueX - textBoundsRect.width() / 2 - mLabelMargin;
-		float right = rawValueX + textBoundsRect.width() / 2 + mLabelMargin;
-		float top = rawValueY - offset - textBoundsRect.height() - mLabelMargin * 2;
+		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
+		labelPaint.getFontMetricsInt(fontMetrics);
+		final int labelHeight = Math.abs(fontMetrics.ascent);
+		float left = rawValueX - labelWidth / 2 - mLabelMargin;
+		float right = rawValueX + labelWidth / 2 + mLabelMargin;
+		float top = rawValueY - offset - labelHeight - mLabelMargin * 2;
 		float bottom = rawValueY - offset;
 		if (top < chartCalculator.mContentRect.top) {
 			top = rawValueY + offset;
-			bottom = rawValueY + offset + textBoundsRect.height() + mLabelMargin * 2;
+			bottom = rawValueY + offset + labelHeight + mLabelMargin * 2;
 		}
 		if (left < chartCalculator.mContentRect.left) {
 			left = rawValueX;
-			right = rawValueX + textBoundsRect.width() + mLabelMargin * 2;
+			right = rawValueX + labelWidth + mLabelMargin * 2;
 		}
 		if (right > chartCalculator.mContentRect.right) {
-			left = rawValueX - textBoundsRect.width() - mLabelMargin * 2;
+			left = rawValueX - labelWidth - mLabelMargin * 2;
 			right = rawValueX;
 		}
 		labelRect.set(left, top, right, bottom);

@@ -12,8 +12,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Cap;
+import android.graphics.Paint.FontMetricsInt;
 import android.graphics.PointF;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 
@@ -35,10 +35,10 @@ public class ColumnChartRenderer implements ChartRenderer {
 	private ColumnChartView mChart;
 	private int mSubcolumnSpacing;
 	private RectF mRectToDraw = new RectF();
-	private Rect mTextBounds = new Rect();
 	private PointF mTouchedPoint = new PointF();
 	private SelectedValue mSelectedValue = new SelectedValue();
 	private char[] labelBuffer = new char[32];
+	private FontMetricsInt fontMetrics = new FontMetricsInt();
 
 	public ColumnChartRenderer(Context context, ColumnChartView chart) {
 		mContext = context;
@@ -312,17 +312,19 @@ public class ColumnChartRenderer implements ChartRenderer {
 	private void drawLabel(Canvas canvas, Column column, ColumnValue columnValue, boolean isStacked, float offset) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final int nummChars = column.getFormatter().formatValue(labelBuffer, columnValue.getValue());
-		labelPaint.getTextBounds(labelBuffer, labelBuffer.length - nummChars, nummChars, mTextBounds);
-		float left = mRectToDraw.centerX() - (mTextBounds.width() / 2) - mLabelMargin;
-		float right = mRectToDraw.centerX() + (mTextBounds.width() / 2) + mLabelMargin;
+		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
+		labelPaint.getFontMetricsInt(fontMetrics);
+		final int labelHeight = Math.abs(fontMetrics.ascent);
+		float left = mRectToDraw.centerX() - labelWidth / 2 - mLabelMargin;
+		float right = mRectToDraw.centerX() + labelWidth / 2 + mLabelMargin;
 		float top;
 		float bottom;
-		if (isStacked && mTextBounds.height() < mRectToDraw.height()) {
+		if (isStacked && labelHeight < mRectToDraw.height()) {
 			if (columnValue.getValue() >= DEFAULT_BASE_VALUE) {
 				top = mRectToDraw.top;
-				bottom = mRectToDraw.top + mTextBounds.height() + mLabelMargin * 2;
+				bottom = mRectToDraw.top + labelHeight + mLabelMargin * 2;
 			} else {
-				top = mRectToDraw.bottom - mTextBounds.height() - mLabelMargin * 2;
+				top = mRectToDraw.bottom - labelHeight - mLabelMargin * 2;
 				bottom = mRectToDraw.bottom;
 			}
 			labelPaint.setColor(column.getTextColor());
@@ -330,17 +332,17 @@ public class ColumnChartRenderer implements ChartRenderer {
 					- mLabelMargin, labelPaint);
 		} else if (!isStacked) {
 			if (columnValue.getValue() >= DEFAULT_BASE_VALUE) {
-				top = mRectToDraw.top - offset - mTextBounds.height() - mLabelMargin * 2;
+				top = mRectToDraw.top - offset - labelHeight - mLabelMargin * 2;
 				if (top < chartCalculator.mContentRect.top) {
 					top = mRectToDraw.top + offset;
-					bottom = mRectToDraw.top + offset + mTextBounds.height() + mLabelMargin * 2;
+					bottom = mRectToDraw.top + offset + labelHeight + mLabelMargin * 2;
 				} else {
 					bottom = mRectToDraw.top - offset;
 				}
 			} else {
-				bottom = mRectToDraw.bottom + offset + mTextBounds.height() + mLabelMargin * 2;
+				bottom = mRectToDraw.bottom + offset + labelHeight + mLabelMargin * 2;
 				if (bottom > chartCalculator.mContentRect.bottom) {
-					top = mRectToDraw.bottom - offset - mTextBounds.height() - mLabelMargin * 2;
+					top = mRectToDraw.bottom - offset - labelHeight - mLabelMargin * 2;
 					bottom = mRectToDraw.bottom - offset;
 				} else {
 					top = mRectToDraw.bottom + offset;
