@@ -34,6 +34,7 @@ public class LineChartRenderer implements ChartRenderer {
 	private Context mContext;
 	private LineChartView mChart;
 	private SelectedValue mSelectedValue = new SelectedValue();
+	private char[] labelBuffer = new char[32];
 
 	public LineChartRenderer(Context context, LineChartView chart) {
 		mContext = context;
@@ -271,8 +272,8 @@ public class LineChartRenderer implements ChartRenderer {
 
 	private void drawLabel(Canvas canvas, Line line, LinePoint linePoint, float rawValueX, float rawValueY, float offset) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
-		final String text = line.getLineValueFormatter().formatValue(linePoint);
-		labelPaint.getTextBounds(text, 0, text.length(), textBoundsRect);
+		final int nummChars = line.getFormatter().formatValue(labelBuffer, linePoint.getY());
+		labelPaint.getTextBounds(labelBuffer, labelBuffer.length - nummChars, labelBuffer.length, textBoundsRect);
 		float left = rawValueX - textBoundsRect.width() / 2 - mLabelMargin;
 		float right = rawValueX + textBoundsRect.width() / 2 + mLabelMargin;
 		float top = rawValueY - offset - textBoundsRect.height() - mLabelMargin * 2;
@@ -293,7 +294,8 @@ public class LineChartRenderer implements ChartRenderer {
 		labelPaint.setColor(Utils.darkenColor(line.getColor()));
 		canvas.drawRect(left, top, right, bottom, labelPaint);
 		labelPaint.setColor(line.getTextColor());
-		canvas.drawText(text, left + mLabelMargin, bottom - mLabelMargin, labelPaint);
+		canvas.drawText(labelBuffer, labelBuffer.length - nummChars, labelBuffer.length, left + mLabelMargin, bottom
+				- mLabelMargin, labelPaint);
 	}
 
 	private void drawArea(Canvas canvas, int transparency) {

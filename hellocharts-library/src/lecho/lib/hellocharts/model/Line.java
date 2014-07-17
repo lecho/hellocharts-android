@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import android.annotation.SuppressLint;
 import android.graphics.Color;
 
 public class Line {
@@ -23,7 +22,7 @@ public class Line {
 	private boolean hasLabels = false;
 	private boolean isSmooth = false;
 	private boolean isFilled = false;
-	private LineValueFormatter lineValueFormatter = new DefaultLineValueFormatter();
+	private ValueFormatter formatter = new NumberValueFormatter();
 	// TODO: consider Collections.emptyList()
 	private List<LinePoint> points = new ArrayList<LinePoint>();
 
@@ -142,32 +141,16 @@ public class Line {
 		return this;
 	}
 
-	public LineValueFormatter getLineValueFormatter() {
-		return lineValueFormatter;
+	public ValueFormatter getFormatter() {
+		return formatter;
 	}
 
-	public Line setLineValueFormatter(LineValueFormatter lineValueFormatter) {
-		if (null == lineValueFormatter) {
-			this.lineValueFormatter = new DefaultLineValueFormatter();
+	public Line setFormatter(ValueFormatter formatter) {
+		if (null == formatter) {
+			this.formatter = new NumberValueFormatter();
 		} else {
-			this.lineValueFormatter = lineValueFormatter;
+			this.formatter = formatter;
 		}
 		return this;
 	}
-
-	public interface LineValueFormatter {
-		public static final String DEFAULT_LINE_VALUE_FORMAT = "%.0f";
-
-		public String formatValue(LinePoint linePoint);
-	}
-
-	@SuppressLint("DefaultLocale")
-	public static class DefaultLineValueFormatter implements LineValueFormatter {
-
-		@Override
-		public String formatValue(LinePoint linePoint) {
-			return String.format(DEFAULT_LINE_VALUE_FORMAT, linePoint.getY());
-		}
-	}
-
 }
