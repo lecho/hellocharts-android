@@ -38,6 +38,7 @@ public class ColumnChartRenderer implements ChartRenderer {
 	private Rect mTextBounds = new Rect();
 	private PointF mTouchedPoint = new PointF();
 	private SelectedValue mSelectedValue = new SelectedValue();
+	private char[] labelBuffer = new char[32];
 
 	public ColumnChartRenderer(Context context, ColumnChartView chart) {
 		mContext = context;
@@ -310,8 +311,8 @@ public class ColumnChartRenderer implements ChartRenderer {
 
 	private void drawLabel(Canvas canvas, Column column, ColumnValue columnValue, boolean isStacked, float offset) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
-		final String text = column.getFormatter().formatValue(columnValue);
-		labelPaint.getTextBounds(text, 0, text.length(), mTextBounds);
+		final int nummChars = column.getFormatter().formatValue(labelBuffer, columnValue.getValue());
+		labelPaint.getTextBounds(labelBuffer, labelBuffer.length - nummChars, labelBuffer.length, mTextBounds);
 		float left = mRectToDraw.centerX() - (mTextBounds.width() / 2) - mLabelMargin;
 		float right = mRectToDraw.centerX() + (mTextBounds.width() / 2) + mLabelMargin;
 		float top;
@@ -325,7 +326,8 @@ public class ColumnChartRenderer implements ChartRenderer {
 				bottom = mRectToDraw.bottom;
 			}
 			labelPaint.setColor(column.getTextColor());
-			canvas.drawText(text, left + mLabelMargin, bottom - mLabelMargin, labelPaint);
+			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, labelBuffer.length, left + mLabelMargin,
+					bottom - mLabelMargin, labelPaint);
 		} else if (!isStacked) {
 			if (columnValue.getValue() >= DEFAULT_BASE_VALUE) {
 				top = mRectToDraw.top - offset - mTextBounds.height() - mLabelMargin * 2;
@@ -347,7 +349,8 @@ public class ColumnChartRenderer implements ChartRenderer {
 			labelPaint.setColor(Utils.darkenColor(columnValue.getColor()));
 			canvas.drawRect(left, top, right, bottom, labelPaint);
 			labelPaint.setColor(column.getTextColor());
-			canvas.drawText(text, left + mLabelMargin, bottom - mLabelMargin, labelPaint);
+			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, labelBuffer.length, left + mLabelMargin,
+					bottom - mLabelMargin, labelPaint);
 		} else {
 			// do nothing
 		}

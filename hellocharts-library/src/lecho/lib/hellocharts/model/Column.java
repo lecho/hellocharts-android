@@ -13,7 +13,7 @@ public class Column {
 	private int textSize = DEFAULT_VALUE_TEXT_SIZE_SP;
 	private int areaTransparency = DEFAULT_AREA_TRANSPARENCY;
 	private boolean hasLabels = false;
-	private ColumnValueFormatter formatter = new DefaultColumnValueFormatter();
+	private ValueFormatter formatter = new NumberValueFormatter();
 	// TODO: consider Collections.emptyList()
 	private List<ColumnValue> values = new ArrayList<ColumnValue>();
 
@@ -69,32 +69,16 @@ public class Column {
 		return this;
 	}
 
-	public ColumnValueFormatter getFormatter() {
+	public ValueFormatter getFormatter() {
 		return formatter;
 	}
 
-	public void setFormatter(ColumnValueFormatter formatter) {
+	public Column setFormatter(ValueFormatter formatter) {
 		if (null == formatter) {
-			this.formatter = new DefaultColumnValueFormatter();
+			this.formatter = new NumberValueFormatter();
 		} else {
 			this.formatter = formatter;
 		}
+		return this;
 	}
-
-	public interface ColumnValueFormatter {
-		public static final String DEFAULT_VALUE_FORMAT = "%.1f";
-
-		public String formatValue(ColumnValue value);
-	}
-
-	@SuppressLint("DefaultLocale")
-	public static class DefaultColumnValueFormatter implements ColumnValueFormatter {
-
-		@Override
-		public String formatValue(ColumnValue value) {
-			return String.format(DEFAULT_VALUE_FORMAT, value.getValue());
-		}
-
-	}
-
 }
