@@ -145,7 +145,7 @@ public class AxesRenderer {
 			// TODO: Should I draw vertical lines for X axis, that doesn't look good but sometimes it is useful.
 			float rawX = chartCalculator.calculateRawX(axisXStopsBuffer.stops[i]);
 			final int nummChars = axisX.getFormatter().formatValue(labelBuffer, axisXStopsBuffer.stops[i],
-					axisYStopsBuffer.decimals);
+					axisXStopsBuffer.decimals);
 			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY, mAxisTextPaint);
 		}
 	}
