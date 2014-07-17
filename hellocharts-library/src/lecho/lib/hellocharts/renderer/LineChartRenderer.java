@@ -273,7 +273,7 @@ public class LineChartRenderer implements ChartRenderer {
 	private void drawLabel(Canvas canvas, Line line, LinePoint linePoint, float rawValueX, float rawValueY, float offset) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final int nummChars = line.getFormatter().formatValue(labelBuffer, linePoint.getY());
-		labelPaint.getTextBounds(labelBuffer, labelBuffer.length - nummChars, labelBuffer.length, textBoundsRect);
+		labelPaint.getTextBounds(labelBuffer, labelBuffer.length - nummChars, nummChars, textBoundsRect);
 		float left = rawValueX - textBoundsRect.width() / 2 - mLabelMargin;
 		float right = rawValueX + textBoundsRect.width() / 2 + mLabelMargin;
 		float top = rawValueY - offset - textBoundsRect.height() - mLabelMargin * 2;
@@ -294,7 +294,7 @@ public class LineChartRenderer implements ChartRenderer {
 		labelPaint.setColor(Utils.darkenColor(line.getColor()));
 		canvas.drawRect(left, top, right, bottom, labelPaint);
 		labelPaint.setColor(line.getTextColor());
-		canvas.drawText(labelBuffer, labelBuffer.length - nummChars, labelBuffer.length, left + mLabelMargin, bottom
+		canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, left + mLabelMargin, bottom
 				- mLabelMargin, labelPaint);
 	}
 
