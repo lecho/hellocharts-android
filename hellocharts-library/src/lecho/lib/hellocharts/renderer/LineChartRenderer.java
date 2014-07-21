@@ -261,7 +261,7 @@ public class LineChartRenderer implements ChartRenderer {
 		if (mSelectedValue.firstIndex == lineIndex && mSelectedValue.secondIndex == valueIndex) {
 			final float touchRadius = Utils.dp2px(mContext, line.getPointRadius() + DEFAULT_TOUCH_TOLLERANCE_DP);
 			final float pointRadius = Utils.dp2px(mContext, line.getPointRadius());
-			mPointPaint.setColor(Utils.darkenColor(line.getColor()));
+			mPointPaint.setColor(line.getDarkenColor());
 			canvas.drawCircle(rawValueX, rawValueY, touchRadius, mPointPaint);
 			if (line.hasLabels()) {
 				drawLabel(canvas, line, linePoint, rawValueX, rawValueY, pointRadius + labelOffset);
@@ -273,7 +273,6 @@ public class LineChartRenderer implements ChartRenderer {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final int nummChars = line.getFormatter().formatValue(labelBuffer, linePoint.getY());
 		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
-		labelPaint.getFontMetricsInt(fontMetrics);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
 		float left = rawValueX - labelWidth / 2 - mLabelMargin;
 		float right = rawValueX + labelWidth / 2 + mLabelMargin;
@@ -293,7 +292,7 @@ public class LineChartRenderer implements ChartRenderer {
 		}
 		labelRect.set(left, top, right, bottom);
 		int orginColor = labelPaint.getColor();
-		labelPaint.setColor(Utils.darkenColor(line.getColor()));
+		labelPaint.setColor(line.getDarkenColor());
 		canvas.drawRect(left, top, right, bottom, labelPaint);
 		labelPaint.setColor(orginColor);
 		canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, left + mLabelMargin, bottom

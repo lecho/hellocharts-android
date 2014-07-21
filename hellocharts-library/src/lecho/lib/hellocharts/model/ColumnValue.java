@@ -1,12 +1,14 @@
 package lecho.lib.hellocharts.model;
 
+import lecho.lib.hellocharts.util.Utils;
 import android.graphics.Color;
 
 public class ColumnValue {
 
 	private float value;
-	private float targetValue = Color.LTGRAY;
-	private int color;
+	private float targetValue;
+	private int color = Color.LTGRAY;
+	private int darkenColor = Color.GRAY;
 
 	public ColumnValue(float value) {
 		// point and targetPoint have to be different objects
@@ -19,6 +21,7 @@ public class ColumnValue {
 		this.value = value;
 		this.targetValue = value;
 		this.color = color;
+		this.darkenColor = Utils.darkenColor(color);
 	}
 
 	public void update(float scale) {
@@ -48,5 +51,10 @@ public class ColumnValue {
 
 	public void setColor(int color) {
 		this.color = color;
+		this.darkenColor = Utils.darkenColor(color);
+	}
+
+	public int getDarkenColor() {
+		return darkenColor;
 	}
 }

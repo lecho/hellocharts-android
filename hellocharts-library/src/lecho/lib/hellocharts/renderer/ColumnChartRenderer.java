@@ -268,7 +268,7 @@ public class ColumnChartRenderer implements ChartRenderer {
 	private void highlightSubcolumn(Canvas canvas, Column column, ColumnValue columnValue, int valueIndex,
 			boolean isStacked) {
 		if (mSelectedValue.secondIndex == valueIndex) {
-			mColumnPaint.setColor(Utils.darkenColor(columnValue.getColor()));
+			mColumnPaint.setColor(columnValue.getDarkenColor());
 			canvas.drawRect(mRectToDraw.left - touchAdditionalWidth, mRectToDraw.top, mRectToDraw.right
 					+ touchAdditionalWidth, mRectToDraw.bottom, mColumnPaint);
 			if (column.hasLabels()) {
@@ -344,7 +344,7 @@ public class ColumnChartRenderer implements ChartRenderer {
 				}
 			}
 			int orginColor = labelPaint.getColor();
-			labelPaint.setColor(Utils.darkenColor(columnValue.getColor()));
+			labelPaint.setColor(columnValue.getDarkenColor());
 			canvas.drawRect(left, top, right, bottom, labelPaint);
 			labelPaint.setColor(orginColor);
 			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, left + mLabelMargin, bottom

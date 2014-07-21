@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import lecho.lib.hellocharts.util.Utils;
+
 import android.graphics.Color;
 
 public class Line {
@@ -12,6 +14,7 @@ public class Line {
 	public static final int DEFAULT_POINT_RADIUS_DP = 6;
 	public static final int DEFAULT_AREA_TRANSPARENCY = 64;
 	private int color = Color.LTGRAY;
+	private int darkenColor = Color.GRAY;
 	private int lineWidth = DEFAULT_LINE_WIDTH_DP;
 	private int pointRadius = DEFAULT_POINT_RADIUS_DP;
 	private int areaTransparency = DEFAULT_AREA_TRANSPARENCY;
@@ -46,7 +49,12 @@ public class Line {
 
 	public Line setColor(int color) {
 		this.color = color;
+		this.darkenColor = Utils.darkenColor(color);
 		return this;
+	}
+
+	public int getDarkenColor() {
+		return darkenColor;
 	}
 
 	public int getLineWidth() {
