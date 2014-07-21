@@ -228,7 +228,6 @@ public class LineChartRenderer implements ChartRenderer {
 	private void drawPoints(Canvas canvas, Line line, int lineIndex, int mode) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		mPointPaint.setColor(line.getColor());
-		labelPaint.setTextSize(Utils.sp2px(mContext, line.getTextSize()));
 		final float pointRadius = Utils.dp2px(mContext, line.getPointRadius());
 		int valueIndex = 0;
 		for (LinePoint linePoint : line.getPoints()) {
@@ -293,9 +292,10 @@ public class LineChartRenderer implements ChartRenderer {
 			right = rawValueX;
 		}
 		labelRect.set(left, top, right, bottom);
+		int orginColor = labelPaint.getColor();
 		labelPaint.setColor(Utils.darkenColor(line.getColor()));
 		canvas.drawRect(left, top, right, bottom, labelPaint);
-		labelPaint.setColor(line.getTextColor());
+		labelPaint.setColor(orginColor);
 		canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, left + mLabelMargin, bottom
 				- mLabelMargin, labelPaint);
 	}
@@ -315,6 +315,18 @@ public class LineChartRenderer implements ChartRenderer {
 		float diffX = touchX - x;
 		float diffY = touchY - y;
 		return Math.pow(diffX, 2) + Math.pow(diffY, 2) <= 2 * Math.pow(radius, 2);
+	}
+
+	@Override
+	public void setTextColor(int color) {
+		labelPaint.setColor(color);
+
+	}
+
+	@Override
+	public void setTextSize(int size) {
+		labelPaint.setTextSize(size);
+		labelPaint.getFontMetricsInt(fontMetrics);
 	}
 
 }

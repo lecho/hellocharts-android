@@ -3,14 +3,8 @@ package lecho.lib.hellocharts.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.annotation.SuppressLint;
-import android.graphics.Color;
-
 public class Column {
-	public static final int DEFAULT_VALUE_TEXT_SIZE_SP = 10;
 	public static final int DEFAULT_AREA_TRANSPARENCY = 255;
-	private int textColor = Color.WHITE;
-	private int textSize = DEFAULT_VALUE_TEXT_SIZE_SP;
 	private int areaTransparency = DEFAULT_AREA_TRANSPARENCY;
 	private boolean hasLabels = false;
 	private ValueFormatter formatter = new NumberValueFormatter();
@@ -31,24 +25,6 @@ public class Column {
 		} else {
 			this.values = values;
 		}
-	}
-
-	public int getTextColor() {
-		return textColor;
-	}
-
-	public Column setTextColor(int textColor) {
-		this.textColor = textColor;
-		return this;
-	}
-
-	public int getTextSize() {
-		return textSize;
-	}
-
-	public Column setTextSize(int textSize) {
-		this.textSize = textSize;
-		return this;
 	}
 
 	public int getAreaTransparency() {

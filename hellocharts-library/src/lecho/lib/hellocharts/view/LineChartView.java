@@ -108,6 +108,9 @@ public class LineChartView extends AbstractChartView {
 		mChartCalculator.setInternalMargin(mData.getPointAdditionalMargin());
 		mAxesRenderer.initRenderer();
 		mChartCalculator.setAxesMargin(mAxesRenderer.getAxisXHeight(), mAxesRenderer.getAxisYWidth());
+
+		mChartRenderer.setTextColor(mData.getLabelsTextColor());
+		mChartRenderer.setTextSize(mData.getLabelsTextSize());
 		ViewCompat.postInvalidateOnAnimation(LineChartView.this);
 	}
 

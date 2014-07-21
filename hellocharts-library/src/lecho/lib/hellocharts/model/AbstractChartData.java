@@ -9,9 +9,9 @@ public abstract class AbstractChartData implements ChartData {
 	protected RectF mBoundaries = new RectF();
 	protected boolean mManualBoundaries = false;
 	protected int axesColor = Color.LTGRAY;
-	protected int axesTextSize;
+	protected int axesTextSize = 16;
 	protected int labelsTextColor = Color.WHITE;
-	protected int labelsTextSize;
+	protected int labelsTextSize = 16;
 
 	public void setAxisX(Axis axisX) {
 		mAxisX = axisX;

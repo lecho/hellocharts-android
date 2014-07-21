@@ -138,7 +138,6 @@ public class ColumnChartRenderer implements ChartRenderer {
 
 	private void processColumnForSubcolumns(Canvas canvas, ChartCalculator chartCalculator, Column column,
 			float columnWidth, int columnIndex, int mode) {
-		labelPaint.setTextSize(Utils.sp2px(mContext, column.getTextSize()));
 		// For n subcolumns there will be n-1 spacing and there will be one
 		// subcolumn for every columnValue
 		float subcolumnWidth = (columnWidth - (mSubcolumnSpacing * (column.getValues().size() - 1)))
@@ -155,6 +154,7 @@ public class ColumnChartRenderer implements ChartRenderer {
 		float subcolumnRawValueX = rawValueX - halfColumnWidth;
 		int valueIndex = 0;
 		for (ColumnValue columnValue : column.getValues()) {
+			mColumnPaint.setColor(columnValue.getColor());
 			if (subcolumnRawValueX > rawValueX + halfColumnWidth) {
 				break;
 			}
@@ -218,7 +218,6 @@ public class ColumnChartRenderer implements ChartRenderer {
 
 	private void processColumnForStacked(Canvas canvas, ChartCalculator chartCalculator, Column column,
 			float columnWidth, int columnIndex, int mode) {
-		labelPaint.setTextSize(Utils.sp2px(mContext, column.getTextSize()));
 		final float rawValueX = chartCalculator.calculateRawX(columnIndex);
 		final float halfColumnWidth = columnWidth / 2;
 		float mostPositiveValue = DEFAULT_BASE_VALUE;
@@ -260,7 +259,6 @@ public class ColumnChartRenderer implements ChartRenderer {
 	}
 
 	private void drawSubcolumn(Canvas canvas, Column column, ColumnValue columnValue, boolean isStacked) {
-		mColumnPaint.setColor(columnValue.getColor());
 		canvas.drawRect(mRectToDraw, mColumnPaint);
 		if (column.hasLabels()) {
 			drawLabel(canvas, column, columnValue, isStacked, labelOffset);
@@ -269,7 +267,6 @@ public class ColumnChartRenderer implements ChartRenderer {
 
 	private void highlightSubcolumn(Canvas canvas, Column column, ColumnValue columnValue, int valueIndex,
 			boolean isStacked) {
-		mColumnPaint.setColor(columnValue.getColor());
 		if (mSelectedValue.secondIndex == valueIndex) {
 			mColumnPaint.setColor(Utils.darkenColor(columnValue.getColor()));
 			canvas.drawRect(mRectToDraw.left - touchAdditionalWidth, mRectToDraw.top, mRectToDraw.right
@@ -313,7 +310,6 @@ public class ColumnChartRenderer implements ChartRenderer {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		final int nummChars = column.getFormatter().formatValue(labelBuffer, columnValue.getValue());
 		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
-		labelPaint.getFontMetricsInt(fontMetrics);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
 		float left = mRectToDraw.centerX() - labelWidth / 2 - mLabelMargin;
 		float right = mRectToDraw.centerX() + labelWidth / 2 + mLabelMargin;
@@ -327,7 +323,6 @@ public class ColumnChartRenderer implements ChartRenderer {
 				top = mRectToDraw.bottom - labelHeight - mLabelMargin * 2;
 				bottom = mRectToDraw.bottom;
 			}
-			labelPaint.setColor(column.getTextColor());
 			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, left + mLabelMargin, bottom
 					- mLabelMargin, labelPaint);
 		} else if (!isStacked) {
@@ -348,13 +343,26 @@ public class ColumnChartRenderer implements ChartRenderer {
 					top = mRectToDraw.bottom + offset;
 				}
 			}
+			int orginColor = labelPaint.getColor();
 			labelPaint.setColor(Utils.darkenColor(columnValue.getColor()));
 			canvas.drawRect(left, top, right, bottom, labelPaint);
-			labelPaint.setColor(column.getTextColor());
+			labelPaint.setColor(orginColor);
 			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, left + mLabelMargin, bottom
 					- mLabelMargin, labelPaint);
 		} else {
 			// do nothing
 		}
+	}
+
+	@Override
+	public void setTextColor(int color) {
+		labelPaint.setColor(color);
+
+	}
+
+	@Override
+	public void setTextSize(int size) {
+		labelPaint.setTextSize(size);
+		labelPaint.getFontMetricsInt(fontMetrics);
 	}
 }

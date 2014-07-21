@@ -12,8 +12,6 @@ public class Line {
 	public static final int DEFAULT_POINT_RADIUS_DP = 6;
 	public static final int DEFAULT_AREA_TRANSPARENCY = 64;
 	private int color = Color.LTGRAY;
-	private int textColor = Color.WHITE;
-	private int textSize = DEFAULT_LINE_VALUE_TEXT_SIZE_SP;
 	private int lineWidth = DEFAULT_LINE_WIDTH_DP;
 	private int pointRadius = DEFAULT_POINT_RADIUS_DP;
 	private int areaTransparency = DEFAULT_AREA_TRANSPARENCY;
@@ -48,24 +46,6 @@ public class Line {
 
 	public Line setColor(int color) {
 		this.color = color;
-		return this;
-	}
-
-	public int getTextColor() {
-		return textColor;
-	}
-
-	public Line setTextColor(int textColor) {
-		this.textColor = textColor;
-		return this;
-	}
-
-	public int getTextSize() {
-		return textSize;
-	}
-
-	public Line setTextSize(int textSize) {
-		this.textSize = textSize;
 		return this;
 	}
 

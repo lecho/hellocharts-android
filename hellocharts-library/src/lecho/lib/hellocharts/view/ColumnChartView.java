@@ -120,6 +120,9 @@ public class ColumnChartView extends AbstractChartView {
 				getPaddingRight(), getPaddingBottom());
 		mAxesRenderer.initRenderer();
 		mChartCalculator.setAxesMargin(mAxesRenderer.getAxisXHeight(), mAxesRenderer.getAxisYWidth());
+
+		mChartRenderer.setTextColor(mData.getLabelsTextColor());
+		mChartRenderer.setTextSize(mData.getLabelsTextSize());
 		ViewCompat.postInvalidateOnAnimation(ColumnChartView.this);
 	}
 
