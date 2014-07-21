@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.util.TypedValue;
 
 public abstract class Utils {
+	public static final int POW10[] = { 1, 10, 100, 1000, 10000, 100000, 1000000 };
 	public static final int COLOR_BLUE = Color.parseColor("#33B5E5");
 	public static final int COLOR_VIOLET = Color.parseColor("#AA66CC");
 	public static final int COLOR_GREEN = Color.parseColor("#99CC00");
@@ -135,5 +136,47 @@ public abstract class Utils {
 		final float magnitude = (float) Math.pow(10, power);
 		final long shifted = Math.round(num * magnitude);
 		return shifted / magnitude;
+	}
+
+	/**
+	 * Formats a float value to the given number of decimals. Returns the length of the string. The string begins at
+	 * [endIndex] - [return value] and ends at [endIndex]. It's up to you to check indexes correctness.
+	 * 
+	 * Parameter [endIndex] can be helpful when you want to append some text to formatted value.
+	 * 
+	 * @return number of characters of formatted value
+	 */
+	public static int formatFloat(final char[] formattedValue, float value, int endIndex, int digits) {
+		boolean negative = false;
+		if (value == 0) {
+			formattedValue[endIndex - 1] = '0';
+			return 1;
+		}
+		if (value < 0) {
+			negative = true;
+			value = -value;
+		}
+		if (digits > POW10.length) {
+			digits = POW10.length - 1;
+		}
+		value *= POW10[digits];
+		long lval = Math.round(value);
+		int index = endIndex - 1;
+		int charCount = 0;
+		while (lval != 0 || charCount < (digits + 1)) {
+			int digit = (int) (lval % 10);
+			lval = lval / 10;
+			formattedValue[index--] = (char) (digit + '0');
+			charCount++;
+			if (charCount == digits) {
+				formattedValue[index--] = '.';
+				charCount++;
+			}
+		}
+		if (negative) {
+			formattedValue[index--] = '-';
+			charCount++;
+		}
+		return charCount;
 	}
 }
