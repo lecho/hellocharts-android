@@ -147,6 +147,10 @@ public abstract class Utils {
 	 * @return number of characters of formatted value
 	 */
 	public static int formatFloat(final char[] formattedValue, float value, int endIndex, int digits) {
+		if (digits >= POW10.length) {
+			formattedValue[endIndex - 1] = '.';
+			return 1;
+		}
 		boolean negative = false;
 		if (value == 0) {
 			formattedValue[endIndex - 1] = '0';
