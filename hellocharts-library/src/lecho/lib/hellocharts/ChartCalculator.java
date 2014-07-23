@@ -12,6 +12,7 @@ public class ChartCalculator {
 	public static final int DEFAULT_COMMON_MARGIN_DP = 4;
 	private Context mContext;
 	private Chart mChart;
+	private int margin;
 	/**
 	 * The current area (in pixels) for chart data, including mCoomonMargin. Labels are drawn outside this area.
 	 */
@@ -36,6 +37,7 @@ public class ChartCalculator {
 	public ChartCalculator(Context context, Chart chart) {
 		mContext = context;
 		mChart = chart;
+		margin = Utils.dp2px(mContext, DEFAULT_COMMON_MARGIN_DP);
 	}
 
 	/**
@@ -44,28 +46,22 @@ public class ChartCalculator {
 	public void calculateContentArea(int width, int height, int paddingLeft, int paddingTop, int paddingRight,
 			int paddingBottom) {
 		mContentRectWithMargins.set(paddingLeft, paddingTop, width - paddingRight, height - paddingBottom);
-		int margin = Utils.dp2px(mContext, DEFAULT_COMMON_MARGIN_DP);
 		mContentRect.set(mContentRectWithMargins.left + margin, mContentRectWithMargins.top + margin,
 				mContentRectWithMargins.right - margin, mContentRectWithMargins.bottom - margin);
 	}
 
 	public void setInternalMargin(int margin) {
-		int marginPx = Utils.dp2px(mContext, margin);
-		mContentRect.left = mContentRectWithMargins.left + marginPx;
-		mContentRect.top = mContentRectWithMargins.top + marginPx;
-		mContentRect.right = mContentRectWithMargins.right - marginPx;
-		mContentRect.bottom = mContentRectWithMargins.bottom - marginPx;
+		mContentRect.left = mContentRectWithMargins.left + margin;
+		mContentRect.top = mContentRectWithMargins.top + margin;
+		mContentRect.right = mContentRectWithMargins.right - margin;
+		mContentRect.bottom = mContentRectWithMargins.bottom - margin;
 	}
 
 	public void setInternalMargin(int marginLeft, int marginTop, int marginRight, int marginBottom) {
-		int margin = Utils.dp2px(mContext, marginLeft);
-		mContentRect.left = mContentRectWithMargins.left + margin;
-		margin = Utils.dp2px(mContext, marginTop);
-		mContentRect.top = mContentRectWithMargins.top + margin;
-		margin = Utils.dp2px(mContext, marginRight);
-		mContentRect.right = mContentRectWithMargins.right - margin;
-		margin = Utils.dp2px(mContext, marginBottom);
-		mContentRect.bottom = mContentRectWithMargins.bottom - margin;
+		mContentRect.left = mContentRectWithMargins.left + marginLeft;
+		mContentRect.top = mContentRectWithMargins.top + marginTop;
+		mContentRect.right = mContentRectWithMargins.right - marginRight;
+		mContentRect.bottom = mContentRectWithMargins.bottom - marginBottom;
 	}
 
 	public void setAxesMargin(int axisXMargin, int axisYMargin) {

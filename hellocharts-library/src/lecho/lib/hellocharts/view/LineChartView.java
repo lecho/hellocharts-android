@@ -10,6 +10,7 @@ import lecho.lib.hellocharts.model.LinePoint;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.LineChartRenderer;
+import lecho.lib.hellocharts.util.Utils;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -65,7 +66,7 @@ public class LineChartView extends AbstractChartView {
 		mChartCalculator.calculateViewport();
 		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
-		mChartCalculator.setInternalMargin(mData.getPointAdditionalMargin());
+		mChartCalculator.setInternalMargin(Utils.sp2px(getContext(), mData.getPointAdditionalMargin()));
 		mChartCalculator.setAxesMargin(mAxesRenderer.getAxisXHeight(), mAxesRenderer.getAxisYWidth());
 	}
 
@@ -105,7 +106,7 @@ public class LineChartView extends AbstractChartView {
 		mChartCalculator.calculateViewport();
 		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
-		mChartCalculator.setInternalMargin(mData.getPointAdditionalMargin());
+		mChartCalculator.setInternalMargin(Utils.sp2px(getContext(), mData.getPointAdditionalMargin()));
 		mAxesRenderer.initRenderer();
 		mChartCalculator.setAxesMargin(mAxesRenderer.getAxisXHeight(), mAxesRenderer.getAxisYWidth());
 
