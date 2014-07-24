@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Column {
-	public static final int DEFAULT_AREA_TRANSPARENCY = 255;
-	private int areaTransparency = DEFAULT_AREA_TRANSPARENCY;
 	private boolean hasLabels = false;
 	private ValueFormatter formatter = new NumberValueFormatter();
 	// TODO: consider Collections.emptyList()
@@ -25,15 +23,6 @@ public class Column {
 		} else {
 			this.values = values;
 		}
-	}
-
-	public int getAreaTransparency() {
-		return areaTransparency;
-	}
-
-	public Column setAreaTransparency(int areaTransparency) {
-		this.areaTransparency = areaTransparency;
-		return this;
 	}
 
 	public boolean hasLabels() {
