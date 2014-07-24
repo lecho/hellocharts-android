@@ -9,6 +9,7 @@ import lecho.lib.hellocharts.renderer.ChartRenderer;
 
 public interface Chart {
 	int DEFAULT_TEXT_SIZE_SP = 14;
+	int DEFAULT_LABEL_MARGIN_DP = 4;
 	int DEFAULT_CONTENT_AREA_MARGIN_DP = 4;
 	int DEFAULT_AXES_NAME_MARGIN_DP = 4;
 	int DEFAULT_LINE_STROKE_WIDTH_DP = 3;
@@ -45,4 +46,17 @@ public interface Chart {
 
 	public void setValueTouchEnabled(boolean isValueTouchEnabled);
 
+	public int getDefaultTextSize();
+
+	public int getDefaultLabelMargin();
+
+	public int getDefaultContentAreaMargin();
+
+	public int getDefaultAxesNameMargin();
+
+	public int getDefaultLineStrokeWidth();
+
+	public int getDefaultPointRadius();
+
+	public int getDefaultTouchTolleranceMargin();
 }

@@ -9,14 +9,9 @@ import lecho.lib.hellocharts.util.Utils;
 import android.graphics.Color;
 
 public class Line {
-	public static final int DEFAULT_LINE_VALUE_TEXT_SIZE_SP = 10;
-	public static final int DEFAULT_LINE_WIDTH_DP = 3;
-	public static final int DEFAULT_POINT_RADIUS_DP = 6;
 	public static final int DEFAULT_AREA_TRANSPARENCY = 64;
 	private int color = Color.LTGRAY;
 	private int darkenColor = Color.GRAY;
-	private int lineWidth = DEFAULT_LINE_WIDTH_DP;
-	private int pointRadius = DEFAULT_POINT_RADIUS_DP;
 	private int areaTransparency = DEFAULT_AREA_TRANSPARENCY;
 	private boolean hasPoints = true;
 	private boolean hasLines = true;
@@ -55,24 +50,6 @@ public class Line {
 
 	public int getDarkenColor() {
 		return darkenColor;
-	}
-
-	public int getLineWidth() {
-		return lineWidth;
-	}
-
-	public Line setLineWidth(int lineWidth) {
-		this.lineWidth = lineWidth;
-		return this;
-	}
-
-	public int getPointRadius() {
-		return pointRadius;
-	}
-
-	public Line setPointRadius(int pointRadius) {
-		this.pointRadius = pointRadius;
-		return this;
 	}
 
 	public int getAreaTransparency() {

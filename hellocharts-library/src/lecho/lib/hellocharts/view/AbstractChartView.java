@@ -4,8 +4,11 @@ import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.gesture.ChartTouchHandler;
 import lecho.lib.hellocharts.gesture.ZoomMode;
+import lecho.lib.hellocharts.model.ChartData;
+import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
+import lecho.lib.hellocharts.util.Utils;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -19,17 +22,31 @@ public abstract class AbstractChartView extends View implements Chart {
 	protected boolean isZoomEnabled = true;
 	protected boolean isValueTouchEnabled = true;
 	protected ZoomMode zoomMode = ZoomMode.HORIZONTAL_AND_VERTICAL;
+	protected int defaultTextSize;
+	protected int defaultLabelMargin;
+	protected int defaultContentAreaMargin;
+	protected int defaultAxesNameMargin;
+	protected int defaultLineStrokeWidth;
+	protected int defaultPointRadius;
+	protected int defaultTouchTolleranceMargin;
 
 	public AbstractChartView(Context context) {
-		super(context);
+		this(context, null, 0);
 	}
 
 	public AbstractChartView(Context context, AttributeSet attrs) {
-		super(context, attrs);
+		this(context, attrs, 0);
 	}
 
 	public AbstractChartView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
+		defaultTextSize = Utils.sp2px(context, DEFAULT_TEXT_SIZE_SP);
+		defaultLabelMargin = Utils.sp2px(context, DEFAULT_LABEL_MARGIN_DP);
+		defaultContentAreaMargin = Utils.dp2px(context, DEFAULT_CONTENT_AREA_MARGIN_DP);
+		defaultAxesNameMargin = Utils.dp2px(context, DEFAULT_AXES_NAME_MARGIN_DP);
+		defaultLineStrokeWidth = Utils.dp2px(context, DEFAULT_LINE_STROKE_WIDTH_DP);
+		defaultPointRadius = Utils.dp2px(context, DEFAULT_POINT_RADIUS_DP);
+		defaultTouchTolleranceMargin = Utils.dp2px(context, DEFAULT_TOUCH_TOLLERANCE_MARGIN_DP);
 	}
 
 	public ChartRenderer getChartRenderer() {
@@ -80,5 +97,58 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	public void setZoomMode(ZoomMode zoomMode) {
 		this.zoomMode = zoomMode;
+	}
+
+	@Override
+	public ChartData getData() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void animationUpdate(float scale) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void callTouchListener(SelectedValue selectedValue) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public int getDefaultTextSize() {
+		return defaultTextSize;
+	}
+
+	@Override
+	public int getDefaultLabelMargin() {
+		return defaultLabelMargin;
+	}
+
+	@Override
+	public int getDefaultContentAreaMargin() {
+		return defaultContentAreaMargin;
+	}
+
+	@Override
+	public int getDefaultAxesNameMargin() {
+		return defaultAxesNameMargin;
+	}
+
+	@Override
+	public int getDefaultLineStrokeWidth() {
+		return defaultLineStrokeWidth;
+	}
+
+	@Override
+	public int getDefaultPointRadius() {
+		return defaultPointRadius;
+	}
+
+	@Override
+	public int getDefaultTouchTolleranceMargin() {
+		return defaultTouchTolleranceMargin;
 	}
 }

@@ -5,9 +5,7 @@ import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.LinePoint;
 import lecho.lib.hellocharts.model.SelectedValue;
-import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.LineChartView;
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
@@ -17,33 +15,33 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 
 public class LineChartRenderer implements ChartRenderer {
-	public static final int DEFAULT_TOUCH_TOLLERANCE_DP = 4;
 	private static final float LINE_SMOOTHNES = 0.16f;
-	private static final int DEFAULT_LABEL_MARGIN_DP = 4;
-	private static final int DEFAULT_LABEL_OFFSET_DP = 4;
 	private static final int MODE_DRAW = 0;
 	private static final int MODE_HIGHLIGHT = 1;
 	private int labelOffset;
-	private final int mLabelMargin;
+	private int mLabelMargin;
+	private int pointRadius;
+	private int touchTolleranceMargin;
 	private Path mLinePath = new Path();
 	private Paint mLinePaint = new Paint();
 	private Paint mPointPaint = new Paint();
 	private Paint labelPaint = new Paint();
 	private RectF labelRect = new RectF();
-	private Context mContext;
 	private LineChartView mChart;
 	private SelectedValue mSelectedValue = new SelectedValue();
 	private char[] labelBuffer = new char[32];
 	private FontMetricsInt fontMetrics = new FontMetricsInt();
 
-	public LineChartRenderer(Context context, LineChartView chart) {
-		mContext = context;
+	public LineChartRenderer(LineChartView chart) {
 		mChart = chart;
-		labelOffset = Utils.dp2px(context, DEFAULT_LABEL_OFFSET_DP);
-		mLabelMargin = Utils.dp2px(context, DEFAULT_LABEL_MARGIN_DP);
+		mLabelMargin = chart.getDefaultLabelMargin();
+		labelOffset = chart.getDefaultLabelMargin();
+		pointRadius = chart.getDefaultPointRadius();
+		touchTolleranceMargin = chart.getDefaultTouchTolleranceMargin();
 
 		mLinePaint.setAntiAlias(true);
 		mLinePaint.setStyle(Paint.Style.STROKE);
+		mLinePaint.setStrokeWidth(chart.getDefaultLineStrokeWidth());
 
 		mPointPaint.setAntiAlias(true);
 		mPointPaint.setStyle(Paint.Style.FILL);
@@ -92,12 +90,11 @@ public class LineChartRenderer implements ChartRenderer {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		int lineIndex = 0;
 		for (Line line : data.lines) {
-			final int touchRadius = Utils.dp2px(mContext, line.getPointRadius() + DEFAULT_TOUCH_TOLLERANCE_DP);
 			int valueIndex = 0;
 			for (LinePoint linePoint : line.getPoints()) {
 				final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
 				final float rawValueY = chartCalculator.calculateRawY(linePoint.getY());
-				if (isInArea(rawValueX, rawValueY, touchX, touchY, touchRadius)) {
+				if (isInArea(rawValueX, rawValueY, touchX, touchY, pointRadius + touchTolleranceMargin)) {
 					mSelectedValue.firstIndex = lineIndex;
 					mSelectedValue.secondIndex = valueIndex;
 				}
@@ -142,7 +139,6 @@ public class LineChartRenderer implements ChartRenderer {
 			++valueIndex;
 		}
 		mLinePaint.setColor(line.getColor());
-		mLinePaint.setStrokeWidth(Utils.dp2px(mContext, line.getLineWidth()));
 		canvas.drawPath(mLinePath, mLinePaint);
 		if (line.isFilled()) {
 			drawArea(canvas, line.getAreaTransparency());
@@ -215,7 +211,6 @@ public class LineChartRenderer implements ChartRenderer {
 			nextPointY = afterNextPointY;
 		}
 		mLinePaint.setColor(line.getColor());
-		mLinePaint.setStrokeWidth(Utils.dp2px(mContext, line.getLineWidth()));
 		canvas.drawPath(mLinePath, mLinePaint);
 		if (line.isFilled()) {
 			drawArea(canvas, line.getAreaTransparency());
@@ -228,7 +223,6 @@ public class LineChartRenderer implements ChartRenderer {
 	private void drawPoints(Canvas canvas, Line line, int lineIndex, int mode) {
 		final ChartCalculator chartCalculator = mChart.getChartCalculator();
 		mPointPaint.setColor(line.getColor());
-		final float pointRadius = Utils.dp2px(mContext, line.getPointRadius());
 		int valueIndex = 0;
 		for (LinePoint linePoint : line.getPoints()) {
 			final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
@@ -259,10 +253,8 @@ public class LineChartRenderer implements ChartRenderer {
 	private void highlightPoint(Canvas canvas, Line line, LinePoint linePoint, float rawValueX, float rawValueY,
 			int lineIndex, int valueIndex) {
 		if (mSelectedValue.firstIndex == lineIndex && mSelectedValue.secondIndex == valueIndex) {
-			final float touchRadius = Utils.dp2px(mContext, line.getPointRadius() + DEFAULT_TOUCH_TOLLERANCE_DP);
-			final float pointRadius = Utils.dp2px(mContext, line.getPointRadius());
 			mPointPaint.setColor(line.getDarkenColor());
-			canvas.drawCircle(rawValueX, rawValueY, touchRadius, mPointPaint);
+			canvas.drawCircle(rawValueX, rawValueY, pointRadius + touchTolleranceMargin, mPointPaint);
 			if (line.hasLabels()) {
 				drawLabel(canvas, line, linePoint, rawValueX, rawValueY, pointRadius + labelOffset);
 			}
