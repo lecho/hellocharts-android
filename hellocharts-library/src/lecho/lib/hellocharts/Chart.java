@@ -8,6 +8,12 @@ import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
 
 public interface Chart {
+	int DEFAULT_TEXT_SIZE_SP = 14;
+	int DEFAULT_CONTENT_AREA_MARGIN_DP = 4;
+	int DEFAULT_AXES_NAME_MARGIN_DP = 4;
+	int DEFAULT_LINE_STROKE_WIDTH_DP = 3;
+	int DEFAULT_POINT_RADIUS_DP = 6;
+	int DEFAULT_TOUCH_TOLLERANCE_MARGIN_DP = 4;
 
 	public ChartData getData();
 
