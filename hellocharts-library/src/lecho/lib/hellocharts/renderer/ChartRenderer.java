@@ -16,8 +16,4 @@ public interface ChartRenderer {
 
 	public void callTouchListener();
 
-	public void setTextColor(int color);
-
-	public void setTextSize(int size);
-
 }

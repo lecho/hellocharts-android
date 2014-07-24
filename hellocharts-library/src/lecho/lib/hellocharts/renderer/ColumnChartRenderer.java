@@ -5,10 +5,9 @@ import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.ColumnValue;
 import lecho.lib.hellocharts.model.SelectedValue;
-import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.ColumnChartView;
-import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Cap;
@@ -18,10 +17,6 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 
 public class ColumnChartRenderer implements ChartRenderer {
-	private static final int DEFAULT_SUBCOLUMN_SPACING_DP = 1;
-	private static final int DEFAULT_TOUCH_ADDITIONAL_WIDTH_DP = 2;
-	private static final int DEFAULT_LABEL_MARGIN_DP = 4;
-	private static final int DEFAULT_LABEL_OFFSET_DP = 4;
 	private static final float DEFAULT_BASE_VALUE = 0.0f;
 	private static final int MODE_DRAW = 0;
 	private static final int MODE_CHECK_TOUCH = 1;
@@ -29,24 +24,22 @@ public class ColumnChartRenderer implements ChartRenderer {
 	private int mLabelMargin;
 	private int labelOffset;
 	private int touchAdditionalWidth;
+	private int subcolumnSpacing;
 	private Paint mColumnPaint = new Paint();
 	private Paint labelPaint = new Paint();
-	private Context mContext;
 	private ColumnChartView mChart;
-	private int mSubcolumnSpacing;
 	private RectF mRectToDraw = new RectF();
 	private PointF mTouchedPoint = new PointF();
 	private SelectedValue mSelectedValue = new SelectedValue();
 	private char[] labelBuffer = new char[32];
 	private FontMetricsInt fontMetrics = new FontMetricsInt();
 
-	public ColumnChartRenderer(Context context, ColumnChartView chart) {
-		mContext = context;
+	public ColumnChartRenderer(ColumnChartView chart) {
 		mChart = chart;
-		labelOffset = Utils.dp2px(context, DEFAULT_LABEL_OFFSET_DP);
-		mLabelMargin = Utils.dp2px(context, DEFAULT_LABEL_MARGIN_DP);
-		mSubcolumnSpacing = Utils.dp2px(mContext, DEFAULT_SUBCOLUMN_SPACING_DP);
-		touchAdditionalWidth = Utils.dp2px(context, DEFAULT_TOUCH_ADDITIONAL_WIDTH_DP);
+		mLabelMargin = chart.getDefaultLabelMargin();
+		labelOffset = chart.getDefaultLabelMargin();
+		subcolumnSpacing = chart.getDefaultSubcolumnSpacing();
+		touchAdditionalWidth = chart.getDefaultColumnTouchAdditionalWidth();
 
 		mColumnPaint.setAntiAlias(true);
 		mColumnPaint.setStyle(Paint.Style.FILL);
@@ -56,6 +49,9 @@ public class ColumnChartRenderer implements ChartRenderer {
 		labelPaint.setStyle(Paint.Style.FILL);
 		labelPaint.setTextAlign(Align.LEFT);
 		labelPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+		labelPaint.setTextSize(chart.getDefaultTextSize());
+		labelPaint.setColor(Color.WHITE);
+		labelPaint.getFontMetricsInt(fontMetrics);
 	}
 
 	public void draw(Canvas canvas) {
@@ -140,7 +136,7 @@ public class ColumnChartRenderer implements ChartRenderer {
 			float columnWidth, int columnIndex, int mode) {
 		// For n subcolumns there will be n-1 spacing and there will be one
 		// subcolumn for every columnValue
-		float subcolumnWidth = (columnWidth - (mSubcolumnSpacing * (column.getValues().size() - 1)))
+		float subcolumnWidth = (columnWidth - (subcolumnSpacing * (column.getValues().size() - 1)))
 				/ column.getValues().size();
 		if (subcolumnWidth < 1) {
 			subcolumnWidth = 1;
@@ -176,7 +172,7 @@ public class ColumnChartRenderer implements ChartRenderer {
 				// be thrown
 				throw new IllegalStateException("Cannot process column in mode: " + mode);
 			}
-			subcolumnRawValueX += subcolumnWidth + mSubcolumnSpacing;
+			subcolumnRawValueX += subcolumnWidth + subcolumnSpacing;
 			++valueIndex;
 		}
 	}
@@ -299,10 +295,10 @@ public class ColumnChartRenderer implements ChartRenderer {
 		mRectToDraw.right = right;
 		if (columnValue.getValue() >= DEFAULT_BASE_VALUE) {
 			mRectToDraw.top = rawValueY;
-			mRectToDraw.bottom = rawBaseValueY - DEFAULT_SUBCOLUMN_SPACING_DP;
+			mRectToDraw.bottom = rawBaseValueY - subcolumnSpacing;
 		} else {
 			mRectToDraw.bottom = rawValueY;
-			mRectToDraw.top = rawBaseValueY + DEFAULT_SUBCOLUMN_SPACING_DP;
+			mRectToDraw.top = rawBaseValueY + subcolumnSpacing;
 		}
 	}
 
@@ -354,15 +350,4 @@ public class ColumnChartRenderer implements ChartRenderer {
 		}
 	}
 
-	@Override
-	public void setTextColor(int color) {
-		labelPaint.setColor(color);
-
-	}
-
-	@Override
-	public void setTextSize(int size) {
-		labelPaint.setTextSize(size);
-		labelPaint.getFontMetricsInt(fontMetrics);
-	}
 }

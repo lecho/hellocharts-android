@@ -29,6 +29,8 @@ public abstract class AbstractChartView extends View implements Chart {
 	protected int defaultLineStrokeWidth;
 	protected int defaultPointRadius;
 	protected int defaultTouchTolleranceMargin;
+	protected int defaultSubcolumnSpacing;
+	protected int defaultColumnTouchAdditionalWidth;
 
 	public AbstractChartView(Context context) {
 		this(context, null, 0);
@@ -47,6 +49,8 @@ public abstract class AbstractChartView extends View implements Chart {
 		defaultLineStrokeWidth = Utils.dp2px(context, DEFAULT_LINE_STROKE_WIDTH_DP);
 		defaultPointRadius = Utils.dp2px(context, DEFAULT_POINT_RADIUS_DP);
 		defaultTouchTolleranceMargin = Utils.dp2px(context, DEFAULT_TOUCH_TOLLERANCE_MARGIN_DP);
+		defaultSubcolumnSpacing = Utils.dp2px(context, DEFAULT_SUBCOLUMN_SPACING_DP);
+		defaultColumnTouchAdditionalWidth = Utils.dp2px(context, DEFAULT_COLUMN_TOUCH_ADDITIONAL_WIDTH_DP);
 	}
 
 	public ChartRenderer getChartRenderer() {
@@ -150,5 +154,15 @@ public abstract class AbstractChartView extends View implements Chart {
 	@Override
 	public int getDefaultTouchTolleranceMargin() {
 		return defaultTouchTolleranceMargin;
+	}
+
+	@Override
+	public int getDefaultSubcolumnSpacing() {
+		return defaultSubcolumnSpacing;
+	}
+
+	@Override
+	public int getDefaultColumnTouchAdditionalWidth() {
+		return defaultColumnTouchAdditionalWidth;
 	}
 }

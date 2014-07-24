@@ -10,7 +10,6 @@ import lecho.lib.hellocharts.model.LinePoint;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.LineChartRenderer;
-import lecho.lib.hellocharts.util.Utils;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -40,7 +39,7 @@ public class LineChartView extends AbstractChartView {
 		initAnimatiors();
 		mChartCalculator = new ChartCalculator(context, this);
 		mAxesRenderer = new AxesRenderer(context, this);
-		mChartRenderer = new LineChartRenderer(context, this);
+		mChartRenderer = new LineChartRenderer(this);
 		mTouchHandler = new DefaultTouchHandler(context, this);
 	}
 
@@ -66,7 +65,7 @@ public class LineChartView extends AbstractChartView {
 		mChartCalculator.calculateViewport();
 		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
-		mChartCalculator.setInternalMargin(Utils.sp2px(getContext(), mData.getPointAdditionalMargin()));
+		mChartCalculator.setInternalMargin(getDefaultPointRadius() + getDefaultTouchTolleranceMargin());
 		mChartCalculator.setAxesMargin(mAxesRenderer.getAxisXHeight(), mAxesRenderer.getAxisYWidth());
 	}
 
@@ -80,7 +79,7 @@ public class LineChartView extends AbstractChartView {
 		mChartRenderer.draw(canvas);
 		canvas.restoreToCount(clipRestoreCount);
 		mChartRenderer.drawUnclipped(canvas);
-		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
+		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000.0);
 	}
 
 	@Override
@@ -106,12 +105,10 @@ public class LineChartView extends AbstractChartView {
 		mChartCalculator.calculateViewport();
 		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
-		mChartCalculator.setInternalMargin(Utils.sp2px(getContext(), mData.getPointAdditionalMargin()));
+		mChartCalculator.setInternalMargin(getDefaultPointRadius() + getDefaultTouchTolleranceMargin());
 		mAxesRenderer.initRenderer();
 		mChartCalculator.setAxesMargin(mAxesRenderer.getAxisXHeight(), mAxesRenderer.getAxisYWidth());
 
-		mChartRenderer.setTextColor(mData.getLabelsTextColor());
-		mChartRenderer.setTextSize(mData.getLabelsTextSize());
 		ViewCompat.postInvalidateOnAnimation(LineChartView.this);
 	}
 

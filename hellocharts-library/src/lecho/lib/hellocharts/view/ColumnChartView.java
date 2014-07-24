@@ -35,7 +35,7 @@ public class ColumnChartView extends AbstractChartView {
 	public ColumnChartView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		initAnimatiors();
-		mChartRenderer = new ColumnChartRenderer(context, this);
+		mChartRenderer = new ColumnChartRenderer(this);
 		mChartCalculator = new ChartCalculator(context, this);
 		mAxesRenderer = new AxesRenderer(context, this);
 		mTouchHandler = new DefaultTouchHandler(context, this);
@@ -121,8 +121,6 @@ public class ColumnChartView extends AbstractChartView {
 		mAxesRenderer.initRenderer();
 		mChartCalculator.setAxesMargin(mAxesRenderer.getAxisXHeight(), mAxesRenderer.getAxisYWidth());
 
-		mChartRenderer.setTextColor(mData.getLabelsTextColor());
-		mChartRenderer.setTextSize(mData.getLabelsTextSize());
 		ViewCompat.postInvalidateOnAnimation(ColumnChartView.this);
 	}
 

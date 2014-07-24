@@ -8,13 +8,15 @@ import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
 
 public interface Chart {
-	int DEFAULT_TEXT_SIZE_SP = 14;
+	int DEFAULT_TEXT_SIZE_SP = 12;
 	int DEFAULT_LABEL_MARGIN_DP = 4;
 	int DEFAULT_CONTENT_AREA_MARGIN_DP = 4;
 	int DEFAULT_AXES_NAME_MARGIN_DP = 4;
 	int DEFAULT_LINE_STROKE_WIDTH_DP = 3;
 	int DEFAULT_POINT_RADIUS_DP = 6;
 	int DEFAULT_TOUCH_TOLLERANCE_MARGIN_DP = 4;
+	int DEFAULT_SUBCOLUMN_SPACING_DP = 1;
+	int DEFAULT_COLUMN_TOUCH_ADDITIONAL_WIDTH_DP = 2;
 
 	public ChartData getData();
 
@@ -59,4 +61,8 @@ public interface Chart {
 	public int getDefaultPointRadius();
 
 	public int getDefaultTouchTolleranceMargin();
+
+	public int getDefaultSubcolumnSpacing();
+
+	public int getDefaultColumnTouchAdditionalWidth();
 }

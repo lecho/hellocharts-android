@@ -10,6 +10,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.FontMetricsInt;
+import android.graphics.Color;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Typeface;
@@ -50,6 +51,9 @@ public class LineChartRenderer implements ChartRenderer {
 		labelPaint.setStyle(Paint.Style.FILL);
 		labelPaint.setTextAlign(Align.LEFT);
 		labelPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+		labelPaint.setColor(Color.WHITE);
+		labelPaint.setTextSize(chart.getDefaultTextSize());
+		labelPaint.getFontMetricsInt(fontMetrics);
 	}
 
 	@Override
@@ -307,17 +311,4 @@ public class LineChartRenderer implements ChartRenderer {
 		float diffY = touchY - y;
 		return Math.pow(diffX, 2) + Math.pow(diffY, 2) <= 2 * Math.pow(radius, 2);
 	}
-
-	@Override
-	public void setTextColor(int color) {
-		labelPaint.setColor(color);
-
-	}
-
-	@Override
-	public void setTextSize(int size) {
-		labelPaint.setTextSize(size);
-		labelPaint.getFontMetricsInt(fontMetrics);
-	}
-
 }
