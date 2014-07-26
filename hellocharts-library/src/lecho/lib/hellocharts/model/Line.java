@@ -9,10 +9,12 @@ import lecho.lib.hellocharts.util.Utils;
 import android.graphics.Color;
 
 public class Line {
+	public static final int DEFAULT_POINT_RADIUS_DP = 6;
 	public static final int DEFAULT_AREA_TRANSPARENCY = 64;
 	private int color = Color.LTGRAY;
 	private int darkenColor = Color.GRAY;
 	private int areaTransparency = DEFAULT_AREA_TRANSPARENCY;
+	private int pointRadius = DEFAULT_POINT_RADIUS_DP;
 	private boolean hasPoints = true;
 	private boolean hasLines = true;
 	private boolean hasLabels = false;
@@ -86,6 +88,14 @@ public class Line {
 	public Line setHasLabels(boolean hasLabels) {
 		this.hasLabels = hasLabels;
 		return this;
+	}
+
+	public int getPointRadius() {
+		return pointRadius;
+	}
+
+	public void setPointRadius(int pointRadius) {
+		this.pointRadius = pointRadius;
 	}
 
 	public boolean isSmooth() {
