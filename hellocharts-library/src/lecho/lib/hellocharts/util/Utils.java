@@ -20,19 +20,30 @@ public abstract class Utils {
 		return colors[(int) Math.round(Math.random() * (colors.length - 1))];
 	}
 
+	public static int dp2px(float density, int dp) {
+		if (dp == 0) {
+			return 1;
+		}
+		return (int) (dp * density + 0.5f);
+
+	}
+
 	public static int dp2px(Context context, int dp) {
 		// Get the screen's density scale
-		final float scale = context.getResources().getDisplayMetrics().density;
+		final float density = context.getResources().getDisplayMetrics().density;
 		// Convert the dps to pixels, based on density scale
-		return (int) (dp * scale + 0.5f);
+		return dp2px(density, dp);
+	}
 
+	public static int sp2px(float scaledDensity, int sp) {
+		return (int) (sp * scaledDensity + 0.5f);
 	}
 
 	public static int sp2px(Context context, int sp) {
 		// Get the screen's density scale
-		final float scale = context.getResources().getDisplayMetrics().scaledDensity;
-		// Convert the sps to pixels, based on scale density scale
-		return (int) (sp * scale + 0.5f);
+		final float scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
+		// Convert the dps to pixels, based on scaled density
+		return sp2px(scaledDensity, sp);
 	}
 
 	public static int mm2px(Context context, int mm) {
@@ -40,7 +51,7 @@ public abstract class Utils {
 				.getDisplayMetrics()) + 0.5f);
 	}
 
-	// TODO: that's not threat safe, should it be?(I hope not).
+	// TODO: that's not threat safe, should it be?
 	public static int darkenColor(int color) {
 		Color.colorToHSV(color, hsv);
 		hsv[1] = Math.min(hsv[1] * SATURATION_DARKEN, 1.0f);

@@ -17,7 +17,6 @@ public class AxesRenderer {
 	private Paint textPaint;
 	private Paint linePaint;
 	private Chart chart;
-	private Context context;
 	private int axisMargin;
 	// For now don't draw lines for X axis
 	// private float[] axisXDrawBuffer;
@@ -30,9 +29,15 @@ public class AxesRenderer {
 	private char[] labelBuffer = new char[32];
 	private String maxLabel = "0000";
 
+	private float density;
+	private float scaledDensity;
+
 	public AxesRenderer(Context context, Chart chart) {
-		this.context = context;
 		this.chart = chart;
+		density = context.getResources().getDisplayMetrics().density;
+		scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
+		axisMargin = Utils.dp2px(density, DEFAULT_AXIS_MARGIN_DP);
+
 		linePaint = new Paint();
 		linePaint.setAntiAlias(true);
 		linePaint.setStyle(Paint.Style.STROKE);
@@ -42,14 +47,12 @@ public class AxesRenderer {
 		textPaint.setAntiAlias(true);
 		textPaint.setStyle(Paint.Style.FILL);
 		textPaint.setStrokeWidth(1);
-
-		axisMargin = Utils.dp2px(context, DEFAULT_AXIS_MARGIN_DP);
 	}
 
 	public void initRenderer() {
 		linePaint.setColor(chart.getChartData().getAxesColor());
 		textPaint.setColor(chart.getChartData().getAxesColor());
-		textPaint.setTextSize(Utils.sp2px(context, chart.getChartData().getAxesTextSize()));
+		textPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getAxesTextSize()));
 		textPaint.getFontMetricsInt(fontMetrics);
 		int axisXHeight = getAxisXHeight(chart.getChartData().getAxisX());
 		int axisYWidth = getAxisYWidth(chart.getChartData().getAxisY());

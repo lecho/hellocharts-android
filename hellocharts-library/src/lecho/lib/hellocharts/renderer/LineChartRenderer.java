@@ -27,7 +27,6 @@ public class LineChartRenderer implements ChartRenderer {
 	private static final int MODE_DRAW = 0;
 	private static final int MODE_HIGHLIGHT = 1;
 
-	private Context context;
 	private Chart chart;
 	private LineChartDataProvider dataProvider;
 
@@ -44,18 +43,22 @@ public class LineChartRenderer implements ChartRenderer {
 	private FontMetricsInt fontMetrics = new FontMetricsInt();
 	protected RectF dataBoundaries = new RectF();
 
+	private float density;
+	private float scaledDensity;
+
 	public LineChartRenderer(Context context, Chart chart, LineChartDataProvider dataProvider) {
-		this.context = context;
 		this.chart = chart;
 		this.dataProvider = dataProvider;
+		density = context.getResources().getDisplayMetrics().density;
+		scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
 
-		labelMaring = Utils.dp2px(context, DEFAULT_LABEL_MARGIN_DP);
+		labelMaring = Utils.dp2px(density, DEFAULT_LABEL_MARGIN_DP);
 		labelOffset = labelMaring;
-		touchTolleranceMargin = Utils.dp2px(context, DEFAULT_TOUCH_TOLLERANCE_MARGIN_DP);
+		touchTolleranceMargin = Utils.dp2px(density, DEFAULT_TOUCH_TOLLERANCE_MARGIN_DP);
 
 		linePaint.setAntiAlias(true);
 		linePaint.setStyle(Paint.Style.STROKE);
-		linePaint.setStrokeWidth(Utils.dp2px(context, DEFAULT_LINE_STROKE_WIDTH_DP));
+		linePaint.setStrokeWidth(Utils.dp2px(density, DEFAULT_LINE_STROKE_WIDTH_DP));
 
 		pointPaint.setAntiAlias(true);
 		pointPaint.setStyle(Paint.Style.FILL);
@@ -72,7 +75,7 @@ public class LineChartRenderer implements ChartRenderer {
 		chart.getChartCalculator().calculateViewport(dataBoundaries);
 		chart.getChartCalculator().setInternalMargin(calculateContentAreaMargin());
 
-		labelPaint.setTextSize(Utils.sp2px(context, chart.getChartData().getLabelsTextSize()));
+		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getLabelsTextSize()));
 		labelPaint.getFontMetricsInt(fontMetrics);
 	}
 
@@ -114,7 +117,7 @@ public class LineChartRenderer implements ChartRenderer {
 		final ChartCalculator chartCalculator = chart.getChartCalculator();
 		int lineIndex = 0;
 		for (Line line : data.lines) {
-			int pointRadius = Utils.dp2px(context, line.getPointRadius());
+			int pointRadius = Utils.dp2px(density, line.getPointRadius());
 			int valueIndex = 0;
 			for (LinePoint linePoint : line.getPoints()) {
 				final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
@@ -184,7 +187,7 @@ public class LineChartRenderer implements ChartRenderer {
 				}
 			}
 		}
-		return Utils.dp2px(context, contentAreaMargin);
+		return Utils.dp2px(density, contentAreaMargin);
 	}
 
 	private void drawPath(Canvas canvas, final Line line) {
@@ -201,7 +204,7 @@ public class LineChartRenderer implements ChartRenderer {
 			}
 			++valueIndex;
 		}
-		linePaint.setStrokeWidth(Utils.dp2px(context, line.getStrokeWidth()));
+		linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
 		linePaint.setColor(line.getColor());
 		canvas.drawPath(mLinePath, linePaint);
 		if (line.isFilled()) {
@@ -274,7 +277,7 @@ public class LineChartRenderer implements ChartRenderer {
 			nextPointX = afterNextPointX;
 			nextPointY = afterNextPointY;
 		}
-		linePaint.setStrokeWidth(Utils.dp2px(context, line.getStrokeWidth()));
+		linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
 		linePaint.setColor(line.getColor());
 		canvas.drawPath(mLinePath, linePaint);
 		if (line.isFilled()) {
@@ -290,7 +293,7 @@ public class LineChartRenderer implements ChartRenderer {
 		pointPaint.setColor(line.getColor());
 		int valueIndex = 0;
 		for (LinePoint linePoint : line.getPoints()) {
-			int pointRadius = Utils.dp2px(context, line.getPointRadius());
+			int pointRadius = Utils.dp2px(density, line.getPointRadius());
 			final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
 			final float rawValueY = chartCalculator.calculateRawY(linePoint.getY());
 			if (chartCalculator.isWithinContentRect((int) rawValueX, (int) rawValueY)) {
@@ -318,7 +321,7 @@ public class LineChartRenderer implements ChartRenderer {
 
 	private void highlightPoint(Canvas canvas, Line line, LinePoint linePoint, float rawValueX, float rawValueY,
 			int lineIndex, int valueIndex) {
-		int pointRadius = Utils.dp2px(context, line.getPointRadius());
+		int pointRadius = Utils.dp2px(density, line.getPointRadius());
 		if (mSelectedValue.firstIndex == lineIndex && mSelectedValue.secondIndex == valueIndex) {
 			pointPaint.setColor(line.getDarkenColor());
 			canvas.drawCircle(rawValueX, rawValueY, pointRadius + touchTolleranceMargin, pointPaint);

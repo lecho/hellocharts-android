@@ -29,7 +29,6 @@ public class ColumnChartRenderer implements ChartRenderer {
 	private static final int MODE_CHECK_TOUCH = 1;
 	private static final int MODE_HIGHLIGHT = 2;
 
-	private Context context;
 	private Chart chart;
 	private ColumnChartDataProvider dataProvider;
 
@@ -44,16 +43,20 @@ public class ColumnChartRenderer implements ChartRenderer {
 	private SelectedValue selectedValue = new SelectedValue();
 	private char[] labelBuffer = new char[32];
 	private FontMetricsInt fontMetrics = new FontMetricsInt();
-	protected RectF dataBoundaries = new RectF();
+	private RectF dataBoundaries = new RectF();
+
+	private float density;
+	private float scaledDensity;
 
 	public ColumnChartRenderer(Context context, Chart chart, ColumnChartDataProvider dataProvider) {
-		this.context = context;
 		this.chart = chart;
 		this.dataProvider = dataProvider;
-		mLabelMargin = Utils.dp2px(context, DEFAULT_LABEL_MARGIN_DP);
+		density = context.getResources().getDisplayMetrics().density;
+		scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
+		mLabelMargin = Utils.dp2px(density, DEFAULT_LABEL_MARGIN_DP);
 		labelOffset = mLabelMargin;
-		subcolumnSpacing = Utils.dp2px(context, DEFAULT_SUBCOLUMN_SPACING_DP);
-		touchAdditionalWidth = Utils.dp2px(context, DEFAULT_COLUMN_TOUCH_ADDITIONAL_WIDTH_DP);
+		subcolumnSpacing = Utils.dp2px(density, DEFAULT_SUBCOLUMN_SPACING_DP);
+		touchAdditionalWidth = Utils.dp2px(density, DEFAULT_COLUMN_TOUCH_ADDITIONAL_WIDTH_DP);
 
 		mColumnPaint.setAntiAlias(true);
 		mColumnPaint.setStyle(Paint.Style.FILL);
@@ -71,7 +74,7 @@ public class ColumnChartRenderer implements ChartRenderer {
 		calculateDataBoundaries();
 		chart.getChartCalculator().calculateViewport(dataBoundaries);
 
-		labelPaint.setTextSize(Utils.sp2px(context, chart.getChartData().getLabelsTextSize()));
+		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getLabelsTextSize()));
 		labelPaint.getFontMetricsInt(fontMetrics);
 
 	}
