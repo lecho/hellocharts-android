@@ -9,7 +9,7 @@ import lecho.lib.hellocharts.renderer.ChartRenderer;
 
 public interface Chart {
 
-	public ChartData getData();
+	public ChartData getChartData();
 
 	public ChartRenderer getChartRenderer();
 

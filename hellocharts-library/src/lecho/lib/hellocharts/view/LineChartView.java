@@ -1,10 +1,12 @@
 package lecho.lib.hellocharts.view;
 
 import lecho.lib.hellocharts.ChartCalculator;
+import lecho.lib.hellocharts.LineChartDataProvider;
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
 import lecho.lib.hellocharts.gesture.DefaultTouchHandler;
+import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.LinePoint;
 import lecho.lib.hellocharts.model.SelectedValue;
@@ -19,7 +21,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 
-public class LineChartView extends AbstractChartView {
+public class LineChartView extends AbstractChartView implements LineChartDataProvider {
 	private static final String TAG = "LineChart";
 	private LineChartData mData;
 	private ChartAnimator mAnimator;
@@ -39,7 +41,7 @@ public class LineChartView extends AbstractChartView {
 		initAnimatiors();
 		mChartCalculator = new ChartCalculator();
 		mAxesRenderer = new AxesRenderer(context, this);
-		mChartRenderer = new LineChartRenderer(context, this);
+		mChartRenderer = new LineChartRenderer(context, this, this);
 		mTouchHandler = new DefaultTouchHandler(context, this);
 	}
 
@@ -97,7 +99,7 @@ public class LineChartView extends AbstractChartView {
 		}
 	}
 
-	public void setData(final LineChartData data) {
+	public void setLineChartData(LineChartData data) {
 		mData = data;
 		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
@@ -107,7 +109,12 @@ public class LineChartView extends AbstractChartView {
 		ViewCompat.postInvalidateOnAnimation(LineChartView.this);
 	}
 
-	public LineChartData getData() {
+	@Override
+	public LineChartData getLineChartData() {
+		return mData;
+	}
+
+	public ChartData getChartData() {
 		return mData;
 	}
 

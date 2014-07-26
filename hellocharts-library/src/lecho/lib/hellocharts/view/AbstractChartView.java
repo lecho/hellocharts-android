@@ -85,7 +85,7 @@ public abstract class AbstractChartView extends View implements Chart {
 	}
 
 	@Override
-	public ChartData getData() {
+	public ChartData getChartData() {
 		// TODO Auto-generated method stub
 		return null;
 	}

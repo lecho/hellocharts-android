@@ -1,6 +1,7 @@
 package lecho.lib.hellocharts.view;
 
 import lecho.lib.hellocharts.ChartCalculator;
+import lecho.lib.hellocharts.ColumnChartDataProvider;
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
@@ -18,7 +19,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 
-public class ColumnChartView extends AbstractChartView {
+public class ColumnChartView extends AbstractChartView implements ColumnChartDataProvider {
 	private static final String TAG = "BarChart";
 	private ColumnChartData mData;
 	private ChartAnimator mAnimator;
@@ -36,7 +37,7 @@ public class ColumnChartView extends AbstractChartView {
 		super(context, attrs, defStyle);
 		initAnimatiors();
 		mChartCalculator = new ChartCalculator();
-		mChartRenderer = new ColumnChartRenderer(context, this);
+		mChartRenderer = new ColumnChartRenderer(context, this, this);
 		mAxesRenderer = new AxesRenderer(context, this);
 		mTouchHandler = new DefaultTouchHandler(context, this);
 	}
@@ -89,7 +90,13 @@ public class ColumnChartView extends AbstractChartView {
 		}
 	}
 
-	public void setData(final ColumnChartData data) {
+	@Override
+	public ColumnChartData getColumnChartData() {
+		return mData;
+	}
+
+	@Override
+	public void setColumnChartData(ColumnChartData data) {
 		mData = data;
 		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
@@ -97,9 +104,10 @@ public class ColumnChartView extends AbstractChartView {
 		mAxesRenderer.initRenderer();
 
 		ViewCompat.postInvalidateOnAnimation(ColumnChartView.this);
+
 	}
 
-	public ColumnChartData getData() {
+	public ColumnChartData getChartData() {
 		return mData;
 	}
 
@@ -156,5 +164,4 @@ public class ColumnChartView extends AbstractChartView {
 			// do nothing
 		}
 	}
-
 }

@@ -1,12 +1,13 @@
 package lecho.lib.hellocharts.renderer;
 
+import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartCalculator;
+import lecho.lib.hellocharts.LineChartDataProvider;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.LinePoint;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.util.Utils;
-import lecho.lib.hellocharts.view.LineChartView;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -27,6 +28,9 @@ public class LineChartRenderer implements ChartRenderer {
 	private static final int MODE_HIGHLIGHT = 1;
 
 	private Context context;
+	private Chart chart;
+	private LineChartDataProvider dataProvider;
+
 	private int labelOffset;
 	private int labelMaring;
 	private int touchTolleranceMargin;
@@ -35,15 +39,15 @@ public class LineChartRenderer implements ChartRenderer {
 	private Paint pointPaint = new Paint();
 	private Paint labelPaint = new Paint();
 	private RectF labelRect = new RectF();
-	private LineChartView chart;
 	private SelectedValue mSelectedValue = new SelectedValue();
 	private char[] labelBuffer = new char[32];
 	private FontMetricsInt fontMetrics = new FontMetricsInt();
 	protected RectF dataBoundaries = new RectF();
 
-	public LineChartRenderer(Context context, LineChartView chart) {
+	public LineChartRenderer(Context context, Chart chart, LineChartDataProvider dataProvider) {
 		this.context = context;
 		this.chart = chart;
+		this.dataProvider = dataProvider;
 
 		labelMaring = Utils.dp2px(context, DEFAULT_LABEL_MARGIN_DP);
 		labelOffset = labelMaring;
@@ -68,13 +72,13 @@ public class LineChartRenderer implements ChartRenderer {
 		chart.getChartCalculator().calculateViewport(dataBoundaries);
 		chart.getChartCalculator().setInternalMargin(calculateContentAreaMargin());
 
-		labelPaint.setTextSize(Utils.sp2px(context, chart.getData().getLabelsTextSize()));
+		labelPaint.setTextSize(Utils.sp2px(context, chart.getChartData().getLabelsTextSize()));
 		labelPaint.getFontMetricsInt(fontMetrics);
 	}
 
 	@Override
 	public void draw(Canvas canvas) {
-		final LineChartData data = chart.getData();
+		final LineChartData data = dataProvider.getLineChartData();
 		for (Line line : data.lines) {
 			if (line.hasLines()) {
 				if (line.isSmooth()) {
@@ -89,7 +93,7 @@ public class LineChartRenderer implements ChartRenderer {
 
 	@Override
 	public void drawUnclipped(Canvas canvas) {
-		final LineChartData data = chart.getData();
+		final LineChartData data = dataProvider.getLineChartData();
 		int lineIndex = 0;
 		for (Line line : data.lines) {
 			if (line.hasPoints()) {
@@ -106,7 +110,7 @@ public class LineChartRenderer implements ChartRenderer {
 
 	@Override
 	public boolean checkTouch(float touchX, float touchY) {
-		final LineChartData data = chart.getData();
+		final LineChartData data = dataProvider.getLineChartData();
 		final ChartCalculator chartCalculator = chart.getChartCalculator();
 		int lineIndex = 0;
 		for (Line line : data.lines) {
@@ -148,7 +152,7 @@ public class LineChartRenderer implements ChartRenderer {
 
 	private void calculateDataBoundaries() {
 		dataBoundaries.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
-		LineChartData data = chart.getData();
+		LineChartData data = dataProvider.getLineChartData();
 		// TODO: optimize
 		for (Line line : data.lines) {
 			for (LinePoint linePoint : line.getPoints()) {
@@ -171,7 +175,7 @@ public class LineChartRenderer implements ChartRenderer {
 
 	private int calculateContentAreaMargin() {
 		int contentAreaMargin = 0;
-		LineChartData data = chart.getData();
+		LineChartData data = dataProvider.getLineChartData();
 		for (Line line : data.lines) {
 			if (line.hasPoints()) {
 				int margin = line.getPointRadius() + DEFAULT_TOUCH_TOLLERANCE_MARGIN_DP;
@@ -308,7 +312,7 @@ public class LineChartRenderer implements ChartRenderer {
 
 	private void highlightPoints(Canvas canvas) {
 		int lineIndex = mSelectedValue.firstIndex;
-		Line line = chart.getData().lines.get(lineIndex);
+		Line line = dataProvider.getLineChartData().lines.get(lineIndex);
 		drawPoints(canvas, line, lineIndex, MODE_HIGHLIGHT);
 	}
 

@@ -1,12 +1,13 @@
 package lecho.lib.hellocharts.renderer;
 
+import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartCalculator;
+import lecho.lib.hellocharts.ColumnChartDataProvider;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.ColumnValue;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.util.Utils;
-import lecho.lib.hellocharts.view.ColumnChartView;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -29,23 +30,26 @@ public class ColumnChartRenderer implements ChartRenderer {
 	private static final int MODE_HIGHLIGHT = 2;
 
 	private Context context;
+	private Chart chart;
+	private ColumnChartDataProvider dataProvider;
+
 	private int mLabelMargin;
 	private int labelOffset;
 	private int touchAdditionalWidth;
 	private int subcolumnSpacing;
 	private Paint mColumnPaint = new Paint();
 	private Paint labelPaint = new Paint();
-	private ColumnChartView mChart;
-	private RectF mRectToDraw = new RectF();
-	private PointF mTouchedPoint = new PointF();
-	private SelectedValue mSelectedValue = new SelectedValue();
+	private RectF drawRect = new RectF();
+	private PointF touchedPoint = new PointF();
+	private SelectedValue selectedValue = new SelectedValue();
 	private char[] labelBuffer = new char[32];
 	private FontMetricsInt fontMetrics = new FontMetricsInt();
 	protected RectF dataBoundaries = new RectF();
 
-	public ColumnChartRenderer(Context context, ColumnChartView chart) {
+	public ColumnChartRenderer(Context context, Chart chart, ColumnChartDataProvider dataProvider) {
 		this.context = context;
-		mChart = chart;
+		this.chart = chart;
+		this.dataProvider = dataProvider;
 		mLabelMargin = Utils.dp2px(context, DEFAULT_LABEL_MARGIN_DP);
 		labelOffset = mLabelMargin;
 		subcolumnSpacing = Utils.dp2px(context, DEFAULT_SUBCOLUMN_SPACING_DP);
@@ -65,15 +69,15 @@ public class ColumnChartRenderer implements ChartRenderer {
 	@Override
 	public void initRenderer() {
 		calculateDataBoundaries();
-		mChart.getChartCalculator().calculateViewport(dataBoundaries);
+		chart.getChartCalculator().calculateViewport(dataBoundaries);
 
-		labelPaint.setTextSize(Utils.sp2px(context, mChart.getData().getLabelsTextSize()));
+		labelPaint.setTextSize(Utils.sp2px(context, chart.getChartData().getLabelsTextSize()));
 		labelPaint.getFontMetricsInt(fontMetrics);
 
 	}
 
 	public void draw(Canvas canvas) {
-		final ColumnChartData data = mChart.getData();
+		final ColumnChartData data = dataProvider.getColumnChartData();
 		if (data.isStacked()) {
 			drawColumnForStacked(canvas);
 			if (isTouched()) {
@@ -93,7 +97,7 @@ public class ColumnChartRenderer implements ChartRenderer {
 	}
 
 	public boolean checkTouch(float touchX, float touchY) {
-		final ColumnChartData data = mChart.getData();
+		final ColumnChartData data = dataProvider.getColumnChartData();
 		if (data.isStacked()) {
 			checkTouchForStacked(touchX, touchY);
 		} else {
@@ -103,21 +107,21 @@ public class ColumnChartRenderer implements ChartRenderer {
 	}
 
 	public boolean isTouched() {
-		return mSelectedValue.isSet();
+		return selectedValue.isSet();
 	}
 
 	public void clearTouch() {
-		mSelectedValue.clear();
+		selectedValue.clear();
 	}
 
 	@Override
 	public void callTouchListener() {
-		mChart.callTouchListener(mSelectedValue);
+		chart.callTouchListener(selectedValue);
 
 	}
 
 	private void calculateDataBoundaries() {
-		ColumnChartData data = mChart.getData();
+		ColumnChartData data = dataProvider.getColumnChartData();
 		dataBoundaries.set(-0.5f, 0, data.getColumns().size() - 0.5f, 0);
 		if (data.isStacked()) {
 			calculateBoundariesStacked(data);
@@ -160,8 +164,8 @@ public class ColumnChartRenderer implements ChartRenderer {
 	}
 
 	private void drawColumnsForSubcolumns(Canvas canvas) {
-		final ColumnChartData data = mChart.getData();
-		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		final ColumnChartData data = dataProvider.getColumnChartData();
+		final ChartCalculator chartCalculator = chart.getChartCalculator();
 		final float columnWidth = calculateColumnWidth(chartCalculator, data.getFillRatio());
 		int columnIndex = 0;
 		for (Column column : data.getColumns()) {
@@ -171,19 +175,19 @@ public class ColumnChartRenderer implements ChartRenderer {
 	}
 
 	private void highlightColumnsForSubcolumns(Canvas canvas) {
-		final ColumnChartData data = mChart.getData();
-		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		final ColumnChartData data = dataProvider.getColumnChartData();
+		final ChartCalculator chartCalculator = chart.getChartCalculator();
 		final float columnWidth = calculateColumnWidth(chartCalculator, data.getFillRatio());
-		Column column = data.getColumns().get(mSelectedValue.firstIndex);
-		processColumnForSubcolumns(canvas, chartCalculator, column, columnWidth, mSelectedValue.firstIndex,
+		Column column = data.getColumns().get(selectedValue.firstIndex);
+		processColumnForSubcolumns(canvas, chartCalculator, column, columnWidth, selectedValue.firstIndex,
 				MODE_HIGHLIGHT);
 	}
 
 	private void checkTouchForSubcolumns(float touchX, float touchY) {
-		mTouchedPoint.x = touchX;
-		mTouchedPoint.y = touchY;
-		final ColumnChartData data = mChart.getData();
-		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		touchedPoint.x = touchX;
+		touchedPoint.y = touchY;
+		final ColumnChartData data = dataProvider.getColumnChartData();
+		final ChartCalculator chartCalculator = chart.getChartCalculator();
 		final float columnWidth = calculateColumnWidth(chartCalculator, data.getFillRatio());
 		int columnIndex = 0;
 		for (Column column : data.getColumns()) {
@@ -239,8 +243,8 @@ public class ColumnChartRenderer implements ChartRenderer {
 	}
 
 	private void drawColumnForStacked(Canvas canvas) {
-		final ColumnChartData data = mChart.getData();
-		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		final ColumnChartData data = dataProvider.getColumnChartData();
+		final ChartCalculator chartCalculator = chart.getChartCalculator();
 		final float columnWidth = calculateColumnWidth(chartCalculator, data.getFillRatio());
 		// Columns are indexes from 0 to n, column index is also column X value
 		int columnIndex = 0;
@@ -251,19 +255,19 @@ public class ColumnChartRenderer implements ChartRenderer {
 	}
 
 	private void highlightColumnForStacked(Canvas canvas) {
-		final ColumnChartData data = mChart.getData();
-		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		final ColumnChartData data = dataProvider.getColumnChartData();
+		final ChartCalculator chartCalculator = chart.getChartCalculator();
 		final float columnWidth = calculateColumnWidth(chartCalculator, data.getFillRatio());
 		// Columns are indexes from 0 to n, column index is also column X value
-		Column column = data.getColumns().get(mSelectedValue.firstIndex);
-		processColumnForStacked(canvas, chartCalculator, column, columnWidth, mSelectedValue.firstIndex, MODE_HIGHLIGHT);
+		Column column = data.getColumns().get(selectedValue.firstIndex);
+		processColumnForStacked(canvas, chartCalculator, column, columnWidth, selectedValue.firstIndex, MODE_HIGHLIGHT);
 	}
 
 	private void checkTouchForStacked(float touchX, float touchY) {
-		mTouchedPoint.x = touchX;
-		mTouchedPoint.y = touchY;
-		final ColumnChartData data = mChart.getData();
-		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		touchedPoint.x = touchX;
+		touchedPoint.y = touchY;
+		final ColumnChartData data = dataProvider.getColumnChartData();
+		final ChartCalculator chartCalculator = chart.getChartCalculator();
 		final float columnWidth = calculateColumnWidth(chartCalculator, data.getFillRatio());
 		int columnIndex = 0;
 		for (Column column : data.getColumns()) {
@@ -316,7 +320,7 @@ public class ColumnChartRenderer implements ChartRenderer {
 	}
 
 	private void drawSubcolumn(Canvas canvas, Column column, ColumnValue columnValue, boolean isStacked) {
-		canvas.drawRect(mRectToDraw, mColumnPaint);
+		canvas.drawRect(drawRect, mColumnPaint);
 		if (column.hasLabels()) {
 			drawLabel(canvas, column, columnValue, isStacked, labelOffset);
 		}
@@ -324,10 +328,10 @@ public class ColumnChartRenderer implements ChartRenderer {
 
 	private void highlightSubcolumn(Canvas canvas, Column column, ColumnValue columnValue, int valueIndex,
 			boolean isStacked) {
-		if (mSelectedValue.secondIndex == valueIndex) {
+		if (selectedValue.secondIndex == valueIndex) {
 			mColumnPaint.setColor(columnValue.getDarkenColor());
-			canvas.drawRect(mRectToDraw.left - touchAdditionalWidth, mRectToDraw.top, mRectToDraw.right
-					+ touchAdditionalWidth, mRectToDraw.bottom, mColumnPaint);
+			canvas.drawRect(drawRect.left - touchAdditionalWidth, drawRect.top, drawRect.right + touchAdditionalWidth,
+					drawRect.bottom, mColumnPaint);
 			if (column.hasLabels()) {
 				drawLabel(canvas, column, columnValue, isStacked, labelOffset);
 			}
@@ -335,9 +339,9 @@ public class ColumnChartRenderer implements ChartRenderer {
 	}
 
 	private void checkRectToDraw(int columnIndex, int valueIndex) {
-		if (mRectToDraw.contains(mTouchedPoint.x, mTouchedPoint.y)) {
-			mSelectedValue.firstIndex = columnIndex;
-			mSelectedValue.secondIndex = valueIndex;
+		if (drawRect.contains(touchedPoint.x, touchedPoint.y)) {
+			selectedValue.firstIndex = columnIndex;
+			selectedValue.secondIndex = valueIndex;
 		}
 	}
 
@@ -352,52 +356,52 @@ public class ColumnChartRenderer implements ChartRenderer {
 
 	private void calculateRectToDraw(ColumnValue columnValue, float left, float right, float rawBaseValueY,
 			float rawValueY) {
-		mRectToDraw.left = left;
-		mRectToDraw.right = right;
+		drawRect.left = left;
+		drawRect.right = right;
 		if (columnValue.getValue() >= DEFAULT_BASE_VALUE) {
-			mRectToDraw.top = rawValueY;
-			mRectToDraw.bottom = rawBaseValueY - subcolumnSpacing;
+			drawRect.top = rawValueY;
+			drawRect.bottom = rawBaseValueY - subcolumnSpacing;
 		} else {
-			mRectToDraw.bottom = rawValueY;
-			mRectToDraw.top = rawBaseValueY + subcolumnSpacing;
+			drawRect.bottom = rawValueY;
+			drawRect.top = rawBaseValueY + subcolumnSpacing;
 		}
 	}
 
 	private void drawLabel(Canvas canvas, Column column, ColumnValue columnValue, boolean isStacked, float offset) {
-		final ChartCalculator chartCalculator = mChart.getChartCalculator();
+		final ChartCalculator chartCalculator = chart.getChartCalculator();
 		final int nummChars = column.getFormatter().formatValue(labelBuffer, columnValue.getValue());
 		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
-		float left = mRectToDraw.centerX() - labelWidth / 2 - mLabelMargin;
-		float right = mRectToDraw.centerX() + labelWidth / 2 + mLabelMargin;
+		float left = drawRect.centerX() - labelWidth / 2 - mLabelMargin;
+		float right = drawRect.centerX() + labelWidth / 2 + mLabelMargin;
 		float top;
 		float bottom;
-		if (isStacked && labelHeight < mRectToDraw.height()) {
+		if (isStacked && labelHeight < drawRect.height()) {
 			if (columnValue.getValue() >= DEFAULT_BASE_VALUE) {
-				top = mRectToDraw.top;
-				bottom = mRectToDraw.top + labelHeight + mLabelMargin * 2;
+				top = drawRect.top;
+				bottom = drawRect.top + labelHeight + mLabelMargin * 2;
 			} else {
-				top = mRectToDraw.bottom - labelHeight - mLabelMargin * 2;
-				bottom = mRectToDraw.bottom;
+				top = drawRect.bottom - labelHeight - mLabelMargin * 2;
+				bottom = drawRect.bottom;
 			}
 			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, left + mLabelMargin, bottom
 					- mLabelMargin, labelPaint);
 		} else if (!isStacked) {
 			if (columnValue.getValue() >= DEFAULT_BASE_VALUE) {
-				top = mRectToDraw.top - offset - labelHeight - mLabelMargin * 2;
+				top = drawRect.top - offset - labelHeight - mLabelMargin * 2;
 				if (top < chartCalculator.mContentRect.top) {
-					top = mRectToDraw.top + offset;
-					bottom = mRectToDraw.top + offset + labelHeight + mLabelMargin * 2;
+					top = drawRect.top + offset;
+					bottom = drawRect.top + offset + labelHeight + mLabelMargin * 2;
 				} else {
-					bottom = mRectToDraw.top - offset;
+					bottom = drawRect.top - offset;
 				}
 			} else {
-				bottom = mRectToDraw.bottom + offset + labelHeight + mLabelMargin * 2;
+				bottom = drawRect.bottom + offset + labelHeight + mLabelMargin * 2;
 				if (bottom > chartCalculator.mContentRect.bottom) {
-					top = mRectToDraw.bottom - offset - labelHeight - mLabelMargin * 2;
-					bottom = mRectToDraw.bottom - offset;
+					top = drawRect.bottom - offset - labelHeight - mLabelMargin * 2;
+					bottom = drawRect.bottom - offset;
 				} else {
-					top = mRectToDraw.bottom + offset;
+					top = drawRect.bottom + offset;
 				}
 			}
 			int orginColor = labelPaint.getColor();
