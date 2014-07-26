@@ -39,7 +39,7 @@ public class LineChartView extends AbstractChartView {
 		initAnimatiors();
 		mChartCalculator = new ChartCalculator(context, this);
 		mAxesRenderer = new AxesRenderer(context, this);
-		mChartRenderer = new LineChartRenderer(this);
+		mChartRenderer = new LineChartRenderer(context, this);
 		mTouchHandler = new DefaultTouchHandler(context, this);
 	}
 
@@ -65,7 +65,7 @@ public class LineChartView extends AbstractChartView {
 		mChartCalculator.calculateViewport();
 		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
-		mChartCalculator.setInternalMargin(getDefaultPointRadius() + getDefaultTouchTolleranceMargin());
+		// mChartCalculator.setInternalMargin(getDefaultPointRadius() + getDefaultTouchTolleranceMargin());
 		mChartCalculator.setAxesMargin(mAxesRenderer.getAxisXHeight(), mAxesRenderer.getAxisYWidth());
 	}
 
@@ -105,7 +105,7 @@ public class LineChartView extends AbstractChartView {
 		mChartCalculator.calculateViewport();
 		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
-		mChartCalculator.setInternalMargin(getDefaultPointRadius() + getDefaultTouchTolleranceMargin());
+		// mChartCalculator.setInternalMargin(getDefaultPointRadius() + getDefaultTouchTolleranceMargin());
 		mAxesRenderer.initRenderer();
 		mChartCalculator.setAxesMargin(mAxesRenderer.getAxisXHeight(), mAxesRenderer.getAxisYWidth());
 

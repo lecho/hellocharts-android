@@ -5,7 +5,9 @@ import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.ColumnValue;
 import lecho.lib.hellocharts.model.SelectedValue;
+import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.ColumnChartView;
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -17,10 +19,20 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 
 public class ColumnChartRenderer implements ChartRenderer {
+	public static final int DEFAULT_TEXT_SIZE_SP = 12;
+	public static final int DEFAULT_LABEL_MARGIN_DP = 4;
+	public static final int DEFAULT_CONTENT_AREA_MARGIN_DP = 4;
+	public static final int DEFAULT_AXES_NAME_MARGIN_DP = 4;
+	public static final int DEFAULT_LINE_STROKE_WIDTH_DP = 3;
+	public static final int DEFAULT_POINT_RADIUS_DP = 6;
+	public static final int DEFAULT_TOUCH_TOLLERANCE_MARGIN_DP = 4;
+	public static final int DEFAULT_SUBCOLUMN_SPACING_DP = 1;
+	public static final int DEFAULT_COLUMN_TOUCH_ADDITIONAL_WIDTH_DP = 2;
 	private static final float DEFAULT_BASE_VALUE = 0.0f;
 	private static final int MODE_DRAW = 0;
 	private static final int MODE_CHECK_TOUCH = 1;
 	private static final int MODE_HIGHLIGHT = 2;
+	private Context context;
 	private int mLabelMargin;
 	private int labelOffset;
 	private int touchAdditionalWidth;
@@ -34,12 +46,13 @@ public class ColumnChartRenderer implements ChartRenderer {
 	private char[] labelBuffer = new char[32];
 	private FontMetricsInt fontMetrics = new FontMetricsInt();
 
-	public ColumnChartRenderer(ColumnChartView chart) {
+	public ColumnChartRenderer(Context context, ColumnChartView chart) {
+		this.context = context;
 		mChart = chart;
-		mLabelMargin = chart.getDefaultLabelMargin();
-		labelOffset = chart.getDefaultLabelMargin();
-		subcolumnSpacing = chart.getDefaultSubcolumnSpacing();
-		touchAdditionalWidth = chart.getDefaultColumnTouchAdditionalWidth();
+		mLabelMargin = Utils.dp2px(context, DEFAULT_LABEL_MARGIN_DP);
+		labelOffset = mLabelMargin;
+		subcolumnSpacing = Utils.dp2px(context, DEFAULT_SUBCOLUMN_SPACING_DP);
+		touchAdditionalWidth = Utils.dp2px(context, DEFAULT_COLUMN_TOUCH_ADDITIONAL_WIDTH_DP);
 
 		mColumnPaint.setAntiAlias(true);
 		mColumnPaint.setStyle(Paint.Style.FILL);
@@ -49,7 +62,7 @@ public class ColumnChartRenderer implements ChartRenderer {
 		labelPaint.setStyle(Paint.Style.FILL);
 		labelPaint.setTextAlign(Align.LEFT);
 		labelPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
-		labelPaint.setTextSize(chart.getDefaultTextSize());
+		labelPaint.setTextSize(Utils.sp2px(context, DEFAULT_TEXT_SIZE_SP));
 		labelPaint.setColor(Color.WHITE);
 		labelPaint.getFontMetricsInt(fontMetrics);
 	}

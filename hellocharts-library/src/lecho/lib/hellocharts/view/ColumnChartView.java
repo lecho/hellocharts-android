@@ -35,7 +35,7 @@ public class ColumnChartView extends AbstractChartView {
 	public ColumnChartView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		initAnimatiors();
-		mChartRenderer = new ColumnChartRenderer(this);
+		mChartRenderer = new ColumnChartRenderer(context, this);
 		mChartCalculator = new ChartCalculator(context, this);
 		mAxesRenderer = new AxesRenderer(context, this);
 		mTouchHandler = new DefaultTouchHandler(context, this);
