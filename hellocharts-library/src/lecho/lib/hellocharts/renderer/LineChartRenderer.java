@@ -46,6 +46,8 @@ public class LineChartRenderer implements ChartRenderer {
 	private float density;
 	private float scaledDensity;
 
+	private boolean hasAutoDataBoundaries = true;
+
 	public LineChartRenderer(Context context, Chart chart, LineChartDataProvider dataProvider) {
 		this.chart = chart;
 		this.dataProvider = dataProvider;
@@ -71,7 +73,9 @@ public class LineChartRenderer implements ChartRenderer {
 	}
 
 	public void initRenderer() {
-		calculateDataBoundaries();
+		if (hasAutoDataBoundaries) {
+			calculateDataBoundaries();
+		}
 		chart.getChartCalculator().calculateViewport(dataBoundaries);
 		chart.getChartCalculator().setInternalMargin(calculateContentAreaMargin());
 
@@ -149,8 +153,20 @@ public class LineChartRenderer implements ChartRenderer {
 		chart.callTouchListener(mSelectedValue);
 	}
 
-	public SelectedValue getSelectedValue() {
-		return mSelectedValue;
+	@Override
+	public void setDataBoundaries(RectF dataBoundaries) {
+		if (null == dataBoundaries) {
+			hasAutoDataBoundaries = true;
+			initRenderer();
+		} else {
+			hasAutoDataBoundaries = false;
+			this.dataBoundaries = dataBoundaries;
+		}
+	}
+
+	@Override
+	public RectF getDataBoundaries() {
+		return dataBoundaries;
 	}
 
 	private void calculateDataBoundaries() {

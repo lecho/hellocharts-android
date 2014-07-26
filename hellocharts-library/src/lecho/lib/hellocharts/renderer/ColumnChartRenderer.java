@@ -48,6 +48,8 @@ public class ColumnChartRenderer implements ChartRenderer {
 	private float density;
 	private float scaledDensity;
 
+	private boolean hasAutoDataBoundaries = true;
+
 	public ColumnChartRenderer(Context context, Chart chart, ColumnChartDataProvider dataProvider) {
 		this.chart = chart;
 		this.dataProvider = dataProvider;
@@ -71,7 +73,9 @@ public class ColumnChartRenderer implements ChartRenderer {
 
 	@Override
 	public void initRenderer() {
-		calculateDataBoundaries();
+		if (hasAutoDataBoundaries) {
+			calculateDataBoundaries();
+		}
 		chart.getChartCalculator().calculateViewport(dataBoundaries);
 
 		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getLabelsTextSize()));
@@ -121,6 +125,22 @@ public class ColumnChartRenderer implements ChartRenderer {
 	public void callTouchListener() {
 		chart.callTouchListener(selectedValue);
 
+	}
+
+	@Override
+	public void setDataBoundaries(RectF dataBoundaries) {
+		if (null == dataBoundaries) {
+			hasAutoDataBoundaries = true;
+			initRenderer();
+		} else {
+			hasAutoDataBoundaries = false;
+			this.dataBoundaries = dataBoundaries;
+		}
+	}
+
+	@Override
+	public RectF getDataBoundaries() {
+		return dataBoundaries;
 	}
 
 	private void calculateDataBoundaries() {

@@ -9,6 +9,7 @@ import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
 import android.content.Context;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -85,9 +86,13 @@ public abstract class AbstractChartView extends View implements Chart {
 	}
 
 	@Override
-	public ChartData getChartData() {
-		// TODO Auto-generated method stub
-		return null;
+	public void setDataBoundaries(RectF dataBoundaries) {
+		getChartRenderer().setDataBoundaries(dataBoundaries);
+	}
+
+	@Override
+	public RectF getDataBoundaries() {
+		return getChartRenderer().getDataBoundaries();
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package lecho.lib.hellocharts.renderer;
 
 import android.graphics.Canvas;
+import android.graphics.RectF;
 
 public interface ChartRenderer {
 
@@ -17,5 +18,9 @@ public interface ChartRenderer {
 	public void clearTouch();
 
 	public void callTouchListener();
+
+	public void setDataBoundaries(RectF dataBoundaries);
+
+	public RectF getDataBoundaries();
 
 }

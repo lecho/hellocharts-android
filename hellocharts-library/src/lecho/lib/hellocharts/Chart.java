@@ -1,5 +1,6 @@
 package lecho.lib.hellocharts;
 
+import android.graphics.RectF;
 import lecho.lib.hellocharts.gesture.ChartTouchHandler;
 import lecho.lib.hellocharts.gesture.ZoomMode;
 import lecho.lib.hellocharts.model.ChartData;
@@ -38,5 +39,9 @@ public interface Chart {
 	public boolean isValueTouchEnabled();
 
 	public void setValueTouchEnabled(boolean isValueTouchEnabled);
+
+	public void setDataBoundaries(RectF boundaries);
+
+	public RectF getDataBoundaries();
 
 }
