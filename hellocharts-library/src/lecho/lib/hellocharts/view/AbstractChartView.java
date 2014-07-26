@@ -10,6 +10,7 @@ import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
 import android.content.Context;
 import android.graphics.RectF;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -88,6 +89,7 @@ public abstract class AbstractChartView extends View implements Chart {
 	@Override
 	public void setDataBoundaries(RectF dataBoundaries) {
 		getChartRenderer().setDataBoundaries(dataBoundaries);
+		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
 	@Override
@@ -99,6 +101,23 @@ public abstract class AbstractChartView extends View implements Chart {
 	public void animationUpdate(float scale) {
 		// TODO Auto-generated method stub
 
+	}
+
+	public void setViewport(RectF viewport) {
+		if (null == viewport) {
+			getChartRenderer().setViewportAutoCalculated(true);
+			getChartCalculator().mCurrentViewport.set(getChartCalculator().mMaximumViewport);
+		} else {
+			getChartRenderer().setViewportAutoCalculated(false);
+			getChartCalculator().mCurrentViewport.set(viewport.left, viewport.bottom, viewport.right, viewport.top);
+			getChartCalculator().constrainViewport();
+		}
+		ViewCompat.postInvalidateOnAnimation(this);
+	}
+
+	public RectF getViewport() {
+		RectF viewport = getChartCalculator().mCurrentViewport;
+		return new RectF(viewport.left, viewport.bottom, viewport.right, viewport.top);
 	}
 
 	@Override

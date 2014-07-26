@@ -17,6 +17,7 @@ import android.graphics.Paint.FontMetricsInt;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.support.v4.view.ViewCompat;
 
 public class LineChartRenderer implements ChartRenderer {
 	private static final float LINE_SMOOTHNES = 0.16f;
@@ -47,6 +48,7 @@ public class LineChartRenderer implements ChartRenderer {
 	private float scaledDensity;
 
 	private boolean hasAutoDataBoundaries = true;
+	private boolean isViewportAutoCalculated = true;
 
 	public LineChartRenderer(Context context, Chart chart, LineChartDataProvider dataProvider) {
 		this.chart = chart;
@@ -76,7 +78,9 @@ public class LineChartRenderer implements ChartRenderer {
 		if (hasAutoDataBoundaries) {
 			calculateDataBoundaries();
 		}
-		chart.getChartCalculator().calculateViewport(dataBoundaries);
+		if (isViewportAutoCalculated) {
+			chart.getChartCalculator().calculateViewport(dataBoundaries);
+		}
 		chart.getChartCalculator().setInternalMargin(calculateContentAreaMargin());
 
 		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getLabelsTextSize()));
@@ -167,6 +171,17 @@ public class LineChartRenderer implements ChartRenderer {
 	@Override
 	public RectF getDataBoundaries() {
 		return dataBoundaries;
+	}
+	
+	@Override
+	public void setViewportAutoCalculated(boolean isViewportAutoCalculated) {
+		this.isViewportAutoCalculated = isViewportAutoCalculated;
+
+	}
+
+	@Override
+	public boolean isViewportAutoCalculated() {
+		return isViewportAutoCalculated;
 	}
 
 	private void calculateDataBoundaries() {
@@ -393,4 +408,5 @@ public class LineChartRenderer implements ChartRenderer {
 		float diffY = touchY - y;
 		return Math.pow(diffX, 2) + Math.pow(diffY, 2) <= 2 * Math.pow(radius, 2);
 	}
+
 }

@@ -49,6 +49,7 @@ public class ColumnChartRenderer implements ChartRenderer {
 	private float scaledDensity;
 
 	private boolean hasAutoDataBoundaries = true;
+	private boolean isViewportAutoCalculated = true;
 
 	public ColumnChartRenderer(Context context, Chart chart, ColumnChartDataProvider dataProvider) {
 		this.chart = chart;
@@ -141,6 +142,17 @@ public class ColumnChartRenderer implements ChartRenderer {
 	@Override
 	public RectF getDataBoundaries() {
 		return dataBoundaries;
+	}
+
+	@Override
+	public void setViewportAutoCalculated(boolean isViewportAutoCalculated) {
+		this.isViewportAutoCalculated = isViewportAutoCalculated;
+
+	}
+
+	@Override
+	public boolean isViewportAutoCalculated() {
+		return isViewportAutoCalculated;
 	}
 
 	private void calculateDataBoundaries() {

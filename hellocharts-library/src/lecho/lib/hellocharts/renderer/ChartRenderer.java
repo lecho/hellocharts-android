@@ -23,4 +23,8 @@ public interface ChartRenderer {
 
 	public RectF getDataBoundaries();
 
+	public void setViewportAutoCalculated(boolean isViewportAutoCalculated);
+
+	public boolean isViewportAutoCalculated();
+
 }

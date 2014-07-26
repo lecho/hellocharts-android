@@ -44,4 +44,8 @@ public interface Chart {
 
 	public RectF getDataBoundaries();
 
+	public void setViewport(RectF viewport);
+
+	public RectF getViewport();
+
 }
