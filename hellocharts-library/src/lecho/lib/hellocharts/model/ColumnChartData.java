@@ -9,52 +9,6 @@ public class ColumnChartData extends AbstractChartData {
 	private boolean mIsStacked = false;
 	private float fillRatio = DEFAULT_FILL_RATIO;
 
-	@Override
-	public void calculateBoundaries() {
-		if (mManualBoundaries) {
-			return;
-		}
-		mBoundaries.set(-0.5f, 0, columns.size() - 0.5f, 0);
-		if (mIsStacked) {
-			calculateBoundariesStacked();
-		} else {
-			calculateBoundariesDefault();
-		}
-	}
-
-	public void calculateBoundariesDefault() {
-		for (Column column : columns) {
-			for (ColumnValue columnValue : column.getValues()) {
-				if (columnValue.getValue() >= 0 && columnValue.getValue() > mBoundaries.top) {
-					mBoundaries.top = columnValue.getValue();
-				}
-				if (columnValue.getValue() < 0 && columnValue.getValue() < mBoundaries.bottom) {
-					mBoundaries.bottom = columnValue.getValue();
-				}
-			}
-		}
-	}
-
-	public void calculateBoundariesStacked() {
-		for (Column column : columns) {
-			float sumPositive = 0;
-			float sumNegative = 0;
-			for (ColumnValue animatedValue : column.getValues()) {
-				if (animatedValue.getValue() >= 0) {
-					sumPositive += animatedValue.getValue();
-				} else {
-					sumNegative += animatedValue.getValue();
-				}
-			}
-			if (sumPositive > mBoundaries.top) {
-				mBoundaries.top = sumPositive;
-			}
-			if (sumNegative < mBoundaries.bottom) {
-				mBoundaries.bottom = sumNegative;
-			}
-		}
-	}
-
 	public List<Column> getColumns() {
 		return columns;
 	}

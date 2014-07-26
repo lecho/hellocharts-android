@@ -9,32 +9,25 @@ import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.LineChartView;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.FontMetricsInt;
-import android.graphics.Color;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 
 public class LineChartRenderer implements ChartRenderer {
 	private static final float LINE_SMOOTHNES = 0.16f;
-	int DEFAULT_TEXT_SIZE_SP = 12;
 	int DEFAULT_LABEL_MARGIN_DP = 4;
-	int DEFAULT_CONTENT_AREA_MARGIN_DP = 4;
-	int DEFAULT_AXES_NAME_MARGIN_DP = 4;
 	int DEFAULT_LINE_STROKE_WIDTH_DP = 3;
-	int DEFAULT_POINT_RADIUS_DP = 6;
 	int DEFAULT_TOUCH_TOLLERANCE_MARGIN_DP = 4;
-	int DEFAULT_SUBCOLUMN_SPACING_DP = 1;
-	int DEFAULT_COLUMN_TOUCH_ADDITIONAL_WIDTH_DP = 2;
 
 	private static final int MODE_DRAW = 0;
 	private static final int MODE_HIGHLIGHT = 1;
 	private Context context;
 	private int labelOffset;
 	private int labelMaring;
-	private int defaultPointRadius;
 	private int touchTolleranceMargin;
 	private Path mLinePath = new Path();
 	private Paint linePaint = new Paint();
@@ -53,7 +46,6 @@ public class LineChartRenderer implements ChartRenderer {
 
 		labelMaring = Utils.dp2px(context, DEFAULT_LABEL_MARGIN_DP);
 		labelOffset = labelMaring;
-		defaultPointRadius = Utils.dp2px(context, DEFAULT_POINT_RADIUS_DP);
 		touchTolleranceMargin = Utils.dp2px(context, DEFAULT_TOUCH_TOLLERANCE_MARGIN_DP);
 
 		linePaint.setAntiAlias(true);
@@ -68,7 +60,14 @@ public class LineChartRenderer implements ChartRenderer {
 		labelPaint.setTextAlign(Align.LEFT);
 		labelPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
 		labelPaint.setColor(Color.WHITE);
-		labelPaint.setTextSize(Utils.sp2px(context, DEFAULT_TEXT_SIZE_SP));
+	}
+
+	public void initRenderer() {
+		calculateDataBoundaries();
+		chart.getChartCalculator().calculateViewport(dataBoundaries);
+		chart.getChartCalculator().setInternalMargin(calculateContentAreaMargin());
+
+		labelPaint.setTextSize(Utils.sp2px(context, chart.getData().getLabelsTextSize()));
 		labelPaint.getFontMetricsInt(fontMetrics);
 	}
 
@@ -110,11 +109,12 @@ public class LineChartRenderer implements ChartRenderer {
 		final ChartCalculator chartCalculator = chart.getChartCalculator();
 		int lineIndex = 0;
 		for (Line line : data.lines) {
+			int pointRadius = Utils.dp2px(context, line.getPointRadius());
 			int valueIndex = 0;
 			for (LinePoint linePoint : line.getPoints()) {
 				final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
 				final float rawValueY = chartCalculator.calculateRawY(linePoint.getY());
-				if (isInArea(rawValueX, rawValueY, touchX, touchY, defaultPointRadius + touchTolleranceMargin)) {
+				if (isInArea(rawValueX, rawValueY, touchX, touchY, pointRadius + touchTolleranceMargin)) {
 					mSelectedValue.firstIndex = lineIndex;
 					mSelectedValue.secondIndex = valueIndex;
 				}
@@ -145,46 +145,45 @@ public class LineChartRenderer implements ChartRenderer {
 		return mSelectedValue;
 	}
 
-	// public void calculateDataBoundaries() {
-	// dataBoundaries.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
-	// LineChartData data = chart.getData();
-	// // TODO: optimize
-	// for (Line line : data.lines) {
-	// for (LinePoint linePoint : line.getPoints()) {
-	// if (linePoint.getX() < dataBoundaries.left) {
-	// dataBoundaries.left = linePoint.getX();
-	// }
-	// if (linePoint.getX() > dataBoundaries.right) {
-	// dataBoundaries.right = linePoint.getX();
-	// }
-	// if (linePoint.getY() < dataBoundaries.bottom) {
-	// dataBoundaries.bottom = linePoint.getY();
-	// }
-	// if (linePoint.getY() > dataBoundaries.top) {
-	// dataBoundaries.top = linePoint.getY();
-	// }
-	//
-	// }
-	// }
-	// }
+	private void calculateDataBoundaries() {
+		dataBoundaries.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
+		LineChartData data = chart.getData();
+		// TODO: optimize
+		for (Line line : data.lines) {
+			for (LinePoint linePoint : line.getPoints()) {
+				if (linePoint.getX() < dataBoundaries.left) {
+					dataBoundaries.left = linePoint.getX();
+				}
+				if (linePoint.getX() > dataBoundaries.right) {
+					dataBoundaries.right = linePoint.getX();
+				}
+				if (linePoint.getY() < dataBoundaries.bottom) {
+					dataBoundaries.bottom = linePoint.getY();
+				}
+				if (linePoint.getY() > dataBoundaries.top) {
+					dataBoundaries.top = linePoint.getY();
+				}
 
-	// private void calculateContentAreaMargin() {
-	// int contentAreaMargin = 0;
-	// LineChartData data = chart.getData();
-	// for (Line line : data.lines) {
-	// if (line.hasPoints()) {
-	// int margin = line.getPointRadius() + touchTolleranceMargin;
-	// if (margin > contentAreaMargin) {
-	// contentAreaMargin = margin;
-	// }
-	// if (contentAreaMargin == 0) {
-	// contentAreaMargin = defaultPointRadius;
-	// }
-	// }
-	// }
-	// }
+			}
+		}
+	}
+
+	private int calculateContentAreaMargin() {
+		int contentAreaMargin = 0;
+		LineChartData data = chart.getData();
+		for (Line line : data.lines) {
+			if (line.hasPoints()) {
+				int margin = line.getPointRadius() + DEFAULT_TOUCH_TOLLERANCE_MARGIN_DP;
+				if (margin > contentAreaMargin) {
+					contentAreaMargin = margin;
+				}
+			}
+		}
+		return Utils.dp2px(context, contentAreaMargin);
+	}
 
 	private void drawPath(Canvas canvas, final Line line) {
+
 		final ChartCalculator chartCalculator = chart.getChartCalculator();
 		int valueIndex = 0;
 		for (LinePoint linePoint : line.getPoints()) {
@@ -197,6 +196,7 @@ public class LineChartRenderer implements ChartRenderer {
 			}
 			++valueIndex;
 		}
+		linePaint.setStrokeWidth(Utils.dp2px(context, line.getStrokeWidth()));
 		linePaint.setColor(line.getColor());
 		canvas.drawPath(mLinePath, linePaint);
 		if (line.isFilled()) {
@@ -269,6 +269,7 @@ public class LineChartRenderer implements ChartRenderer {
 			nextPointX = afterNextPointX;
 			nextPointY = afterNextPointY;
 		}
+		linePaint.setStrokeWidth(Utils.dp2px(context, line.getStrokeWidth()));
 		linePaint.setColor(line.getColor());
 		canvas.drawPath(mLinePath, linePaint);
 		if (line.isFilled()) {
@@ -284,14 +285,15 @@ public class LineChartRenderer implements ChartRenderer {
 		pointPaint.setColor(line.getColor());
 		int valueIndex = 0;
 		for (LinePoint linePoint : line.getPoints()) {
+			int pointRadius = Utils.dp2px(context, line.getPointRadius());
 			final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
 			final float rawValueY = chartCalculator.calculateRawY(linePoint.getY());
 			if (chartCalculator.isWithinContentRect((int) rawValueX, (int) rawValueY)) {
 				// Draw points only if they are within contentRect
 				if (MODE_DRAW == mode) {
-					canvas.drawCircle(rawValueX, rawValueY, defaultPointRadius, pointPaint);
+					canvas.drawCircle(rawValueX, rawValueY, pointRadius, pointPaint);
 					if (line.hasLabels()) {
-						drawLabel(canvas, line, linePoint, rawValueX, rawValueY, defaultPointRadius + labelOffset);
+						drawLabel(canvas, line, linePoint, rawValueX, rawValueY, pointRadius + labelOffset);
 					}
 				} else if (MODE_HIGHLIGHT == mode) {
 					highlightPoint(canvas, line, linePoint, rawValueX, rawValueY, lineIndex, valueIndex);
@@ -311,11 +313,12 @@ public class LineChartRenderer implements ChartRenderer {
 
 	private void highlightPoint(Canvas canvas, Line line, LinePoint linePoint, float rawValueX, float rawValueY,
 			int lineIndex, int valueIndex) {
+		int pointRadius = Utils.dp2px(context, line.getPointRadius());
 		if (mSelectedValue.firstIndex == lineIndex && mSelectedValue.secondIndex == valueIndex) {
 			pointPaint.setColor(line.getDarkenColor());
-			canvas.drawCircle(rawValueX, rawValueY, defaultPointRadius + touchTolleranceMargin, pointPaint);
+			canvas.drawCircle(rawValueX, rawValueY, pointRadius + touchTolleranceMargin, pointPaint);
 			if (line.hasLabels()) {
-				drawLabel(canvas, line, linePoint, rawValueX, rawValueY, defaultPointRadius + labelOffset);
+				drawLabel(canvas, line, linePoint, rawValueX, rawValueY, pointRadius + labelOffset);
 			}
 		}
 	}

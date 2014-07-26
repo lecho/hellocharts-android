@@ -45,6 +45,7 @@ public class ColumnChartRenderer implements ChartRenderer {
 	private SelectedValue mSelectedValue = new SelectedValue();
 	private char[] labelBuffer = new char[32];
 	private FontMetricsInt fontMetrics = new FontMetricsInt();
+	protected RectF dataBoundaries = new RectF();
 
 	public ColumnChartRenderer(Context context, ColumnChartView chart) {
 		this.context = context;
@@ -65,6 +66,16 @@ public class ColumnChartRenderer implements ChartRenderer {
 		labelPaint.setTextSize(Utils.sp2px(context, DEFAULT_TEXT_SIZE_SP));
 		labelPaint.setColor(Color.WHITE);
 		labelPaint.getFontMetricsInt(fontMetrics);
+	}
+
+	@Override
+	public void initRenderer() {
+		calculateDataBoundaries();
+		mChart.getChartCalculator().calculateViewport(dataBoundaries);
+
+		labelPaint.setTextSize(Utils.sp2px(context, mChart.getData().getLabelsTextSize()));
+		labelPaint.getFontMetricsInt(fontMetrics);
+
 	}
 
 	public void draw(Canvas canvas) {
@@ -109,6 +120,49 @@ public class ColumnChartRenderer implements ChartRenderer {
 	public void callTouchListener() {
 		mChart.callTouchListener(mSelectedValue);
 
+	}
+
+	private void calculateDataBoundaries() {
+		ColumnChartData data = mChart.getData();
+		dataBoundaries.set(-0.5f, 0, data.getColumns().size() - 0.5f, 0);
+		if (data.isStacked()) {
+			calculateBoundariesStacked(data);
+		} else {
+			calculateBoundariesForSubcolumns(data);
+		}
+	}
+
+	private void calculateBoundariesForSubcolumns(ColumnChartData data) {
+		for (Column column : data.getColumns()) {
+			for (ColumnValue columnValue : column.getValues()) {
+				if (columnValue.getValue() >= 0 && columnValue.getValue() > dataBoundaries.top) {
+					dataBoundaries.top = columnValue.getValue();
+				}
+				if (columnValue.getValue() < 0 && columnValue.getValue() < dataBoundaries.bottom) {
+					dataBoundaries.bottom = columnValue.getValue();
+				}
+			}
+		}
+	}
+
+	private void calculateBoundariesStacked(ColumnChartData data) {
+		for (Column column : data.getColumns()) {
+			float sumPositive = 0;
+			float sumNegative = 0;
+			for (ColumnValue columnValue : column.getValues()) {
+				if (columnValue.getValue() >= 0) {
+					sumPositive += columnValue.getValue();
+				} else {
+					sumNegative += columnValue.getValue();
+				}
+			}
+			if (sumPositive > dataBoundaries.top) {
+				dataBoundaries.top = sumPositive;
+			}
+			if (sumNegative < dataBoundaries.bottom) {
+				dataBoundaries.bottom = sumNegative;
+			}
+		}
 	}
 
 	private void drawColumnsForSubcolumns(Canvas canvas) {

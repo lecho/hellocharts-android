@@ -37,7 +37,7 @@ public class LineChartView extends AbstractChartView {
 		super(context, attrs, defStyle);
 		initAttributes();
 		initAnimatiors();
-		mChartCalculator = new ChartCalculator(context, this);
+		mChartCalculator = new ChartCalculator();
 		mAxesRenderer = new AxesRenderer(context, this);
 		mChartRenderer = new LineChartRenderer(context, this);
 		mTouchHandler = new DefaultTouchHandler(context, this);
@@ -61,11 +61,9 @@ public class LineChartView extends AbstractChartView {
 	@Override
 	protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
-		// TODO mPointRadus can change, recalculate in setter
-		mChartCalculator.calculateViewport();
 		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
-		// mChartCalculator.setInternalMargin(getDefaultPointRadius() + getDefaultTouchTolleranceMargin());
+		mChartRenderer.initRenderer();
 		mChartCalculator.setAxesMargin(mAxesRenderer.getAxisXHeight(), mAxesRenderer.getAxisYWidth());
 	}
 
@@ -101,11 +99,9 @@ public class LineChartView extends AbstractChartView {
 
 	public void setData(final LineChartData data) {
 		mData = data;
-		mData.calculateBoundaries();
-		mChartCalculator.calculateViewport();
 		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
-		// mChartCalculator.setInternalMargin(getDefaultPointRadius() + getDefaultTouchTolleranceMargin());
+		mChartRenderer.initRenderer();
 		mAxesRenderer.initRenderer();
 		mChartCalculator.setAxesMargin(mAxesRenderer.getAxisXHeight(), mAxesRenderer.getAxisYWidth());
 
@@ -117,12 +113,12 @@ public class LineChartView extends AbstractChartView {
 	}
 
 	public void animationUpdate(float scale) {
-		for (LinePoint animatedPoint : mData.lines.get(0).getPoints()) {
-			animatedPoint.update(scale);
-		}
-		mData.calculateBoundaries();
-		mChartCalculator.calculateViewport();
-		ViewCompat.postInvalidateOnAnimation(LineChartView.this);
+		// for (LinePoint animatedPoint : mData.lines.get(0).getPoints()) {
+		// animatedPoint.update(scale);
+		// }
+		// mData.calculateBoundaries();
+		// mChartCalculator.calculateViewport();
+		// ViewCompat.postInvalidateOnAnimation(LineChartView.this);
 	}
 
 	@Override

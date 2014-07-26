@@ -35,8 +35,8 @@ public class ColumnChartView extends AbstractChartView {
 	public ColumnChartView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		initAnimatiors();
+		mChartCalculator = new ChartCalculator();
 		mChartRenderer = new ColumnChartRenderer(context, this);
-		mChartCalculator = new ChartCalculator(context, this);
 		mAxesRenderer = new AxesRenderer(context, this);
 		mTouchHandler = new DefaultTouchHandler(context, this);
 	}
@@ -53,34 +53,11 @@ public class ColumnChartView extends AbstractChartView {
 	protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
 		// TODO mPointRadus can change, recalculate in setter
-		mChartCalculator.calculateViewport();
 		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
+		mChartRenderer.initRenderer();
 		mChartCalculator.setAxesMargin(mAxesRenderer.getAxisXHeight(), mAxesRenderer.getAxisYWidth());
 	}
-
-	// Automatically calculates Y axis values.
-	// private Axis calculateYAxis(int numberOfSteps) {
-	// if (numberOfSteps < 2) {
-	// throw new
-	// IllegalArgumentException("Number or steps have to be grater or equal 2");
-	// }
-	// List<Float> values = new ArrayList<Float>();
-	// final float range = mData.getMaxYValue() - mData.getMinYValue();
-	// final float tickRange = range / (numberOfSteps - 1);
-	// final float x = (float) Math.ceil(Math.log10(tickRange) - 1);
-	// final float pow10x = (float) Math.pow(10, x);
-	// final float roundedTickRange = (float) Math.ceil(tickRange / pow10x) *
-	// pow10x;
-	// float value = mData.getMinYValue();
-	// while (value <= mData.getMaxYValue()) {
-	// values.add(value);
-	// value += roundedTickRange;
-	// }
-	// Axis yAxis = new Axis();
-	// yAxis.setValues(values);
-	// return yAxis;
-	// }
 
 	@Override
 	protected void onDraw(Canvas canvas) {
@@ -114,10 +91,9 @@ public class ColumnChartView extends AbstractChartView {
 
 	public void setData(final ColumnChartData data) {
 		mData = data;
-		mData.calculateBoundaries();
-		mChartCalculator.calculateViewport();
 		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
+		mChartRenderer.initRenderer();
 		mAxesRenderer.initRenderer();
 		mChartCalculator.setAxesMargin(mAxesRenderer.getAxisXHeight(), mAxesRenderer.getAxisYWidth());
 

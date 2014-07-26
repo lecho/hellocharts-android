@@ -4,6 +4,8 @@ import android.graphics.Canvas;
 
 public interface ChartRenderer {
 
+	public void initRenderer();
+
 	public void draw(Canvas canvas);
 
 	public void drawUnclipped(Canvas canvas);

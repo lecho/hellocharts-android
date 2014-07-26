@@ -1,7 +1,6 @@
 package lecho.lib.hellocharts;
 
 import lecho.lib.hellocharts.util.Utils;
-import android.content.Context;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -9,10 +8,6 @@ import android.graphics.RectF;
 
 public class ChartCalculator {
 	// TODO: use getters/setters instead of public members
-	public static final int DEFAULT_COMMON_MARGIN_DP = 4;
-	private Context mContext;
-	private Chart mChart;
-	private int margin;
 	/**
 	 * The current area (in pixels) for chart data, including mCoomonMargin. Labels are drawn outside this area.
 	 */
@@ -34,10 +29,7 @@ public class ChartCalculator {
 	/**
 	 * Constructor
 	 */
-	public ChartCalculator(Context context, Chart chart) {
-		mContext = context;
-		mChart = chart;
-		margin = Utils.dp2px(mContext, DEFAULT_COMMON_MARGIN_DP);
+	public ChartCalculator() {
 	}
 
 	/**
@@ -46,8 +38,7 @@ public class ChartCalculator {
 	public void calculateContentArea(int width, int height, int paddingLeft, int paddingTop, int paddingRight,
 			int paddingBottom) {
 		mContentRectWithMargins.set(paddingLeft, paddingTop, width - paddingRight, height - paddingBottom);
-		mContentRect.set(mContentRectWithMargins.left + margin, mContentRectWithMargins.top + margin,
-				mContentRectWithMargins.right - margin, mContentRectWithMargins.bottom - margin);
+		mContentRect.set(mContentRectWithMargins);
 	}
 
 	public void setInternalMargin(int margin) {
@@ -71,8 +62,7 @@ public class ChartCalculator {
 		mContentRect.bottom = mContentRect.bottom - axisXMargin;
 	}
 
-	public void calculateViewport() {
-		final RectF boundaries = mChart.getData().getBoundaries();
+	public void calculateViewport(RectF boundaries) {
 		mMaximumViewport.set(boundaries.left, boundaries.bottom, boundaries.right, boundaries.top);
 		// TODO: don't reset current viewport during animation if zoom is enabled
 		mCurrentViewport.set(mMaximumViewport);
