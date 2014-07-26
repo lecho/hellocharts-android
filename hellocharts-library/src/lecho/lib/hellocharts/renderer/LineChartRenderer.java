@@ -25,6 +25,7 @@ public class LineChartRenderer implements ChartRenderer {
 
 	private static final int MODE_DRAW = 0;
 	private static final int MODE_HIGHLIGHT = 1;
+
 	private Context context;
 	private int labelOffset;
 	private int labelMaring;

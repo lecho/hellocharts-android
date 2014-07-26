@@ -19,19 +19,15 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 
 public class ColumnChartRenderer implements ChartRenderer {
-	public static final int DEFAULT_TEXT_SIZE_SP = 12;
 	public static final int DEFAULT_LABEL_MARGIN_DP = 4;
-	public static final int DEFAULT_CONTENT_AREA_MARGIN_DP = 4;
-	public static final int DEFAULT_AXES_NAME_MARGIN_DP = 4;
-	public static final int DEFAULT_LINE_STROKE_WIDTH_DP = 3;
-	public static final int DEFAULT_POINT_RADIUS_DP = 6;
-	public static final int DEFAULT_TOUCH_TOLLERANCE_MARGIN_DP = 4;
 	public static final int DEFAULT_SUBCOLUMN_SPACING_DP = 1;
 	public static final int DEFAULT_COLUMN_TOUCH_ADDITIONAL_WIDTH_DP = 2;
+
 	private static final float DEFAULT_BASE_VALUE = 0.0f;
 	private static final int MODE_DRAW = 0;
 	private static final int MODE_CHECK_TOUCH = 1;
 	private static final int MODE_HIGHLIGHT = 2;
+
 	private Context context;
 	private int mLabelMargin;
 	private int labelOffset;
@@ -60,12 +56,10 @@ public class ColumnChartRenderer implements ChartRenderer {
 		mColumnPaint.setStrokeCap(Cap.SQUARE);
 
 		labelPaint.setAntiAlias(true);
+		labelPaint.setColor(Color.WHITE);
 		labelPaint.setStyle(Paint.Style.FILL);
 		labelPaint.setTextAlign(Align.LEFT);
 		labelPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
-		labelPaint.setTextSize(Utils.sp2px(context, DEFAULT_TEXT_SIZE_SP));
-		labelPaint.setColor(Color.WHITE);
-		labelPaint.getFontMetricsInt(fontMetrics);
 	}
 
 	@Override

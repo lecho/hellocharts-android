@@ -5,15 +5,6 @@ import android.graphics.Color;
 import android.util.TypedValue;
 
 public abstract class Utils {
-	public static final int DEFAULT_TEXT_SIZE_SP = 12;
-	public static final int DEFAULT_LABEL_MARGIN_DP = 4;
-	public static final int DEFAULT_CONTENT_AREA_MARGIN_DP = 4;
-	public static final int DEFAULT_AXES_NAME_MARGIN_DP = 4;
-	public static final int DEFAULT_LINE_STROKE_WIDTH_DP = 3;
-	public static final int DEFAULT_POINT_RADIUS_DP = 6;
-	public static final int DEFAULT_TOUCH_TOLLERANCE_MARGIN_DP = 4;
-	public static final int DEFAULT_SUBCOLUMN_SPACING_DP = 1;
-	public static final int DEFAULT_COLUMN_TOUCH_ADDITIONAL_WIDTH_DP = 2;
 	public static final int POW10[] = { 1, 10, 100, 1000, 10000, 100000, 1000000 };
 	public static final int COLOR_BLUE = Color.parseColor("#33B5E5");
 	public static final int COLOR_VIOLET = Color.parseColor("#AA66CC");
