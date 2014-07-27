@@ -9,7 +9,6 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
 public class ChartTouchHandler {
-
 	private GestureDetector gestureDetector;
 	private ScaleGestureDetector scaleGestureDetector;
 	private ChartScroller chartScroller;

@@ -190,18 +190,16 @@ public class LineChartRenderer implements ChartRenderer {
 	public void setViewport(RectF viewport) {
 		if (null == viewport) {
 			this.isViewportAutoCalculated = false;
-			chart.getChartCalculator().mCurrentViewport.set(chart.getChartCalculator().mMaximumViewport);
+			chart.getChartCalculator().setCurrentViewport(chart.getChartCalculator().getMaximumViewport());
 		} else {
 			this.isViewportAutoCalculated = true;
-			chart.getChartCalculator().mCurrentViewport.set(viewport.left, viewport.bottom, viewport.right,
-					viewport.top);
-			chart.getChartCalculator().constrainViewport();
+			chart.getChartCalculator().setCurrentViewport(viewport.left, viewport.bottom, viewport.right, viewport.top);
 		}
 	}
 
 	@Override
 	public RectF getViewport() {
-		RectF viewport = chart.getChartCalculator().mCurrentViewport;
+		RectF viewport = chart.getChartCalculator().getCurrentViewport();
 		return new RectF(viewport.left, viewport.bottom, viewport.right, viewport.top);
 	}
 
@@ -401,15 +399,15 @@ public class LineChartRenderer implements ChartRenderer {
 		float right = rawValueX + labelWidth / 2 + labelMaring;
 		float top = rawValueY - offset - labelHeight - labelMaring * 2;
 		float bottom = rawValueY - offset;
-		if (top < chartCalculator.mContentRect.top) {
+		if (top < chartCalculator.getContentRect().top) {
 			top = rawValueY + offset;
 			bottom = rawValueY + offset + labelHeight + labelMaring * 2;
 		}
-		if (left < chartCalculator.mContentRect.left) {
+		if (left < chartCalculator.getContentRect().left) {
 			left = rawValueX;
 			right = rawValueX + labelWidth + labelMaring * 2;
 		}
-		if (right > chartCalculator.mContentRect.right) {
+		if (right > chartCalculator.getContentRect().right) {
 			left = rawValueX - labelWidth - labelMaring * 2;
 			right = rawValueX;
 		}
@@ -424,8 +422,8 @@ public class LineChartRenderer implements ChartRenderer {
 
 	private void drawArea(Canvas canvas, int transparency) {
 		final ChartCalculator chartCalculator = chart.getChartCalculator();
-		mLinePath.lineTo(chartCalculator.mContentRect.right, chartCalculator.mContentRect.bottom);
-		mLinePath.lineTo(chartCalculator.mContentRect.left, chartCalculator.mContentRect.bottom);
+		mLinePath.lineTo(chartCalculator.getContentRect().right, chartCalculator.getContentRect().bottom);
+		mLinePath.lineTo(chartCalculator.getContentRect().left, chartCalculator.getContentRect().bottom);
 		mLinePath.close();
 		linePaint.setStyle(Paint.Style.FILL);
 		linePaint.setAlpha(transparency);

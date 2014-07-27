@@ -68,7 +68,7 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 		super.onDraw(canvas);
 		axesRenderer.draw(canvas);
 		int clipRestoreCount = canvas.save();
-		canvas.clipRect(chartCalculator.mContentRect);
+		canvas.clipRect(chartCalculator.getContentRect());
 		chartRenderer.draw(canvas);
 		canvas.restoreToCount(clipRestoreCount);
 		chartRenderer.drawUnclipped(canvas);

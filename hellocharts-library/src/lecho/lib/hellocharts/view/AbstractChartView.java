@@ -108,7 +108,7 @@ public abstract class AbstractChartView extends View implements Chart {
 	 * Smoothly zooms the chart in one step.
 	 */
 	public void zoomIn(float x, float y) {
-		if (chartCalculator.mCurrentViewport.contains(x, y)) {
+		if (chartCalculator.getCurrentViewport().contains(x, y)) {
 			touchHandler.startZoom(x, y, ChartZoomer.ZOOM_AMOUNT);
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
@@ -118,7 +118,7 @@ public abstract class AbstractChartView extends View implements Chart {
 	 * Smoothly zooms the chart out one step.
 	 */
 	public void zoomOut(float x, float y) {
-		if (chartCalculator.mCurrentViewport.contains(x, y)) {
+		if (chartCalculator.getCurrentViewport().contains(x, y)) {
 			touchHandler.startZoom(x, y, -ChartZoomer.ZOOM_AMOUNT);
 			ViewCompat.postInvalidateOnAnimation(this);
 		}

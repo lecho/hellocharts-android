@@ -7,12 +7,12 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 
 public class ChartCalculator {
-	// TODO: use getters/setters instead of public members
+	private static final float MAXIMUM_SCALE = 10f;
 	/**
 	 * The current area (in pixels) for chart data, including mCoomonMargin. Labels are drawn outside this area.
 	 */
-	public Rect mContentRect = new Rect();
-	public Rect mContentRectWithMargins = new Rect();
+	private Rect contentRect = new Rect();
+	private Rect contentRectWithMargins = new Rect();
 	/**
 	 * This rectangle represents the currently visible chart values ranges. The currently visible chart X values are
 	 * from this rectangle's left to its right. The currently visible chart Y values are from this rectangle's top to
@@ -23,8 +23,11 @@ public class ChartCalculator {
 	 * pixel Y positions), this rectangle's "top" is drawn above this rectangle's "bottom" value.
 	 * 
 	 */
-	public RectF mCurrentViewport = new RectF();
-	public RectF mMaximumViewport = new RectF();// Viewport for whole data ranges
+	private RectF currentViewport = new RectF();
+	private RectF maximumViewport = new RectF();// Viewport for whole data ranges
+
+	private float minimumViewportWidth;
+	private float minimumViewportHeight;
 
 	/**
 	 * Constructor
@@ -37,51 +40,62 @@ public class ChartCalculator {
 	 */
 	public void calculateContentArea(int width, int height, int paddingLeft, int paddingTop, int paddingRight,
 			int paddingBottom) {
-		mContentRectWithMargins.set(paddingLeft, paddingTop, width - paddingRight, height - paddingBottom);
-		mContentRect.set(mContentRectWithMargins);
+		contentRectWithMargins.set(paddingLeft, paddingTop, width - paddingRight, height - paddingBottom);
+		contentRect.set(contentRectWithMargins);
 	}
 
 	public void setInternalMargin(int margin) {
-		mContentRect.left = mContentRectWithMargins.left + margin;
-		mContentRect.top = mContentRectWithMargins.top + margin;
-		mContentRect.right = mContentRectWithMargins.right - margin;
-		mContentRect.bottom = mContentRectWithMargins.bottom - margin;
+		contentRect.left = contentRectWithMargins.left + margin;
+		contentRect.top = contentRectWithMargins.top + margin;
+		contentRect.right = contentRectWithMargins.right - margin;
+		contentRect.bottom = contentRectWithMargins.bottom - margin;
 	}
 
 	public void setInternalMargin(int marginLeft, int marginTop, int marginRight, int marginBottom) {
-		mContentRect.left = mContentRectWithMargins.left + marginLeft;
-		mContentRect.top = mContentRectWithMargins.top + marginTop;
-		mContentRect.right = mContentRectWithMargins.right - marginRight;
-		mContentRect.bottom = mContentRectWithMargins.bottom - marginBottom;
+		contentRect.left = contentRectWithMargins.left + marginLeft;
+		contentRect.top = contentRectWithMargins.top + marginTop;
+		contentRect.right = contentRectWithMargins.right - marginRight;
+		contentRect.bottom = contentRectWithMargins.bottom - marginBottom;
 	}
 
 	public void setAxesMargin(int axisXMargin, int axisYMargin) {
-		mContentRectWithMargins.bottom = mContentRectWithMargins.bottom - axisXMargin;
-		mContentRectWithMargins.left = mContentRectWithMargins.left + axisYMargin;
-		mContentRect.left = mContentRect.left + axisYMargin;
-		mContentRect.bottom = mContentRect.bottom - axisXMargin;
+		contentRectWithMargins.bottom = contentRectWithMargins.bottom - axisXMargin;
+		contentRectWithMargins.left = contentRectWithMargins.left + axisYMargin;
+		contentRect.left = contentRect.left + axisYMargin;
+		contentRect.bottom = contentRect.bottom - axisXMargin;
 	}
 
 	public void calculateViewport(RectF boundaries) {
-		mMaximumViewport.set(boundaries.left, boundaries.bottom, boundaries.right, boundaries.top);
-		// TODO: don't reset current viewport during animation if zoom is enabled
-		mCurrentViewport.set(mMaximumViewport);
+		maximumViewport.set(boundaries.left, boundaries.bottom, boundaries.right, boundaries.top);
+		minimumViewportWidth = maximumViewport.width() / MAXIMUM_SCALE;
+		minimumViewportHeight = maximumViewport.height() / MAXIMUM_SCALE;
+		currentViewport.set(maximumViewport);
 	}
 
-	public void constrainViewport() {
-		// TODO: avoid too much zoom
-		mCurrentViewport.left = Math.max(mMaximumViewport.left, mCurrentViewport.left);
-		mCurrentViewport.top = Math.max(mMaximumViewport.top, mCurrentViewport.top);
-		mCurrentViewport.bottom = Math.max(Utils.nextUpF(mCurrentViewport.top),
-				Math.min(mMaximumViewport.bottom, mCurrentViewport.bottom));
-		mCurrentViewport.right = Math.max(Utils.nextUpF(mCurrentViewport.left),
-				Math.min(mMaximumViewport.right, mCurrentViewport.right));
+	public void setCurrentViewport(float left, float top, float right, float bottom) {
+		constrainViewport(left, top, right, bottom);
+	}
+
+	public void setCurrentViewport(RectF viewport) {
+		constrainViewport(viewport.left, viewport.top, viewport.right, viewport.bottom);
+	}
+
+	public void constrainViewport(float left, float top, float right, float bottom) {
+		if (right - left < minimumViewportWidth || bottom - top < minimumViewportHeight) {
+			// Maximum zoom!
+			return;
+		}
+
+		currentViewport.left = Math.max(maximumViewport.left, left);
+		currentViewport.top = Math.max(maximumViewport.top, top);
+		currentViewport.bottom = Math.max(Utils.nextUpF(top), Math.min(maximumViewport.bottom, bottom));
+		currentViewport.right = Math.max(Utils.nextUpF(left), Math.min(maximumViewport.right, right));
 	}
 
 	/**
-	 * Sets the current viewport (defined by {@link #mCurrentViewport}) to the given X and Y positions. Note that the Y
-	 * value represents the topmost pixel position, and thus the bottom of the {@link #mCurrentViewport} rectangle. For
-	 * more details on why top and bottom are flipped, see {@link #mCurrentViewport}.
+	 * Sets the current viewport (defined by {@link #currentViewport}) to the given X and Y positions. Note that the Y
+	 * value represents the topmost pixel position, and thus the bottom of the {@link #currentViewport} rectangle. For
+	 * more details on why top and bottom are flipped, see {@link #currentViewport}.
 	 */
 	public void setViewportBottomLeft(float x, float y) {
 		/**
@@ -90,55 +104,79 @@ public class ChartCalculator {
 		 * would be 0 to 8.
 		 */
 
-		final float curWidth = mCurrentViewport.width();
-		final float curHeight = mCurrentViewport.height();
-		x = Math.max(mMaximumViewport.left, Math.min(x, mMaximumViewport.right - curWidth));
-		y = Math.max(mMaximumViewport.top + curHeight, Math.min(y, mMaximumViewport.bottom));
-		mCurrentViewport.set(x, y - curHeight, x + curWidth, y);
+		final float curWidth = currentViewport.width();
+		final float curHeight = currentViewport.height();
+		x = Math.max(maximumViewport.left, Math.min(x, maximumViewport.right - curWidth));
+		y = Math.max(maximumViewport.top + curHeight, Math.min(y, maximumViewport.bottom));
+		currentViewport.set(x, y - curHeight, x + curWidth, y);
 	}
 
 	public float calculateRawX(float valueX) {
-		final float pixelOffset = (valueX - mCurrentViewport.left) * (mContentRect.width() / mCurrentViewport.width());
-		return mContentRect.left + pixelOffset;
+		final float pixelOffset = (valueX - currentViewport.left) * (contentRect.width() / currentViewport.width());
+		return contentRect.left + pixelOffset;
 	}
 
 	public float calculateRawY(float valueY) {
-		final float pixelOffset = (valueY - mCurrentViewport.top) * (mContentRect.height() / mCurrentViewport.height());
-		return mContentRect.bottom - pixelOffset;
+		final float pixelOffset = (valueY - currentViewport.top) * (contentRect.height() / currentViewport.height());
+		return contentRect.bottom - pixelOffset;
 	}
 
 	/**
 	 * Finds the chart point (i.e. within the chart's domain and range) represented by the given pixel coordinates, if
-	 * that pixel is within the chart region described by {@link #mContentRect}. If the point is found, the "dest"
+	 * that pixel is within the chart region described by {@link #contentRect}. If the point is found, the "dest"
 	 * argument is set to the point and this function returns true. Otherwise, this function returns false and "dest" is
 	 * unchanged.
 	 */
 	public boolean rawPixelsToDataPoint(float x, float y, PointF dest) {
-		if (!mContentRect.contains((int) x, (int) y)) {
+		if (!contentRect.contains((int) x, (int) y)) {
 			return false;
 		}
-		dest.set(mCurrentViewport.left + (x - mContentRect.left) * mCurrentViewport.width() / mContentRect.width(),
-				mCurrentViewport.top + (y - mContentRect.bottom) * mCurrentViewport.height() / -mContentRect.height());
+		dest.set(currentViewport.left + (x - contentRect.left) * currentViewport.width() / contentRect.width(),
+				currentViewport.top + (y - contentRect.bottom) * currentViewport.height() / -contentRect.height());
 		return true;
 	}
 
 	/**
 	 * Computes the current scrollable surface size, in pixels. For example, if the entire chart area is visible, this
-	 * is simply the current size of {@link #mContentRect}. If the chart is zoomed in 200% in both directions, the
+	 * is simply the current size of {@link #contentRect}. If the chart is zoomed in 200% in both directions, the
 	 * returned size will be twice as large horizontally and vertically.
 	 */
 	public void computeScrollSurfaceSize(Point out) {
-		out.set((int) (mMaximumViewport.width() * mContentRect.width() / mCurrentViewport.width()),
-				(int) (mMaximumViewport.height() * mContentRect.height() / mCurrentViewport.height()));
+		out.set((int) (maximumViewport.width() * contentRect.width() / currentViewport.width()),
+				(int) (maximumViewport.height() * contentRect.height() / currentViewport.height()));
 	}
 
 	public boolean isWithinContentRect(int x, int y) {
-		if (x >= mContentRect.left && x <= mContentRect.right) {
-			if (y >= mContentRect.top && y <= mContentRect.bottom) {
+		if (x >= contentRect.left && x <= contentRect.right) {
+			if (y >= contentRect.top && y <= contentRect.bottom) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	public Rect getContentRect() {
+		return contentRect;
+	}
+
+	public Rect getContentRectWithMargins() {
+		return contentRectWithMargins;
+	}
+
+	public RectF getCurrentViewport() {
+		return currentViewport;
+	}
+
+	public RectF getMaximumViewport() {
+		return maximumViewport;
+	}
+
+	public float getMinimumViewportWidth() {
+		return minimumViewportWidth;
+	}
+
+	public float getMinimumViewportHeight() {
+		return minimumViewportHeight;
 	}
 
 }

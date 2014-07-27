@@ -25,7 +25,7 @@ public class ChartZoomer {
 
 	public boolean startZoom(MotionEvent e, ChartCalculator chartCalculator) {
 		zoomer.forceFinished(true);
-		scrollerStartViewport.set(chartCalculator.mCurrentViewport);
+		scrollerStartViewport.set(chartCalculator.getCurrentViewport());
 		if (chartCalculator.rawPixelsToDataPoint(e.getX(), e.getY(), zoomFocalPoint)) {
 			zoomer.startZoom(ZOOM_AMOUNT);
 		}
@@ -34,7 +34,7 @@ public class ChartZoomer {
 
 	public boolean startZoom(float x, float y, float zoom, ChartCalculator chartCalculator) {
 		zoomer.forceFinished(true);
-		scrollerStartViewport.set(chartCalculator.mCurrentViewport);
+		scrollerStartViewport.set(chartCalculator.getCurrentViewport());
 		zoomFocalPoint.set(x, y);
 		zoomer.startZoom(zoom);
 		return true;
@@ -66,16 +66,16 @@ public class ChartZoomer {
 		 * Smaller viewport means bigger zoom so for zoomIn scale should have value <1, for zoomOout >1
 		 */
 		float scale = 2.0f - detector.getScaleFactor();
-		final float newWidth = scale * chartCalculator.mCurrentViewport.width();
-		final float newHeight = scale * chartCalculator.mCurrentViewport.height();
+		final float newWidth = scale * chartCalculator.getCurrentViewport().width();
+		final float newHeight = scale * chartCalculator.getCurrentViewport().height();
 		final float focusX = detector.getFocusX();
 		final float focusY = detector.getFocusY();
 		chartCalculator.rawPixelsToDataPoint(focusX, focusY, viewportFocus);
 
-		float left = viewportFocus.x - (focusX - chartCalculator.mContentRect.left)
-				* (newWidth / chartCalculator.mContentRect.width());
-		float top = viewportFocus.y - (chartCalculator.mContentRect.bottom - focusY)
-				* (newHeight / chartCalculator.mContentRect.height());
+		float left = viewportFocus.x - (focusX - chartCalculator.getContentRect().left)
+				* (newWidth / chartCalculator.getContentRect().width());
+		float top = viewportFocus.y - (chartCalculator.getContentRect().bottom - focusY)
+				* (newHeight / chartCalculator.getContentRect().height());
 		float right = left + newWidth;
 		float bottom = top + newHeight;
 		setCurrentViewport(chartCalculator, left, top, right, bottom);
@@ -83,15 +83,13 @@ public class ChartZoomer {
 	}
 
 	private void setCurrentViewport(ChartCalculator chartCalculator, float left, float top, float right, float bottom) {
+		RectF currentViewport = chartCalculator.getCurrentViewport();
 		if (zoomType == ZOOM_HORIZONTAL_AND_VERTICAL || zoomType == ZOOM_HORIZONTAL) {
-			chartCalculator.mCurrentViewport.left = left;
-			chartCalculator.mCurrentViewport.right = right;
+			chartCalculator.setCurrentViewport(left, currentViewport.top, right, currentViewport.bottom);
 		}
 		if (zoomType == ZOOM_HORIZONTAL_AND_VERTICAL || zoomType == ZOOM_VERTICAL) {
-			chartCalculator.mCurrentViewport.top = top;
-			chartCalculator.mCurrentViewport.bottom = bottom;
+			chartCalculator.setCurrentViewport(currentViewport.left, top, currentViewport.right, bottom);
 		}
-		chartCalculator.constrainViewport();
 	}
 
 	public int getZoomType() {

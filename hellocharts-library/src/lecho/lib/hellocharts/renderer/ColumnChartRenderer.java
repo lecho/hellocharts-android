@@ -159,18 +159,16 @@ public class ColumnChartRenderer implements ChartRenderer {
 	public void setViewport(RectF viewport) {
 		if (null == viewport) {
 			this.isViewportAutoCalculated = false;
-			chart.getChartCalculator().mCurrentViewport.set(chart.getChartCalculator().mMaximumViewport);
+			chart.getChartCalculator().setCurrentViewport(chart.getChartCalculator().getMaximumViewport());
 		} else {
 			this.isViewportAutoCalculated = true;
-			chart.getChartCalculator().mCurrentViewport.set(viewport.left, viewport.bottom, viewport.right,
-					viewport.top);
-			chart.getChartCalculator().constrainViewport();
+			chart.getChartCalculator().setCurrentViewport(viewport.left, viewport.bottom, viewport.right, viewport.top);
 		}
 	}
 
 	@Override
 	public RectF getViewport() {
-		RectF viewport = chart.getChartCalculator().mCurrentViewport;
+		RectF viewport = chart.getChartCalculator().getCurrentViewport();
 		return new RectF(viewport.left, viewport.bottom, viewport.right, viewport.top);
 	}
 
@@ -405,7 +403,8 @@ public class ColumnChartRenderer implements ChartRenderer {
 
 	private float calculateColumnWidth(final ChartCalculator chartCalculator, float fillRatio) {
 		// columnWidht should be at least 2 px
-		float columnWidth = fillRatio * chartCalculator.mContentRect.width() / chartCalculator.mCurrentViewport.width();
+		float columnWidth = fillRatio * chartCalculator.getContentRect().width()
+				/ chartCalculator.getCurrentViewport().width();
 		if (columnWidth < 2) {
 			columnWidth = 2;
 		}
@@ -447,7 +446,7 @@ public class ColumnChartRenderer implements ChartRenderer {
 		} else if (!isStacked) {
 			if (columnValue.getValue() >= DEFAULT_BASE_VALUE) {
 				top = drawRect.top - offset - labelHeight - mLabelMargin * 2;
-				if (top < chartCalculator.mContentRect.top) {
+				if (top < chartCalculator.getContentRect().top) {
 					top = drawRect.top + offset;
 					bottom = drawRect.top + offset + labelHeight + mLabelMargin * 2;
 				} else {
@@ -455,7 +454,7 @@ public class ColumnChartRenderer implements ChartRenderer {
 				}
 			} else {
 				bottom = drawRect.bottom + offset + labelHeight + mLabelMargin * 2;
-				if (bottom > chartCalculator.mContentRect.bottom) {
+				if (bottom > chartCalculator.getContentRect().bottom) {
 					top = drawRect.bottom - offset - labelHeight - mLabelMargin * 2;
 					bottom = drawRect.bottom - offset;
 				} else {
