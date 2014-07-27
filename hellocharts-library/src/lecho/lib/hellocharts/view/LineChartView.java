@@ -127,19 +127,6 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 		onValueTouchListener.onValueTouched(selectedValue.firstIndex, selectedValue.secondIndex, point);
 	}
 
-	// public void animateSeries(int index,
-	// List<lecho.lib.hellocharts.model.Point> points) {
-	// mAnimator.cancelAnimation();
-	// mData.updateLineTarget(index, points);
-	// mAnimator.startAnimation();
-	// }
-	//
-	// public void updateSeries(int index,
-	// List<lecho.lib.hellocharts.model.Point> points) {
-	// mData.updateLine(index, points);
-	// ViewCompat.postInvalidateOnAnimation(LineChart.this);
-	// }
-
 	public LineChartOnValueTouchListener getOnValueTouchListener() {
 		return onValueTouchListener;
 	}

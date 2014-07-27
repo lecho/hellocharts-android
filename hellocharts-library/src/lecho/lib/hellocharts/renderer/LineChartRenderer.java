@@ -140,8 +140,12 @@ public class LineChartRenderer implements ChartRenderer {
 				final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
 				final float rawValueY = chartCalculator.calculateRawY(linePoint.getY());
 				if (isInArea(rawValueX, rawValueY, touchX, touchY, pointRadius + touchTolleranceMargin)) {
-					mSelectedValue.firstIndex = lineIndex;
-					mSelectedValue.secondIndex = valueIndex;
+					if (mSelectedValue.isSet()) {
+						clearTouch();
+					} else {
+						mSelectedValue.firstIndex = lineIndex;
+						mSelectedValue.secondIndex = valueIndex;
+					}
 				}
 				++valueIndex;
 			}
@@ -381,7 +385,7 @@ public class LineChartRenderer implements ChartRenderer {
 		int pointRadius = Utils.dp2px(density, line.getPointRadius());
 		if (mSelectedValue.firstIndex == lineIndex && mSelectedValue.secondIndex == valueIndex) {
 			pointPaint.setColor(line.getDarkenColor());
-			canvas.drawCircle(rawValueX, rawValueY, pointRadius + touchTolleranceMargin, pointPaint);
+			drawPoint(canvas, rawValueX, rawValueY, pointRadius + touchTolleranceMargin, line.getPointShape());
 			if (line.hasLabels()) {
 				drawLabel(canvas, line, linePoint, rawValueX, rawValueY, pointRadius + labelOffset);
 			}

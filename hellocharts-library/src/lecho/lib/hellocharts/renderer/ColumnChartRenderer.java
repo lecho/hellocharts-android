@@ -394,8 +394,12 @@ public class ColumnChartRenderer implements ChartRenderer {
 
 	private void checkRectToDraw(int columnIndex, int valueIndex) {
 		if (drawRect.contains(touchedPoint.x, touchedPoint.y)) {
-			selectedValue.firstIndex = columnIndex;
-			selectedValue.secondIndex = valueIndex;
+			if (selectedValue.isSet()) {
+				clearTouch();
+			} else {
+				selectedValue.firstIndex = columnIndex;
+				selectedValue.secondIndex = valueIndex;
+			}
 		}
 	}
 
