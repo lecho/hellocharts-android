@@ -7,6 +7,11 @@ public interface ChartRenderer {
 
 	public void initRenderer();
 
+	/**
+	 * Used only for chart animations. That method skips some calculations during initialization.
+	 */
+	public void fastInitRenderer();
+
 	public void draw(Canvas canvas);
 
 	public void drawUnclipped(Canvas canvas);

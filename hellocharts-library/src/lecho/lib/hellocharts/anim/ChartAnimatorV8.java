@@ -20,10 +20,10 @@ public class ChartAnimatorV8 implements ChartAnimator {
 			long elapsed = SystemClock.uptimeMillis() - mStart;
 			float dt = Math.min(mInterpolator.getInterpolation((float) elapsed / mDuration), 1);
 			if (dt < 1.0) {
-				mChart.animationUpdate(dt);
+				mChart.animationDataUpdate(dt);
 				mHandler.postDelayed(this, 16);
 			} else {
-				mChart.animationUpdate(1.0f);
+				mChart.animationDataUpdate(1.0f);
 			}
 
 		}

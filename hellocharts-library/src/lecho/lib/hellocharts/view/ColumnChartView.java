@@ -133,15 +133,19 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 	}
 
 	@Override
-	public void animationUpdate(float scale) {
+	public void animationDataUpdate(float scale) {
 		for (Column column : mData.getColumns()) {
 			for (ColumnValue value : column.getValues()) {
 				value.update(scale);
 			}
 		}
-		mChartRenderer.initRenderer();
-		mAxesRenderer.initRenderer();
+		mChartRenderer.fastInitRenderer();
 		ViewCompat.postInvalidateOnAnimation(this);
+	}
+
+	@Override
+	public void startDataAnimation() {
+		mAnimator.startAnimation();
 	}
 
 	public interface BarChartOnValueTouchListener {

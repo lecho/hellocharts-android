@@ -40,7 +40,7 @@ public class ChartAnimatorV11 implements ChartAnimator, AnimatorListener, Animat
 
 	@Override
 	public void onAnimationUpdate(ValueAnimator animation) {
-		mChart.animationUpdate((Float) animation.getAnimatedValue());
+		mChart.animationDataUpdate((Float) animation.getAnimatedValue());
 	}
 
 	@Override
@@ -49,6 +49,7 @@ public class ChartAnimatorV11 implements ChartAnimator, AnimatorListener, Animat
 
 	@Override
 	public void onAnimationEnd(Animator animation) {
+		mChart.animationDataUpdate(1.0f);
 	}
 
 	@Override

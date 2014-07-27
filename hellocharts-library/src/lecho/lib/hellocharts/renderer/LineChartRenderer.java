@@ -87,6 +87,16 @@ public class LineChartRenderer implements ChartRenderer {
 	}
 
 	@Override
+	public void fastInitRenderer() {
+		if (hasAutoDataBoundaries) {
+			calculateDataBoundaries();
+		}
+		if (isViewportAutoCalculated) {
+			chart.getChartCalculator().calculateViewport(dataBoundaries);
+		}
+	}
+
+	@Override
 	public void draw(Canvas canvas) {
 		final LineChartData data = dataProvider.getLineChartData();
 		for (Line line : data.lines) {

@@ -85,6 +85,16 @@ public class ColumnChartRenderer implements ChartRenderer {
 
 	}
 
+	@Override
+	public void fastInitRenderer() {
+		if (hasAutoDataBoundaries) {
+			calculateDataBoundaries();
+		}
+		if (isViewportAutoCalculated) {
+			chart.getChartCalculator().calculateViewport(dataBoundaries);
+		}
+	}
+
 	public void draw(Canvas canvas) {
 		final ColumnChartData data = dataProvider.getColumnChartData();
 		if (data.isStacked()) {

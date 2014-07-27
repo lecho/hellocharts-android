@@ -152,15 +152,19 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 	}
 
 	@Override
-	public void animationUpdate(float scale) {
+	public void animationDataUpdate(float scale) {
 		for (Line line : mData.lines) {
 			for (LinePoint point : line.getPoints()) {
 				point.update(scale);
 			}
 		}
-		mChartRenderer.initRenderer();
-		mAxesRenderer.initRenderer();
+		mChartRenderer.fastInitRenderer();
 		ViewCompat.postInvalidateOnAnimation(this);
+	}
+
+	@Override
+	public void startDataAnimation() {
+		mAnimator.startAnimation();
 	}
 
 	public interface LineChartOnValueTouchListener {

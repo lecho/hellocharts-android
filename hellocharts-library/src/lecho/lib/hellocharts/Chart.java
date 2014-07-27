@@ -19,7 +19,9 @@ public interface Chart {
 
 	public ChartTouchHandler getTouchHandler();
 
-	public void animationUpdate(float scale);
+	public void animationDataUpdate(float scale);
+
+	public void startDataAnimation();
 
 	public void callTouchListener(SelectedValue selectedValue);
 
