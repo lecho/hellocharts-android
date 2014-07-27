@@ -4,8 +4,6 @@ import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.gesture.ChartTouchHandler;
 import lecho.lib.hellocharts.gesture.ZoomMode;
-import lecho.lib.hellocharts.model.ChartData;
-import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
 import android.content.Context;
@@ -88,13 +86,13 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	@Override
 	public void setDataBoundaries(RectF dataBoundaries) {
-		getChartRenderer().setDataBoundaries(dataBoundaries);
+		mChartRenderer.setDataBoundaries(dataBoundaries);
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
 	@Override
 	public RectF getDataBoundaries() {
-		return getChartRenderer().getDataBoundaries();
+		return mChartRenderer.getDataBoundaries();
 	}
 
 	@Override
@@ -103,26 +101,15 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	}
 
+	@Override
 	public void setViewport(RectF viewport) {
-		if (null == viewport) {
-			getChartRenderer().setViewportAutoCalculated(true);
-			getChartCalculator().mCurrentViewport.set(getChartCalculator().mMaximumViewport);
-		} else {
-			getChartRenderer().setViewportAutoCalculated(false);
-			getChartCalculator().mCurrentViewport.set(viewport.left, viewport.bottom, viewport.right, viewport.top);
-			getChartCalculator().constrainViewport();
-		}
+		mChartRenderer.setViewport(viewport);
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
-	public RectF getViewport() {
-		RectF viewport = getChartCalculator().mCurrentViewport;
-		return new RectF(viewport.left, viewport.bottom, viewport.right, viewport.top);
-	}
-
 	@Override
-	public void callTouchListener(SelectedValue selectedValue) {
-		// TODO Auto-generated method stub
-
+	public RectF getViewport() {
+		return getChartRenderer().getViewport();
 	}
+
 }

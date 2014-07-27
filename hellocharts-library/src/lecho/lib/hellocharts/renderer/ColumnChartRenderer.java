@@ -77,8 +77,9 @@ public class ColumnChartRenderer implements ChartRenderer {
 		if (hasAutoDataBoundaries) {
 			calculateDataBoundaries();
 		}
-		chart.getChartCalculator().calculateViewport(dataBoundaries);
-
+		if (isViewportAutoCalculated) {
+			chart.getChartCalculator().calculateViewport(dataBoundaries);
+		}
 		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getLabelsTextSize()));
 		labelPaint.getFontMetricsInt(fontMetrics);
 
@@ -145,14 +146,22 @@ public class ColumnChartRenderer implements ChartRenderer {
 	}
 
 	@Override
-	public void setViewportAutoCalculated(boolean isViewportAutoCalculated) {
-		this.isViewportAutoCalculated = isViewportAutoCalculated;
-
+	public void setViewport(RectF viewport) {
+		if (null == viewport) {
+			this.isViewportAutoCalculated = false;
+			chart.getChartCalculator().mCurrentViewport.set(chart.getChartCalculator().mMaximumViewport);
+		} else {
+			this.isViewportAutoCalculated = true;
+			chart.getChartCalculator().mCurrentViewport.set(viewport.left, viewport.bottom, viewport.right,
+					viewport.top);
+			chart.getChartCalculator().constrainViewport();
+		}
 	}
 
 	@Override
-	public boolean isViewportAutoCalculated() {
-		return isViewportAutoCalculated;
+	public RectF getViewport() {
+		RectF viewport = chart.getChartCalculator().mCurrentViewport;
+		return new RectF(viewport.left, viewport.bottom, viewport.right, viewport.top);
 	}
 
 	private void calculateDataBoundaries() {
