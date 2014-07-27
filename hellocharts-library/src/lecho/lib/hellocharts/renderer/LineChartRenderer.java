@@ -337,7 +337,7 @@ public class LineChartRenderer implements ChartRenderer {
 			if (chartCalculator.isWithinContentRect((int) rawValueX, (int) rawValueY)) {
 				// Draw points only if they are within contentRect
 				if (MODE_DRAW == mode) {
-					canvas.drawCircle(rawValueX, rawValueY, pointRadius, pointPaint);
+					drawPoint(canvas, rawValueX, rawValueY, pointRadius, line.getPointShape());
 					if (line.hasLabels()) {
 						drawLabel(canvas, line, linePoint, rawValueX, rawValueY, pointRadius + labelOffset);
 					}
@@ -348,6 +348,15 @@ public class LineChartRenderer implements ChartRenderer {
 				}
 			}
 			++valueIndex;
+		}
+	}
+
+	private void drawPoint(Canvas canvas, float rawValueX, float rawValueY, float pointRadius, int pointShape) {
+		if (Line.SHAPE_SQUARE == pointShape) {
+			canvas.drawRect(rawValueX - pointRadius, rawValueY - pointRadius, rawValueX + pointRadius, rawValueY
+					+ pointRadius, pointPaint);
+		} else {
+			canvas.drawCircle(rawValueX, rawValueY, pointRadius, pointPaint);
 		}
 	}
 

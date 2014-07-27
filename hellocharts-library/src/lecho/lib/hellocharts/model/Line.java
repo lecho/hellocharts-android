@@ -9,9 +9,11 @@ import lecho.lib.hellocharts.util.Utils;
 import android.graphics.Color;
 
 public class Line {
-	public static final int DEFAULT_LINE_STROKE_WIDTH_DP = 3;
-	public static final int DEFAULT_POINT_RADIUS_DP = 6;
-	public static final int DEFAULT_AREA_TRANSPARENCY = 64;
+	public static final int SHAPE_CIRCLE = 1;
+	public static final int SHAPE_SQUARE = 2;
+	private static final int DEFAULT_LINE_STROKE_WIDTH_DP = 3;
+	private static final int DEFAULT_POINT_RADIUS_DP = 6;
+	private static final int DEFAULT_AREA_TRANSPARENCY = 64;
 	private int color = Color.LTGRAY;
 	private int darkenColor = Color.GRAY;
 	private int areaTransparency = DEFAULT_AREA_TRANSPARENCY;
@@ -22,6 +24,7 @@ public class Line {
 	private boolean hasLabels = false;
 	private boolean isSmooth = false;
 	private boolean isFilled = false;
+	private int pointShape = SHAPE_CIRCLE;
 	private ValueFormatter formatter = new NumberValueFormatter();
 	// TODO: consider Collections.emptyList()
 	private List<LinePoint> points = new ArrayList<LinePoint>();
@@ -69,8 +72,9 @@ public class Line {
 		return strokeWidth;
 	}
 
-	public void setStrokeWidth(int strokeWidth) {
+	public Line setStrokeWidth(int strokeWidth) {
 		this.strokeWidth = strokeWidth;
+		return this;
 	}
 
 	public boolean hasPoints() {
@@ -104,8 +108,9 @@ public class Line {
 		return pointRadius;
 	}
 
-	public void setPointRadius(int pointRadius) {
+	public Line setPointRadius(int pointRadius) {
 		this.pointRadius = pointRadius;
+		return this;
 	}
 
 	public boolean isSmooth() {
@@ -123,6 +128,15 @@ public class Line {
 
 	public Line setFilled(boolean isFilled) {
 		this.isFilled = isFilled;
+		return this;
+	}
+
+	public int getPointShape() {
+		return pointShape;
+	}
+
+	public Line setPointShape(int pointShape) {
+		this.pointShape = pointShape;
 		return this;
 	}
 
