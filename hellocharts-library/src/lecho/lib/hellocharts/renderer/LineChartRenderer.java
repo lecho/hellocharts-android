@@ -82,7 +82,7 @@ public class LineChartRenderer implements ChartRenderer {
 		}
 		chart.getChartCalculator().setInternalMargin(calculateContentAreaMargin());
 
-		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getLabelsTextSize()));
+		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));
 		labelPaint.getFontMetricsInt(fontMetrics);
 	}
 

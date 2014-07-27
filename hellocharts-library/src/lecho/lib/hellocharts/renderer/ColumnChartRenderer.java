@@ -80,7 +80,7 @@ public class ColumnChartRenderer implements ChartRenderer {
 		if (isViewportAutoCalculated) {
 			chart.getChartCalculator().calculateViewport(dataBoundaries);
 		}
-		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getLabelsTextSize()));
+		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));
 		labelPaint.getFontMetricsInt(fontMetrics);
 
 	}

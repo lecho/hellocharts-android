@@ -52,7 +52,7 @@ public class AxesRenderer {
 	public void initRenderer() {
 		linePaint.setColor(chart.getChartData().getAxesColor());
 		textPaint.setColor(chart.getChartData().getAxesColor());
-		textPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getAxesTextSize()));
+		textPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getAxesLabelTextSize()));
 		textPaint.getFontMetricsInt(fontMetrics);
 		int axisXHeight = getAxisXHeight(chart.getChartData().getAxisX());
 		int axisYWidth = getAxisYWidth(chart.getChartData().getAxisY());

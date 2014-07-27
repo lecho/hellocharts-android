@@ -7,9 +7,9 @@ public abstract class AbstractChartData implements ChartData {
 	protected Axis mAxisX = new Axis();
 	protected Axis mAxisY = new Axis();
 	protected int axesColor = Color.LTGRAY;
-	protected int axesTextSize = DEFAULT_TEXT_SIZE_SP;
-	protected int labelsTextColor = Color.WHITE;
-	protected int labelsTextSize = DEFAULT_TEXT_SIZE_SP;
+	protected int axesLabelTextSize = DEFAULT_TEXT_SIZE_SP;
+	protected int valueLabelTextColor = Color.WHITE;
+	protected int valueLabelTextSize = DEFAULT_TEXT_SIZE_SP;
 
 	public void setAxisX(Axis axisX) {
 		mAxisX = axisX;
@@ -35,28 +35,28 @@ public abstract class AbstractChartData implements ChartData {
 		this.axesColor = axesColor;
 	}
 
-	public int getAxesTextSize() {
-		return axesTextSize;
+	public int getAxesLabelTextSize() {
+		return axesLabelTextSize;
 	}
 
-	public void setAxesTextSize(int axesTextSize) {
-		this.axesTextSize = axesTextSize;
+	public void setAxesLabelTextSize(int axesLabelTextSize) {
+		this.axesLabelTextSize = axesLabelTextSize;
 	}
 
-	public int getLabelsTextColor() {
-		return labelsTextColor;
+	public int getValueLabelTextColor() {
+		return valueLabelTextColor;
 	}
 
-	public void setLabelsTextColor(int labelsTextColor) {
-		this.labelsTextColor = labelsTextColor;
+	public void setValueLabelsTextColor(int valueLabelTextColor) {
+		this.valueLabelTextColor = valueLabelTextColor;
 	}
 
-	public int getLabelsTextSize() {
-		return labelsTextSize;
+	public int getValueLabelTextSize() {
+		return valueLabelTextSize;
 	}
 
-	public void setLabelsTextSize(int labelsTextSize) {
-		this.labelsTextSize = labelsTextSize;
+	public void setValueLabelTextSize(int valueLabelTextSize) {
+		this.valueLabelTextSize = valueLabelTextSize;
 	}
 
 }

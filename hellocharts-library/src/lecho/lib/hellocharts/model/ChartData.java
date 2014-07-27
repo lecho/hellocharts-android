@@ -14,16 +14,16 @@ public interface ChartData {
 
 	public void setAxesColor(int axesColor);
 
-	public int getAxesTextSize();
+	public int getAxesLabelTextSize();
 
-	public void setAxesTextSize(int axesTextSize);
+	public void setAxesLabelTextSize(int axesTextSize);
 
-	public int getLabelsTextColor();
+	public int getValueLabelTextColor();
 
-	public void setLabelsTextColor(int labelsTextColor);
+	public void setValueLabelsTextColor(int labelsTextColor);
 
-	public int getLabelsTextSize();
+	public int getValueLabelTextSize();
 
-	public void setLabelsTextSize(int labelsTextSize);
+	public void setValueLabelTextSize(int labelsTextSize);
 
 }
