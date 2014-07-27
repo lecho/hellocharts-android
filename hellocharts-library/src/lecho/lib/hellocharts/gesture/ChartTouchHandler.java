@@ -12,7 +12,9 @@ public interface ChartTouchHandler {
 
 	public void setZoomEnabled(boolean isZoomEnabled);
 
-	public void setZoomMode(ZoomMode zoomMode);
+	public void setZoomType(int zoomType);
+
+	public int getZoomType();
 
 	public void setValueTouchEnabled(boolean isValueTouchEnabled);
 }

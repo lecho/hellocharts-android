@@ -8,16 +8,19 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
 public class ChartZoomer {
+	public static final int ZOOM_HORIZONTAL_AND_VERTICAL = 1;
+	public static final int ZOOM_HORIZONTAL = 2;
+	public static final int ZOOM_VERTICAL = 3;
 	public static final float ZOOM_AMOUNT = 0.25f;
 	private ZoomerCompat mZoomer;
-	private ZoomMode mZoomMode;
+	private int zoomType;
 	private PointF mZoomFocalPoint = new PointF();// Used for double tap zoom
 	private PointF mViewportFocus = new PointF();
 	private RectF mScrollerStartViewport = new RectF(); // Used only for zooms and flings
 
-	public ChartZoomer(Context context, ZoomMode zoomType) {
+	public ChartZoomer(Context context, int zoomType) {
 		mZoomer = new ZoomerCompat(context);
-		mZoomMode = zoomType;
+		this.zoomType = zoomType;
 	}
 
 	public boolean startZoom(MotionEvent e, ChartCalculator chartCalculator) {
@@ -80,22 +83,22 @@ public class ChartZoomer {
 	}
 
 	private void setCurrentViewport(ChartCalculator chartCalculator, float left, float top, float right, float bottom) {
-		if (mZoomMode.equals(ZoomMode.HORIZONTAL_AND_VERTICAL) || mZoomMode.equals(ZoomMode.HORIZONTAL)) {
+		if (zoomType == ZOOM_HORIZONTAL_AND_VERTICAL || zoomType == ZOOM_HORIZONTAL) {
 			chartCalculator.mCurrentViewport.left = left;
 			chartCalculator.mCurrentViewport.right = right;
 		}
-		if (mZoomMode.equals(ZoomMode.HORIZONTAL_AND_VERTICAL) || mZoomMode.equals(ZoomMode.VERTICAL)) {
+		if (zoomType == ZOOM_HORIZONTAL_AND_VERTICAL || zoomType == ZOOM_VERTICAL) {
 			chartCalculator.mCurrentViewport.top = top;
 			chartCalculator.mCurrentViewport.bottom = bottom;
 		}
 		chartCalculator.constrainViewport();
 	}
 
-	public ZoomMode getZoomMode() {
-		return mZoomMode;
+	public int getZoomType() {
+		return zoomType;
 	}
 
-	public void setZoomMode(ZoomMode zoomMode) {
-		this.mZoomMode = zoomMode;
+	public void setZoomType(int zoomType) {
+		this.zoomType = zoomType;
 	}
 }

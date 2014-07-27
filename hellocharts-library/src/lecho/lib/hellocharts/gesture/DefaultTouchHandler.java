@@ -24,7 +24,7 @@ public class DefaultTouchHandler implements ChartTouchHandler {
 		mGestureDetector = new GestureDetector(context, new ChartGestureListener());
 		mScaleGestureDetector = new ScaleGestureDetector(context, new ChartScaleGestureListener());
 		mChartScroller = new ChartScroller(context);
-		mChartZoomer = new ChartZoomer(context, ZoomMode.HORIZONTAL_AND_VERTICAL);
+		mChartZoomer = new ChartZoomer(context, ChartZoomer.ZOOM_HORIZONTAL_AND_VERTICAL);
 	}
 
 	public boolean computeScroll() {
@@ -92,8 +92,13 @@ public class DefaultTouchHandler implements ChartTouchHandler {
 	}
 
 	@Override
-	public void setZoomMode(ZoomMode zoomMode) {
-		mChartZoomer.setZoomMode(zoomMode);
+	public void setZoomType(int zoomType) {
+		mChartZoomer.setZoomType(zoomType);
+	}
+
+	@Override
+	public int getZoomType() {
+		return mChartZoomer.getZoomType();
 	}
 
 	@Override

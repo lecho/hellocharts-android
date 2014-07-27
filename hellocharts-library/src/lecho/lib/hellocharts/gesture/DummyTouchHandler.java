@@ -22,9 +22,13 @@ public class DummyTouchHandler implements ChartTouchHandler {
 	}
 
 	@Override
-	public void setZoomMode(ZoomMode zoomMode) {
+	public void setZoomType(int zoomType) {
 		// do nothing
+	}
 
+	@Override
+	public int getZoomType() {
+		return 0;
 	}
 
 	@Override

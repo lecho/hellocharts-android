@@ -1,12 +1,11 @@
 package lecho.lib.hellocharts;
 
-import android.graphics.RectF;
 import lecho.lib.hellocharts.gesture.ChartTouchHandler;
-import lecho.lib.hellocharts.gesture.ZoomMode;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
+import android.graphics.RectF;
 
 public interface Chart {
 
@@ -32,9 +31,9 @@ public interface Chart {
 
 	public void setZoomEnabled(boolean isZoomEnabled);
 
-	public ZoomMode getZoomMode();
+	public int getZoomType();
 
-	public void setZoomMode(ZoomMode zoomMode);
+	public void setZoomType(int zoomType);
 
 	public boolean isValueTouchEnabled();
 

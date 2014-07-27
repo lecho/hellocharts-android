@@ -3,7 +3,7 @@ package lecho.lib.hellocharts.view;
 import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.gesture.ChartTouchHandler;
-import lecho.lib.hellocharts.gesture.ZoomMode;
+import lecho.lib.hellocharts.gesture.ChartZoomer;
 import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
 import android.content.Context;
@@ -20,7 +20,6 @@ public abstract class AbstractChartView extends View implements Chart {
 	protected boolean isInteractive = true;
 	protected boolean isZoomEnabled = true;
 	protected boolean isValueTouchEnabled = true;
-	protected ZoomMode zoomMode = ZoomMode.HORIZONTAL_AND_VERTICAL;
 
 	public AbstractChartView(Context context) {
 		this(context, null, 0);
@@ -76,12 +75,14 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	}
 
-	public ZoomMode getZoomMode() {
-		return zoomMode;
+	@Override
+	public int getZoomType() {
+		return 0;
 	}
 
-	public void setZoomMode(ZoomMode zoomMode) {
-		this.zoomMode = zoomMode;
+	@Override
+	public void setZoomType(int zoomType) {
+
 	}
 
 	@Override
@@ -117,7 +118,7 @@ public abstract class AbstractChartView extends View implements Chart {
 	 */
 	public void zoomIn(float x, float y) {
 		if (mChartCalculator.mCurrentViewport.contains(x, y)) {
-			mTouchHandler.startZoom(x, y, 0.25f);
+			mTouchHandler.startZoom(x, y, ChartZoomer.ZOOM_AMOUNT);
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
 	}
@@ -127,7 +128,7 @@ public abstract class AbstractChartView extends View implements Chart {
 	 */
 	public void zoomOut(float x, float y) {
 		if (mChartCalculator.mCurrentViewport.contains(x, y)) {
-			mTouchHandler.startZoom(x, y, -0.25f);
+			mTouchHandler.startZoom(x, y, -ChartZoomer.ZOOM_AMOUNT);
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
 	}
