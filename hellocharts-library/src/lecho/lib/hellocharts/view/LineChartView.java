@@ -2,6 +2,7 @@ package lecho.lib.hellocharts.view;
 
 import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.LineChartDataProvider;
+import lecho.lib.hellocharts.anim.ChartAnimationListener;
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
@@ -165,6 +166,11 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 	@Override
 	public void startDataAnimation() {
 		mAnimator.startAnimation();
+	}
+
+	@Override
+	public void setChartAnimationListener(ChartAnimationListener animationListener) {
+		mAnimator.setChartAnimationListener(animationListener);
 	}
 
 	public interface LineChartOnValueTouchListener {

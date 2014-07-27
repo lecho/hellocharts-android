@@ -9,10 +9,12 @@ import android.view.animation.LinearInterpolator;
 public class ChartAnimatorV8 implements ChartAnimator {
 
 	long mStart;
+	boolean isAnimationStarted = false;
 	final Chart mChart;
 	final long mDuration;
 	final Handler mHandler;
 	final Interpolator mInterpolator = new LinearInterpolator();
+	private ChartAnimationListener animationListener = new DummyChartAnimationListener();
 	private final Runnable mRunnable = new Runnable() {
 
 		@Override
@@ -24,6 +26,7 @@ public class ChartAnimatorV8 implements ChartAnimator {
 				mHandler.postDelayed(this, 16);
 			} else {
 				mChart.animationDataUpdate(1.0f);
+				isAnimationStarted = false;
 			}
 
 		}
@@ -41,14 +44,30 @@ public class ChartAnimatorV8 implements ChartAnimator {
 
 	@Override
 	public void startAnimation() {
+		isAnimationStarted = true;
+		animationListener.onAnimationStarted();
 		mStart = SystemClock.uptimeMillis();
 		mHandler.post(mRunnable);
-
 	}
 
 	@Override
 	public void cancelAnimation() {
+		isAnimationStarted = false;
 		mHandler.removeCallbacks(mRunnable);
+		animationListener.onAnimationFinished();
 	}
 
+	@Override
+	public boolean isAnimationStarted() {
+		return isAnimationStarted;
+	}
+
+	@Override
+	public void setChartAnimationListener(ChartAnimationListener animationListener) {
+		if (null == animationListener) {
+			this.animationListener = new DummyChartAnimationListener();
+		} else {
+			this.animationListener = animationListener;
+		}
+	}
 }

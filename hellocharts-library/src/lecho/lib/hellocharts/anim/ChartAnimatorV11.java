@@ -13,8 +13,9 @@ public class ChartAnimatorV11 implements ChartAnimator, AnimatorListener, Animat
 	private ValueAnimator mAnimator;
 	private final Chart mChart;
 	private final long mDuration;
+	private ChartAnimationListener animationListener = new DummyChartAnimationListener();
 
-	public ChartAnimatorV11(final Chart chart) {
+	public ChartAnimatorV11(Chart chart) {
 		this(chart, DEFAULT_ANIMATION_DURATION);
 	}
 
@@ -30,12 +31,14 @@ public class ChartAnimatorV11 implements ChartAnimator, AnimatorListener, Animat
 
 	@Override
 	public void startAnimation() {
+		animationListener.onAnimationStarted();
 		mAnimator.start();
 	}
 
 	@Override
 	public void cancelAnimation() {
 		mAnimator.cancel();
+		animationListener.onAnimationFinished();
 	}
 
 	@Override
@@ -45,11 +48,13 @@ public class ChartAnimatorV11 implements ChartAnimator, AnimatorListener, Animat
 
 	@Override
 	public void onAnimationCancel(Animator animation) {
+		animationListener.onAnimationFinished();
 	}
 
 	@Override
 	public void onAnimationEnd(Animator animation) {
 		mChart.animationDataUpdate(1.0f);
+		animationListener.onAnimationFinished();
 	}
 
 	@Override
@@ -58,6 +63,20 @@ public class ChartAnimatorV11 implements ChartAnimator, AnimatorListener, Animat
 
 	@Override
 	public void onAnimationStart(Animator animation) {
+	}
+
+	@Override
+	public boolean isAnimationStarted() {
+		return mAnimator.isStarted();
+	}
+
+	@Override
+	public void setChartAnimationListener(ChartAnimationListener animationListener) {
+		if (null == animationListener) {
+			this.animationListener = new DummyChartAnimationListener();
+		} else {
+			this.animationListener = animationListener;
+		}
 	}
 
 }

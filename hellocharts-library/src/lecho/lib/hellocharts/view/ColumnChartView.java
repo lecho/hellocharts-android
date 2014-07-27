@@ -2,6 +2,7 @@ package lecho.lib.hellocharts.view;
 
 import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.ColumnChartDataProvider;
+import lecho.lib.hellocharts.anim.ChartAnimationListener;
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
@@ -148,6 +149,11 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 		mAnimator.startAnimation();
 	}
 
+	@Override
+	public void setChartAnimationListener(ChartAnimationListener animationListener) {
+		mAnimator.setChartAnimationListener(animationListener);
+	}
+
 	public interface BarChartOnValueTouchListener {
 		public void onValueTouched(int selectedLine, int selectedValue, ColumnValue point);
 	}
@@ -159,4 +165,5 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 			// do nothing
 		}
 	}
+
 }

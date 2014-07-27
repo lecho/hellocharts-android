@@ -8,4 +8,8 @@ public interface ChartAnimator {
 
 	public void cancelAnimation();
 
+	public boolean isAnimationStarted();
+
+	public void setChartAnimationListener(ChartAnimationListener animationListener);
+
 }
