@@ -77,12 +77,12 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	@Override
 	public int getZoomType() {
-		return 0;
+		return mTouchHandler.getZoomType();
 	}
 
 	@Override
 	public void setZoomType(int zoomType) {
-
+		mTouchHandler.setZoomType(zoomType);
 	}
 
 	@Override
