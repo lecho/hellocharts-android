@@ -32,4 +32,10 @@ public class DummyTouchHandler implements ChartTouchHandler {
 		// do nothing
 
 	}
+
+	@Override
+	public void startZoom(float x, float y, float zoom) {
+		// TODO Auto-generated method stub
+
+	}
 }

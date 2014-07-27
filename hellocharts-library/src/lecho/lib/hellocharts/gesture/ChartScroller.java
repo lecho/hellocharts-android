@@ -8,9 +8,9 @@ import android.support.v4.widget.ScrollerCompat;
 
 public class ChartScroller {
 
-	public RectF mScrollerStartViewport = new RectF(); // Used only for zooms and flings
+	private RectF mScrollerStartViewport = new RectF(); // Used only for zooms and flings
 	private Point mSurfaceSizeBuffer = new Point();// Used for scroll and flings
-	public ScrollerCompat mScroller;
+	private ScrollerCompat mScroller;
 
 	public ChartScroller(Context context) {
 		mScroller = ScrollerCompat.create(context);

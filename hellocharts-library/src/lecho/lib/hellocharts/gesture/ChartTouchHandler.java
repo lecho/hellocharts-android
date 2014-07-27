@@ -8,6 +8,8 @@ public interface ChartTouchHandler {
 
 	public boolean handleTouchEvent(MotionEvent event);
 
+	public void startZoom(float x, float y, float zoom);
+
 	public void setZoomEnabled(boolean isZoomEnabled);
 
 	public void setZoomMode(ZoomMode zoomMode);

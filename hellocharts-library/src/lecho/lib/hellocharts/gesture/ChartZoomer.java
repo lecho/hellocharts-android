@@ -8,12 +8,12 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
 public class ChartZoomer {
-	private static final float ZOOM_AMOUNT = 0.25f;
+	public static final float ZOOM_AMOUNT = 0.25f;
 	private ZoomerCompat mZoomer;
 	private ZoomMode mZoomMode;
 	private PointF mZoomFocalPoint = new PointF();// Used for double tap zoom
 	private PointF mViewportFocus = new PointF();
-	public RectF mScrollerStartViewport = new RectF(); // Used only for zooms and flings
+	private RectF mScrollerStartViewport = new RectF(); // Used only for zooms and flings
 
 	public ChartZoomer(Context context, ZoomMode zoomType) {
 		mZoomer = new ZoomerCompat(context);
@@ -26,6 +26,14 @@ public class ChartZoomer {
 		if (chartCalculator.rawPixelsToDataPoint(e.getX(), e.getY(), mZoomFocalPoint)) {
 			mZoomer.startZoom(ZOOM_AMOUNT);
 		}
+		return true;
+	}
+
+	public boolean startZoom(float x, float y, float zoom, ChartCalculator chartCalculator) {
+		mZoomer.forceFinished(true);
+		mScrollerStartViewport.set(chartCalculator.mCurrentViewport);
+		mZoomFocalPoint.set(x, y);
+		mZoomer.startZoom(zoom);
 		return true;
 	}
 

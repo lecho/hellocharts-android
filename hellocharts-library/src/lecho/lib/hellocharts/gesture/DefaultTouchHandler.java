@@ -101,6 +101,12 @@ public class DefaultTouchHandler implements ChartTouchHandler {
 		this.isValueTouchEnabled = isValueTouchEnable;
 	}
 
+	@Override
+	public void startZoom(float x, float y, float zoom) {
+		mChartZoomer.startZoom(x, y, zoom, mChart.getChartCalculator());
+
+	}
+
 	private class ChartScaleGestureListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
 
 		@Override
