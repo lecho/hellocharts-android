@@ -7,6 +7,7 @@ import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
 import lecho.lib.hellocharts.gesture.DefaultTouchHandler;
 import lecho.lib.hellocharts.model.ChartData;
+import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.LinePoint;
 import lecho.lib.hellocharts.model.SelectedValue;
@@ -114,17 +115,9 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 		return mData;
 	}
 
+	@Override
 	public ChartData getChartData() {
 		return mData;
-	}
-
-	public void animationUpdate(float scale) {
-		// for (LinePoint animatedPoint : mData.lines.get(0).getPoints()) {
-		// animatedPoint.update(scale);
-		// }
-		// mData.calculateBoundaries();
-		// mChartCalculator.calculateViewport();
-		// ViewCompat.postInvalidateOnAnimation(LineChartView.this);
 	}
 
 	@Override
@@ -156,6 +149,18 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 		} else {
 			this.onValueTouchListener = touchListener;
 		}
+	}
+
+	@Override
+	public void animationUpdate(float scale) {
+		for (Line line : mData.lines) {
+			for (LinePoint point : line.getPoints()) {
+				point.update(scale);
+			}
+		}
+		mChartRenderer.initRenderer();
+		mAxesRenderer.initRenderer();
+		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
 	public interface LineChartOnValueTouchListener {

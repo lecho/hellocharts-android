@@ -97,12 +97,6 @@ public abstract class AbstractChartView extends View implements Chart {
 	}
 
 	@Override
-	public void animationUpdate(float scale) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void setViewport(RectF viewport) {
 		mChartRenderer.setViewport(viewport);
 		ViewCompat.postInvalidateOnAnimation(this);
@@ -132,4 +126,5 @@ public abstract class AbstractChartView extends View implements Chart {
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
 	}
+
 }

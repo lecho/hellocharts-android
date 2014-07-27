@@ -6,6 +6,7 @@ import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
 import lecho.lib.hellocharts.gesture.DefaultTouchHandler;
+import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.ColumnValue;
 import lecho.lib.hellocharts.model.SelectedValue;
@@ -107,32 +108,10 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 
 	}
 
+	@Override
 	public ColumnChartData getChartData() {
 		return mData;
 	}
-
-	public void animationUpdate(float scale) {
-		// for (AnimatedPoint animatedPoint : mData.lines.get(0).animatedPoints)
-		// {
-		// animatedPoint.update(scale);
-		// }
-		// mData.calculateBoundaries();
-		// mChartCalculator.calculateViewport();
-		// ViewCompat.postInvalidateOnAnimation(BarChart.this);
-	}
-
-	// public void animateSeries(int index,
-	// List<lecho.lib.hellocharts.model.Point> points) {
-	// mAnimator.cancelAnimation();
-	// mData.updateLineTarget(index, points);
-	// mAnimator.startAnimation();
-	// }
-	//
-	// public void updateSeries(int index,
-	// List<lecho.lib.hellocharts.model.Point> points) {
-	// mData.updateLine(index, points);
-	// ViewCompat.postInvalidateOnAnimation(BarChart.this);
-	// }
 
 	@Override
 	public void callTouchListener(SelectedValue selectedValue) {
@@ -151,6 +130,18 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 		} else {
 			this.onValueTouchListener = touchListener;
 		}
+	}
+
+	@Override
+	public void animationUpdate(float scale) {
+		for (Column column : mData.getColumns()) {
+			for (ColumnValue value : column.getValues()) {
+				value.update(scale);
+			}
+		}
+		mChartRenderer.initRenderer();
+		mAxesRenderer.initRenderer();
+		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
 	public interface BarChartOnValueTouchListener {
