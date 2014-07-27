@@ -4,27 +4,27 @@ import android.graphics.Color;
 
 public abstract class AbstractChartData implements ChartData {
 	public static final int DEFAULT_TEXT_SIZE_SP = 12;
-	protected Axis mAxisX = new Axis();
-	protected Axis mAxisY = new Axis();
+	protected Axis axisX = new Axis();
+	protected Axis axisY = new Axis();
 	protected int axesColor = Color.LTGRAY;
 	protected int axesLabelTextSize = DEFAULT_TEXT_SIZE_SP;
 	protected int valueLabelTextColor = Color.WHITE;
 	protected int valueLabelTextSize = DEFAULT_TEXT_SIZE_SP;
 
 	public void setAxisX(Axis axisX) {
-		mAxisX = axisX;
+		this.axisX = axisX;
 	}
 
 	public Axis getAxisX() {
-		return mAxisX;
+		return axisX;
 	}
 
 	public void setAxisY(Axis axisY) {
-		mAxisY = axisY;
+		this.axisY = axisY;
 	}
 
 	public Axis getAxisY() {
-		return mAxisY;
+		return axisY;
 	}
 
 	public int getAxesColor() {

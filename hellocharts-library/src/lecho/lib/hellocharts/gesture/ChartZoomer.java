@@ -12,49 +12,49 @@ public class ChartZoomer {
 	public static final int ZOOM_HORIZONTAL = 2;
 	public static final int ZOOM_VERTICAL = 3;
 	public static final float ZOOM_AMOUNT = 0.25f;
-	private ZoomerCompat mZoomer;
+	private ZoomerCompat zoomer;
 	private int zoomType;
-	private PointF mZoomFocalPoint = new PointF();// Used for double tap zoom
-	private PointF mViewportFocus = new PointF();
-	private RectF mScrollerStartViewport = new RectF(); // Used only for zooms and flings
+	private PointF zoomFocalPoint = new PointF();// Used for double tap zoom
+	private PointF viewportFocus = new PointF();
+	private RectF scrollerStartViewport = new RectF(); // Used only for zooms and flings
 
 	public ChartZoomer(Context context, int zoomType) {
-		mZoomer = new ZoomerCompat(context);
+		zoomer = new ZoomerCompat(context);
 		this.zoomType = zoomType;
 	}
 
 	public boolean startZoom(MotionEvent e, ChartCalculator chartCalculator) {
-		mZoomer.forceFinished(true);
-		mScrollerStartViewport.set(chartCalculator.mCurrentViewport);
-		if (chartCalculator.rawPixelsToDataPoint(e.getX(), e.getY(), mZoomFocalPoint)) {
-			mZoomer.startZoom(ZOOM_AMOUNT);
+		zoomer.forceFinished(true);
+		scrollerStartViewport.set(chartCalculator.mCurrentViewport);
+		if (chartCalculator.rawPixelsToDataPoint(e.getX(), e.getY(), zoomFocalPoint)) {
+			zoomer.startZoom(ZOOM_AMOUNT);
 		}
 		return true;
 	}
 
 	public boolean startZoom(float x, float y, float zoom, ChartCalculator chartCalculator) {
-		mZoomer.forceFinished(true);
-		mScrollerStartViewport.set(chartCalculator.mCurrentViewport);
-		mZoomFocalPoint.set(x, y);
-		mZoomer.startZoom(zoom);
+		zoomer.forceFinished(true);
+		scrollerStartViewport.set(chartCalculator.mCurrentViewport);
+		zoomFocalPoint.set(x, y);
+		zoomer.startZoom(zoom);
 		return true;
 	}
 
 	public boolean computeZoom(ChartCalculator chartCalculator) {
-		if (mZoomer.computeZoom()) {
+		if (zoomer.computeZoom()) {
 			// Performs the zoom since a zoom is in progress (either programmatically or via
 			// double-touch).
-			final float newWidth = (1.0f - mZoomer.getCurrZoom()) * mScrollerStartViewport.width();
-			final float newHeight = (1.0f - mZoomer.getCurrZoom()) * mScrollerStartViewport.height();
-			final float pointWithinViewportX = (mZoomFocalPoint.x - mScrollerStartViewport.left)
-					/ mScrollerStartViewport.width();
-			final float pointWithinViewportY = (mZoomFocalPoint.y - mScrollerStartViewport.top)
-					/ mScrollerStartViewport.height();
+			final float newWidth = (1.0f - zoomer.getCurrZoom()) * scrollerStartViewport.width();
+			final float newHeight = (1.0f - zoomer.getCurrZoom()) * scrollerStartViewport.height();
+			final float pointWithinViewportX = (zoomFocalPoint.x - scrollerStartViewport.left)
+					/ scrollerStartViewport.width();
+			final float pointWithinViewportY = (zoomFocalPoint.y - scrollerStartViewport.top)
+					/ scrollerStartViewport.height();
 
-			float left = mZoomFocalPoint.x - newWidth * pointWithinViewportX;
-			float top = mZoomFocalPoint.y - newHeight * pointWithinViewportY;
-			float right = mZoomFocalPoint.x + newWidth * (1 - pointWithinViewportX);
-			float bottom = mZoomFocalPoint.y + newHeight * (1 - pointWithinViewportY);
+			float left = zoomFocalPoint.x - newWidth * pointWithinViewportX;
+			float top = zoomFocalPoint.y - newHeight * pointWithinViewportY;
+			float right = zoomFocalPoint.x + newWidth * (1 - pointWithinViewportX);
+			float bottom = zoomFocalPoint.y + newHeight * (1 - pointWithinViewportY);
 			setCurrentViewport(chartCalculator, left, top, right, bottom);
 			return true;
 		}
@@ -70,11 +70,11 @@ public class ChartZoomer {
 		final float newHeight = scale * chartCalculator.mCurrentViewport.height();
 		final float focusX = detector.getFocusX();
 		final float focusY = detector.getFocusY();
-		chartCalculator.rawPixelsToDataPoint(focusX, focusY, mViewportFocus);
+		chartCalculator.rawPixelsToDataPoint(focusX, focusY, viewportFocus);
 
-		float left = mViewportFocus.x - (focusX - chartCalculator.mContentRect.left)
+		float left = viewportFocus.x - (focusX - chartCalculator.mContentRect.left)
 				* (newWidth / chartCalculator.mContentRect.width());
-		float top = mViewportFocus.y - (chartCalculator.mContentRect.bottom - focusY)
+		float top = viewportFocus.y - (chartCalculator.mContentRect.bottom - focusY)
 				* (newHeight / chartCalculator.mContentRect.height());
 		float right = left + newWidth;
 		float bottom = top + newHeight;

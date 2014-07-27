@@ -23,8 +23,8 @@ import android.view.MotionEvent;
 
 public class ColumnChartView extends AbstractChartView implements ColumnChartDataProvider {
 	private static final String TAG = "BarChart";
-	private ColumnChartData mData;
-	private ChartAnimator mAnimator;
+	private ColumnChartData data;
+	private ChartAnimator animator;
 	private BarChartOnValueTouchListener onValueTouchListener = new DummyOnValueTouchListener();
 
 	public ColumnChartView(Context context) {
@@ -46,9 +46,9 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 
 	private void initAnimatiors() {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-			mAnimator = new ChartAnimatorV8(this);
+			animator = new ChartAnimatorV8(this);
 		} else {
-			mAnimator = new ChartAnimatorV11(this);
+			animator = new ChartAnimatorV11(this);
 		}
 	}
 
@@ -94,12 +94,12 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 
 	@Override
 	public ColumnChartData getColumnChartData() {
-		return mData;
+		return data;
 	}
 
 	@Override
 	public void setColumnChartData(ColumnChartData data) {
-		mData = data;
+		this.data = data;
 		chartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
 		chartRenderer.initRenderer();
@@ -111,12 +111,12 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 
 	@Override
 	public ColumnChartData getChartData() {
-		return mData;
+		return data;
 	}
 
 	@Override
 	public void callTouchListener(SelectedValue selectedValue) {
-		ColumnValue value = mData.getColumns().get(selectedValue.firstIndex).getValues().get(selectedValue.secondIndex);
+		ColumnValue value = data.getColumns().get(selectedValue.firstIndex).getValues().get(selectedValue.secondIndex);
 		onValueTouchListener.onValueTouched(selectedValue.firstIndex, selectedValue.secondIndex, value);
 
 	}
@@ -135,7 +135,7 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 
 	@Override
 	public void animationDataUpdate(float scale) {
-		for (Column column : mData.getColumns()) {
+		for (Column column : data.getColumns()) {
 			for (ColumnValue value : column.getValues()) {
 				value.update(scale);
 			}
@@ -146,12 +146,12 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 
 	@Override
 	public void startDataAnimation() {
-		mAnimator.startAnimation();
+		animator.startAnimation();
 	}
 
 	@Override
 	public void setChartAnimationListener(ChartAnimationListener animationListener) {
-		mAnimator.setChartAnimationListener(animationListener);
+		animator.setChartAnimationListener(animationListener);
 	}
 
 	public interface BarChartOnValueTouchListener {

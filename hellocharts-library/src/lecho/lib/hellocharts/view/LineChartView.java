@@ -25,8 +25,8 @@ import android.view.MotionEvent;
 
 public class LineChartView extends AbstractChartView implements LineChartDataProvider {
 	private static final String TAG = "LineChart";
-	private LineChartData mData;
-	private ChartAnimator mAnimator;
+	private LineChartData data;
+	private ChartAnimator animator;
 	private LineChartOnValueTouchListener onValueTouchListener = new DummyOnValueTouchListener();
 
 	public LineChartView(Context context) {
@@ -56,9 +56,9 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 
 	private void initAnimatiors() {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			mAnimator = new ChartAnimatorV11(this);
+			animator = new ChartAnimatorV11(this);
 		} else {
-			mAnimator = new ChartAnimatorV8(this);
+			animator = new ChartAnimatorV8(this);
 		}
 	}
 
@@ -102,7 +102,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 	}
 
 	public void setLineChartData(LineChartData data) {
-		mData = data;
+		this.data = data;
 		chartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
 		chartRenderer.initRenderer();
@@ -113,17 +113,17 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 
 	@Override
 	public LineChartData getLineChartData() {
-		return mData;
+		return data;
 	}
 
 	@Override
 	public ChartData getChartData() {
-		return mData;
+		return data;
 	}
 
 	@Override
 	public void callTouchListener(SelectedValue selectedValue) {
-		LinePoint point = mData.lines.get(selectedValue.firstIndex).getPoints().get(selectedValue.secondIndex);
+		LinePoint point = data.lines.get(selectedValue.firstIndex).getPoints().get(selectedValue.secondIndex);
 		onValueTouchListener.onValueTouched(selectedValue.firstIndex, selectedValue.secondIndex, point);
 	}
 
@@ -141,7 +141,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 
 	@Override
 	public void animationDataUpdate(float scale) {
-		for (Line line : mData.lines) {
+		for (Line line : data.lines) {
 			for (LinePoint point : line.getPoints()) {
 				point.update(scale);
 			}
@@ -152,12 +152,12 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 
 	@Override
 	public void startDataAnimation() {
-		mAnimator.startAnimation();
+		animator.startAnimation();
 	}
 
 	@Override
 	public void setChartAnimationListener(ChartAnimationListener animationListener) {
-		mAnimator.setChartAnimationListener(animationListener);
+		animator.setChartAnimationListener(animationListener);
 	}
 
 	public interface LineChartOnValueTouchListener {

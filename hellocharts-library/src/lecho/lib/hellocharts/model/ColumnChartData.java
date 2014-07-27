@@ -6,7 +6,7 @@ import java.util.List;
 public class ColumnChartData extends AbstractChartData {
 	public static final float DEFAULT_FILL_RATIO = 0.75f;
 	private List<Column> columns = new ArrayList<Column>();
-	private boolean mIsStacked = false;
+	private boolean isStacked = false;
 	private float fillRatio = DEFAULT_FILL_RATIO;
 
 	public List<Column> getColumns() {
@@ -22,11 +22,11 @@ public class ColumnChartData extends AbstractChartData {
 	}
 
 	public boolean isStacked() {
-		return mIsStacked;
+		return isStacked;
 	}
 
 	public void setStacked(boolean isStacked) {
-		this.mIsStacked = isStacked;
+		this.isStacked = isStacked;
 	}
 
 	public float getFillRatio() {
