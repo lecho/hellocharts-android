@@ -10,6 +10,7 @@ public abstract class AbstractChartData implements ChartData {
 	protected int axesLabelTextSize = DEFAULT_TEXT_SIZE_SP;
 	protected int valueLabelTextColor = Color.WHITE;
 	protected int valueLabelTextSize = DEFAULT_TEXT_SIZE_SP;
+	protected int maxLabelChars = 5;
 
 	public void setAxisX(Axis axisX) {
 		this.axisX = axisX;
@@ -57,6 +58,21 @@ public abstract class AbstractChartData implements ChartData {
 
 	public void setValueLabelTextSize(int valueLabelTextSize) {
 		this.valueLabelTextSize = valueLabelTextSize;
+	}
+
+	@Override
+	public void setMaxLabelChars(int numChars) {
+		if (numChars < 0) {
+			numChars = 0;
+		} else if (numChars > 16) {
+			numChars = 16;
+		}
+		maxLabelChars = numChars;
+	}
+
+	@Override
+	public int getMaxLabelChars() {
+		return maxLabelChars;
 	}
 
 }

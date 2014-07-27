@@ -26,4 +26,8 @@ public interface ChartData {
 
 	public void setValueLabelTextSize(int labelsTextSize);
 
+	public void setMaxLabelChars(int numChars);
+
+	public int getMaxLabelChars();
+
 }
