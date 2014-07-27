@@ -6,7 +6,7 @@ import lecho.lib.hellocharts.anim.ChartAnimationListener;
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
-import lecho.lib.hellocharts.gesture.DefaultTouchHandler;
+import lecho.lib.hellocharts.gesture.ChartTouchHandler;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
@@ -41,10 +41,10 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 		super(context, attrs, defStyle);
 		initAttributes();
 		initAnimatiors();
-		mChartCalculator = new ChartCalculator();
-		mAxesRenderer = new AxesRenderer(context, this);
-		mChartRenderer = new LineChartRenderer(context, this, this);
-		mTouchHandler = new DefaultTouchHandler(context, this);
+		chartCalculator = new ChartCalculator();
+		axesRenderer = new AxesRenderer(context, this);
+		chartRenderer = new LineChartRenderer(context, this, this);
+		touchHandler = new ChartTouchHandler(context, this);
 	}
 
 	@SuppressLint("NewApi")
@@ -65,29 +65,29 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 	@Override
 	protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
-		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
+		chartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
-		mChartRenderer.initRenderer();
-		mAxesRenderer.initRenderer();
+		chartRenderer.initRenderer();
+		axesRenderer.initRenderer();
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
 		super.onDraw(canvas);
-		mAxesRenderer.draw(canvas);
+		axesRenderer.draw(canvas);
 		int clipRestoreCount = canvas.save();
-		canvas.clipRect(mChartCalculator.mContentRect);
-		mChartRenderer.draw(canvas);
+		canvas.clipRect(chartCalculator.mContentRect);
+		chartRenderer.draw(canvas);
 		canvas.restoreToCount(clipRestoreCount);
-		mChartRenderer.drawUnclipped(canvas);
+		chartRenderer.drawUnclipped(canvas);
 		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000.0);
 	}
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		super.onTouchEvent(event);
-		if (mTouchHandler.handleTouchEvent(event)) {
+		if (touchHandler.handleTouchEvent(event)) {
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
 		return true;
@@ -96,17 +96,17 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 	@Override
 	public void computeScroll() {
 		super.computeScroll();
-		if (mTouchHandler.computeScroll()) {
+		if (touchHandler.computeScroll()) {
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
 	}
 
 	public void setLineChartData(LineChartData data) {
 		mData = data;
-		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
+		chartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
-		mChartRenderer.initRenderer();
-		mAxesRenderer.initRenderer();
+		chartRenderer.initRenderer();
+		axesRenderer.initRenderer();
 
 		ViewCompat.postInvalidateOnAnimation(LineChartView.this);
 	}
@@ -146,7 +146,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 				point.update(scale);
 			}
 		}
-		mChartRenderer.fastInitRenderer();
+		chartRenderer.fastInitRenderer();
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 

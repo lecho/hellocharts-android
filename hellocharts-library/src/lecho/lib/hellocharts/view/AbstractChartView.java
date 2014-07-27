@@ -13,13 +13,10 @@ import android.util.AttributeSet;
 import android.view.View;
 
 public abstract class AbstractChartView extends View implements Chart {
-	protected ChartCalculator mChartCalculator;
-	protected AxesRenderer mAxesRenderer;
-	protected ChartTouchHandler mTouchHandler;
-	protected ChartRenderer mChartRenderer;
-	protected boolean isInteractive = true;
-	protected boolean isZoomEnabled = true;
-	protected boolean isValueTouchEnabled = true;
+	protected ChartCalculator chartCalculator;
+	protected AxesRenderer axesRenderer;
+	protected ChartTouchHandler touchHandler;
+	protected ChartRenderer chartRenderer;
 
 	public AbstractChartView(Context context) {
 		this(context, null, 0);
@@ -34,71 +31,71 @@ public abstract class AbstractChartView extends View implements Chart {
 	}
 
 	public ChartRenderer getChartRenderer() {
-		return mChartRenderer;
+		return chartRenderer;
 	}
 
 	public AxesRenderer getAxesRenderer() {
-		return mAxesRenderer;
+		return axesRenderer;
 	}
 
 	public ChartCalculator getChartCalculator() {
-		return mChartCalculator;
+		return chartCalculator;
 	}
 
 	public ChartTouchHandler getTouchHandler() {
-		return mTouchHandler;
+		return touchHandler;
 	}
 
 	public boolean isInteractive() {
-		return isInteractive;
+		return touchHandler.isInteractive();
 	}
 
 	public void setInteractive(boolean isInteractive) {
-		this.isInteractive = isInteractive;
+		touchHandler.setInteractive(isInteractive);
 	}
 
 	public boolean isZoomEnabled() {
-		return isZoomEnabled;
+		return touchHandler.isZoomEnabled();
 	}
 
 	public void setZoomEnabled(boolean isZoomEnabled) {
-		this.isZoomEnabled = isZoomEnabled;
+		touchHandler.setZoomEnabled(isZoomEnabled);
 	}
 
 	public boolean isValueTouchEnabled() {
-		return isValueTouchEnabled;
+		return touchHandler.isValueTouchEnabled();
 	}
 
 	@Override
 	public void setValueTouchEnabled(boolean isValueTouchEnabled) {
-		this.isValueTouchEnabled = isValueTouchEnabled;
+		touchHandler.setValueTouchEnabled(isValueTouchEnabled);
 
 	}
 
 	@Override
 	public int getZoomType() {
-		return mTouchHandler.getZoomType();
+		return touchHandler.getZoomType();
 	}
 
 	@Override
 	public void setZoomType(int zoomType) {
-		mTouchHandler.setZoomType(zoomType);
+		touchHandler.setZoomType(zoomType);
 	}
 
 	@Override
 	public void setDataBoundaries(RectF dataBoundaries) {
-		mChartRenderer.setDataBoundaries(dataBoundaries);
+		chartRenderer.setDataBoundaries(dataBoundaries);
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
 	@Override
 	public RectF getDataBoundaries() {
-		return mChartRenderer.getDataBoundaries();
+		return chartRenderer.getDataBoundaries();
 	}
 
 	@Override
 	public void setViewport(RectF viewport) {
-		mChartRenderer.setViewport(viewport);
+		chartRenderer.setViewport(viewport);
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
@@ -111,8 +108,8 @@ public abstract class AbstractChartView extends View implements Chart {
 	 * Smoothly zooms the chart in one step.
 	 */
 	public void zoomIn(float x, float y) {
-		if (mChartCalculator.mCurrentViewport.contains(x, y)) {
-			mTouchHandler.startZoom(x, y, ChartZoomer.ZOOM_AMOUNT);
+		if (chartCalculator.mCurrentViewport.contains(x, y)) {
+			touchHandler.startZoom(x, y, ChartZoomer.ZOOM_AMOUNT);
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
 	}
@@ -121,8 +118,8 @@ public abstract class AbstractChartView extends View implements Chart {
 	 * Smoothly zooms the chart out one step.
 	 */
 	public void zoomOut(float x, float y) {
-		if (mChartCalculator.mCurrentViewport.contains(x, y)) {
-			mTouchHandler.startZoom(x, y, -ChartZoomer.ZOOM_AMOUNT);
+		if (chartCalculator.mCurrentViewport.contains(x, y)) {
+			touchHandler.startZoom(x, y, -ChartZoomer.ZOOM_AMOUNT);
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
 	}

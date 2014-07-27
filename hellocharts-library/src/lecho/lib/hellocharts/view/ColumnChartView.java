@@ -6,7 +6,7 @@ import lecho.lib.hellocharts.anim.ChartAnimationListener;
 import lecho.lib.hellocharts.anim.ChartAnimator;
 import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
-import lecho.lib.hellocharts.gesture.DefaultTouchHandler;
+import lecho.lib.hellocharts.gesture.ChartTouchHandler;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.ColumnValue;
@@ -38,10 +38,10 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 	public ColumnChartView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		initAnimatiors();
-		mChartCalculator = new ChartCalculator();
-		mChartRenderer = new ColumnChartRenderer(context, this, this);
-		mAxesRenderer = new AxesRenderer(context, this);
-		mTouchHandler = new DefaultTouchHandler(context, this);
+		chartCalculator = new ChartCalculator();
+		chartRenderer = new ColumnChartRenderer(context, this, this);
+		axesRenderer = new AxesRenderer(context, this);
+		touchHandler = new ChartTouchHandler(context, this);
 	}
 
 	private void initAnimatiors() {
@@ -56,29 +56,29 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 	protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
 		// TODO mPointRadus can change, recalculate in setter
-		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
+		chartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
-		mChartRenderer.initRenderer();
-		mAxesRenderer.initRenderer();
+		chartRenderer.initRenderer();
+		axesRenderer.initRenderer();
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
 		super.onDraw(canvas);
-		mAxesRenderer.draw(canvas);
+		axesRenderer.draw(canvas);
 		int clipRestoreCount = canvas.save();
-		canvas.clipRect(mChartCalculator.mContentRect);
-		mChartRenderer.draw(canvas);
+		canvas.clipRect(chartCalculator.mContentRect);
+		chartRenderer.draw(canvas);
 		canvas.restoreToCount(clipRestoreCount);
-		mChartRenderer.drawUnclipped(canvas);
+		chartRenderer.drawUnclipped(canvas);
 		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
 	}
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		super.onTouchEvent(event);
-		if (mTouchHandler.handleTouchEvent(event)) {
+		if (touchHandler.handleTouchEvent(event)) {
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
 		return true;
@@ -87,7 +87,7 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 	@Override
 	public void computeScroll() {
 		super.computeScroll();
-		if (mTouchHandler.computeScroll()) {
+		if (touchHandler.computeScroll()) {
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
 	}
@@ -100,10 +100,10 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 	@Override
 	public void setColumnChartData(ColumnChartData data) {
 		mData = data;
-		mChartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
+		chartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
-		mChartRenderer.initRenderer();
-		mAxesRenderer.initRenderer();
+		chartRenderer.initRenderer();
+		axesRenderer.initRenderer();
 
 		ViewCompat.postInvalidateOnAnimation(ColumnChartView.this);
 
@@ -140,7 +140,7 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 				value.update(scale);
 			}
 		}
-		mChartRenderer.fastInitRenderer();
+		chartRenderer.fastInitRenderer();
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
