@@ -1,5 +1,8 @@
 package lecho.lib.hellocharts.view;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.ColumnChartDataProvider;
 import lecho.lib.hellocharts.anim.ChartAnimationListener;
@@ -42,6 +45,7 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 		chartRenderer = new ColumnChartRenderer(context, this, this);
 		axesRenderer = new AxesRenderer(context, this);
 		touchHandler = new ChartTouchHandler(context, this);
+		setColumnChartData(generateDummyData());
 	}
 
 	private void initAnimatiors() {
@@ -99,7 +103,11 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 
 	@Override
 	public void setColumnChartData(ColumnChartData data) {
-		this.data = data;
+		if (null == data) {
+			this.data = generateDummyData();
+		} else {
+			this.data = data;
+		}
 		chartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
 		chartRenderer.initRenderer();
@@ -152,6 +160,20 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 	@Override
 	public void setChartAnimationListener(ChartAnimationListener animationListener) {
 		animator.setChartAnimationListener(animationListener);
+	}
+
+	private ColumnChartData generateDummyData() {
+		final int numValues = 4;
+		ColumnChartData data = new ColumnChartData();
+		List<ColumnValue> values = new ArrayList<ColumnValue>(numValues);
+		for (int i = 1; i <= numValues; ++i) {
+			values.add(new ColumnValue(i));
+		}
+		Column column = new Column(values);
+		List<Column> columns = new ArrayList<Column>(1);
+		columns.add(column);
+		data.setColumns(columns);
+		return data;
 	}
 
 	public interface ColumnChartOnValueTouchListener {

@@ -1,5 +1,8 @@
 package lecho.lib.hellocharts.view;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.LineChartDataProvider;
 import lecho.lib.hellocharts.anim.ChartAnimationListener;
@@ -8,6 +11,9 @@ import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
 import lecho.lib.hellocharts.gesture.ChartTouchHandler;
 import lecho.lib.hellocharts.model.ChartData;
+import lecho.lib.hellocharts.model.Column;
+import lecho.lib.hellocharts.model.ColumnChartData;
+import lecho.lib.hellocharts.model.ColumnValue;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.LinePoint;
@@ -45,6 +51,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 		axesRenderer = new AxesRenderer(context, this);
 		chartRenderer = new LineChartRenderer(context, this, this);
 		touchHandler = new ChartTouchHandler(context, this);
+		setLineChartData(generateDummyData());
 	}
 
 	@SuppressLint("NewApi")
@@ -102,7 +109,11 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 	}
 
 	public void setLineChartData(LineChartData data) {
-		this.data = data;
+		if (null == data) {
+			this.data = generateDummyData();
+		} else {
+			this.data = data;
+		}
 		chartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
 		chartRenderer.initRenderer();
@@ -158,6 +169,20 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 	@Override
 	public void setChartAnimationListener(ChartAnimationListener animationListener) {
 		animator.setChartAnimationListener(animationListener);
+	}
+
+	private LineChartData generateDummyData() {
+		final int numValues = 2;
+		LineChartData data = new LineChartData();
+		List<LinePoint> values = new ArrayList<LinePoint>(numValues);
+		for (int i = 1; i <= numValues; ++i) {
+			values.add(new LinePoint(i, i));
+		}
+		Line line = new Line(values);
+		List<Line> lines = new ArrayList<Line>(1);
+		lines.add(line);
+		data.lines = lines;
+		return data;
 	}
 
 	public interface LineChartOnValueTouchListener {
