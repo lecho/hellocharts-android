@@ -39,6 +39,7 @@ public class LineChartRenderer implements ChartRenderer {
 	private Paint labelPaint = new Paint();
 	private RectF labelRect = new RectF();
 	private SelectedValue selectedValue = new SelectedValue();
+	private SelectedValue oldSelectedValue = new SelectedValue();
 	private char[] labelBuffer = new char[32];
 	private FontMetricsInt fontMetrics = new FontMetricsInt();
 	protected RectF maxViewport = new RectF();
@@ -132,20 +133,9 @@ public class LineChartRenderer implements ChartRenderer {
 	public boolean checkTouch(float touchX, float touchY) {
 		final LineChartData data = dataProvider.getLineChartData();
 		final ChartCalculator chartCalculator = chart.getChartCalculator();
-		// Check if touch is still on the same value, if not return false.
-		if (isTouched()) {
-			Line line = data.lines.get(selectedValue.firstIndex);
-			LinePoint linePoint = line.getPoints().get(selectedValue.secondIndex);
-			int pointRadius = Utils.dp2px(density, line.getPointRadius());
-			final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
-			final float rawValueY = chartCalculator.calculateRawY(linePoint.getY());
-			if (isInArea(rawValueX, rawValueY, touchX, touchY, pointRadius + touchTolleranceMargin)) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-		// If no value has been already selected check all values for selection.
+		oldSelectedValue.firstIndex = selectedValue.firstIndex;
+		oldSelectedValue.secondIndex = selectedValue.secondIndex;
+		selectedValue.clear();
 		int lineIndex = 0;
 		for (Line line : data.lines) {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
@@ -161,6 +151,10 @@ public class LineChartRenderer implements ChartRenderer {
 			}
 			++lineIndex;
 		}
+		// Check if touch is still on the same value, if not return false.
+		if (oldSelectedValue.isSet() && selectedValue.isSet() && !oldSelectedValue.equals(selectedValue)) {
+			return false;
+		}
 		return isTouched();
 	}
 
@@ -172,6 +166,7 @@ public class LineChartRenderer implements ChartRenderer {
 	@Override
 	public void clearTouch() {
 		selectedValue.clear();
+		oldSelectedValue.clear();
 
 	}
 

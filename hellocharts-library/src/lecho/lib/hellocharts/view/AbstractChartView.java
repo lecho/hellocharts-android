@@ -124,4 +124,14 @@ public abstract class AbstractChartView extends View implements Chart {
 		}
 	}
 
+	@Override
+	public boolean isValueSelectionEnabled() {
+		return touchHandler.isValueSelectionEnabled();
+	}
+
+	@Override
+	public void setValueSelectionEnabled(boolean isValueSelectionEnabled) {
+		touchHandler.setValueSelectionEnabled(isValueSelectionEnabled);
+	}
+
 }

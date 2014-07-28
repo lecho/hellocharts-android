@@ -52,4 +52,8 @@ public interface Chart {
 
 	public RectF getViewport();
 
+	public boolean isValueSelectionEnabled();
+
+	public void setValueSelectionEnabled(boolean isValueSelectionEnabled);
+
 }

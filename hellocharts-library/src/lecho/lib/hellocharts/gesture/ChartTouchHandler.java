@@ -18,6 +18,7 @@ public class ChartTouchHandler {
 	private boolean isInteractive = true;
 	private boolean isZoomEnabled = true;
 	private boolean isValueTouchEnabled = true;
+	private boolean isValueSelectionEnabled = false;
 
 	public ChartTouchHandler(Context context, Chart chart) {
 		this.chart = chart;
@@ -68,8 +69,12 @@ public class ChartTouchHandler {
 			if (chartRenderer.isTouched()) {
 				if (chartRenderer.checkTouch(event.getX(), event.getY())) {
 					chartRenderer.callTouchListener();
+					if (!isValueSelectionEnabled) {
+						chartRenderer.clearTouch();
+					}
+				} else {
+					chartRenderer.clearTouch();
 				}
-				chartRenderer.clearTouch();
 				needInvalidate = true;
 			}
 			break;
@@ -124,6 +129,14 @@ public class ChartTouchHandler {
 
 	public void setValueTouchEnabled(boolean isValueTouchEnabled) {
 		this.isValueTouchEnabled = isValueTouchEnabled;
+	}
+
+	public boolean isValueSelectionEnabled() {
+		return isValueSelectionEnabled;
+	}
+
+	public void setValueSelectionEnabled(boolean isValueSelectionEnabled) {
+		this.isValueSelectionEnabled = isValueSelectionEnabled;
 	}
 
 	public void startZoom(float x, float y, float zoom) {
