@@ -3,7 +3,6 @@ package lecho.lib.hellocharts.view;
 import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.gesture.ChartTouchHandler;
-import lecho.lib.hellocharts.gesture.ChartZoomer;
 import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
 import android.content.Context;
@@ -105,21 +104,15 @@ public abstract class AbstractChartView extends View implements Chart {
 	}
 
 	/**
-	 * Smoothly zooms the chart in one step.
+	 * Smoothly zooms the chart in or out according to value of zoomAmount.
+	 * 
+	 * @param zoomAmout
+	 *            positive value for zoom in, negative for zoom out.
 	 */
-	public void zoomIn(float x, float y) {
+	@Override
+	public void zoom(float x, float y, float zoomAmout) {
 		if (chartCalculator.getCurrentViewport().contains(x, y)) {
-			touchHandler.startZoom(x, y, ChartZoomer.ZOOM_AMOUNT);
-			ViewCompat.postInvalidateOnAnimation(this);
-		}
-	}
-
-	/**
-	 * Smoothly zooms the chart out one step.
-	 */
-	public void zoomOut(float x, float y) {
-		if (chartCalculator.getCurrentViewport().contains(x, y)) {
-			touchHandler.startZoom(x, y, -ChartZoomer.ZOOM_AMOUNT);
+			touchHandler.startZoom(x, y, zoomAmout);
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
 	}

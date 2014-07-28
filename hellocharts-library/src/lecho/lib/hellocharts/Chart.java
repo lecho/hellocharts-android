@@ -52,6 +52,8 @@ public interface Chart {
 
 	public RectF getViewport();
 
+	public void zoom(float x, float y, float zoomAmout);
+
 	public boolean isValueSelectionEnabled();
 
 	public void setValueSelectionEnabled(boolean isValueSelectionEnabled);
