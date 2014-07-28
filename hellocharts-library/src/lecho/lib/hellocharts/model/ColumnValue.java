@@ -6,26 +6,26 @@ import android.graphics.Color;
 public class ColumnValue {
 
 	private float value;
-	private float targetValue;
+	private float target;
 	private int color = Color.LTGRAY;
 	private int darkenColor = Color.GRAY;
 
 	public ColumnValue(float value) {
 		// point and targetPoint have to be different objects
 		this.value = value;
-		this.targetValue = value;
+		this.target = value;
 	}
 
 	public ColumnValue(float value, int color) {
 		// point and targetPoint have to be different objects
 		this.value = value;
-		this.targetValue = value;
+		this.target = value;
 		this.color = color;
 		this.darkenColor = Utils.darkenColor(color);
 	}
 
 	public void update(float scale) {
-		final float diff = targetValue - value;
+		final float diff = target - value;
 		value = diff * scale;
 	}
 
@@ -37,12 +37,12 @@ public class ColumnValue {
 		this.value = value;
 	}
 
-	public float getTargetValue() {
-		return targetValue;
+	public float getTarget() {
+		return target;
 	}
 
-	public void setTargetValue(float targetValue) {
-		this.targetValue = targetValue;
+	public void setTarget(float target) {
+		this.target = target;
 	}
 
 	public int getColor() {
