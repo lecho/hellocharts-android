@@ -44,9 +44,9 @@ public interface Chart {
 
 	public void setValueTouchEnabled(boolean isValueTouchEnabled);
 
-	public void setDataBoundaries(RectF boundaries);
+	public void setMaxViewport(RectF maxViewport);
 
-	public RectF getDataBoundaries();
+	public RectF getMaxViewport();
 
 	public void setViewport(RectF viewport);
 

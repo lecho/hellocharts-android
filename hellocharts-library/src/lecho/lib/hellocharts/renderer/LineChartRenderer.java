@@ -41,12 +41,12 @@ public class LineChartRenderer implements ChartRenderer {
 	private SelectedValue mSelectedValue = new SelectedValue();
 	private char[] labelBuffer = new char[32];
 	private FontMetricsInt fontMetrics = new FontMetricsInt();
-	protected RectF dataBoundaries = new RectF();
+	protected RectF maxViewport = new RectF();
 
 	private float density;
 	private float scaledDensity;
 
-	private boolean hasAutoDataBoundaries = true;
+	private boolean hasMaxViewportAutoCalculated = true;
 	private boolean isViewportAutoCalculated = true;
 
 	public LineChartRenderer(Context context, Chart chart, LineChartDataProvider dataProvider) {
@@ -74,11 +74,11 @@ public class LineChartRenderer implements ChartRenderer {
 	}
 
 	public void initRenderer() {
-		if (hasAutoDataBoundaries) {
+		if (hasMaxViewportAutoCalculated) {
 			calculateDataBoundaries();
 		}
 		if (isViewportAutoCalculated) {
-			chart.getChartCalculator().calculateViewport(dataBoundaries);
+			chart.getChartCalculator().calculateViewport(maxViewport);
 		}
 		chart.getChartCalculator().setInternalMargin(calculateContentAreaMargin());
 
@@ -88,11 +88,11 @@ public class LineChartRenderer implements ChartRenderer {
 
 	@Override
 	public void fastInitRenderer() {
-		if (hasAutoDataBoundaries) {
+		if (hasMaxViewportAutoCalculated) {
 			calculateDataBoundaries();
 		}
 		if (isViewportAutoCalculated) {
-			chart.getChartCalculator().calculateViewport(dataBoundaries);
+			chart.getChartCalculator().calculateViewport(maxViewport);
 		}
 	}
 
@@ -171,19 +171,19 @@ public class LineChartRenderer implements ChartRenderer {
 	}
 
 	@Override
-	public void setDataBoundaries(RectF dataBoundaries) {
-		if (null == dataBoundaries) {
-			hasAutoDataBoundaries = true;
+	public void setMaxViewport(RectF maxViewport) {
+		if (null == maxViewport) {
+			hasMaxViewportAutoCalculated = true;
 			initRenderer();
 		} else {
-			hasAutoDataBoundaries = false;
-			this.dataBoundaries = dataBoundaries;
+			hasMaxViewportAutoCalculated = false;
+			this.maxViewport = maxViewport;
 		}
 	}
 
 	@Override
-	public RectF getDataBoundaries() {
-		return dataBoundaries;
+	public RectF getMaxViewport() {
+		return maxViewport;
 	}
 
 	@Override
@@ -204,22 +204,22 @@ public class LineChartRenderer implements ChartRenderer {
 	}
 
 	private void calculateDataBoundaries() {
-		dataBoundaries.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
+		maxViewport.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
 		LineChartData data = dataProvider.getLineChartData();
 		// TODO: optimize
 		for (Line line : data.lines) {
 			for (LinePoint linePoint : line.getPoints()) {
-				if (linePoint.getX() < dataBoundaries.left) {
-					dataBoundaries.left = linePoint.getX();
+				if (linePoint.getX() < maxViewport.left) {
+					maxViewport.left = linePoint.getX();
 				}
-				if (linePoint.getX() > dataBoundaries.right) {
-					dataBoundaries.right = linePoint.getX();
+				if (linePoint.getX() > maxViewport.right) {
+					maxViewport.right = linePoint.getX();
 				}
-				if (linePoint.getY() < dataBoundaries.bottom) {
-					dataBoundaries.bottom = linePoint.getY();
+				if (linePoint.getY() < maxViewport.bottom) {
+					maxViewport.bottom = linePoint.getY();
 				}
-				if (linePoint.getY() > dataBoundaries.top) {
-					dataBoundaries.top = linePoint.getY();
+				if (linePoint.getY() > maxViewport.top) {
+					maxViewport.top = linePoint.getY();
 				}
 
 			}

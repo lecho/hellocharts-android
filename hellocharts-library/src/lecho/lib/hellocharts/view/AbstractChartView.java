@@ -83,14 +83,14 @@ public abstract class AbstractChartView extends View implements Chart {
 	}
 
 	@Override
-	public void setDataBoundaries(RectF dataBoundaries) {
-		chartRenderer.setDataBoundaries(dataBoundaries);
+	public void setMaxViewport(RectF maxViewport) {
+		chartRenderer.setMaxViewport(maxViewport);
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
 	@Override
-	public RectF getDataBoundaries() {
-		return chartRenderer.getDataBoundaries();
+	public RectF getMaxViewport() {
+		return chartRenderer.getMaxViewport();
 	}
 
 	@Override

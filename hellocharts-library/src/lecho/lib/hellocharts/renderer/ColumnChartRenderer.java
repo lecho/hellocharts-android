@@ -43,12 +43,12 @@ public class ColumnChartRenderer implements ChartRenderer {
 	private SelectedValue selectedValue = new SelectedValue();
 	private char[] labelBuffer = new char[32];
 	private FontMetricsInt fontMetrics = new FontMetricsInt();
-	private RectF dataBoundaries = new RectF();
+	private RectF maxViewport = new RectF();
 
 	private float density;
 	private float scaledDensity;
 
-	private boolean hasAutoDataBoundaries = true;
+	private boolean hasMaxViewportAutoCalculated = true;
 	private boolean isViewportAutoCalculated = true;
 
 	public ColumnChartRenderer(Context context, Chart chart, ColumnChartDataProvider dataProvider) {
@@ -74,11 +74,11 @@ public class ColumnChartRenderer implements ChartRenderer {
 
 	@Override
 	public void initRenderer() {
-		if (hasAutoDataBoundaries) {
-			calculateDataBoundaries();
+		if (hasMaxViewportAutoCalculated) {
+			calculateMaxViewport();
 		}
 		if (isViewportAutoCalculated) {
-			chart.getChartCalculator().calculateViewport(dataBoundaries);
+			chart.getChartCalculator().calculateViewport(maxViewport);
 		}
 		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));
 		labelPaint.getFontMetricsInt(fontMetrics);
@@ -87,11 +87,11 @@ public class ColumnChartRenderer implements ChartRenderer {
 
 	@Override
 	public void fastInitRenderer() {
-		if (hasAutoDataBoundaries) {
-			calculateDataBoundaries();
+		if (hasMaxViewportAutoCalculated) {
+			calculateMaxViewport();
 		}
 		if (isViewportAutoCalculated) {
-			chart.getChartCalculator().calculateViewport(dataBoundaries);
+			chart.getChartCalculator().calculateViewport(maxViewport);
 		}
 	}
 
@@ -140,19 +140,19 @@ public class ColumnChartRenderer implements ChartRenderer {
 	}
 
 	@Override
-	public void setDataBoundaries(RectF dataBoundaries) {
+	public void setMaxViewport(RectF dataBoundaries) {
 		if (null == dataBoundaries) {
-			hasAutoDataBoundaries = true;
+			hasMaxViewportAutoCalculated = true;
 			initRenderer();
 		} else {
-			hasAutoDataBoundaries = false;
-			this.dataBoundaries = dataBoundaries;
+			hasMaxViewportAutoCalculated = false;
+			this.maxViewport = dataBoundaries;
 		}
 	}
 
 	@Override
-	public RectF getDataBoundaries() {
-		return dataBoundaries;
+	public RectF getMaxViewport() {
+		return maxViewport;
 	}
 
 	@Override
@@ -172,30 +172,30 @@ public class ColumnChartRenderer implements ChartRenderer {
 		return new RectF(viewport.left, viewport.bottom, viewport.right, viewport.top);
 	}
 
-	private void calculateDataBoundaries() {
+	private void calculateMaxViewport() {
 		ColumnChartData data = dataProvider.getColumnChartData();
-		dataBoundaries.set(-0.5f, 0, data.getColumns().size() - 0.5f, 0);
+		maxViewport.set(-0.5f, 0, data.getColumns().size() - 0.5f, 0);
 		if (data.isStacked()) {
-			calculateBoundariesStacked(data);
+			calculateMaxViewportForStacked(data);
 		} else {
-			calculateBoundariesForSubcolumns(data);
+			calculateMaxViewportForSubcolumns(data);
 		}
 	}
 
-	private void calculateBoundariesForSubcolumns(ColumnChartData data) {
+	private void calculateMaxViewportForSubcolumns(ColumnChartData data) {
 		for (Column column : data.getColumns()) {
 			for (ColumnValue columnValue : column.getValues()) {
-				if (columnValue.getValue() >= 0 && columnValue.getValue() > dataBoundaries.top) {
-					dataBoundaries.top = columnValue.getValue();
+				if (columnValue.getValue() >= 0 && columnValue.getValue() > maxViewport.top) {
+					maxViewport.top = columnValue.getValue();
 				}
-				if (columnValue.getValue() < 0 && columnValue.getValue() < dataBoundaries.bottom) {
-					dataBoundaries.bottom = columnValue.getValue();
+				if (columnValue.getValue() < 0 && columnValue.getValue() < maxViewport.bottom) {
+					maxViewport.bottom = columnValue.getValue();
 				}
 			}
 		}
 	}
 
-	private void calculateBoundariesStacked(ColumnChartData data) {
+	private void calculateMaxViewportForStacked(ColumnChartData data) {
 		for (Column column : data.getColumns()) {
 			float sumPositive = 0;
 			float sumNegative = 0;
@@ -206,11 +206,11 @@ public class ColumnChartRenderer implements ChartRenderer {
 					sumNegative += columnValue.getValue();
 				}
 			}
-			if (sumPositive > dataBoundaries.top) {
-				dataBoundaries.top = sumPositive;
+			if (sumPositive > maxViewport.top) {
+				maxViewport.top = sumPositive;
 			}
-			if (sumNegative < dataBoundaries.bottom) {
-				dataBoundaries.bottom = sumNegative;
+			if (sumNegative < maxViewport.bottom) {
+				maxViewport.bottom = sumNegative;
 			}
 		}
 	}

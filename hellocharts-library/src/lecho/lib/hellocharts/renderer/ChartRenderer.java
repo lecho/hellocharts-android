@@ -24,9 +24,9 @@ public interface ChartRenderer {
 
 	public void callTouchListener();
 
-	public void setDataBoundaries(RectF dataBoundaries);
+	public void setMaxViewport(RectF maxViewport);
 
-	public RectF getDataBoundaries();
+	public RectF getMaxViewport();
 
 	public void setViewport(RectF viewport);
 
