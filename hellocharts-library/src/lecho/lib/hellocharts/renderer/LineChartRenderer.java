@@ -38,7 +38,7 @@ public class LineChartRenderer implements ChartRenderer {
 	private Paint pointPaint = new Paint();
 	private Paint labelPaint = new Paint();
 	private RectF labelRect = new RectF();
-	private SelectedValue mSelectedValue = new SelectedValue();
+	private SelectedValue selectedValue = new SelectedValue();
 	private char[] labelBuffer = new char[32];
 	private FontMetricsInt fontMetrics = new FontMetricsInt();
 	protected RectF maxViewport = new RectF();
@@ -132,6 +132,20 @@ public class LineChartRenderer implements ChartRenderer {
 	public boolean checkTouch(float touchX, float touchY) {
 		final LineChartData data = dataProvider.getLineChartData();
 		final ChartCalculator chartCalculator = chart.getChartCalculator();
+		// Check if touch is still on the same value, if not return false.
+		if (isTouched()) {
+			Line line = data.lines.get(selectedValue.firstIndex);
+			LinePoint linePoint = line.getPoints().get(selectedValue.secondIndex);
+			int pointRadius = Utils.dp2px(density, line.getPointRadius());
+			final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
+			final float rawValueY = chartCalculator.calculateRawY(linePoint.getY());
+			if (isInArea(rawValueX, rawValueY, touchX, touchY, pointRadius + touchTolleranceMargin)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		// If no value has been already selected check all values for selection.
 		int lineIndex = 0;
 		for (Line line : data.lines) {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
@@ -140,12 +154,8 @@ public class LineChartRenderer implements ChartRenderer {
 				final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
 				final float rawValueY = chartCalculator.calculateRawY(linePoint.getY());
 				if (isInArea(rawValueX, rawValueY, touchX, touchY, pointRadius + touchTolleranceMargin)) {
-					if (mSelectedValue.isSet()) {
-						clearTouch();
-					} else {
-						mSelectedValue.firstIndex = lineIndex;
-						mSelectedValue.secondIndex = valueIndex;
-					}
+					selectedValue.firstIndex = lineIndex;
+					selectedValue.secondIndex = valueIndex;
 				}
 				++valueIndex;
 			}
@@ -156,18 +166,18 @@ public class LineChartRenderer implements ChartRenderer {
 
 	@Override
 	public boolean isTouched() {
-		return mSelectedValue.isSet();
+		return selectedValue.isSet();
 	}
 
 	@Override
 	public void clearTouch() {
-		mSelectedValue.clear();
+		selectedValue.clear();
 
 	}
 
 	@Override
 	public void callTouchListener() {
-		chart.callTouchListener(mSelectedValue);
+		chart.callTouchListener(selectedValue);
 	}
 
 	@Override
@@ -373,7 +383,7 @@ public class LineChartRenderer implements ChartRenderer {
 	}
 
 	private void highlightPoints(Canvas canvas) {
-		int lineIndex = mSelectedValue.firstIndex;
+		int lineIndex = selectedValue.firstIndex;
 		Line line = dataProvider.getLineChartData().lines.get(lineIndex);
 		drawPoints(canvas, line, lineIndex, MODE_HIGHLIGHT);
 	}
@@ -381,7 +391,7 @@ public class LineChartRenderer implements ChartRenderer {
 	private void highlightPoint(Canvas canvas, Line line, LinePoint linePoint, float rawValueX, float rawValueY,
 			int lineIndex, int valueIndex) {
 		int pointRadius = Utils.dp2px(density, line.getPointRadius());
-		if (mSelectedValue.firstIndex == lineIndex && mSelectedValue.secondIndex == valueIndex) {
+		if (selectedValue.firstIndex == lineIndex && selectedValue.secondIndex == valueIndex) {
 			pointPaint.setColor(line.getDarkenColor());
 			drawPoint(canvas, rawValueX, rawValueY, pointRadius + touchTolleranceMargin, line.getPointShape());
 			if (line.hasLabels()) {

@@ -25,7 +25,7 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 	private static final String TAG = "BarChart";
 	private ColumnChartData data;
 	private ChartAnimator animator;
-	private BarChartOnValueTouchListener onValueTouchListener = new DummyOnValueTouchListener();
+	private ColumnChartOnValueTouchListener onValueTouchListener = new DummyOnValueTouchListener();
 
 	public ColumnChartView(Context context) {
 		this(context, null, 0);
@@ -121,11 +121,11 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 
 	}
 
-	public BarChartOnValueTouchListener getOnValueTouchListener() {
+	public ColumnChartOnValueTouchListener getOnValueTouchListener() {
 		return onValueTouchListener;
 	}
 
-	public void setOnValueTouchListener(BarChartOnValueTouchListener touchListener) {
+	public void setOnValueTouchListener(ColumnChartOnValueTouchListener touchListener) {
 		if (null == touchListener) {
 			this.onValueTouchListener = new DummyOnValueTouchListener();
 		} else {
@@ -154,11 +154,11 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 		animator.setChartAnimationListener(animationListener);
 	}
 
-	public interface BarChartOnValueTouchListener {
+	public interface ColumnChartOnValueTouchListener {
 		public void onValueTouched(int selectedLine, int selectedValue, ColumnValue point);
 	}
 
-	private static class DummyOnValueTouchListener implements BarChartOnValueTouchListener {
+	private static class DummyOnValueTouchListener implements ColumnChartOnValueTouchListener {
 
 		@Override
 		public void onValueTouched(int selectedLine, int selectedValue, ColumnValue point) {

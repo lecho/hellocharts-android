@@ -36,11 +36,12 @@ public class ColumnChartRenderer implements ChartRenderer {
 	private int labelOffset;
 	private int touchAdditionalWidth;
 	private int subcolumnSpacing;
-	private Paint mColumnPaint = new Paint();
+	private Paint columnPaint = new Paint();
 	private Paint labelPaint = new Paint();
 	private RectF drawRect = new RectF();
 	private PointF touchedPoint = new PointF();
 	private SelectedValue selectedValue = new SelectedValue();
+	private SelectedValue oldSelectedValue = new SelectedValue();
 	private char[] labelBuffer = new char[32];
 	private FontMetricsInt fontMetrics = new FontMetricsInt();
 	private RectF maxViewport = new RectF();
@@ -61,9 +62,9 @@ public class ColumnChartRenderer implements ChartRenderer {
 		subcolumnSpacing = Utils.dp2px(density, DEFAULT_SUBCOLUMN_SPACING_DP);
 		touchAdditionalWidth = Utils.dp2px(density, DEFAULT_COLUMN_TOUCH_ADDITIONAL_WIDTH_DP);
 
-		mColumnPaint.setAntiAlias(true);
-		mColumnPaint.setStyle(Paint.Style.FILL);
-		mColumnPaint.setStrokeCap(Cap.SQUARE);
+		columnPaint.setAntiAlias(true);
+		columnPaint.setStyle(Paint.Style.FILL);
+		columnPaint.setStrokeCap(Cap.SQUARE);
 
 		labelPaint.setAntiAlias(true);
 		labelPaint.setColor(Color.WHITE);
@@ -116,11 +117,18 @@ public class ColumnChartRenderer implements ChartRenderer {
 	}
 
 	public boolean checkTouch(float touchX, float touchY) {
+		oldSelectedValue.firstIndex = selectedValue.firstIndex;
+		oldSelectedValue.secondIndex = selectedValue.secondIndex;
+		selectedValue.clear();
 		final ColumnChartData data = dataProvider.getColumnChartData();
 		if (data.isStacked()) {
 			checkTouchForStacked(touchX, touchY);
 		} else {
 			checkTouchForSubcolumns(touchX, touchY);
+		}
+		// Check if touch is still on the same value, if not return false.
+		if (oldSelectedValue.isSet() && selectedValue.isSet() && !oldSelectedValue.equals(selectedValue)) {
+			return false;
 		}
 		return isTouched();
 	}
@@ -131,6 +139,7 @@ public class ColumnChartRenderer implements ChartRenderer {
 
 	public void clearTouch() {
 		selectedValue.clear();
+		oldSelectedValue.clear();
 	}
 
 	@Override
@@ -267,7 +276,7 @@ public class ColumnChartRenderer implements ChartRenderer {
 		float subcolumnRawValueX = rawValueX - halfColumnWidth;
 		int valueIndex = 0;
 		for (ColumnValue columnValue : column.getValues()) {
-			mColumnPaint.setColor(columnValue.getColor());
+			columnPaint.setColor(columnValue.getColor());
 			if (subcolumnRawValueX > rawValueX + halfColumnWidth) {
 				break;
 			}
@@ -338,7 +347,7 @@ public class ColumnChartRenderer implements ChartRenderer {
 		float baseValue = DEFAULT_BASE_VALUE;
 		int valueIndex = 0;
 		for (ColumnValue columnValue : column.getValues()) {
-			mColumnPaint.setColor(columnValue.getColor());
+			columnPaint.setColor(columnValue.getColor());
 			if (columnValue.getValue() >= DEFAULT_BASE_VALUE) {
 				// Using values instead of raw pixels make code easier to
 				// understand(for me)
@@ -372,7 +381,7 @@ public class ColumnChartRenderer implements ChartRenderer {
 	}
 
 	private void drawSubcolumn(Canvas canvas, Column column, ColumnValue columnValue, boolean isStacked) {
-		canvas.drawRect(drawRect, mColumnPaint);
+		canvas.drawRect(drawRect, columnPaint);
 		if (column.hasLabels()) {
 			drawLabel(canvas, column, columnValue, isStacked, labelOffset);
 		}
@@ -381,9 +390,9 @@ public class ColumnChartRenderer implements ChartRenderer {
 	private void highlightSubcolumn(Canvas canvas, Column column, ColumnValue columnValue, int valueIndex,
 			boolean isStacked) {
 		if (selectedValue.secondIndex == valueIndex) {
-			mColumnPaint.setColor(columnValue.getDarkenColor());
+			columnPaint.setColor(columnValue.getDarkenColor());
 			canvas.drawRect(drawRect.left - touchAdditionalWidth, drawRect.top, drawRect.right + touchAdditionalWidth,
-					drawRect.bottom, mColumnPaint);
+					drawRect.bottom, columnPaint);
 			if (column.hasLabels()) {
 				drawLabel(canvas, column, columnValue, isStacked, labelOffset);
 			}
@@ -392,12 +401,8 @@ public class ColumnChartRenderer implements ChartRenderer {
 
 	private void checkRectToDraw(int columnIndex, int valueIndex) {
 		if (drawRect.contains(touchedPoint.x, touchedPoint.y)) {
-			if (selectedValue.isSet()) {
-				clearTouch();
-			} else {
-				selectedValue.firstIndex = columnIndex;
-				selectedValue.secondIndex = valueIndex;
-			}
+			selectedValue.firstIndex = columnIndex;
+			selectedValue.secondIndex = valueIndex;
 		}
 	}
 

@@ -10,7 +10,7 @@ public class SelectedValue {
 
 	public void clear() {
 		this.firstIndex = Integer.MIN_VALUE;
-		this.firstIndex = Integer.MIN_VALUE;
+		this.secondIndex = Integer.MIN_VALUE;
 	}
 
 	public boolean isSet() {
@@ -20,4 +20,30 @@ public class SelectedValue {
 			return false;
 		}
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + firstIndex;
+		result = prime * result + secondIndex;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SelectedValue other = (SelectedValue) obj;
+		if (firstIndex != other.firstIndex)
+			return false;
+		if (secondIndex != other.secondIndex)
+			return false;
+		return true;
+	}
+
 }

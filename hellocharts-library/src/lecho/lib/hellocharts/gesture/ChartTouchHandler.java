@@ -66,7 +66,9 @@ public class ChartTouchHandler {
 			break;
 		case MotionEvent.ACTION_UP:
 			if (chartRenderer.isTouched()) {
-				chartRenderer.callTouchListener();
+				if (chartRenderer.checkTouch(event.getX(), event.getY())) {
+					chartRenderer.callTouchListener();
+				}
 				chartRenderer.clearTouch();
 				needInvalidate = true;
 			}
