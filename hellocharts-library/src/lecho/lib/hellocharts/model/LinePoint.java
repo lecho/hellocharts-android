@@ -4,35 +4,41 @@ public class LinePoint {
 
 	private float x;
 	private float y;
-	private float targetX;
-	private float targetY;
+	private float orginX;
+	private float orginY;
+	private float diffX;
+	private float diffY;
 
 	public LinePoint(float x, float y) {
-		this.x = x;
-		this.y = y;
-		this.targetX = x;
-		this.targetY = y;
+		set(x, y);
 	}
 
 	public void update(float scale) {
-		float xdiff = targetX - x;
-		float ydiff = targetY - y;
-		offset(xdiff * scale, ydiff * scale);
+		x = orginX + diffX * scale;
+		y = orginY + diffY * scale;
+	}
+
+	public void finish(boolean isFinishedSuccess) {
+		if (isFinishedSuccess) {
+			set(orginX + diffX, orginY + diffY);
+		} else {
+			set(x, y);
+		}
 	}
 
 	public void set(float x, float y) {
 		this.x = x;
 		this.y = y;
+		this.orginX = x;
+		this.orginY = y;
+		this.diffX = 0;
+		this.diffY = 0;
 	}
 
 	public void setTarget(float targetX, float targetY) {
-		this.targetX = targetX;
-		this.targetY = targetY;
-	}
-
-	public void offset(float dx, float dy) {
-		this.x += dx;
-		this.y += dy;
+		set(x, y);
+		this.diffX = targetX - orginX;
+		this.diffY = targetY - diffY;
 	}
 
 	public float getX() {

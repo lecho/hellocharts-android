@@ -22,6 +22,8 @@ public interface Chart {
 
 	public void animationDataUpdate(float scale);
 
+	public void animationDataFinished(boolean isFinishedSuccess);
+
 	public void startDataAnimation();
 
 	public void setChartAnimationListener(ChartAnimationListener animationListener);

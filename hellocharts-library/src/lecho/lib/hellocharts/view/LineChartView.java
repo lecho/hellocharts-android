@@ -11,9 +11,6 @@ import lecho.lib.hellocharts.anim.ChartAnimatorV11;
 import lecho.lib.hellocharts.anim.ChartAnimatorV8;
 import lecho.lib.hellocharts.gesture.ChartTouchHandler;
 import lecho.lib.hellocharts.model.ChartData;
-import lecho.lib.hellocharts.model.Column;
-import lecho.lib.hellocharts.model.ColumnChartData;
-import lecho.lib.hellocharts.model.ColumnValue;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.LinePoint;
@@ -30,7 +27,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 public class LineChartView extends AbstractChartView implements LineChartDataProvider {
-	private static final String TAG = "LineChart";
+	private static final String TAG = "LineChartView";
 	private LineChartData data;
 	private ChartAnimator animator;
 	private LineChartOnValueTouchListener onValueTouchListener = new DummyOnValueTouchListener();
@@ -62,10 +59,10 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 	}
 
 	private void initAnimatiors() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			animator = new ChartAnimatorV11(this);
-		} else {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
 			animator = new ChartAnimatorV8(this);
+		} else {
+			animator = new ChartAnimatorV11(this);
 		}
 	}
 
@@ -162,6 +159,17 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 	}
 
 	@Override
+	public void animationDataFinished(boolean isFinishedSuccess) {
+		for (Line line : data.lines) {
+			for (LinePoint point : line.getPoints()) {
+				point.finish(isFinishedSuccess);
+			}
+		}
+		chartRenderer.fastInitRenderer();
+		ViewCompat.postInvalidateOnAnimation(this);
+	}
+
+	@Override
 	public void startDataAnimation() {
 		animator.startAnimation();
 	}
@@ -172,7 +180,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 	}
 
 	private LineChartData generateDummyData() {
-		final int numValues = 2;
+		final int numValues = 4;
 		LineChartData data = new LineChartData();
 		List<LinePoint> values = new ArrayList<LinePoint>(numValues);
 		for (int i = 1; i <= numValues; ++i) {

@@ -6,13 +6,11 @@ import android.animation.Animator.AnimatorListener;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.annotation.SuppressLint;
-import android.view.animation.LinearInterpolator;
 
 @SuppressLint("NewApi")
 public class ChartAnimatorV11 implements ChartAnimator, AnimatorListener, AnimatorUpdateListener {
-	private ValueAnimator mAnimator;
-	private final Chart mChart;
-	private final long mDuration;
+	private ValueAnimator animator;
+	private final Chart chart;
 	private ChartAnimationListener animationListener = new DummyChartAnimationListener();
 
 	public ChartAnimatorV11(Chart chart) {
@@ -20,40 +18,38 @@ public class ChartAnimatorV11 implements ChartAnimator, AnimatorListener, Animat
 	}
 
 	public ChartAnimatorV11(final Chart chart, final long duration) {
-		mChart = chart;
-		mDuration = duration;
-		mAnimator = ValueAnimator.ofFloat(0.0f, 1.0f);
-		mAnimator.setDuration(mDuration);
-		mAnimator.setInterpolator(new LinearInterpolator());
-		mAnimator.addListener(this);
-		mAnimator.addUpdateListener(this);
+		this.chart = chart;
+		animator = ValueAnimator.ofFloat(0.0f, 1.0f);
+		animator.setDuration(duration);
+		animator.addListener(this);
+		animator.addUpdateListener(this);
 	}
 
 	@Override
 	public void startAnimation() {
 		animationListener.onAnimationStarted();
-		mAnimator.start();
+		animator.start();
 	}
 
 	@Override
 	public void cancelAnimation() {
-		mAnimator.cancel();
-		animationListener.onAnimationFinished();
+		animator.cancel();
 	}
 
 	@Override
 	public void onAnimationUpdate(ValueAnimator animation) {
-		mChart.animationDataUpdate((Float) animation.getAnimatedValue());
+		chart.animationDataUpdate(animation.getAnimatedFraction());
 	}
 
 	@Override
 	public void onAnimationCancel(Animator animation) {
+		chart.animationDataFinished(false);
 		animationListener.onAnimationFinished();
 	}
 
 	@Override
 	public void onAnimationEnd(Animator animation) {
-		mChart.animationDataUpdate(1.0f);
+		chart.animationDataFinished(true);
 		animationListener.onAnimationFinished();
 	}
 
@@ -67,7 +63,7 @@ public class ChartAnimatorV11 implements ChartAnimator, AnimatorListener, Animat
 
 	@Override
 	public boolean isAnimationStarted() {
-		return mAnimator.isStarted();
+		return animator.isStarted();
 	}
 
 	@Override

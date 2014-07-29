@@ -25,7 +25,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 public class ColumnChartView extends AbstractChartView implements ColumnChartDataProvider {
-	private static final String TAG = "BarChart";
+	private static final String TAG = "ColumnChartView";
 	private ColumnChartData data;
 	private ChartAnimator animator;
 	private ColumnChartOnValueTouchListener onValueTouchListener = new DummyOnValueTouchListener();
@@ -150,6 +150,18 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 		}
 		chartRenderer.fastInitRenderer();
 		ViewCompat.postInvalidateOnAnimation(this);
+	}
+
+	@Override
+	public void animationDataFinished(boolean isFinishedSuccess) {
+		for (Column column : data.getColumns()) {
+			for (ColumnValue value : column.getValues()) {
+				value.finish(isFinishedSuccess);
+			}
+		}
+		chartRenderer.fastInitRenderer();
+		ViewCompat.postInvalidateOnAnimation(this);
+
 	}
 
 	@Override

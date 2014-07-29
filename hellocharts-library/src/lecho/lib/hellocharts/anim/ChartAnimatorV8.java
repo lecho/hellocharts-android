@@ -3,31 +3,31 @@ package lecho.lib.hellocharts.anim;
 import lecho.lib.hellocharts.Chart;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
-import android.view.animation.LinearInterpolator;
 
 public class ChartAnimatorV8 implements ChartAnimator {
 
-	long mStart;
+	long start;
 	boolean isAnimationStarted = false;
-	final Chart mChart;
-	final long mDuration;
-	final Handler mHandler;
-	final Interpolator mInterpolator = new LinearInterpolator();
+	final Chart chart;
+	final long duration;
+	final Handler handler;
+	final Interpolator interpolator = new AccelerateDecelerateInterpolator();
 	private ChartAnimationListener animationListener = new DummyChartAnimationListener();
-	private final Runnable mRunnable = new Runnable() {
+	private final Runnable runnable = new Runnable() {
 
 		@Override
 		public void run() {
-			long elapsed = SystemClock.uptimeMillis() - mStart;
-			float dt = Math.min(mInterpolator.getInterpolation((float) elapsed / mDuration), 1);
-			if (dt < 1.0) {
-				mChart.animationDataUpdate(dt);
-				mHandler.postDelayed(this, 16);
-			} else {
-				mChart.animationDataUpdate(1.0f);
+			long elapsed = SystemClock.uptimeMillis() - start;
+			if (elapsed > duration) {
 				isAnimationStarted = false;
+				chart.animationDataFinished(true);
+				return;
 			}
+			float scale = Math.min(interpolator.getInterpolation((float) elapsed / duration), 1);
+			chart.animationDataUpdate(scale);
+			handler.postDelayed(this, 16);
 
 		}
 	};
@@ -37,23 +37,24 @@ public class ChartAnimatorV8 implements ChartAnimator {
 	}
 
 	public ChartAnimatorV8(final Chart chart, final long duration) {
-		mChart = chart;
-		mDuration = duration;
-		mHandler = new Handler();
+		this.chart = chart;
+		this.duration = duration;
+		this.handler = new Handler();
 	}
 
 	@Override
 	public void startAnimation() {
 		isAnimationStarted = true;
 		animationListener.onAnimationStarted();
-		mStart = SystemClock.uptimeMillis();
-		mHandler.post(mRunnable);
+		start = SystemClock.uptimeMillis();
+		handler.post(runnable);
 	}
 
 	@Override
 	public void cancelAnimation() {
 		isAnimationStarted = false;
-		mHandler.removeCallbacks(mRunnable);
+		handler.removeCallbacks(runnable);
+		chart.animationDataFinished(false);
 		animationListener.onAnimationFinished();
 	}
 
