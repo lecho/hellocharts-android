@@ -32,7 +32,7 @@ public class ColumnChartRenderer implements ChartRenderer {
 	private Chart chart;
 	private ColumnChartDataProvider dataProvider;
 
-	private int mLabelMargin;
+	private int labelMargin;
 	private int labelOffset;
 	private int touchAdditionalWidth;
 	private int subcolumnSpacing;
@@ -57,8 +57,8 @@ public class ColumnChartRenderer implements ChartRenderer {
 		this.dataProvider = dataProvider;
 		density = context.getResources().getDisplayMetrics().density;
 		scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
-		mLabelMargin = Utils.dp2px(density, DEFAULT_LABEL_MARGIN_DP);
-		labelOffset = mLabelMargin;
+		labelMargin = Utils.dp2px(density, DEFAULT_LABEL_MARGIN_DP);
+		labelOffset = labelMargin;
 		subcolumnSpacing = Utils.dp2px(density, DEFAULT_SUBCOLUMN_SPACING_DP);
 		touchAdditionalWidth = Utils.dp2px(density, DEFAULT_COLUMN_TOUCH_ADDITIONAL_WIDTH_DP);
 
@@ -81,6 +81,8 @@ public class ColumnChartRenderer implements ChartRenderer {
 		if (isViewportAutoCalculated) {
 			chart.getChartCalculator().calculateViewport(maxViewport);
 		}
+		chart.getChartCalculator().setInternalMargin(labelMargin);// Using label margin because I'm lazy:P
+
 		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));
 		labelPaint.getFontMetricsInt(fontMetrics);
 
@@ -434,33 +436,33 @@ public class ColumnChartRenderer implements ChartRenderer {
 		final int nummChars = column.getFormatter().formatValue(labelBuffer, columnValue.getValue());
 		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
-		float left = drawRect.centerX() - labelWidth / 2 - mLabelMargin;
-		float right = drawRect.centerX() + labelWidth / 2 + mLabelMargin;
+		float left = drawRect.centerX() - labelWidth / 2 - labelMargin;
+		float right = drawRect.centerX() + labelWidth / 2 + labelMargin;
 		float top;
 		float bottom;
 		if (isStacked && labelHeight < drawRect.height()) {
 			if (columnValue.getValue() >= DEFAULT_BASE_VALUE) {
 				top = drawRect.top;
-				bottom = drawRect.top + labelHeight + mLabelMargin * 2;
+				bottom = drawRect.top + labelHeight + labelMargin * 2;
 			} else {
-				top = drawRect.bottom - labelHeight - mLabelMargin * 2;
+				top = drawRect.bottom - labelHeight - labelMargin * 2;
 				bottom = drawRect.bottom;
 			}
-			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, left + mLabelMargin, bottom
-					- mLabelMargin, labelPaint);
+			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, left + labelMargin, bottom
+					- labelMargin, labelPaint);
 		} else if (!isStacked) {
 			if (columnValue.getValue() >= DEFAULT_BASE_VALUE) {
-				top = drawRect.top - offset - labelHeight - mLabelMargin * 2;
+				top = drawRect.top - offset - labelHeight - labelMargin * 2;
 				if (top < chartCalculator.getContentRect().top) {
 					top = drawRect.top + offset;
-					bottom = drawRect.top + offset + labelHeight + mLabelMargin * 2;
+					bottom = drawRect.top + offset + labelHeight + labelMargin * 2;
 				} else {
 					bottom = drawRect.top - offset;
 				}
 			} else {
-				bottom = drawRect.bottom + offset + labelHeight + mLabelMargin * 2;
+				bottom = drawRect.bottom + offset + labelHeight + labelMargin * 2;
 				if (bottom > chartCalculator.getContentRect().bottom) {
-					top = drawRect.bottom - offset - labelHeight - mLabelMargin * 2;
+					top = drawRect.bottom - offset - labelHeight - labelMargin * 2;
 					bottom = drawRect.bottom - offset;
 				} else {
 					top = drawRect.bottom + offset;
@@ -470,8 +472,8 @@ public class ColumnChartRenderer implements ChartRenderer {
 			labelPaint.setColor(columnValue.getDarkenColor());
 			canvas.drawRect(left, top, right, bottom, labelPaint);
 			labelPaint.setColor(orginColor);
-			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, left + mLabelMargin, bottom
-					- mLabelMargin, labelPaint);
+			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, left + labelMargin, bottom
+					- labelMargin, labelPaint);
 		} else {
 			// do nothing
 		}
