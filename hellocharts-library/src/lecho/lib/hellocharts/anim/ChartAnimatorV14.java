@@ -8,16 +8,16 @@ import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.annotation.SuppressLint;
 
 @SuppressLint("NewApi")
-public class ChartAnimatorV11 implements ChartAnimator, AnimatorListener, AnimatorUpdateListener {
+public class ChartAnimatorV14 implements ChartAnimator, AnimatorListener, AnimatorUpdateListener {
 	private ValueAnimator animator;
 	private final Chart chart;
 	private ChartAnimationListener animationListener = new DummyChartAnimationListener();
 
-	public ChartAnimatorV11(Chart chart) {
+	public ChartAnimatorV14(Chart chart) {
 		this(chart, DEFAULT_ANIMATION_DURATION);
 	}
 
-	public ChartAnimatorV11(final Chart chart, final long duration) {
+	public ChartAnimatorV14(final Chart chart, final long duration) {
 		this.chart = chart;
 		animator = ValueAnimator.ofFloat(0.0f, 1.0f);
 		animator.setDuration(duration);

@@ -47,8 +47,8 @@ public class ChartScroller {
 			chartCalculator.computeScrollSurfaceSize(surfaceSizeBuffer);
 			float currXRange = chartCalculator.getMaximumViewport().left + chartCalculator.getMaximumViewport().width()
 					* scroller.getCurrX() / surfaceSizeBuffer.x;
-			float currYRange = chartCalculator.getMaximumViewport().bottom - chartCalculator.getMaximumViewport().height()
-					* scroller.getCurrY() / surfaceSizeBuffer.y;
+			float currYRange = chartCalculator.getMaximumViewport().bottom
+					- chartCalculator.getMaximumViewport().height() * scroller.getCurrY() / surfaceSizeBuffer.y;
 			chartCalculator.setViewportBottomLeft(currXRange, currYRange);
 			return true;
 		}
@@ -60,15 +60,16 @@ public class ChartScroller {
 		chartCalculator.computeScrollSurfaceSize(surfaceSizeBuffer);
 		scrollerStartViewport.set(chartCalculator.getCurrentViewport());
 		int startX = (int) (surfaceSizeBuffer.x
-				* (scrollerStartViewport.left - chartCalculator.getMaximumViewport().left) / chartCalculator.getMaximumViewport()
-				.width());
+				* (scrollerStartViewport.left - chartCalculator.getMaximumViewport().left) / chartCalculator
+				.getMaximumViewport().width());
 		int startY = (int) (surfaceSizeBuffer.y
-				* (chartCalculator.getMaximumViewport().bottom - scrollerStartViewport.bottom) / chartCalculator.getMaximumViewport()
-				.height());
-		scroller.abortAnimation();// probably should be mScroller.forceFinish but compat doesn't have that method.
-		scroller.fling(startX, startY, velocityX, velocityY, 0,
-				surfaceSizeBuffer.x - chartCalculator.getContentRect().width(), 0, surfaceSizeBuffer.y
-						- chartCalculator.getContentRect().height(), chartCalculator.getContentRect().width() / 2,
+				* (chartCalculator.getMaximumViewport().bottom - scrollerStartViewport.bottom) / chartCalculator
+				.getMaximumViewport().height());
+		// TODO probably should be mScroller.forceFinish but ScrollerCompat doesn't have that method.
+		scroller.abortAnimation();
+		scroller.fling(startX, startY, velocityX, velocityY, 0, surfaceSizeBuffer.x
+				- chartCalculator.getContentRect().width(), 0, surfaceSizeBuffer.y
+				- chartCalculator.getContentRect().height(), chartCalculator.getContentRect().width() / 2,
 				chartCalculator.getContentRect().height() / 2);
 		return true;
 	}
