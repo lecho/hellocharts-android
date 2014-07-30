@@ -50,7 +50,7 @@ public interface Chart {
 
 	public RectF getMaxViewport();
 
-	public void setViewport(RectF viewport);
+	public void setViewport(RectF targetViewport, boolean isAnimated);
 
 	public RectF getViewport();
 

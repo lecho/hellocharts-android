@@ -1,11 +1,12 @@
 package lecho.lib.hellocharts.anim;
 
-public interface ChartAnimator {
+import android.graphics.RectF;
 
-	public static final int DEFAULT_ANIMATION_DURATION = 500;
-	public static final int FAST_ANIMATION_DURATION = 200;
+public interface ViewportAnimator {
 
-	public void startAnimation();
+	public static final int FAST_ANIMATION_DURATION = 2000;
+
+	public void startAnimation(RectF startViewport, RectF targetViewport);
 
 	public void cancelAnimation();
 

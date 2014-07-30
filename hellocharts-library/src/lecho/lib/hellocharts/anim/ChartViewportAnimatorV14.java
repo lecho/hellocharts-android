@@ -6,18 +6,21 @@ import android.animation.Animator.AnimatorListener;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.annotation.SuppressLint;
+import android.graphics.RectF;
 
 @SuppressLint("NewApi")
-public class ChartAnimatorV14 implements ChartAnimator, AnimatorListener, AnimatorUpdateListener {
+public class ChartViewportAnimatorV14 implements ViewportAnimator, AnimatorListener, AnimatorUpdateListener {
 	private ValueAnimator animator;
 	private final Chart chart;
+	private RectF startViewport = new RectF();
+	private RectF targetViewport = new RectF();
 	private ChartAnimationListener animationListener = new DummyChartAnimationListener();
 
-	public ChartAnimatorV14(Chart chart) {
-		this(chart, DEFAULT_ANIMATION_DURATION);
+	public ChartViewportAnimatorV14(Chart chart) {
+		this(chart, FAST_ANIMATION_DURATION);
 	}
 
-	public ChartAnimatorV14(final Chart chart, final long duration) {
+	public ChartViewportAnimatorV14(final Chart chart, final long duration) {
 		this.chart = chart;
 		animator = ValueAnimator.ofFloat(0.0f, 1.0f);
 		animator.setDuration(duration);
@@ -26,8 +29,9 @@ public class ChartAnimatorV14 implements ChartAnimator, AnimatorListener, Animat
 	}
 
 	@Override
-	public void startAnimation() {
-		animationListener.onAnimationStarted();
+	public void startAnimation(RectF startViewport, RectF targetViewport) {
+		this.startViewport.set(startViewport);
+		this.targetViewport.set(targetViewport);
 		animator.start();
 	}
 
@@ -38,18 +42,26 @@ public class ChartAnimatorV14 implements ChartAnimator, AnimatorListener, Animat
 
 	@Override
 	public void onAnimationUpdate(ValueAnimator animation) {
-		chart.animationDataUpdate(animation.getAnimatedFraction());
+		float scale = animation.getAnimatedFraction();
+		float diffLeft = (targetViewport.left - startViewport.left) * scale;
+		float diffTop = (startViewport.top - targetViewport.top) * scale;
+		float diffRight = (targetViewport.right - startViewport.right) * scale;
+		float diffBottom = (startViewport.bottom - targetViewport.bottom) * scale;
+		RectF currentViewport = chart.getViewport();
+		currentViewport.set(currentViewport.left + diffLeft, currentViewport.top + diffTop, currentViewport.right
+				+ diffRight, currentViewport.bottom + diffBottom);
+		chart.setViewport(currentViewport, false);
 	}
 
 	@Override
 	public void onAnimationCancel(Animator animation) {
-		chart.animationDataFinished(false);
+		chart.setViewport(targetViewport, false);
 		animationListener.onAnimationFinished();
 	}
 
 	@Override
 	public void onAnimationEnd(Animator animation) {
-		chart.animationDataFinished(true);
+		chart.setViewport(targetViewport, false);
 		animationListener.onAnimationFinished();
 	}
 
@@ -59,6 +71,7 @@ public class ChartAnimatorV14 implements ChartAnimator, AnimatorListener, Animat
 
 	@Override
 	public void onAnimationStart(Animator animation) {
+		animationListener.onAnimationStarted();
 	}
 
 	@Override

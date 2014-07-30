@@ -7,8 +7,8 @@ import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.LineChartDataProvider;
 import lecho.lib.hellocharts.anim.ChartAnimationListener;
 import lecho.lib.hellocharts.anim.ChartAnimator;
-import lecho.lib.hellocharts.anim.ChartAnimatorV14;
-import lecho.lib.hellocharts.anim.ChartAnimatorV8;
+import lecho.lib.hellocharts.anim.ChartDataAnimatorV14;
+import lecho.lib.hellocharts.anim.ChartDataAnimatorV8;
 import lecho.lib.hellocharts.gesture.ChartTouchHandler;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.Line;
@@ -60,9 +60,9 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 
 	private void initAnimatiors() {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-			animator = new ChartAnimatorV8(this);
+			animator = new ChartDataAnimatorV8(this);
 		} else {
-			animator = new ChartAnimatorV14(this);
+			animator = new ChartDataAnimatorV14(this);
 		}
 	}
 

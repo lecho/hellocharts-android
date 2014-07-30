@@ -65,11 +65,10 @@ public class ChartCalculator {
 		contentRect.bottom = contentRect.bottom - axisXMargin;
 	}
 
-	public void calculateViewport(RectF boundaries) {
-		maximumViewport.set(boundaries.left, boundaries.bottom, boundaries.right, boundaries.top);
+	public void calculateMaxViewport(RectF boundaries) {
+		maximumViewport.set(boundaries.left, boundaries.top, boundaries.right, boundaries.bottom);
 		minimumViewportWidth = maximumViewport.width() / MAXIMUM_SCALE;
 		minimumViewportHeight = maximumViewport.height() / MAXIMUM_SCALE;
-		currentViewport.set(maximumViewport);
 	}
 
 	public void setCurrentViewport(float left, float top, float right, float bottom) {

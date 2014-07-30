@@ -2,6 +2,8 @@ package lecho.lib.hellocharts.view;
 
 import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartCalculator;
+import lecho.lib.hellocharts.anim.ChartViewportAnimatorV14;
+import lecho.lib.hellocharts.anim.ViewportAnimator;
 import lecho.lib.hellocharts.gesture.ChartTouchHandler;
 import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
@@ -16,6 +18,7 @@ public abstract class AbstractChartView extends View implements Chart {
 	protected AxesRenderer axesRenderer;
 	protected ChartTouchHandler touchHandler;
 	protected ChartRenderer chartRenderer;
+	protected ViewportAnimator viewportAnimator;
 
 	public AbstractChartView(Context context) {
 		this(context, null, 0);
@@ -27,6 +30,7 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	public AbstractChartView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
+		this.viewportAnimator = new ChartViewportAnimatorV14(this);
 	}
 
 	public ChartRenderer getChartRenderer() {
@@ -93,8 +97,12 @@ public abstract class AbstractChartView extends View implements Chart {
 	}
 
 	@Override
-	public void setViewport(RectF viewport) {
-		chartRenderer.setViewport(viewport);
+	public void setViewport(RectF targetViewport, boolean isAnimated) {
+		if (isAnimated) {
+			viewportAnimator.startAnimation(getViewport(), targetViewport);
+		} else {
+			chartRenderer.setViewport(targetViewport);
+		}
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 

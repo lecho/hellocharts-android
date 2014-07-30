@@ -49,7 +49,7 @@ public class ColumnChartRenderer implements ChartRenderer {
 	private float density;
 	private float scaledDensity;
 
-	private boolean hasMaxViewportAutoCalculated = true;
+	private boolean isMaxViewportAutoCalculated = true;
 	private boolean isViewportAutoCalculated = true;
 
 	public ColumnChartRenderer(Context context, Chart chart, ColumnChartDataProvider dataProvider) {
@@ -75,11 +75,12 @@ public class ColumnChartRenderer implements ChartRenderer {
 
 	@Override
 	public void initRenderer() {
-		if (hasMaxViewportAutoCalculated) {
+		if (isMaxViewportAutoCalculated) {
 			calculateMaxViewport();
+			chart.getChartCalculator().calculateMaxViewport(maxViewport);
 		}
 		if (isViewportAutoCalculated) {
-			chart.getChartCalculator().calculateViewport(maxViewport);
+			chart.getChartCalculator().setCurrentViewport(maxViewport);
 		}
 		chart.getChartCalculator().setInternalMargin(labelMargin);// Using label margin because I'm lazy:P
 
@@ -90,11 +91,12 @@ public class ColumnChartRenderer implements ChartRenderer {
 
 	@Override
 	public void fastInitRenderer() {
-		if (hasMaxViewportAutoCalculated) {
+		if (isMaxViewportAutoCalculated) {
 			calculateMaxViewport();
+			chart.getChartCalculator().calculateMaxViewport(maxViewport);
 		}
 		if (isViewportAutoCalculated) {
-			chart.getChartCalculator().calculateViewport(maxViewport);
+			chart.getChartCalculator().setCurrentViewport(maxViewport);
 		}
 	}
 
@@ -151,13 +153,14 @@ public class ColumnChartRenderer implements ChartRenderer {
 	}
 
 	@Override
-	public void setMaxViewport(RectF dataBoundaries) {
-		if (null == dataBoundaries) {
-			hasMaxViewportAutoCalculated = true;
-			initRenderer();
+	public void setMaxViewport(RectF maxViewport) {
+		if (null == maxViewport) {
+			isMaxViewportAutoCalculated = true;
+			fastInitRenderer();
 		} else {
-			hasMaxViewportAutoCalculated = false;
-			this.maxViewport = dataBoundaries;
+			isMaxViewportAutoCalculated = false;
+			this.maxViewport = maxViewport;
+			chart.getChartCalculator().calculateMaxViewport(maxViewport);
 		}
 	}
 
@@ -169,23 +172,22 @@ public class ColumnChartRenderer implements ChartRenderer {
 	@Override
 	public void setViewport(RectF viewport) {
 		if (null == viewport) {
-			this.isViewportAutoCalculated = false;
-			chart.getChartCalculator().setCurrentViewport(chart.getChartCalculator().getMaximumViewport());
+			isViewportAutoCalculated = true;
+			chart.getChartCalculator().setCurrentViewport(maxViewport);
 		} else {
-			this.isViewportAutoCalculated = true;
-			chart.getChartCalculator().setCurrentViewport(viewport.left, viewport.bottom, viewport.right, viewport.top);
+			isViewportAutoCalculated = false;
+			chart.getChartCalculator().setCurrentViewport(viewport);
 		}
 	}
 
 	@Override
 	public RectF getViewport() {
-		RectF viewport = chart.getChartCalculator().getCurrentViewport();
-		return new RectF(viewport.left, viewport.bottom, viewport.right, viewport.top);
+		return chart.getChartCalculator().getCurrentViewport();
 	}
 
 	private void calculateMaxViewport() {
 		ColumnChartData data = dataProvider.getColumnChartData();
-		maxViewport.set(-0.5f, 0, data.getColumns().size() - 0.5f, 0);
+		maxViewport.set(-0.5f, DEFAULT_BASE_VALUE, data.getColumns().size() - 0.5f, DEFAULT_BASE_VALUE);
 		if (data.isStacked()) {
 			calculateMaxViewportForStacked(data);
 		} else {
@@ -196,11 +198,11 @@ public class ColumnChartRenderer implements ChartRenderer {
 	private void calculateMaxViewportForSubcolumns(ColumnChartData data) {
 		for (Column column : data.getColumns()) {
 			for (ColumnValue columnValue : column.getValues()) {
-				if (columnValue.getValue() >= 0 && columnValue.getValue() > maxViewport.top) {
-					maxViewport.top = columnValue.getValue();
-				}
-				if (columnValue.getValue() < 0 && columnValue.getValue() < maxViewport.bottom) {
+				if (columnValue.getValue() >= DEFAULT_BASE_VALUE && columnValue.getValue() > maxViewport.bottom) {
 					maxViewport.bottom = columnValue.getValue();
+				}
+				if (columnValue.getValue() < DEFAULT_BASE_VALUE && columnValue.getValue() < maxViewport.top) {
+					maxViewport.top = columnValue.getValue();
 				}
 			}
 		}
@@ -208,20 +210,20 @@ public class ColumnChartRenderer implements ChartRenderer {
 
 	private void calculateMaxViewportForStacked(ColumnChartData data) {
 		for (Column column : data.getColumns()) {
-			float sumPositive = 0;
-			float sumNegative = 0;
+			float sumPositive = DEFAULT_BASE_VALUE;
+			float sumNegative = DEFAULT_BASE_VALUE;
 			for (ColumnValue columnValue : column.getValues()) {
-				if (columnValue.getValue() >= 0) {
+				if (columnValue.getValue() >= DEFAULT_BASE_VALUE) {
 					sumPositive += columnValue.getValue();
 				} else {
 					sumNegative += columnValue.getValue();
 				}
 			}
-			if (sumPositive > maxViewport.top) {
-				maxViewport.top = sumPositive;
+			if (sumPositive > maxViewport.bottom) {
+				maxViewport.bottom = sumPositive;
 			}
-			if (sumNegative < maxViewport.bottom) {
-				maxViewport.bottom = sumNegative;
+			if (sumNegative < maxViewport.top) {
+				maxViewport.top = sumNegative;
 			}
 		}
 	}

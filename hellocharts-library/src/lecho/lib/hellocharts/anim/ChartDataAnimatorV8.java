@@ -6,7 +6,7 @@ import android.os.SystemClock;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 
-public class ChartAnimatorV8 implements ChartAnimator {
+public class ChartDataAnimatorV8 implements ChartAnimator {
 
 	long start;
 	boolean isAnimationStarted = false;
@@ -32,11 +32,11 @@ public class ChartAnimatorV8 implements ChartAnimator {
 		}
 	};
 
-	public ChartAnimatorV8(final Chart chart) {
+	public ChartDataAnimatorV8(final Chart chart) {
 		this(chart, DEFAULT_ANIMATION_DURATION);
 	}
 
-	public ChartAnimatorV8(final Chart chart, final long duration) {
+	public ChartDataAnimatorV8(final Chart chart, final long duration) {
 		this.chart = chart;
 		this.duration = duration;
 		this.handler = new Handler();
