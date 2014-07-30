@@ -44,12 +44,12 @@ public class ChartViewportAnimatorV14 implements ViewportAnimator, AnimatorListe
 	public void onAnimationUpdate(ValueAnimator animation) {
 		float scale = animation.getAnimatedFraction();
 		float diffLeft = (targetViewport.left - startViewport.left) * scale;
-		float diffTop = (startViewport.top - targetViewport.top) * scale;
+		float diffTop = (targetViewport.top - startViewport.top) * scale;
 		float diffRight = (targetViewport.right - startViewport.right) * scale;
-		float diffBottom = (startViewport.bottom - targetViewport.bottom) * scale;
+		float diffBottom = (targetViewport.bottom - startViewport.bottom) * scale;
 		RectF currentViewport = chart.getViewport();
-		currentViewport.set(currentViewport.left + diffLeft, currentViewport.top + diffTop, currentViewport.right
-				+ diffRight, currentViewport.bottom + diffBottom);
+		currentViewport.set(startViewport.left + diffLeft, startViewport.top + diffTop,
+				startViewport.right + diffRight, startViewport.bottom + diffBottom);
 		chart.setViewport(currentViewport, false);
 	}
 

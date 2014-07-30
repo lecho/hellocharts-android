@@ -4,7 +4,7 @@ import android.graphics.RectF;
 
 public interface ViewportAnimator {
 
-	public static final int FAST_ANIMATION_DURATION = 2000;
+	public static final int FAST_ANIMATION_DURATION = 200;
 
 	public void startAnimation(RectF startViewport, RectF targetViewport);
 
