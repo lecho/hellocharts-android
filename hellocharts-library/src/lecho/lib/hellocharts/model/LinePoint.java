@@ -38,7 +38,7 @@ public class LinePoint {
 	public void setTarget(float targetX, float targetY) {
 		set(x, y);
 		this.diffX = targetX - orginX;
-		this.diffY = targetY - diffY;
+		this.diffY = targetY - orginY;
 	}
 
 	public float getX() {
