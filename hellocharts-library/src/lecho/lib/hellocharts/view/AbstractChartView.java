@@ -3,12 +3,14 @@ package lecho.lib.hellocharts.view;
 import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.anim.ChartViewportAnimatorV14;
+import lecho.lib.hellocharts.anim.ChartViewportAnimatorV8;
 import lecho.lib.hellocharts.anim.ViewportAnimator;
 import lecho.lib.hellocharts.gesture.ChartTouchHandler;
 import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
 import android.content.Context;
 import android.graphics.RectF;
+import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
@@ -30,7 +32,12 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	public AbstractChartView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-		this.viewportAnimator = new ChartViewportAnimatorV14(this);
+		this.viewportAnimator = new ChartViewportAnimatorV8(this);
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			this.viewportAnimator = new ChartViewportAnimatorV8(this);
+		} else {
+			this.viewportAnimator = new ChartViewportAnimatorV14(this);
+		}
 	}
 
 	public ChartRenderer getChartRenderer() {

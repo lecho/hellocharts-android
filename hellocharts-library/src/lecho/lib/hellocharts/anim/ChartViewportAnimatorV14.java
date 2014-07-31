@@ -14,6 +14,7 @@ public class ChartViewportAnimatorV14 implements ViewportAnimator, AnimatorListe
 	private final Chart chart;
 	private RectF startViewport = new RectF();
 	private RectF targetViewport = new RectF();
+	private RectF newViewport = new RectF();
 	private ChartAnimationListener animationListener = new DummyChartAnimationListener();
 
 	public ChartViewportAnimatorV14(Chart chart) {
@@ -47,10 +48,9 @@ public class ChartViewportAnimatorV14 implements ViewportAnimator, AnimatorListe
 		float diffTop = (targetViewport.top - startViewport.top) * scale;
 		float diffRight = (targetViewport.right - startViewport.right) * scale;
 		float diffBottom = (targetViewport.bottom - startViewport.bottom) * scale;
-		RectF currentViewport = chart.getViewport();
-		currentViewport.set(startViewport.left + diffLeft, startViewport.top + diffTop,
-				startViewport.right + diffRight, startViewport.bottom + diffBottom);
-		chart.setViewport(currentViewport, false);
+		newViewport.set(startViewport.left + diffLeft, startViewport.top + diffTop, startViewport.right + diffRight,
+				startViewport.bottom + diffBottom);
+		chart.setViewport(newViewport, false);
 	}
 
 	@Override
