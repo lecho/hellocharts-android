@@ -14,7 +14,7 @@ import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 
 public class ColumnChartView extends AbstractChartView implements ColumnChartDataProvider {
-	public static final String TAG = "ColumnChartView";
+	private static final String TAG = "ColumnChartView";
 	private ColumnChartData data;
 	private ColumnChartOnValueTouchListener onValueTouchListener = new DummyOnValueTouchListener();
 

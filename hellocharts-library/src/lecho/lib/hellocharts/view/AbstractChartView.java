@@ -23,7 +23,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 public abstract class AbstractChartView extends View implements Chart {
-	public static final String TAG = "AbstractChartView";
+	private static final String TAG = "AbstractChartView";
 	protected ChartCalculator chartCalculator;
 	protected AxesRenderer axesRenderer;
 	protected ChartTouchHandler touchHandler;

@@ -17,7 +17,7 @@ import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 
 public class LineChartView extends AbstractChartView implements LineChartDataProvider {
-	public static final String TAG = "LineChartView";
+	private static final String TAG = "LineChartView";
 	private LineChartData data;
 	private LineChartOnValueTouchListener onValueTouchListener = new DummyOnValueTouchListener();
 
