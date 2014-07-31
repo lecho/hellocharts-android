@@ -64,8 +64,8 @@ public abstract class AbstractChartData implements ChartData {
 	public void setMaxLabelChars(int numChars) {
 		if (numChars < 0) {
 			numChars = 0;
-		} else if (numChars > 16) {
-			numChars = 16;
+		} else if (numChars > 32) {
+			numChars = 32;
 		}
 		maxLabelChars = numChars;
 	}

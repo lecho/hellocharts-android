@@ -28,7 +28,7 @@ public class AxesRenderer {
 	private FontMetricsInt fontMetrics = new FontMetricsInt();
 	private char[] labelBuffer = new char[32];
 	private char[] labelWidthChars = new char[] { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-			'0', '0' };
+			'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0' };
 
 	private float density;
 	private float scaledDensity;
@@ -50,7 +50,7 @@ public class AxesRenderer {
 		textPaint.setStrokeWidth(1);
 	}
 
-	public void initRenderer() {
+	public void initAxesAttributes() {
 		linePaint.setColor(chart.getChartData().getAxesColor());
 		textPaint.setColor(chart.getChartData().getAxesColor());
 		textPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getAxesLabelTextSize()));
