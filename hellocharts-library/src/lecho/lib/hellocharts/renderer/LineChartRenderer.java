@@ -6,55 +6,33 @@ import lecho.lib.hellocharts.LineChartDataProvider;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.LinePoint;
-import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.util.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Paint.Align;
-import android.graphics.Paint.FontMetricsInt;
 import android.graphics.Path;
 import android.graphics.RectF;
-import android.graphics.Typeface;
 
-public class LineChartRenderer implements ChartRenderer {
+public class LineChartRenderer extends AbstractChartRenderer {
 	private static final float LINE_SMOOTHNES = 0.16f;
-	int DEFAULT_LABEL_MARGIN_DP = 4;
 	int DEFAULT_LINE_STROKE_WIDTH_DP = 3;
 	int DEFAULT_TOUCH_TOLLERANCE_MARGIN_DP = 4;
 
 	private static final int MODE_DRAW = 0;
 	private static final int MODE_HIGHLIGHT = 1;
 
-	private Chart chart;
 	private LineChartDataProvider dataProvider;
 
-	private int labelOffset;
-	private int labelMaring;
 	private int touchTolleranceMargin;
 	private Path mLinePath = new Path();
 	private Paint linePaint = new Paint();
 	private Paint pointPaint = new Paint();
-	private Paint labelPaint = new Paint();
 	private RectF labelRect = new RectF();
-	private SelectedValue selectedValue = new SelectedValue();
-	private SelectedValue oldSelectedValue = new SelectedValue();
-	private char[] labelBuffer = new char[32];
-	private FontMetricsInt fontMetrics = new FontMetricsInt();
-	protected RectF tempMaxViewport = new RectF();
-
-	private float density;
-	private float scaledDensity;
 
 	public LineChartRenderer(Context context, Chart chart, LineChartDataProvider dataProvider) {
-		this.chart = chart;
+		super(context, chart);
 		this.dataProvider = dataProvider;
-		density = context.getResources().getDisplayMetrics().density;
-		scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
 
-		labelMaring = Utils.dp2px(density, DEFAULT_LABEL_MARGIN_DP);
-		labelOffset = labelMaring;
 		touchTolleranceMargin = Utils.dp2px(density, DEFAULT_TOUCH_TOLLERANCE_MARGIN_DP);
 
 		linePaint.setAntiAlias(true);
@@ -64,21 +42,11 @@ public class LineChartRenderer implements ChartRenderer {
 		pointPaint.setAntiAlias(true);
 		pointPaint.setStyle(Paint.Style.FILL);
 
-		labelPaint.setAntiAlias(true);
-		labelPaint.setStyle(Paint.Style.FILL);
-		labelPaint.setTextAlign(Align.LEFT);
-		labelPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
-		labelPaint.setColor(Color.WHITE);
 	}
 
 	public void initMaxViewport() {
 		calculateMaxViewport();
 		chart.getChartCalculator().setMaxViewport(tempMaxViewport);
-	}
-
-	public void initCurrentViewport() {
-		ChartCalculator chartCalculator = chart.getChartCalculator();
-		chartCalculator.setCurrentViewport(chartCalculator.getMaximumViewport());
 	}
 
 	public void initDataAttributes() {
@@ -146,52 +114,6 @@ public class LineChartRenderer implements ChartRenderer {
 			return false;
 		}
 		return isTouched();
-	}
-
-	@Override
-	public boolean isTouched() {
-		return selectedValue.isSet();
-	}
-
-	@Override
-	public void clearTouch() {
-		selectedValue.clear();
-		oldSelectedValue.clear();
-
-	}
-
-	@Override
-	public void callTouchListener() {
-		chart.callTouchListener(selectedValue);
-	}
-
-	@Override
-	public void setMaxViewport(RectF maxViewport) {
-		if (null == maxViewport) {
-			initMaxViewport();
-		} else {
-			this.tempMaxViewport = maxViewport;
-			chart.getChartCalculator().setMaxViewport(maxViewport);
-		}
-	}
-
-	@Override
-	public RectF getMaxViewport() {
-		return tempMaxViewport;
-	}
-
-	@Override
-	public void setViewport(RectF viewport) {
-		if (null == viewport) {
-			initCurrentViewport();
-		} else {
-			chart.getChartCalculator().setCurrentViewport(viewport);
-		}
-	}
-
-	@Override
-	public RectF getViewport() {
-		return chart.getChartCalculator().getCurrentViewport();
 	}
 
 	private void calculateMaxViewport() {
@@ -386,20 +308,20 @@ public class LineChartRenderer implements ChartRenderer {
 		final int nummChars = line.getFormatter().formatValue(labelBuffer, linePoint.getY());
 		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
-		float left = rawValueX - labelWidth / 2 - labelMaring;
-		float right = rawValueX + labelWidth / 2 + labelMaring;
-		float top = rawValueY - offset - labelHeight - labelMaring * 2;
+		float left = rawValueX - labelWidth / 2 - labelMargin;
+		float right = rawValueX + labelWidth / 2 + labelMargin;
+		float top = rawValueY - offset - labelHeight - labelMargin * 2;
 		float bottom = rawValueY - offset;
 		if (top < chartCalculator.getContentRect().top) {
 			top = rawValueY + offset;
-			bottom = rawValueY + offset + labelHeight + labelMaring * 2;
+			bottom = rawValueY + offset + labelHeight + labelMargin * 2;
 		}
 		if (left < chartCalculator.getContentRect().left) {
 			left = rawValueX;
-			right = rawValueX + labelWidth + labelMaring * 2;
+			right = rawValueX + labelWidth + labelMargin * 2;
 		}
 		if (right > chartCalculator.getContentRect().right) {
-			left = rawValueX - labelWidth - labelMaring * 2;
+			left = rawValueX - labelWidth - labelMargin * 2;
 			right = rawValueX;
 		}
 		labelRect.set(left, top, right, bottom);
@@ -407,8 +329,8 @@ public class LineChartRenderer implements ChartRenderer {
 		labelPaint.setColor(line.getDarkenColor());
 		canvas.drawRect(left, top, right, bottom, labelPaint);
 		labelPaint.setColor(orginColor);
-		canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, left + labelMaring, bottom
-				- labelMaring, labelPaint);
+		canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, left + labelMargin, bottom
+				- labelMargin, labelPaint);
 	}
 
 	private void drawArea(Canvas canvas, int transparency) {

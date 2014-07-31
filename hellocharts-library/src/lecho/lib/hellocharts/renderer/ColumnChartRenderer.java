@@ -6,21 +6,15 @@ import lecho.lib.hellocharts.ColumnChartDataProvider;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.ColumnValue;
-import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.util.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Paint.Align;
 import android.graphics.Paint.Cap;
-import android.graphics.Paint.FontMetricsInt;
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.graphics.Typeface;
 
-public class ColumnChartRenderer implements ChartRenderer {
-	public static final int DEFAULT_LABEL_MARGIN_DP = 4;
+public class ColumnChartRenderer extends AbstractChartRenderer {
 	public static final int DEFAULT_SUBCOLUMN_SPACING_DP = 1;
 	public static final int DEFAULT_COLUMN_TOUCH_ADDITIONAL_WIDTH_DP = 2;
 
@@ -29,55 +23,28 @@ public class ColumnChartRenderer implements ChartRenderer {
 	private static final int MODE_CHECK_TOUCH = 1;
 	private static final int MODE_HIGHLIGHT = 2;
 
-	private Chart chart;
 	private ColumnChartDataProvider dataProvider;
 
-	private int labelMargin;
-	private int labelOffset;
 	private int touchAdditionalWidth;
 	private int subcolumnSpacing;
 	private Paint columnPaint = new Paint();
-	private Paint labelPaint = new Paint();
 	private RectF drawRect = new RectF();
 	private PointF touchedPoint = new PointF();
-	private SelectedValue selectedValue = new SelectedValue();
-	private SelectedValue oldSelectedValue = new SelectedValue();
-	private char[] labelBuffer = new char[32];
-	private FontMetricsInt fontMetrics = new FontMetricsInt();
-	private RectF tempMaxViewport = new RectF();
-
-	private float density;
-	private float scaledDensity;
 
 	public ColumnChartRenderer(Context context, Chart chart, ColumnChartDataProvider dataProvider) {
-		this.chart = chart;
+		super(context, chart);
 		this.dataProvider = dataProvider;
-		density = context.getResources().getDisplayMetrics().density;
-		scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
-		labelMargin = Utils.dp2px(density, DEFAULT_LABEL_MARGIN_DP);
-		labelOffset = labelMargin;
 		subcolumnSpacing = Utils.dp2px(density, DEFAULT_SUBCOLUMN_SPACING_DP);
 		touchAdditionalWidth = Utils.dp2px(density, DEFAULT_COLUMN_TOUCH_ADDITIONAL_WIDTH_DP);
 
 		columnPaint.setAntiAlias(true);
 		columnPaint.setStyle(Paint.Style.FILL);
 		columnPaint.setStrokeCap(Cap.SQUARE);
-
-		labelPaint.setAntiAlias(true);
-		labelPaint.setColor(Color.WHITE);
-		labelPaint.setStyle(Paint.Style.FILL);
-		labelPaint.setTextAlign(Align.LEFT);
-		labelPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
 	}
 
 	public void initMaxViewport() {
 		calculateMaxViewport();
 		chart.getChartCalculator().setMaxViewport(tempMaxViewport);
-	}
-
-	public void initCurrentViewport() {
-		ChartCalculator chartCalculator = chart.getChartCalculator();
-		chartCalculator.setCurrentViewport(chartCalculator.getMaximumViewport());
 	}
 
 	public void initDataAttributes() {
@@ -121,50 +88,6 @@ public class ColumnChartRenderer implements ChartRenderer {
 			return false;
 		}
 		return isTouched();
-	}
-
-	public boolean isTouched() {
-		return selectedValue.isSet();
-	}
-
-	public void clearTouch() {
-		selectedValue.clear();
-		oldSelectedValue.clear();
-	}
-
-	@Override
-	public void callTouchListener() {
-		chart.callTouchListener(selectedValue);
-
-	}
-
-	@Override
-	public void setMaxViewport(RectF maxViewport) {
-		if (null == maxViewport) {
-			initMaxViewport();
-		} else {
-			this.tempMaxViewport = maxViewport;
-			chart.getChartCalculator().setMaxViewport(maxViewport);
-		}
-	}
-
-	@Override
-	public RectF getMaxViewport() {
-		return tempMaxViewport;
-	}
-
-	@Override
-	public void setViewport(RectF viewport) {
-		if (null == viewport) {
-			initCurrentViewport();
-		} else {
-			chart.getChartCalculator().setCurrentViewport(viewport);
-		}
-	}
-
-	@Override
-	public RectF getViewport() {
-		return chart.getChartCalculator().getCurrentViewport();
 	}
 
 	private void calculateMaxViewport() {
