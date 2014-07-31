@@ -5,12 +5,11 @@ import android.graphics.RectF;
 
 public interface ChartRenderer {
 
-	public void initRenderer();
+	public void initMaxViewport();
 
-	/**
-	 * Used only for chart animations. That method skips some calculations during initialization.
-	 */
-	public void fastInitRenderer();
+	public void initCurrentViewport();
+
+	public void initDataAttributes();
 
 	public void draw(Canvas canvas);
 

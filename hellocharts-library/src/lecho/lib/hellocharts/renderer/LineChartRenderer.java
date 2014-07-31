@@ -17,7 +17,6 @@ import android.graphics.Paint.FontMetricsInt;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.util.Log;
 
 public class LineChartRenderer implements ChartRenderer {
 	private static final float LINE_SMOOTHNES = 0.16f;
@@ -43,13 +42,10 @@ public class LineChartRenderer implements ChartRenderer {
 	private SelectedValue oldSelectedValue = new SelectedValue();
 	private char[] labelBuffer = new char[32];
 	private FontMetricsInt fontMetrics = new FontMetricsInt();
-	protected RectF maxViewport = new RectF();
+	protected RectF tempMaxViewport = new RectF();
 
 	private float density;
 	private float scaledDensity;
-
-	private boolean isMaxViewportAutoCalculated = true;
-	private boolean isViewportAutoCalculated = true;
 
 	public LineChartRenderer(Context context, Chart chart, LineChartDataProvider dataProvider) {
 		this.chart = chart;
@@ -75,31 +71,20 @@ public class LineChartRenderer implements ChartRenderer {
 		labelPaint.setColor(Color.WHITE);
 	}
 
-	public void initRenderer() {
-		if (isMaxViewportAutoCalculated) {
-			calculateMaxViewport();
-			chart.getChartCalculator().calculateMaxViewport(maxViewport);
-			Log.e("tag", "initialize MAXviewport");
-		}
-		if (isViewportAutoCalculated) {
-			Log.e("tag", "initialize viewport");
-			chart.getChartCalculator().setCurrentViewport(maxViewport);
-		}
-		chart.getChartCalculator().setInternalMargin(calculateContentAreaMargin());
-
-		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));
-		labelPaint.getFontMetricsInt(fontMetrics);
+	public void initMaxViewport() {
+		calculateMaxViewport();
+		chart.getChartCalculator().setMaxViewport(tempMaxViewport);
 	}
 
-	@Override
-	public void fastInitRenderer() {
-		if (isMaxViewportAutoCalculated) {
-			calculateMaxViewport();
-			chart.getChartCalculator().calculateMaxViewport(maxViewport);
-		}
-		if (isViewportAutoCalculated) {
-			chart.getChartCalculator().setCurrentViewport(maxViewport);
-		}
+	public void initCurrentViewport() {
+		ChartCalculator chartCalculator = chart.getChartCalculator();
+		chartCalculator.setCurrentViewport(chartCalculator.getMaximumViewport());
+	}
+
+	public void initDataAttributes() {
+		chart.getChartCalculator().setInternalMargin(calculateContentAreaMargin());
+		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));
+		labelPaint.getFontMetricsInt(fontMetrics);
 	}
 
 	@Override
@@ -183,27 +168,23 @@ public class LineChartRenderer implements ChartRenderer {
 	@Override
 	public void setMaxViewport(RectF maxViewport) {
 		if (null == maxViewport) {
-			isMaxViewportAutoCalculated = true;
-			fastInitRenderer();
+			initMaxViewport();
 		} else {
-			isMaxViewportAutoCalculated = false;
-			this.maxViewport = maxViewport;
-			chart.getChartCalculator().calculateMaxViewport(maxViewport);
+			this.tempMaxViewport = maxViewport;
+			chart.getChartCalculator().setMaxViewport(maxViewport);
 		}
 	}
 
 	@Override
 	public RectF getMaxViewport() {
-		return maxViewport;
+		return tempMaxViewport;
 	}
 
 	@Override
 	public void setViewport(RectF viewport) {
 		if (null == viewport) {
-			isViewportAutoCalculated = true;
-			chart.getChartCalculator().setCurrentViewport(maxViewport);
+			initCurrentViewport();
 		} else {
-			isViewportAutoCalculated = false;
 			chart.getChartCalculator().setCurrentViewport(viewport);
 		}
 	}
@@ -214,22 +195,22 @@ public class LineChartRenderer implements ChartRenderer {
 	}
 
 	private void calculateMaxViewport() {
-		maxViewport.set(Float.MAX_VALUE, Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
+		tempMaxViewport.set(Float.MAX_VALUE, Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
 		LineChartData data = dataProvider.getLineChartData();
 		// TODO: optimize
 		for (Line line : data.lines) {
 			for (LinePoint linePoint : line.getPoints()) {
-				if (linePoint.getX() < maxViewport.left) {
-					maxViewport.left = linePoint.getX();
+				if (linePoint.getX() < tempMaxViewport.left) {
+					tempMaxViewport.left = linePoint.getX();
 				}
-				if (linePoint.getX() > maxViewport.right) {
-					maxViewport.right = linePoint.getX();
+				if (linePoint.getX() > tempMaxViewport.right) {
+					tempMaxViewport.right = linePoint.getX();
 				}
-				if (linePoint.getY() < maxViewport.top) {
-					maxViewport.top = linePoint.getY();
+				if (linePoint.getY() < tempMaxViewport.top) {
+					tempMaxViewport.top = linePoint.getY();
 				}
-				if (linePoint.getY() > maxViewport.bottom) {
-					maxViewport.bottom = linePoint.getY();
+				if (linePoint.getY() > tempMaxViewport.bottom) {
+					tempMaxViewport.bottom = linePoint.getY();
 				}
 
 			}

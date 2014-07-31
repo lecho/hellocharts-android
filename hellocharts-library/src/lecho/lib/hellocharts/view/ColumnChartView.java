@@ -62,7 +62,7 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 		// TODO mPointRadus can change, recalculate in setter
 		chartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
-		chartRenderer.initRenderer();
+		chartRenderer.initDataAttributes();
 		axesRenderer.initRenderer();
 	}
 
@@ -110,7 +110,9 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 		}
 		chartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
-		chartRenderer.initRenderer();
+		chartRenderer.initMaxViewport();
+		chartRenderer.initCurrentViewport();
+		chartRenderer.initDataAttributes();
 		axesRenderer.initRenderer();
 
 		ViewCompat.postInvalidateOnAnimation(ColumnChartView.this);
@@ -148,7 +150,8 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 				value.update(scale);
 			}
 		}
-		chartRenderer.fastInitRenderer();
+		chartRenderer.initMaxViewport();
+		chartRenderer.initCurrentViewport();
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
@@ -159,7 +162,8 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 				value.finish(isFinishedSuccess);
 			}
 		}
-		chartRenderer.fastInitRenderer();
+		chartRenderer.initMaxViewport();
+		chartRenderer.initCurrentViewport();
 		ViewCompat.postInvalidateOnAnimation(this);
 
 	}

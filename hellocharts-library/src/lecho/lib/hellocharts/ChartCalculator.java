@@ -24,10 +24,10 @@ public class ChartCalculator {
 	 * 
 	 */
 	private RectF currentViewport = new RectF();
-	private RectF maximumViewport = new RectF();// Viewport for whole data ranges
+	private RectF maxViewport = new RectF();// Viewport for whole data ranges
 
-	private float minimumViewportWidth;
-	private float minimumViewportHeight;
+	private float minViewportWidth;
+	private float minViewportHeight;
 
 	/**
 	 * Constructor
@@ -65,10 +65,10 @@ public class ChartCalculator {
 		contentRect.bottom = contentRect.bottom - axisXMargin;
 	}
 
-	public void calculateMaxViewport(RectF boundaries) {
-		maximumViewport.set(boundaries.left, boundaries.top, boundaries.right, boundaries.bottom);
-		minimumViewportWidth = maximumViewport.width() / MAXIMUM_SCALE;
-		minimumViewportHeight = maximumViewport.height() / MAXIMUM_SCALE;
+	public void setMaxViewport(RectF maxViewport) {
+		this.maxViewport.set(maxViewport.left, maxViewport.top, maxViewport.right, maxViewport.bottom);
+		minViewportWidth = this.maxViewport.width() / MAXIMUM_SCALE;
+		minViewportHeight = this.maxViewport.height() / MAXIMUM_SCALE;
 	}
 
 	public void setCurrentViewport(float left, float top, float right, float bottom) {
@@ -80,15 +80,15 @@ public class ChartCalculator {
 	}
 
 	public void constrainViewport(float left, float top, float right, float bottom) {
-		if (right - left < minimumViewportWidth || bottom - top < minimumViewportHeight) {
+		if (right - left < minViewportWidth || bottom - top < minViewportHeight) {
 			// Maximum zoom!
 			return;
 		}
 
-		currentViewport.left = Math.max(maximumViewport.left, left);
-		currentViewport.top = Math.max(maximumViewport.top, top);
-		currentViewport.bottom = Math.max(Utils.nextUpF(top), Math.min(maximumViewport.bottom, bottom));
-		currentViewport.right = Math.max(Utils.nextUpF(left), Math.min(maximumViewport.right, right));
+		currentViewport.left = Math.max(maxViewport.left, left);
+		currentViewport.top = Math.max(maxViewport.top, top);
+		currentViewport.bottom = Math.max(Utils.nextUpF(top), Math.min(maxViewport.bottom, bottom));
+		currentViewport.right = Math.max(Utils.nextUpF(left), Math.min(maxViewport.right, right));
 	}
 
 	/**
@@ -105,8 +105,8 @@ public class ChartCalculator {
 
 		final float curWidth = currentViewport.width();
 		final float curHeight = currentViewport.height();
-		x = Math.max(maximumViewport.left, Math.min(x, maximumViewport.right - curWidth));
-		y = Math.max(maximumViewport.top + curHeight, Math.min(y, maximumViewport.bottom));
+		x = Math.max(maxViewport.left, Math.min(x, maxViewport.right - curWidth));
+		y = Math.max(maxViewport.top + curHeight, Math.min(y, maxViewport.bottom));
 		currentViewport.set(x, y - curHeight, x + curWidth, y);
 	}
 
@@ -141,8 +141,8 @@ public class ChartCalculator {
 	 * returned size will be twice as large horizontally and vertically.
 	 */
 	public void computeScrollSurfaceSize(Point out) {
-		out.set((int) (maximumViewport.width() * contentRect.width() / currentViewport.width()),
-				(int) (maximumViewport.height() * contentRect.height() / currentViewport.height()));
+		out.set((int) (maxViewport.width() * contentRect.width() / currentViewport.width()),
+				(int) (maxViewport.height() * contentRect.height() / currentViewport.height()));
 	}
 
 	public boolean isWithinContentRect(int x, int y) {
@@ -167,15 +167,15 @@ public class ChartCalculator {
 	}
 
 	public RectF getMaximumViewport() {
-		return maximumViewport;
+		return maxViewport;
 	}
 
 	public float getMinimumViewportWidth() {
-		return minimumViewportWidth;
+		return minViewportWidth;
 	}
 
 	public float getMinimumViewportHeight() {
-		return minimumViewportHeight;
+		return minViewportHeight;
 	}
 
 }

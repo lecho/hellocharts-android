@@ -71,7 +71,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
 		chartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
-		chartRenderer.initRenderer();
+		chartRenderer.initDataAttributes();
 		axesRenderer.initRenderer();
 	}
 
@@ -113,7 +113,9 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 		}
 		chartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
-		chartRenderer.initRenderer();
+		chartRenderer.initMaxViewport();
+		chartRenderer.initCurrentViewport();
+		chartRenderer.initDataAttributes();
 		axesRenderer.initRenderer();
 
 		ViewCompat.postInvalidateOnAnimation(LineChartView.this);
@@ -154,7 +156,8 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 				point.update(scale);
 			}
 		}
-		chartRenderer.fastInitRenderer();
+		chartRenderer.initMaxViewport();
+		chartRenderer.initCurrentViewport();
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
@@ -165,7 +168,8 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 				point.finish(isFinishedSuccess);
 			}
 		}
-		chartRenderer.fastInitRenderer();
+		chartRenderer.initMaxViewport();
+		chartRenderer.initCurrentViewport();
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
