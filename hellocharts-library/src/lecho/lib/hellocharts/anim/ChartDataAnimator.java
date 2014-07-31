@@ -1,6 +1,6 @@
 package lecho.lib.hellocharts.anim;
 
-public interface ChartAnimator {
+public interface ChartDataAnimator {
 
 	public static final int DEFAULT_ANIMATION_DURATION = 500;
 

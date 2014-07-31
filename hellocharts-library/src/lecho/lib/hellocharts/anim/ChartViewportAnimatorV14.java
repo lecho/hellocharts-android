@@ -9,7 +9,7 @@ import android.annotation.SuppressLint;
 import android.graphics.RectF;
 
 @SuppressLint("NewApi")
-public class ChartViewportAnimatorV14 implements ViewportAnimator, AnimatorListener, AnimatorUpdateListener {
+public class ChartViewportAnimatorV14 implements ChartViewportAnimator, AnimatorListener, AnimatorUpdateListener {
 	private ValueAnimator animator;
 	private final Chart chart;
 	private RectF startViewport = new RectF();

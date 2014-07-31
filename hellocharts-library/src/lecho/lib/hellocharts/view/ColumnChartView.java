@@ -3,31 +3,19 @@ package lecho.lib.hellocharts.view;
 import java.util.ArrayList;
 import java.util.List;
 
-import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.ColumnChartDataProvider;
-import lecho.lib.hellocharts.anim.ChartAnimationListener;
-import lecho.lib.hellocharts.anim.ChartAnimator;
-import lecho.lib.hellocharts.anim.ChartDataAnimatorV14;
-import lecho.lib.hellocharts.anim.ChartDataAnimatorV8;
-import lecho.lib.hellocharts.gesture.ChartTouchHandler;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.ColumnValue;
 import lecho.lib.hellocharts.model.SelectedValue;
-import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.ColumnChartRenderer;
 import android.content.Context;
-import android.graphics.Canvas;
-import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.MotionEvent;
 
 public class ColumnChartView extends AbstractChartView implements ColumnChartDataProvider {
-	private static final String TAG = "ColumnChartView";
+	public static final String TAG = "ColumnChartView";
 	private ColumnChartData data;
-	private ChartAnimator animator;
 	private ColumnChartOnValueTouchListener onValueTouchListener = new DummyOnValueTouchListener();
 
 	public ColumnChartView(Context context) {
@@ -40,60 +28,8 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 
 	public ColumnChartView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		initAnimatiors();
-		chartCalculator = new ChartCalculator();
 		chartRenderer = new ColumnChartRenderer(context, this, this);
-		axesRenderer = new AxesRenderer(context, this);
-		touchHandler = new ChartTouchHandler(context, this);
 		setColumnChartData(generateDummyData());
-	}
-
-	private void initAnimatiors() {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-			animator = new ChartDataAnimatorV8(this);
-		} else {
-			animator = new ChartDataAnimatorV14(this);
-		}
-	}
-
-	@Override
-	protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
-		super.onSizeChanged(width, height, oldWidth, oldHeight);
-		// TODO mPointRadus can change, recalculate in setter
-		chartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
-				getPaddingRight(), getPaddingBottom());
-		chartRenderer.initDataAttributes();
-		axesRenderer.initRenderer();
-	}
-
-	@Override
-	protected void onDraw(Canvas canvas) {
-		long time = System.nanoTime();
-		super.onDraw(canvas);
-		axesRenderer.draw(canvas);
-		int clipRestoreCount = canvas.save();
-		canvas.clipRect(chartCalculator.getContentRect());
-		chartRenderer.draw(canvas);
-		canvas.restoreToCount(clipRestoreCount);
-		chartRenderer.drawUnclipped(canvas);
-		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
-	}
-
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		super.onTouchEvent(event);
-		if (touchHandler.handleTouchEvent(event)) {
-			ViewCompat.postInvalidateOnAnimation(this);
-		}
-		return true;
-	}
-
-	@Override
-	public void computeScroll() {
-		super.computeScroll();
-		if (touchHandler.computeScroll()) {
-			ViewCompat.postInvalidateOnAnimation(this);
-		}
 	}
 
 	@Override
@@ -166,16 +102,6 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 		chartRenderer.initCurrentViewport();
 		ViewCompat.postInvalidateOnAnimation(this);
 
-	}
-
-	@Override
-	public void startDataAnimation() {
-		animator.startAnimation();
-	}
-
-	@Override
-	public void setChartAnimationListener(ChartAnimationListener animationListener) {
-		animator.setChartAnimationListener(animationListener);
 	}
 
 	private ColumnChartData generateDummyData() {

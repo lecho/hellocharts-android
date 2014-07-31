@@ -2,25 +2,34 @@ package lecho.lib.hellocharts.view;
 
 import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartCalculator;
+import lecho.lib.hellocharts.anim.ChartAnimationListener;
+import lecho.lib.hellocharts.anim.ChartDataAnimator;
+import lecho.lib.hellocharts.anim.ChartDataAnimatorV14;
+import lecho.lib.hellocharts.anim.ChartDataAnimatorV8;
 import lecho.lib.hellocharts.anim.ChartViewportAnimatorV14;
 import lecho.lib.hellocharts.anim.ChartViewportAnimatorV8;
-import lecho.lib.hellocharts.anim.ViewportAnimator;
+import lecho.lib.hellocharts.anim.ChartViewportAnimator;
 import lecho.lib.hellocharts.gesture.ChartTouchHandler;
 import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.RectF;
 import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 public abstract class AbstractChartView extends View implements Chart {
+	public static final String TAG = "AbstractChartView";
 	protected ChartCalculator chartCalculator;
 	protected AxesRenderer axesRenderer;
 	protected ChartTouchHandler touchHandler;
 	protected ChartRenderer chartRenderer;
-	protected ViewportAnimator viewportAnimator;
+	protected ChartDataAnimator dataAnimator;
+	protected ChartViewportAnimator viewportAnimator;
 
 	public AbstractChartView(Context context) {
 		this(context, null, 0);
@@ -32,12 +41,65 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	public AbstractChartView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-		this.viewportAnimator = new ChartViewportAnimatorV8(this);
+		chartCalculator = new ChartCalculator();
+		axesRenderer = new AxesRenderer(context, this);
+		touchHandler = new ChartTouchHandler(context, this);
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			this.dataAnimator = new ChartDataAnimatorV8(this);
 			this.viewportAnimator = new ChartViewportAnimatorV8(this);
 		} else {
 			this.viewportAnimator = new ChartViewportAnimatorV14(this);
+			this.dataAnimator = new ChartDataAnimatorV14(this);
 		}
+	}
+
+	@Override
+	protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
+		super.onSizeChanged(width, height, oldWidth, oldHeight);
+		chartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
+				getPaddingRight(), getPaddingBottom());
+		chartRenderer.initDataAttributes();
+		axesRenderer.initRenderer();
+	}
+
+	@Override
+	protected void onDraw(Canvas canvas) {
+		long time = System.nanoTime();
+		super.onDraw(canvas);
+		axesRenderer.draw(canvas);
+		int clipRestoreCount = canvas.save();
+		canvas.clipRect(chartCalculator.getContentRect());
+		chartRenderer.draw(canvas);
+		canvas.restoreToCount(clipRestoreCount);
+		chartRenderer.drawUnclipped(canvas);
+		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
+	}
+
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		super.onTouchEvent(event);
+		if (touchHandler.handleTouchEvent(event)) {
+			ViewCompat.postInvalidateOnAnimation(this);
+		}
+		return true;
+	}
+
+	@Override
+	public void computeScroll() {
+		super.computeScroll();
+		if (touchHandler.computeScroll()) {
+			ViewCompat.postInvalidateOnAnimation(this);
+		}
+	}
+
+	@Override
+	public void startDataAnimation() {
+		dataAnimator.startAnimation();
+	}
+
+	@Override
+	public void setDataAnimationListener(ChartAnimationListener animationListener) {
+		dataAnimator.setChartAnimationListener(animationListener);
 	}
 
 	public ChartRenderer getChartRenderer() {

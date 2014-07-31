@@ -8,7 +8,7 @@ import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.annotation.SuppressLint;
 
 @SuppressLint("NewApi")
-public class ChartDataAnimatorV14 implements ChartAnimator, AnimatorListener, AnimatorUpdateListener {
+public class ChartDataAnimatorV14 implements ChartDataAnimator, AnimatorListener, AnimatorUpdateListener {
 	private ValueAnimator animator;
 	private final Chart chart;
 	private ChartAnimationListener animationListener = new DummyChartAnimationListener();

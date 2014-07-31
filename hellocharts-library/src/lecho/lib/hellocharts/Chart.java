@@ -26,7 +26,7 @@ public interface Chart {
 
 	public void startDataAnimation();
 
-	public void setChartAnimationListener(ChartAnimationListener animationListener);
+	public void setDataAnimationListener(ChartAnimationListener animationListener);
 
 	public void callTouchListener(SelectedValue selectedValue);
 

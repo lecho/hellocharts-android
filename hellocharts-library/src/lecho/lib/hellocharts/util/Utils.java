@@ -28,22 +28,8 @@ public abstract class Utils {
 
 	}
 
-	public static int dp2px(Context context, int dp) {
-		// Get the screen's density scale
-		final float density = context.getResources().getDisplayMetrics().density;
-		// Convert the dps to pixels, based on density scale
-		return dp2px(density, dp);
-	}
-
 	public static int sp2px(float scaledDensity, int sp) {
 		return (int) (sp * scaledDensity + 0.5f);
-	}
-
-	public static int sp2px(Context context, int sp) {
-		// Get the screen's density scale
-		final float scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
-		// Convert the dps to pixels, based on scaled density
-		return sp2px(scaledDensity, sp);
 	}
 
 	public static int mm2px(Context context, int mm) {

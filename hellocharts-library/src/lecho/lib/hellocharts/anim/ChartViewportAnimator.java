@@ -2,7 +2,7 @@ package lecho.lib.hellocharts.anim;
 
 import android.graphics.RectF;
 
-public interface ViewportAnimator {
+public interface ChartViewportAnimator {
 
 	public static final int FAST_ANIMATION_DURATION = 200;
 

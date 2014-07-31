@@ -7,7 +7,7 @@ import android.os.SystemClock;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 
-public class ChartViewportAnimatorV8 implements ViewportAnimator {
+public class ChartViewportAnimatorV8 implements ChartViewportAnimator {
 
 	long start;
 	boolean isAnimationStarted = false;
