@@ -135,8 +135,8 @@ public class AxesRenderer {
 			float rawY = chartCalculator.getContentRectWithMargins().bottom + axesTextHeight;
 			for (AxisValue axisValue : axisX.getValues()) {
 				final float value = axisValue.getValue();
-				if (value >= chartCalculator.getCurrentViewport().left
-						&& value <= chartCalculator.getCurrentViewport().right) {
+				if (value >= chartCalculator.getVisibleViewport().left
+						&& value <= chartCalculator.getVisibleViewport().right) {
 					final float rawX = chartCalculator.calculateRawX(axisValue.getValue());
 					final int nummChars = axisX.getFormatter().formatValue(labelBuffer, axisValue.getValue());
 					canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY, textPaint);
@@ -146,7 +146,7 @@ public class AxesRenderer {
 	}
 
 	private void drawAxisXAuto(Canvas canvas, ChartCalculator chartCalculator, Axis axisX) {
-		computeAxisStops(chartCalculator.getCurrentViewport().left, chartCalculator.getCurrentViewport().right,
+		computeAxisStops(chartCalculator.getVisibleViewport().left, chartCalculator.getVisibleViewport().right,
 				chartCalculator.getContentRect().width() / axesLabelMaxWidth / 2, axisXStopsBuffer);
 		textPaint.setTextAlign(Paint.Align.CENTER);
 		float rawY = chartCalculator.getContentRectWithMargins().bottom + axesTextHeight;
@@ -189,8 +189,8 @@ public class AxesRenderer {
 		int i = 0;
 		for (AxisValue axisValue : axisY.getValues()) {
 			final float value = axisValue.getValue();
-			if (value <= chartCalculator.getCurrentViewport().bottom
-					&& value >= chartCalculator.getCurrentViewport().top) {
+			if (value <= chartCalculator.getVisibleViewport().bottom
+					&& value >= chartCalculator.getVisibleViewport().top) {
 				final float rawY = chartCalculator.calculateRawY(value);
 				axisYDrawBuffer[i++] = rawX;
 				axisYDrawBuffer[i++] = rawY;
@@ -204,7 +204,7 @@ public class AxesRenderer {
 	}
 
 	public void drawAxisYAuto(Canvas canvas, ChartCalculator chartCalculator, Axis axisY) {
-		computeAxisStops(chartCalculator.getCurrentViewport().top, chartCalculator.getCurrentViewport().bottom,
+		computeAxisStops(chartCalculator.getVisibleViewport().top, chartCalculator.getVisibleViewport().bottom,
 				chartCalculator.getContentRect().height() / axesTextHeight / 2, axisYStopsBuffer);
 		if (axisYDrawBuffer.length < axisYStopsBuffer.numStops * 4) {
 			axisYDrawBuffer = new float[axisYStopsBuffer.numStops * 4];

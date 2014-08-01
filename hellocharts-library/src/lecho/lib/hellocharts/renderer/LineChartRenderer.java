@@ -15,8 +15,8 @@ import android.graphics.RectF;
 
 public class LineChartRenderer extends AbstractChartRenderer {
 	private static final float LINE_SMOOTHNES = 0.16f;
-	int DEFAULT_LINE_STROKE_WIDTH_DP = 3;
-	int DEFAULT_TOUCH_TOLLERANCE_MARGIN_DP = 4;
+	private static final int DEFAULT_LINE_STROKE_WIDTH_DP = 3;
+	private static final int DEFAULT_TOUCH_TOLLERANCE_MARGIN_DP = 4;
 
 	private static final int MODE_DRAW = 0;
 	private static final int MODE_HIGHLIGHT = 1;
@@ -276,8 +276,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 	private void drawPoint(Canvas canvas, float rawX, float rawY, float pointRadius, int pointShape) {
 		if (Line.SHAPE_SQUARE == pointShape) {
-			canvas.drawRect(rawX - pointRadius, rawY - pointRadius, rawX + pointRadius, rawY
-					+ pointRadius, pointPaint);
+			canvas.drawRect(rawX - pointRadius, rawY - pointRadius, rawX + pointRadius, rawY + pointRadius, pointPaint);
 		} else {
 			canvas.drawCircle(rawX, rawY, pointRadius, pointPaint);
 		}
@@ -289,8 +288,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		drawPoints(canvas, line, lineIndex, MODE_HIGHLIGHT);
 	}
 
-	private void highlightPoint(Canvas canvas, Line line, LinePoint linePoint, float rawX, float rawY,
-			int lineIndex, int valueIndex) {
+	private void highlightPoint(Canvas canvas, Line line, LinePoint linePoint, float rawX, float rawY, int lineIndex,
+			int valueIndex) {
 		int pointRadius = Utils.dp2px(density, line.getPointRadius());
 		if (selectedValue.firstIndex == lineIndex && selectedValue.secondIndex == valueIndex) {
 			pointPaint.setColor(line.getDarkenColor());

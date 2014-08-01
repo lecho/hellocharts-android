@@ -320,7 +320,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	private float calculateColumnWidth(final ChartCalculator chartCalculator, float fillRatio) {
 		// columnWidht should be at least 2 px
 		float columnWidth = fillRatio * chartCalculator.getContentRect().width()
-				/ chartCalculator.getCurrentViewport().width();
+				/ chartCalculator.getVisibleViewport().width();
 		if (columnWidth < 2) {
 			columnWidth = 2;
 		}

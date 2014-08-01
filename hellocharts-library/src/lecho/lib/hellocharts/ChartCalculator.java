@@ -7,12 +7,12 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 
 public class ChartCalculator {
-	private static final float MAXIMUM_SCALE = 10f;
+	protected static final float MAXIMUM_SCALE = 10f;
 	/**
 	 * The current area (in pixels) for chart data, including mCoomonMargin. Labels are drawn outside this area.
 	 */
-	private Rect contentRect = new Rect();
-	private Rect contentRectWithMargins = new Rect();
+	protected Rect contentRect = new Rect();
+	protected Rect contentRectWithMargins = new Rect();
 	/**
 	 * This rectangle represents the currently visible chart values ranges. The currently visible chart X values are
 	 * from this rectangle's left to its right. The currently visible chart Y values are from this rectangle's top to
@@ -23,11 +23,11 @@ public class ChartCalculator {
 	 * pixel Y positions), this rectangle's "top" is drawn above this rectangle's "bottom" value.
 	 * 
 	 */
-	private RectF currentViewport = new RectF();
-	private RectF maxViewport = new RectF();// Viewport for whole data ranges
+	protected RectF currentViewport = new RectF();
+	protected RectF maxViewport = new RectF();// Viewport for whole data ranges
 
-	private float minViewportWidth;
-	private float minViewportHeight;
+	protected float minViewportWidth;
+	protected float minViewportHeight;
 
 	/**
 	 * Constructor
@@ -63,20 +63,6 @@ public class ChartCalculator {
 		contentRectWithMargins.left = contentRectWithMargins.left + axisYMargin;
 		contentRect.left = contentRect.left + axisYMargin;
 		contentRect.bottom = contentRect.bottom - axisXMargin;
-	}
-
-	public void setMaxViewport(RectF maxViewport) {
-		this.maxViewport.set(maxViewport.left, maxViewport.top, maxViewport.right, maxViewport.bottom);
-		minViewportWidth = this.maxViewport.width() / MAXIMUM_SCALE;
-		minViewportHeight = this.maxViewport.height() / MAXIMUM_SCALE;
-	}
-
-	public void setCurrentViewport(float left, float top, float right, float bottom) {
-		constrainViewport(left, top, right, bottom);
-	}
-
-	public void setCurrentViewport(RectF viewport) {
-		constrainViewport(viewport.left, viewport.top, viewport.right, viewport.bottom);
 	}
 
 	public void constrainViewport(float left, float top, float right, float bottom) {
@@ -166,8 +152,30 @@ public class ChartCalculator {
 		return currentViewport;
 	}
 
+	public void setCurrentViewport(float left, float top, float right, float bottom) {
+		constrainViewport(left, top, right, bottom);
+	}
+
+	public void setCurrentViewport(RectF viewport) {
+		constrainViewport(viewport.left, viewport.top, viewport.right, viewport.bottom);
+	}
+
 	public RectF getMaximumViewport() {
 		return maxViewport;
+	}
+
+	public void setMaxViewport(RectF maxViewport) {
+		this.maxViewport.set(maxViewport.left, maxViewport.top, maxViewport.right, maxViewport.bottom);
+		minViewportWidth = this.maxViewport.width() / MAXIMUM_SCALE;
+		minViewportHeight = this.maxViewport.height() / MAXIMUM_SCALE;
+	}
+
+	public RectF getVisibleViewport() {
+		return currentViewport;
+	}
+
+	public void setVisibleViewport(RectF visibleViewport) {
+		setCurrentViewport(visibleViewport);
 	}
 
 	public float getMinimumViewportWidth() {

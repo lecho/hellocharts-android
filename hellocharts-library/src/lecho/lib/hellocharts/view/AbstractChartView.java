@@ -188,7 +188,7 @@ public abstract class AbstractChartView extends View implements Chart {
 	 */
 	@Override
 	public void zoom(float x, float y, float zoomAmout) {
-		if (chartCalculator.getCurrentViewport().contains(x, y)) {
+		if (chartCalculator.getVisibleViewport().contains(x, y)) {
 			touchHandler.startZoom(x, y, zoomAmout);
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
