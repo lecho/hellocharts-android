@@ -70,7 +70,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 
 	@Override
 	public void drawUnclipped(Canvas canvas) {
-		// Do nothing
+		// Do nothing, for this kind of chart there is nothing to draw beyond clipped area
 	}
 
 	public boolean checkTouch(float touchX, float touchY) {
@@ -91,7 +91,10 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void calculateMaxViewport() {
-		ColumnChartData data = dataProvider.getColumnChartData();
+		final ColumnChartData data = dataProvider.getColumnChartData();
+		// Column chart always has X values from 0 to numColumns-1, to add some margin on the left and right I added
+		// extra 0.5 to the each side, that margins will be negative scaled according to number of columns, so for more
+		// columns there will be less margin.
 		tempMaxViewport.set(-0.5f, DEFAULT_BASE_VALUE, data.getColumns().size() - 0.5f, DEFAULT_BASE_VALUE);
 		if (data.isStacked()) {
 			calculateMaxViewportForStacked(data);
@@ -154,6 +157,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void checkTouchForSubcolumns(float touchX, float touchY) {
+		// Using member variable to hold touch point to avoid too much parameters in methods.
 		touchedPoint.x = touchX;
 		touchedPoint.y = touchY;
 		final ColumnChartData data = dataProvider.getColumnChartData();
@@ -176,22 +180,21 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 		if (subcolumnWidth < 1) {
 			subcolumnWidth = 1;
 		}
-		// Columns are indexes from 0 to n, column index is also cikynb X value
-		final float rawValueX = chartCalculator.calculateRawX(columnIndex);
+		// Columns are indexes from 0 to n, column index is also column X value
+		final float rawX = chartCalculator.calculateRawX(columnIndex);
 		final float halfColumnWidth = columnWidth / 2;
-		final float rawBaseValueY = chartCalculator.calculateRawY(DEFAULT_BASE_VALUE);
+		final float baseRawY = chartCalculator.calculateRawY(DEFAULT_BASE_VALUE);
 		// First subcolumn will starts at the left edge of current column,
 		// rawValueX is horizontal center of that column
-		float subcolumnRawValueX = rawValueX - halfColumnWidth;
+		float subcolumnRawX = rawX - halfColumnWidth;
 		int valueIndex = 0;
 		for (ColumnValue columnValue : column.getValues()) {
 			columnPaint.setColor(columnValue.getColor());
-			if (subcolumnRawValueX > rawValueX + halfColumnWidth) {
+			if (subcolumnRawX > rawX + halfColumnWidth) {
 				break;
 			}
-			final float rawValueY = chartCalculator.calculateRawY(columnValue.getValue());
-			calculateRectToDraw(columnValue, subcolumnRawValueX, subcolumnRawValueX + subcolumnWidth, rawBaseValueY,
-					rawValueY);
+			final float rawY = chartCalculator.calculateRawY(columnValue.getValue());
+			calculateRectToDraw(columnValue, subcolumnRawX, subcolumnRawX + subcolumnWidth, baseRawY, rawY);
 			switch (mode) {
 			case MODE_DRAW:
 				drawSubcolumn(canvas, column, columnValue, false);
@@ -207,7 +210,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 				// be thrown
 				throw new IllegalStateException("Cannot process column in mode: " + mode);
 			}
-			subcolumnRawValueX += subcolumnWidth + subcolumnSpacing;
+			subcolumnRawX += subcolumnWidth + subcolumnSpacing;
 			++valueIndex;
 		}
 	}
@@ -249,7 +252,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 
 	private void processColumnForStacked(Canvas canvas, ChartCalculator chartCalculator, Column column,
 			float columnWidth, int columnIndex, int mode) {
-		final float rawValueX = chartCalculator.calculateRawX(columnIndex);
+		final float rawX = chartCalculator.calculateRawX(columnIndex);
 		final float halfColumnWidth = columnWidth / 2;
 		float mostPositiveValue = DEFAULT_BASE_VALUE;
 		float mostNegativeValue = DEFAULT_BASE_VALUE;
@@ -266,10 +269,9 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 				baseValue = mostNegativeValue;
 				mostNegativeValue += columnValue.getValue();
 			}
-			final float rawBaseValueY = chartCalculator.calculateRawY(baseValue);
-			final float rawValueY = chartCalculator.calculateRawY(baseValue + columnValue.getValue());
-			calculateRectToDraw(columnValue, rawValueX - halfColumnWidth, rawValueX + halfColumnWidth, rawBaseValueY,
-					rawValueY);
+			final float rawBaseY = chartCalculator.calculateRawY(baseValue);
+			final float rawY = chartCalculator.calculateRawY(baseValue + columnValue.getValue());
+			calculateRectToDraw(columnValue, rawX - halfColumnWidth, rawX + halfColumnWidth, rawBaseY, rawY);
 			switch (mode) {
 			case MODE_DRAW:
 				drawSubcolumn(canvas, column, columnValue, true);
@@ -325,16 +327,16 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 		return columnWidth;
 	}
 
-	private void calculateRectToDraw(ColumnValue columnValue, float left, float right, float rawBaseValueY,
-			float rawValueY) {
+	private void calculateRectToDraw(ColumnValue columnValue, float left, float right, float rawBaseY, float rawY) {
+		// Calculate rect that will be drawn as column, subcolumn or label background.
 		drawRect.left = left;
 		drawRect.right = right;
 		if (columnValue.getValue() >= DEFAULT_BASE_VALUE) {
-			drawRect.top = rawValueY;
-			drawRect.bottom = rawBaseValueY - subcolumnSpacing;
+			drawRect.top = rawY;
+			drawRect.bottom = rawBaseY - subcolumnSpacing;
 		} else {
-			drawRect.bottom = rawValueY;
-			drawRect.top = rawBaseValueY + subcolumnSpacing;
+			drawRect.bottom = rawY;
+			drawRect.top = rawBaseY + subcolumnSpacing;
 		}
 	}
 
@@ -348,6 +350,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 		float top;
 		float bottom;
 		if (isStacked && labelHeight < drawRect.height()) {
+			// For stacked columns draw label only if label height is less than subcolumn height
 			if (columnValue.getValue() >= DEFAULT_BASE_VALUE) {
 				top = drawRect.top;
 				bottom = drawRect.top + labelHeight + labelMargin * 2;
@@ -358,6 +361,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, left + labelMargin, bottom
 					- labelMargin, labelPaint);
 		} else if (!isStacked) {
+			// For not stacked draw label at the top for positive and at the bottom for negative values
 			if (columnValue.getValue() >= DEFAULT_BASE_VALUE) {
 				top = drawRect.top - offset - labelHeight - labelMargin * 2;
 				if (top < chartCalculator.getContentRect().top) {

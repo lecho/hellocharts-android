@@ -78,7 +78,6 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			if (line.hasPoints()) {
 				drawPoints(canvas, line, lineIndex, MODE_DRAW);
 			}
-			mLinePath.reset();
 			++lineIndex;
 		}
 		if (isTouched()) {
@@ -119,7 +118,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private void calculateMaxViewport() {
 		tempMaxViewport.set(Float.MAX_VALUE, Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
 		LineChartData data = dataProvider.getLineChartData();
-		// TODO: optimize
+		// TODO: Optimize.
 		for (Line line : data.lines) {
 			for (LinePoint linePoint : line.getPoints()) {
 				if (linePoint.getX() < tempMaxViewport.left) {
@@ -154,16 +153,15 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void drawPath(Canvas canvas, final Line line) {
-
 		final ChartCalculator chartCalculator = chart.getChartCalculator();
 		int valueIndex = 0;
 		for (LinePoint linePoint : line.getPoints()) {
-			final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
-			final float rawValueY = chartCalculator.calculateRawY(linePoint.getY());
+			final float rawX = chartCalculator.calculateRawX(linePoint.getX());
+			final float rawY = chartCalculator.calculateRawY(linePoint.getY());
 			if (valueIndex == 0) {
-				mLinePath.moveTo(rawValueX, rawValueY);
+				mLinePath.moveTo(rawX, rawY);
 			} else {
-				mLinePath.lineTo(rawValueX, rawValueY);
+				mLinePath.lineTo(rawX, rawY);
 			}
 			++valueIndex;
 		}
@@ -257,17 +255,17 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		int valueIndex = 0;
 		for (LinePoint linePoint : line.getPoints()) {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
-			final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
-			final float rawValueY = chartCalculator.calculateRawY(linePoint.getY());
-			if (chartCalculator.isWithinContentRect((int) rawValueX, (int) rawValueY)) {
+			final float rawX = chartCalculator.calculateRawX(linePoint.getX());
+			final float rawY = chartCalculator.calculateRawY(linePoint.getY());
+			if (chartCalculator.isWithinContentRect((int) rawX, (int) rawY)) {
 				// Draw points only if they are within contentRect
 				if (MODE_DRAW == mode) {
-					drawPoint(canvas, rawValueX, rawValueY, pointRadius, line.getPointShape());
+					drawPoint(canvas, rawX, rawY, pointRadius, line.getPointShape());
 					if (line.hasLabels()) {
-						drawLabel(canvas, line, linePoint, rawValueX, rawValueY, pointRadius + labelOffset);
+						drawLabel(canvas, line, linePoint, rawX, rawY, pointRadius + labelOffset);
 					}
 				} else if (MODE_HIGHLIGHT == mode) {
-					highlightPoint(canvas, line, linePoint, rawValueX, rawValueY, lineIndex, valueIndex);
+					highlightPoint(canvas, line, linePoint, rawX, rawY, lineIndex, valueIndex);
 				} else {
 					throw new IllegalStateException("Cannot process points in mode: " + mode);
 				}
@@ -276,12 +274,12 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		}
 	}
 
-	private void drawPoint(Canvas canvas, float rawValueX, float rawValueY, float pointRadius, int pointShape) {
+	private void drawPoint(Canvas canvas, float rawX, float rawY, float pointRadius, int pointShape) {
 		if (Line.SHAPE_SQUARE == pointShape) {
-			canvas.drawRect(rawValueX - pointRadius, rawValueY - pointRadius, rawValueX + pointRadius, rawValueY
+			canvas.drawRect(rawX - pointRadius, rawY - pointRadius, rawX + pointRadius, rawY
 					+ pointRadius, pointPaint);
 		} else {
-			canvas.drawCircle(rawValueX, rawValueY, pointRadius, pointPaint);
+			canvas.drawCircle(rawX, rawY, pointRadius, pointPaint);
 		}
 	}
 
@@ -291,38 +289,38 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		drawPoints(canvas, line, lineIndex, MODE_HIGHLIGHT);
 	}
 
-	private void highlightPoint(Canvas canvas, Line line, LinePoint linePoint, float rawValueX, float rawValueY,
+	private void highlightPoint(Canvas canvas, Line line, LinePoint linePoint, float rawX, float rawY,
 			int lineIndex, int valueIndex) {
 		int pointRadius = Utils.dp2px(density, line.getPointRadius());
 		if (selectedValue.firstIndex == lineIndex && selectedValue.secondIndex == valueIndex) {
 			pointPaint.setColor(line.getDarkenColor());
-			drawPoint(canvas, rawValueX, rawValueY, pointRadius + touchTolleranceMargin, line.getPointShape());
+			drawPoint(canvas, rawX, rawY, pointRadius + touchTolleranceMargin, line.getPointShape());
 			if (line.hasLabels()) {
-				drawLabel(canvas, line, linePoint, rawValueX, rawValueY, pointRadius + labelOffset);
+				drawLabel(canvas, line, linePoint, rawX, rawY, pointRadius + labelOffset);
 			}
 		}
 	}
 
-	private void drawLabel(Canvas canvas, Line line, LinePoint linePoint, float rawValueX, float rawValueY, float offset) {
+	private void drawLabel(Canvas canvas, Line line, LinePoint linePoint, float rawX, float rawY, float offset) {
 		final ChartCalculator chartCalculator = chart.getChartCalculator();
 		final int nummChars = line.getFormatter().formatValue(labelBuffer, linePoint.getY());
 		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
-		float left = rawValueX - labelWidth / 2 - labelMargin;
-		float right = rawValueX + labelWidth / 2 + labelMargin;
-		float top = rawValueY - offset - labelHeight - labelMargin * 2;
-		float bottom = rawValueY - offset;
+		float left = rawX - labelWidth / 2 - labelMargin;
+		float right = rawX + labelWidth / 2 + labelMargin;
+		float top = rawY - offset - labelHeight - labelMargin * 2;
+		float bottom = rawY - offset;
 		if (top < chartCalculator.getContentRect().top) {
-			top = rawValueY + offset;
-			bottom = rawValueY + offset + labelHeight + labelMargin * 2;
+			top = rawY + offset;
+			bottom = rawY + offset + labelHeight + labelMargin * 2;
 		}
 		if (left < chartCalculator.getContentRect().left) {
-			left = rawValueX;
-			right = rawValueX + labelWidth + labelMargin * 2;
+			left = rawX;
+			right = rawX + labelWidth + labelMargin * 2;
 		}
 		if (right > chartCalculator.getContentRect().right) {
-			left = rawValueX - labelWidth - labelMargin * 2;
-			right = rawValueX;
+			left = rawX - labelWidth - labelMargin * 2;
+			right = rawX;
 		}
 		labelRect.set(left, top, right, bottom);
 		int orginColor = labelPaint.getColor();
