@@ -36,7 +36,7 @@ public class ChartScroller {
 				/ chartCalculator.getContentRect().height();
 		chartCalculator.computeScrollSurfaceSize(surfaceSizeBuffer);
 		chartCalculator.setViewportBottomLeft(chartCalculator.getCurrentViewport().left + viewportOffsetX,
-				chartCalculator.getCurrentViewport().bottom + viewportOffsetY);
+				chartCalculator.getCurrentViewport().top + viewportOffsetY);
 		return true;
 	}
 
@@ -47,8 +47,8 @@ public class ChartScroller {
 			chartCalculator.computeScrollSurfaceSize(surfaceSizeBuffer);
 			float currXRange = chartCalculator.getMaximumViewport().left + chartCalculator.getMaximumViewport().width()
 					* scroller.getCurrX() / surfaceSizeBuffer.x;
-			float currYRange = chartCalculator.getMaximumViewport().bottom
-					- chartCalculator.getMaximumViewport().height() * scroller.getCurrY() / surfaceSizeBuffer.y;
+			float currYRange = chartCalculator.getMaximumViewport().top - chartCalculator.getMaximumViewport().height()
+					* scroller.getCurrY() / surfaceSizeBuffer.y;
 			chartCalculator.setViewportBottomLeft(currXRange, currYRange);
 			return true;
 		}
@@ -63,7 +63,7 @@ public class ChartScroller {
 				* (scrollerStartViewport.left - chartCalculator.getMaximumViewport().left) / chartCalculator
 				.getMaximumViewport().width());
 		int startY = (int) (surfaceSizeBuffer.y
-				* (chartCalculator.getMaximumViewport().bottom - scrollerStartViewport.bottom) / chartCalculator
+				* (chartCalculator.getMaximumViewport().top - scrollerStartViewport.top) / chartCalculator
 				.getMaximumViewport().height());
 		// TODO probably should be mScroller.forceFinish but ScrollerCompat doesn't have that method.
 		scroller.abortAnimation();

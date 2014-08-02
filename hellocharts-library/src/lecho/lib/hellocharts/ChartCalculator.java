@@ -85,7 +85,7 @@ public class ChartCalculator {
 	 * value represents the topmost pixel position, and thus the bottom of the {@link #currentViewport} rectangle. For
 	 * more details on why top and bottom are flipped, see {@link #currentViewport}.
 	 */
-	public void setViewportBottomLeft(float left, float bottom) {
+	public void setViewportBottomLeft(float left, float top) {
 		/**
 		 * Constrains within the scroll range. The scroll range is simply the viewport extremes (AXIS_X_MAX, etc.) minus
 		 * the viewport size. For example, if the extrema were 0 and 10, and the viewport size was 2, the scroll range
@@ -95,8 +95,8 @@ public class ChartCalculator {
 		final float curWidth = currentViewport.width();
 		final float curHeight = currentViewport.height();
 		left = Math.max(maxViewport.left, Math.min(left, maxViewport.right - curWidth));
-		bottom = Math.max(maxViewport.top + curHeight, Math.min(bottom, maxViewport.bottom));
-		constrainViewport(left, bottom - curHeight, left + curWidth, bottom);
+		top = Math.max(maxViewport.bottom + curHeight, Math.min(top, maxViewport.top));
+		constrainViewport(left, top, left + curWidth, top - curHeight);
 	}
 
 	public float calculateRawX(float valueX) {
