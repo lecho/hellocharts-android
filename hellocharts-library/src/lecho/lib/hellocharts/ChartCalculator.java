@@ -65,8 +65,8 @@ public class ChartCalculator {
 	}
 
 	public void constrainViewport(float left, float top, float right, float bottom) {
-		if (right - left < minViewportWidth || top - bottom < minViewportHeight) {
-			// Maximum zoom!
+		if (right - left < minViewportWidth) {
+			// Minimum width - constrain horizontal zoom!
 			right = left + minViewportWidth;
 			if (left < maxViewport.left) {
 				left = maxViewport.left;
@@ -75,6 +75,9 @@ public class ChartCalculator {
 				right = maxViewport.right;
 				left = right - minViewportWidth;
 			}
+		}
+		if (top - bottom < minViewportHeight) {
+			// Minimum height - constrain vertical zoom!
 			bottom = top - minViewportHeight;
 			if (top > maxViewport.top) {
 				top = maxViewport.top;
