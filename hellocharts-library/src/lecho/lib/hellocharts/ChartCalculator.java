@@ -120,7 +120,7 @@ public class ChartCalculator {
 			return false;
 		}
 		dest.set(currentViewport.left + (x - contentRect.left) * currentViewport.width() / contentRect.width(),
-				currentViewport.bottom + (y - contentRect.top) * currentViewport.height() / -contentRect.height());
+				currentViewport.bottom + (y - contentRect.bottom) * currentViewport.height() / -contentRect.height());
 		return true;
 	}
 
