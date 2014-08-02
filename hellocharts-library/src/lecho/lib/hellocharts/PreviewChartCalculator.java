@@ -10,7 +10,7 @@ public class PreviewChartCalculator extends ChartCalculator {
 	}
 
 	public float calculateRawY(float valueY) {
-		final float pixelOffset = (valueY - maxViewport.top) * (contentRect.height() / maxViewport.height());
+		final float pixelOffset = (valueY - maxViewport.bottom) * (contentRect.height() / maxViewport.height());
 		return contentRect.bottom - pixelOffset;
 	}
 
