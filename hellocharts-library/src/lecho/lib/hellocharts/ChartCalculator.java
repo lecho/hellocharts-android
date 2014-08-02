@@ -1,7 +1,6 @@
 package lecho.lib.hellocharts;
 
 import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.util.Utils;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -68,15 +67,27 @@ public class ChartCalculator {
 	public void constrainViewport(float left, float top, float right, float bottom) {
 		if (right - left < minViewportWidth || top - bottom < minViewportHeight) {
 			// Maximum zoom!
-			left = currentViewport.left;
-			top = currentViewport.top;
 			right = left + minViewportWidth;
+			if (left < maxViewport.left) {
+				left = maxViewport.left;
+				right = left + minViewportWidth;
+			} else if (right > maxViewport.right) {
+				right = maxViewport.right;
+				left = right - minViewportWidth;
+			}
 			bottom = top - minViewportHeight;
+			if (top > maxViewport.top) {
+				top = maxViewport.top;
+				bottom = top - minViewportHeight;
+			} else if (bottom < maxViewport.bottom) {
+				bottom = maxViewport.bottom;
+				top = bottom + minViewportHeight;
+			}
 		}
 
 		currentViewport.left = Math.max(maxViewport.left, left);
-		currentViewport.top = Math.max(Utils.nextUpF(bottom), Math.min(maxViewport.top, top));
-		currentViewport.right = Math.max(Utils.nextUpF(left), Math.min(maxViewport.right, right));
+		currentViewport.top = Math.min(maxViewport.top, top);
+		currentViewport.right = Math.min(maxViewport.right, right);
 		currentViewport.bottom = Math.max(maxViewport.bottom, bottom);
 	}
 
