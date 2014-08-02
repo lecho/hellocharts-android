@@ -28,6 +28,8 @@ public interface Chart {
 
 	public void setDataAnimationListener(ChartAnimationListener animationListener);
 
+	public void setViewportAnimationListener(ChartAnimationListener animationListener);
+
 	public void callTouchListener(SelectedValue selectedValue);
 
 	public boolean isInteractive();

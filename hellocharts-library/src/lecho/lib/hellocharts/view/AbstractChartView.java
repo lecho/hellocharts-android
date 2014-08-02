@@ -102,6 +102,11 @@ public abstract class AbstractChartView extends View implements Chart {
 		dataAnimator.setChartAnimationListener(animationListener);
 	}
 
+	@Override
+	public void setViewportAnimationListener(ChartAnimationListener animationListener) {
+		viewportAnimator.setChartAnimationListener(animationListener);
+	}
+
 	public ChartRenderer getChartRenderer() {
 		return chartRenderer;
 	}
