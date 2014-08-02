@@ -2,6 +2,7 @@ package lecho.lib.hellocharts.view;
 
 import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartCalculator;
+import lecho.lib.hellocharts.ViewportChangeListener;
 import lecho.lib.hellocharts.anim.ChartAnimationListener;
 import lecho.lib.hellocharts.anim.ChartDataAnimator;
 import lecho.lib.hellocharts.anim.ChartDataAnimatorV14;
@@ -105,6 +106,11 @@ public abstract class AbstractChartView extends View implements Chart {
 	@Override
 	public void setViewportAnimationListener(ChartAnimationListener animationListener) {
 		viewportAnimator.setChartAnimationListener(animationListener);
+	}
+
+	@Override
+	public void setViewportChangeListener(ViewportChangeListener viewportChangeListener) {
+		chartCalculator.setViewportChangeListener(viewportChangeListener);
 	}
 
 	public ChartRenderer getChartRenderer() {

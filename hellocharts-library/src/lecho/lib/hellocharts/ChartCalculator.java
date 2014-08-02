@@ -29,6 +29,8 @@ public class ChartCalculator {
 	protected float minViewportWidth;
 	protected float minViewportHeight;
 
+	private ViewportChangeListener viewportChangeListener = new DummyVieportChangeListener();
+
 	/**
 	 * Calculates available width and height. Should be called when chart dimensions or chart data change.
 	 */
@@ -72,6 +74,8 @@ public class ChartCalculator {
 		currentViewport.top = Math.max(maxViewport.top, top);
 		currentViewport.bottom = Math.max(Utils.nextUpF(top), Math.min(maxViewport.bottom, bottom));
 		currentViewport.right = Math.max(Utils.nextUpF(left), Math.min(maxViewport.right, right));
+
+		viewportChangeListener.onViewportChanged(currentViewport);
 	}
 
 	/**
@@ -181,6 +185,14 @@ public class ChartCalculator {
 
 	public float getMinimumViewportHeight() {
 		return minViewportHeight;
+	}
+
+	public void setViewportChangeListener(ViewportChangeListener viewportChangeListener) {
+		if (null == viewportChangeListener) {
+			this.viewportChangeListener = new DummyVieportChangeListener();
+		} else {
+			this.viewportChangeListener = viewportChangeListener;
+		}
 	}
 
 }
