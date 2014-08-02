@@ -1,4 +1,4 @@
-package lecho.lib.hellocharts.anim;
+package lecho.lib.hellocharts.animation;
 
 import lecho.lib.hellocharts.Chart;
 import android.animation.Animator;
