@@ -9,16 +9,16 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
 public class ChartTouchHandler {
-	private GestureDetector gestureDetector;
-	private ScaleGestureDetector scaleGestureDetector;
-	private ChartScroller chartScroller;
-	private ChartZoomer chartZoomer;
-	private Chart chart;
+	protected GestureDetector gestureDetector;
+	protected ScaleGestureDetector scaleGestureDetector;
+	protected ChartScroller chartScroller;
+	protected ChartZoomer chartZoomer;
+	protected Chart chart;
 	// TODO: consider using dummy zoomer and scroller instead of boolean flags
-	private boolean isInteractive = true;
-	private boolean isZoomEnabled = true;
-	private boolean isValueTouchEnabled = true;
-	private boolean isValueSelectionEnabled = false;
+	protected boolean isInteractive = true;
+	protected boolean isZoomEnabled = true;
+	protected boolean isValueTouchEnabled = true;
+	protected boolean isValueSelectionEnabled = false;
 
 	public ChartTouchHandler(Context context, Chart chart) {
 		this.chart = chart;

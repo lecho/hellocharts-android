@@ -2,7 +2,7 @@ package lecho.lib.hellocharts.renderer;
 
 import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartCalculator;
-import lecho.lib.hellocharts.LineChartDataProvider;
+import lecho.lib.hellocharts.ColumnChartDataProvider;
 import lecho.lib.hellocharts.util.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -10,14 +10,14 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 
-public class PreviewLineChartRenderer extends LineChartRenderer {
+public class PreviewColumnChartRenderer extends ColumnChartRenderer {
 	private static final int DEFAULT_PREVIEW_TRANSPARENCY = 64;
 	private static final int FULL_ALPHA = 255;
 	private static final int DEFAULT_PREVIEW_STROKE_WIDTH_DP = 2;
 
 	private Paint previewPaint = new Paint();
 
-	public PreviewLineChartRenderer(Context context, Chart chart, LineChartDataProvider dataProvider) {
+	public PreviewColumnChartRenderer(Context context, Chart chart, ColumnChartDataProvider dataProvider) {
 		super(context, chart, dataProvider);
 		previewPaint.setAntiAlias(true);
 		previewPaint.setColor(Color.LTGRAY);
@@ -49,4 +49,5 @@ public class PreviewLineChartRenderer extends LineChartRenderer {
 	public int getPreviewColor() {
 		return previewPaint.getColor();
 	}
+
 }

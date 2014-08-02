@@ -30,12 +30,6 @@ public class ChartCalculator {
 	protected float minViewportHeight;
 
 	/**
-	 * Constructor
-	 */
-	public ChartCalculator() {
-	}
-
-	/**
 	 * Calculates available width and height. Should be called when chart dimensions or chart data change.
 	 */
 	public void calculateContentArea(int width, int height, int paddingLeft, int paddingTop, int paddingRight,

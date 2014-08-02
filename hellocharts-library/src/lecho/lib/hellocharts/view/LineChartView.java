@@ -18,8 +18,8 @@ import android.util.AttributeSet;
 
 public class LineChartView extends AbstractChartView implements LineChartDataProvider {
 	private static final String TAG = "LineChartView";
-	private LineChartData data;
-	private LineChartOnValueTouchListener onValueTouchListener = new DummyOnValueTouchListener();
+	protected LineChartData data;
+	protected LineChartOnValueTouchListener onValueTouchListener = new DummyOnValueTouchListener();
 
 	public LineChartView(Context context) {
 		this(context, null, 0);
@@ -31,9 +31,9 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 
 	public LineChartView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		initAttributes();
 		chartRenderer = new LineChartRenderer(context, this, this);
 		setLineChartData(generateDummyData());
+		initAttributes();
 	}
 
 	@SuppressLint("NewApi")
