@@ -13,6 +13,10 @@ public class PreviewChartTouchHandler extends ChartTouchHandler {
 		this.chart = chart;
 		gestureDetector = new GestureDetector(context, new ChartGestureListener());
 		scaleGestureDetector = new ScaleGestureDetector(context, new ChartScaleGestureListener());
+
+		// Disable value touch, not needed for preview chart.
+		isValueTouchEnabled = false;
+		isValueSelectionEnabled = false;
 	}
 
 	private class ChartScaleGestureListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
