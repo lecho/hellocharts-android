@@ -4,9 +4,9 @@ import lecho.lib.hellocharts.animation.ChartAnimationListener;
 import lecho.lib.hellocharts.gesture.ChartTouchHandler;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
+import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
-import android.graphics.RectF;
 
 public interface Chart {
 
@@ -50,13 +50,13 @@ public interface Chart {
 
 	public void setValueTouchEnabled(boolean isValueTouchEnabled);
 
-	public void setMaxViewport(RectF maxViewport);
+	public void setMaxViewport(Viewport maxViewport);
 
-	public RectF getMaxViewport();
+	public Viewport getMaxViewport();
 
-	public void setViewport(RectF targetViewport, boolean isAnimated);
+	public void setViewport(Viewport targetViewport, boolean isAnimated);
 
-	public RectF getViewport();
+	public Viewport getViewport();
 
 	public void zoom(float x, float y, float zoomAmout);
 

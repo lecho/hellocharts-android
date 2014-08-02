@@ -1,14 +1,14 @@
 package lecho.lib.hellocharts.gesture;
 
 import lecho.lib.hellocharts.ChartCalculator;
+import lecho.lib.hellocharts.model.Viewport;
 import android.content.Context;
 import android.graphics.Point;
-import android.graphics.RectF;
 import android.support.v4.widget.ScrollerCompat;
 
 public class ChartScroller {
 
-	private RectF scrollerStartViewport = new RectF(); // Used only for zooms and flings
+	private Viewport scrollerStartViewport = new Viewport(); // Used only for zooms and flings
 	private Point surfaceSizeBuffer = new Point();// Used for scroll and flings
 	private ScrollerCompat scroller;
 

@@ -1,10 +1,10 @@
 package lecho.lib.hellocharts;
 
+import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.Utils;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
-import android.graphics.RectF;
 
 public class ChartCalculator {
 	protected static final float MAXIMUM_SCALE = 10f;
@@ -23,8 +23,8 @@ public class ChartCalculator {
 	 * pixel Y positions), this rectangle's "top" is drawn above this rectangle's "bottom" value.
 	 * 
 	 */
-	protected RectF currentViewport = new RectF();
-	protected RectF maxViewport = new RectF();// Viewport for whole data ranges
+	protected Viewport currentViewport = new Viewport();
+	protected Viewport maxViewport = new Viewport();// Viewport for whole data ranges
 
 	protected float minViewportWidth;
 	protected float minViewportHeight;
@@ -66,18 +66,18 @@ public class ChartCalculator {
 	}
 
 	public void constrainViewport(float left, float top, float right, float bottom) {
-		if (right - left < minViewportWidth || bottom - top < minViewportHeight) {
+		if (right - left < minViewportWidth || top - bottom < minViewportHeight) {
 			// Maximum zoom!
 			left = currentViewport.left;
 			top = currentViewport.top;
 			right = left + minViewportWidth;
-			bottom = top + minViewportHeight;
+			bottom = top - minViewportHeight;
 		}
 
 		currentViewport.left = Math.max(maxViewport.left, left);
-		currentViewport.top = Math.max(maxViewport.top, top);
-		currentViewport.bottom = Math.max(Utils.nextUpF(top), Math.min(maxViewport.bottom, bottom));
+		currentViewport.top = Math.max(Utils.nextUpF(bottom), Math.min(maxViewport.top, top));
 		currentViewport.right = Math.max(Utils.nextUpF(left), Math.min(maxViewport.right, right));
+		currentViewport.bottom = Math.max(maxViewport.bottom, bottom);
 	}
 
 	/**
@@ -105,7 +105,7 @@ public class ChartCalculator {
 	}
 
 	public float calculateRawY(float valueY) {
-		final float pixelOffset = (valueY - currentViewport.top) * (contentRect.height() / currentViewport.height());
+		final float pixelOffset = (valueY - currentViewport.bottom) * (contentRect.height() / currentViewport.height());
 		return contentRect.bottom - pixelOffset;
 	}
 
@@ -120,7 +120,7 @@ public class ChartCalculator {
 			return false;
 		}
 		dest.set(currentViewport.left + (x - contentRect.left) * currentViewport.width() / contentRect.width(),
-				currentViewport.top + (y - contentRect.bottom) * currentViewport.height() / -contentRect.height());
+				currentViewport.bottom + (y - contentRect.top) * currentViewport.height() / -contentRect.height());
 		return true;
 	}
 
@@ -136,7 +136,7 @@ public class ChartCalculator {
 
 	public boolean isWithinContentRect(int x, int y) {
 		if (x >= contentRect.left && x <= contentRect.right) {
-			if (y >= contentRect.top && y <= contentRect.bottom) {
+			if (y <= contentRect.bottom && y >= contentRect.top) {
 				return true;
 			}
 		}
@@ -151,7 +151,7 @@ public class ChartCalculator {
 		return contentRectWithMargins;
 	}
 
-	public RectF getCurrentViewport() {
+	public Viewport getCurrentViewport() {
 		return currentViewport;
 	}
 
@@ -159,25 +159,25 @@ public class ChartCalculator {
 		constrainViewport(left, top, right, bottom);
 	}
 
-	public void setCurrentViewport(RectF viewport) {
+	public void setCurrentViewport(Viewport viewport) {
 		constrainViewport(viewport.left, viewport.top, viewport.right, viewport.bottom);
 	}
 
-	public RectF getMaximumViewport() {
+	public Viewport getMaximumViewport() {
 		return maxViewport;
 	}
 
-	public void setMaxViewport(RectF maxViewport) {
+	public void setMaxViewport(Viewport maxViewport) {
 		this.maxViewport.set(maxViewport.left, maxViewport.top, maxViewport.right, maxViewport.bottom);
 		minViewportWidth = this.maxViewport.width() / MAXIMUM_SCALE;
 		minViewportHeight = this.maxViewport.height() / MAXIMUM_SCALE;
 	}
 
-	public RectF getVisibleViewport() {
+	public Viewport getVisibleViewport() {
 		return currentViewport;
 	}
 
-	public void setVisibleViewport(RectF visibleViewport) {
+	public void setVisibleViewport(Viewport visibleViewport) {
 		setCurrentViewport(visibleViewport);
 	}
 

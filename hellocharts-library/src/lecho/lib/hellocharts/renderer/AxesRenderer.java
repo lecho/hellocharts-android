@@ -190,8 +190,8 @@ public class AxesRenderer {
 		int i = 0;
 		for (AxisValue axisValue : axisY.getValues()) {
 			final float value = axisValue.getValue();
-			if (value <= chartCalculator.getVisibleViewport().bottom
-					&& value >= chartCalculator.getVisibleViewport().top) {
+			if (value >= chartCalculator.getVisibleViewport().bottom
+					&& value <= chartCalculator.getVisibleViewport().top) {
 				final float rawY = chartCalculator.calculateRawY(value);
 				axisYDrawBuffer[i++] = rawX;
 				axisYDrawBuffer[i++] = rawY;
@@ -205,7 +205,7 @@ public class AxesRenderer {
 	}
 
 	public void drawAxisYAuto(Canvas canvas, ChartCalculator chartCalculator, Axis axisY) {
-		computeAxisStops(chartCalculator.getVisibleViewport().top, chartCalculator.getVisibleViewport().bottom,
+		computeAxisStops(chartCalculator.getVisibleViewport().bottom, chartCalculator.getVisibleViewport().top,
 				chartCalculator.getContentRect().height() / axesTextHeight / 2, axisYStopsBuffer);
 		if (axisYDrawBuffer.length < axisYStopsBuffer.numStops * 4) {
 			axisYDrawBuffer = new float[axisYStopsBuffer.numStops * 4];

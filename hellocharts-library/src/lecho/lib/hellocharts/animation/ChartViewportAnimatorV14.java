@@ -1,20 +1,20 @@
 package lecho.lib.hellocharts.animation;
 
 import lecho.lib.hellocharts.Chart;
+import lecho.lib.hellocharts.model.Viewport;
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.annotation.SuppressLint;
-import android.graphics.RectF;
 
 @SuppressLint("NewApi")
 public class ChartViewportAnimatorV14 implements ChartViewportAnimator, AnimatorListener, AnimatorUpdateListener {
 	private ValueAnimator animator;
 	private final Chart chart;
-	private RectF startViewport = new RectF();
-	private RectF targetViewport = new RectF();
-	private RectF newViewport = new RectF();
+	private Viewport startViewport = new Viewport();
+	private Viewport targetViewport = new Viewport();
+	private Viewport newViewport = new Viewport();
 	private ChartAnimationListener animationListener = new DummyChartAnimationListener();
 
 	public ChartViewportAnimatorV14(Chart chart) {
@@ -30,7 +30,7 @@ public class ChartViewportAnimatorV14 implements ChartViewportAnimator, Animator
 	}
 
 	@Override
-	public void startAnimation(RectF startViewport, RectF targetViewport) {
+	public void startAnimation(Viewport startViewport, Viewport targetViewport) {
 		this.startViewport.set(startViewport);
 		this.targetViewport.set(targetViewport);
 		animator.start();

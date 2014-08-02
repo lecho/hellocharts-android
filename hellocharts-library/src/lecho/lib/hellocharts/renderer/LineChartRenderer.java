@@ -116,7 +116,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void calculateMaxViewport() {
-		tempMaxViewport.set(Float.MAX_VALUE, Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE);
+		tempMaxViewport.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
 		LineChartData data = dataProvider.getLineChartData();
 		// TODO: Optimize.
 		for (Line line : data.lines) {
@@ -127,11 +127,11 @@ public class LineChartRenderer extends AbstractChartRenderer {
 				if (linePoint.getX() > tempMaxViewport.right) {
 					tempMaxViewport.right = linePoint.getX();
 				}
-				if (linePoint.getY() < tempMaxViewport.top) {
-					tempMaxViewport.top = linePoint.getY();
-				}
-				if (linePoint.getY() > tempMaxViewport.bottom) {
+				if (linePoint.getY() < tempMaxViewport.bottom) {
 					tempMaxViewport.bottom = linePoint.getY();
+				}
+				if (linePoint.getY() > tempMaxViewport.top) {
+					tempMaxViewport.top = linePoint.getY();
 				}
 
 			}

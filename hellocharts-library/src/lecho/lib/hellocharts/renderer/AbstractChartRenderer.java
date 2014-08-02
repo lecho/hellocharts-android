@@ -3,21 +3,21 @@ package lecho.lib.hellocharts.renderer;
 import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.model.SelectedValue;
+import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.Utils;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.FontMetricsInt;
-import android.graphics.RectF;
+import android.graphics.Typeface;
 
 public abstract class AbstractChartRenderer implements ChartRenderer {
 	public int DEFAULT_LABEL_MARGIN_DP = 4;
 	protected Chart chart;
 	protected Paint labelPaint = new Paint();
 	protected FontMetricsInt fontMetrics = new FontMetricsInt();
-	protected RectF tempMaxViewport = new RectF();
+	protected Viewport tempMaxViewport = new Viewport();
 
 	protected float density;
 	protected float scaledDensity;
@@ -67,22 +67,22 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 	}
 
 	@Override
-	public void setMaxViewport(RectF maxViewport) {
+	public void setMaxViewport(Viewport maxViewport) {
 		if (null == maxViewport) {
 			initMaxViewport();
 		} else {
-			this.tempMaxViewport = maxViewport;
+			this.tempMaxViewport.set(maxViewport);
 			chart.getChartCalculator().setMaxViewport(maxViewport);
 		}
 	}
 
 	@Override
-	public RectF getMaxViewport() {
+	public Viewport getMaxViewport() {
 		return tempMaxViewport;
 	}
 
 	@Override
-	public void setViewport(RectF viewport) {
+	public void setViewport(Viewport viewport) {
 		if (null == viewport) {
 			initCurrentViewport();
 		} else {
@@ -91,7 +91,7 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 	}
 
 	@Override
-	public RectF getViewport() {
+	public Viewport getViewport() {
 		return chart.getChartCalculator().getCurrentViewport();
 	}
 }

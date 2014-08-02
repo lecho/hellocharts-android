@@ -1,6 +1,6 @@
 package lecho.lib.hellocharts;
 
-import android.graphics.RectF;
+import lecho.lib.hellocharts.model.Viewport;
 
 public class PreviewChartCalculator extends ChartCalculator {
 
@@ -14,11 +14,11 @@ public class PreviewChartCalculator extends ChartCalculator {
 		return contentRect.bottom - pixelOffset;
 	}
 
-	public RectF getVisibleViewport() {
+	public Viewport getVisibleViewport() {
 		return maxViewport;
 	}
 
-	public void setVisibleViewport(RectF visibleViewport) {
+	public void setVisibleViewport(Viewport visibleViewport) {
 		setMaxViewport(visibleViewport);
 	}
 

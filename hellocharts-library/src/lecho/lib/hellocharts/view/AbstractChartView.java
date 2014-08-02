@@ -11,11 +11,11 @@ import lecho.lib.hellocharts.animation.ChartViewportAnimator;
 import lecho.lib.hellocharts.animation.ChartViewportAnimatorV14;
 import lecho.lib.hellocharts.animation.ChartViewportAnimatorV8;
 import lecho.lib.hellocharts.gesture.ChartTouchHandler;
+import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.RectF;
 import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
@@ -166,18 +166,18 @@ public abstract class AbstractChartView extends View implements Chart {
 	}
 
 	@Override
-	public void setMaxViewport(RectF maxViewport) {
+	public void setMaxViewport(Viewport maxViewport) {
 		chartRenderer.setMaxViewport(maxViewport);
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
 	@Override
-	public RectF getMaxViewport() {
+	public Viewport getMaxViewport() {
 		return chartRenderer.getMaxViewport();
 	}
 
 	@Override
-	public void setViewport(RectF targetViewport, boolean isAnimated) {
+	public void setViewport(Viewport targetViewport, boolean isAnimated) {
 		if (isAnimated) {
 			viewportAnimator.startAnimation(getViewport(), targetViewport);
 		} else {
@@ -187,7 +187,7 @@ public abstract class AbstractChartView extends View implements Chart {
 	}
 
 	@Override
-	public RectF getViewport() {
+	public Viewport getViewport() {
 		return getChartRenderer().getViewport();
 	}
 

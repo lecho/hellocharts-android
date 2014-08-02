@@ -106,11 +106,11 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	private void calculateMaxViewportForSubcolumns(ColumnChartData data) {
 		for (Column column : data.getColumns()) {
 			for (ColumnValue columnValue : column.getValues()) {
-				if (columnValue.getValue() >= DEFAULT_BASE_VALUE && columnValue.getValue() > tempMaxViewport.bottom) {
-					tempMaxViewport.bottom = columnValue.getValue();
-				}
-				if (columnValue.getValue() < DEFAULT_BASE_VALUE && columnValue.getValue() < tempMaxViewport.top) {
+				if (columnValue.getValue() >= DEFAULT_BASE_VALUE && columnValue.getValue() > tempMaxViewport.top) {
 					tempMaxViewport.top = columnValue.getValue();
+				}
+				if (columnValue.getValue() < DEFAULT_BASE_VALUE && columnValue.getValue() < tempMaxViewport.bottom) {
+					tempMaxViewport.bottom = columnValue.getValue();
 				}
 			}
 		}
@@ -127,11 +127,11 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 					sumNegative += columnValue.getValue();
 				}
 			}
-			if (sumPositive > tempMaxViewport.bottom) {
-				tempMaxViewport.bottom = sumPositive;
+			if (sumPositive > tempMaxViewport.top) {
+				tempMaxViewport.top = sumPositive;
 			}
-			if (sumNegative < tempMaxViewport.top) {
-				tempMaxViewport.top = sumNegative;
+			if (sumNegative < tempMaxViewport.bottom) {
+				tempMaxViewport.bottom = sumNegative;
 			}
 		}
 	}

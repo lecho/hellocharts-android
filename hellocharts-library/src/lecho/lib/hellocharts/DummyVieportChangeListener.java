@@ -1,11 +1,11 @@
 package lecho.lib.hellocharts;
 
-import android.graphics.RectF;
+import lecho.lib.hellocharts.model.Viewport;
 
 public class DummyVieportChangeListener implements ViewportChangeListener {
 
 	@Override
-	public void onViewportChanged(RectF newViewport) {
+	public void onViewportChanged(Viewport newViewport) {
 		// Do nothing
 	}
 }

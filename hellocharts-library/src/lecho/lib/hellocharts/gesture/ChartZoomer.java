@@ -1,9 +1,9 @@
 package lecho.lib.hellocharts.gesture;
 
 import lecho.lib.hellocharts.ChartCalculator;
+import lecho.lib.hellocharts.model.Viewport;
 import android.content.Context;
 import android.graphics.PointF;
-import android.graphics.RectF;
 import android.view.MotionEvent;
 
 public class ChartZoomer {
@@ -15,7 +15,7 @@ public class ChartZoomer {
 	private int zoomType;
 	private PointF zoomFocalPoint = new PointF();// Used for double tap zoom
 	private PointF viewportFocus = new PointF();
-	private RectF scrollerStartViewport = new RectF(); // Used only for zooms and flings
+	private Viewport scrollerStartViewport = new Viewport(); // Used only for zooms and flings
 
 	public ChartZoomer(Context context, int zoomType) {
 		zoomer = new ZoomerCompat(context);
@@ -53,9 +53,9 @@ public class ChartZoomer {
 					/ scrollerStartViewport.height();
 
 			float left = zoomFocalPoint.x - newWidth * pointWithinViewportX;
-			float top = zoomFocalPoint.y - newHeight * pointWithinViewportY;
+			float bottom = zoomFocalPoint.y - newHeight * pointWithinViewportY;
 			float right = zoomFocalPoint.x + newWidth * (1 - pointWithinViewportX);
-			float bottom = zoomFocalPoint.y + newHeight * (1 - pointWithinViewportY);
+			float top = zoomFocalPoint.y + newHeight * (1 - pointWithinViewportY);
 			setCurrentViewport(chartCalculator, left, top, right, bottom);
 			return true;
 		}
@@ -84,7 +84,7 @@ public class ChartZoomer {
 	}
 
 	private void setCurrentViewport(ChartCalculator chartCalculator, float left, float top, float right, float bottom) {
-		RectF currentViewport = chartCalculator.getCurrentViewport();
+		Viewport currentViewport = chartCalculator.getCurrentViewport();
 		if (zoomType == ZOOM_HORIZONTAL_AND_VERTICAL || zoomType == ZOOM_HORIZONTAL) {
 			chartCalculator.setCurrentViewport(left, currentViewport.top, right, currentViewport.bottom);
 		}

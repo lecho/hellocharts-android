@@ -1,7 +1,7 @@
 package lecho.lib.hellocharts.renderer;
 
+import lecho.lib.hellocharts.model.Viewport;
 import android.graphics.Canvas;
-import android.graphics.RectF;
 
 public interface ChartRenderer {
 
@@ -23,12 +23,12 @@ public interface ChartRenderer {
 
 	public void callTouchListener();
 
-	public void setMaxViewport(RectF maxViewport);
+	public void setMaxViewport(Viewport maxViewport);
 
-	public RectF getMaxViewport();
+	public Viewport getMaxViewport();
 
-	public void setViewport(RectF viewport);
+	public void setViewport(Viewport viewport);
 
-	public RectF getViewport();
+	public Viewport getViewport();
 
 }
