@@ -58,11 +58,11 @@ public class ChartCalculator {
 		contentRect.bottom = contentRectWithMargins.bottom - marginBottom;
 	}
 
-	public void setAxesMargin(int axisXMargin, int axisYMargin) {
-		contentRectWithMargins.bottom = contentRectWithMargins.bottom - axisXMargin;
-		contentRectWithMargins.left = contentRectWithMargins.left + axisYMargin;
-		contentRect.left = contentRect.left + axisYMargin;
-		contentRect.bottom = contentRect.bottom - axisXMargin;
+	public void setAxesMargin(int axisXMarginTop, int axisXMarginBottom, int axisYMarginLeft, int axisYMarginRight) {
+		contentRectWithMargins.bottom = contentRectWithMargins.bottom - axisXMarginBottom;
+		contentRectWithMargins.left = contentRectWithMargins.left + axisYMarginLeft;
+		contentRect.left = contentRect.left + axisYMarginLeft;
+		contentRect.bottom = contentRect.bottom - axisXMarginBottom;
 	}
 
 	public void constrainViewport(float left, float top, float right, float bottom) {

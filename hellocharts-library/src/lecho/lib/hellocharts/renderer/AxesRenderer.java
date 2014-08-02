@@ -57,7 +57,8 @@ public class AxesRenderer {
 		textPaint.getFontMetricsInt(fontMetrics);
 		int axisXHeight = getAxisXHeight(chart.getChartData().getAxisX());
 		int axisYWidth = getAxisYWidth(chart.getChartData().getAxisY(), chart.getChartData().getMaxLabelChars());
-		chart.getChartCalculator().setAxesMargin(axisXHeight, axisYWidth);
+		// This renderer draws axes on the left and at the bottom of the chart so top and right axes margins are 0.
+		chart.getChartCalculator().setAxesMargin(0, axisXHeight, axisYWidth, 0);
 	}
 
 	private int getAxisXHeight(Axis axisX) {
