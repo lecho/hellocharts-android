@@ -12,16 +12,16 @@ import android.graphics.RectF;
 
 public class PreviewLineChartRenderer extends LineChartRenderer {
 	private static final int DEFAULT_PREVIEW_TRANSPARENCY = 64;
+	private static final int FULL_ALPHA = 255;
 	private static final int DEFAULT_PREVIEW_STROKE_WIDTH_DP = 2;
 
-	private Paint previewViewportPaint = new Paint();
+	private Paint previewPaint = new Paint();
 
 	public PreviewLineChartRenderer(Context context, Chart chart, LineChartDataProvider dataProvider) {
 		super(context, chart, dataProvider);
-
-		previewViewportPaint.setAntiAlias(true);
-		previewViewportPaint.setColor(Color.LTGRAY);
-		previewViewportPaint.setStrokeWidth(Utils.dp2px(context.getResources().getDisplayMetrics().density,
+		previewPaint.setAntiAlias(true);
+		previewPaint.setColor(Color.LTGRAY);
+		previewPaint.setStrokeWidth(Utils.dp2px(context.getResources().getDisplayMetrics().density,
 				DEFAULT_PREVIEW_STROKE_WIDTH_DP));
 	}
 
@@ -34,11 +34,19 @@ public class PreviewLineChartRenderer extends LineChartRenderer {
 		final float top = chartCalculator.calculateRawY(currentViewport.top);
 		final float right = chartCalculator.calculateRawX(currentViewport.right);
 		final float bottom = chartCalculator.calculateRawY(currentViewport.bottom);
-		previewViewportPaint.setAlpha(DEFAULT_PREVIEW_TRANSPARENCY);
-		previewViewportPaint.setStyle(Paint.Style.FILL);
-		canvas.drawRect(left, top, right, bottom, previewViewportPaint);
-		previewViewportPaint.setStyle(Paint.Style.STROKE);
-		previewViewportPaint.setAlpha(255);
-		canvas.drawRect(left, bottom, right, top, previewViewportPaint);
+		previewPaint.setAlpha(DEFAULT_PREVIEW_TRANSPARENCY);
+		previewPaint.setStyle(Paint.Style.FILL);
+		canvas.drawRect(left, top, right, bottom, previewPaint);
+		previewPaint.setStyle(Paint.Style.STROKE);
+		previewPaint.setAlpha(FULL_ALPHA);
+		canvas.drawRect(left, bottom, right, top, previewPaint);
+	}
+
+	public void setPreviewColor(int color) {
+		previewPaint.setColor(color);
+	}
+
+	public int getPreviewColor() {
+		return previewPaint.getColor();
 	}
 }
