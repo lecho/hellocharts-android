@@ -29,7 +29,11 @@ public class ChartCalculator {
 	protected float minViewportWidth;
 	protected float minViewportHeight;
 
-	private ViewportChangeListener viewportChangeListener = new DummyVieportChangeListener();
+	/**
+	 * Warning! Viewport listener is disabled for all charts beside preview charts to avoid addidtional method calls
+	 * during animations.
+	 */
+	protected ViewportChangeListener viewportChangeListener = new DummyVieportChangeListener();
 
 	/**
 	 * Calculates available width and height. Should be called when chart dimensions or chart data change.
@@ -74,8 +78,6 @@ public class ChartCalculator {
 		currentViewport.top = Math.max(maxViewport.top, top);
 		currentViewport.bottom = Math.max(Utils.nextUpF(top), Math.min(maxViewport.bottom, bottom));
 		currentViewport.right = Math.max(Utils.nextUpF(left), Math.min(maxViewport.right, right));
-
-		viewportChangeListener.onViewportChanged(currentViewport);
 	}
 
 	/**

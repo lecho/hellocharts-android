@@ -22,4 +22,9 @@ public class PreviewChartCalculator extends ChartCalculator {
 		setMaxViewport(visibleViewport);
 	}
 
+	public void constrainViewport(float left, float top, float right, float bottom) {
+		super.constrainViewport(left, top, right, bottom);
+		viewportChangeListener.onViewportChanged(currentViewport);
+	}
+
 }
