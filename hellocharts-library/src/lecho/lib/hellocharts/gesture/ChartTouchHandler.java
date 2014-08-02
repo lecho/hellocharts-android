@@ -148,7 +148,11 @@ public class ChartTouchHandler {
 
 		@Override
 		public boolean onScale(ScaleGestureDetector detector) {
-			return chartZoomer.scale(detector, chart.getChartCalculator());
+			float scale = 2.0f - detector.getScaleFactor();
+			if (Float.isInfinite(scale)) {
+				scale = 1;
+			}
+			return chartZoomer.scale(chart.getChartCalculator(), detector.getFocusX(), detector.getFocusY(), scale);
 		}
 	}
 

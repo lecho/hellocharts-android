@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 
 public class ChartZoomer {
 	public static final int ZOOM_HORIZONTAL_AND_VERTICAL = 1;
@@ -26,9 +25,11 @@ public class ChartZoomer {
 	public boolean startZoom(MotionEvent e, ChartCalculator chartCalculator) {
 		zoomer.forceFinished(true);
 		scrollerStartViewport.set(chartCalculator.getCurrentViewport());
-		if (chartCalculator.rawPixelsToDataPoint(e.getX(), e.getY(), zoomFocalPoint)) {
-			zoomer.startZoom(ZOOM_AMOUNT);
+		if (!chartCalculator.rawPixelsToDataPoint(e.getX(), e.getY(), zoomFocalPoint)) {
+			// Focus point is not within content area.
+			return false;
 		}
+		zoomer.startZoom(ZOOM_AMOUNT);
 		return true;
 	}
 
@@ -61,16 +62,16 @@ public class ChartZoomer {
 		return false;
 	}
 
-	public boolean scale(ScaleGestureDetector detector, ChartCalculator chartCalculator) {
+	public boolean scale(ChartCalculator chartCalculator, float focusX, float focusY, float scale) {
 		/**
 		 * Smaller viewport means bigger zoom so for zoomIn scale should have value <1, for zoomOout >1
 		 */
-		float scale = 2.0f - detector.getScaleFactor();
 		final float newWidth = scale * chartCalculator.getCurrentViewport().width();
 		final float newHeight = scale * chartCalculator.getCurrentViewport().height();
-		final float focusX = detector.getFocusX();
-		final float focusY = detector.getFocusY();
-		chartCalculator.rawPixelsToDataPoint(focusX, focusY, viewportFocus);
+		if (!chartCalculator.rawPixelsToDataPoint(focusX, focusY, viewportFocus)) {
+			// Focus point is not within content area.
+			return false;
+		}
 
 		float left = viewportFocus.x - (focusX - chartCalculator.getContentRect().left)
 				* (newWidth / chartCalculator.getContentRect().width());
