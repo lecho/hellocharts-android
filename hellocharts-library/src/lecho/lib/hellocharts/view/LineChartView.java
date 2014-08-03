@@ -49,8 +49,6 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 		} else {
 			this.data = data;
 		}
-		chartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
-				getPaddingRight(), getPaddingBottom());
 		chartRenderer.initMaxViewport();
 		chartRenderer.initCurrentViewport();
 		chartRenderer.initDataAttributes();
