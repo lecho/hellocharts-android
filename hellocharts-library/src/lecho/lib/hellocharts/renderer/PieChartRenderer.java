@@ -9,12 +9,15 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
+import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
 public class PieChartRenderer extends AbstractChartRenderer {
 	private static final float MAX_WIDTH_HEIGHT = 100f;
 	private static final int DEFAULT_ARC_SPACING_DP = 2;
+	private static final float DEFAULT_START_ANGLE = 45;
 	private static final int MODE_DRAW = 0;
 	private static final int MODE_HIGHLIGHT = 1;
 
@@ -24,7 +27,9 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	private RectF labelRect = new RectF();
 	private float maxSum;
 	private float circleRadius;
-	private RectF circleOval = new RectF();
+	private RectF orginCircleOval = new RectF();
+	private RectF drawCircleOval = new RectF();
+	private PointF arcVector = new PointF();
 	private float arcSpacing;
 
 	public PieChartRenderer(Context context, Chart chart, PieChartDataProvider dataProvider) {
@@ -54,31 +59,33 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	public void draw(Canvas canvas) {
 		// TODO
 		final PieChartData data = dataProvider.getPieChartData();
-		float lastArc = 45;
+		final float circleCenterX = orginCircleOval.centerX();
+		final float circleCenterY = orginCircleOval.centerY();
+		final float arcScale = 360f / maxSum;
+		float lastAngle = DEFAULT_START_ANGLE;
 		for (ArcValue arcValue : data.getArcs()) {
-			final float arc = (arcValue.getValue() / maxSum) * 360f;
+			final float angle = arcValue.getValue() * arcScale;
 			arcPaint.setColor(Utils.pickColor());
-			// canvas.drawArc(circleOval, lastArc + arcSpacing, arc - arcSpacing, true, arcPaint);
+			labelPaint.setTextAlign(Align.CENTER);
 
-			float textX = (float) (circleRadius / 2 * Math.cos(Math.toRadians(lastArc + arc / 2)) + circleOval
-					.centerX());
-			float textY = (float) (circleRadius / 2 * Math.sin(Math.toRadians(lastArc + arc / 2)) + circleOval
-					.centerY());
+			final float arcCenterX = (float) (circleRadius * 0.6 * Math.cos(Math.toRadians(lastAngle + angle / 2)) + circleCenterX);
+			final float arcCenterY = (float) (circleRadius * 0.6 * Math.sin(Math.toRadians(lastAngle + angle / 2)) + circleCenterY);
 
-			// canvas.drawText("TTT", textX, textY, labelPaint);
+			arcVector.set(arcCenterX - circleCenterX, arcCenterY - circleCenterY);
+			normalizeVector(arcVector);
+			drawCircleOval.set(orginCircleOval);
+			drawCircleOval.offset(arcVector.x * arcSpacing, arcVector.y * arcSpacing);
+			canvas.drawArc(drawCircleOval, lastAngle, angle, true, arcPaint);
 
-			textX = textX - circleOval.centerX();
-			textY = textY - circleOval.centerY();
-			float length = (float) Math.sqrt((textX * textX) + (textY * textY));
-			textX = textX / length;
-			textY = textY / length;
+			canvas.drawText("TTT", arcCenterX, arcCenterY, labelPaint);
 
-			RectF temp = new RectF(circleOval);
-			temp.offset(textX * arcSpacing, textY * arcSpacing);
-			canvas.drawArc(temp, lastArc, arc, true, arcPaint);
-			lastArc += arc;
-
+			lastAngle += angle;
 		}
+	}
+
+	private void normalizeVector(PointF point) {
+		final float abs = point.length();
+		point.set(point.x / abs, point.y / abs);
 	}
 
 	@Override
@@ -119,7 +126,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		circleRadius = Math.min(contentRect.width() / 2f, contentRect.height() / 2f);
 		float x = contentRect.centerX();
 		float y = contentRect.centerY();
-		circleOval.set(x - circleRadius, y - circleRadius, x + circleRadius, y + circleRadius);
+		orginCircleOval.set(x - circleRadius, y - circleRadius, x + circleRadius, y + circleRadius);
 	}
 
 	private void calculateMaxViewport() {
