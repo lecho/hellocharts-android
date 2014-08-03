@@ -1,23 +1,20 @@
 package lecho.lib.hellocharts.renderer;
 
 import lecho.lib.hellocharts.Chart;
-import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.PieChartDataProvider;
 import lecho.lib.hellocharts.model.ArcValue;
 import lecho.lib.hellocharts.model.PieChartData;
-import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
-import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
 public class PieChartRenderer extends AbstractChartRenderer {
 	private static final float MAX_WIDTH_HEIGHT = 100f;
+	private static final int DEFAULT_ARC_SPACING_DP = 2;
 	private static final int MODE_DRAW = 0;
 	private static final int MODE_HIGHLIGHT = 1;
 
@@ -28,10 +25,12 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	private float maxSum;
 	private float circleRadius;
 	private RectF circleOval = new RectF();
+	private float arcSpacing;
 
 	public PieChartRenderer(Context context, Chart chart, PieChartDataProvider dataProvider) {
 		super(context, chart);
 		this.dataProvider = dataProvider;
+		arcSpacing = Utils.dp2px(density, DEFAULT_ARC_SPACING_DP);
 
 		arcPaint.setAntiAlias(true);
 		arcPaint.setStyle(Paint.Style.FILL);
@@ -54,15 +53,32 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	@Override
 	public void draw(Canvas canvas) {
 		// TODO
-		PieChartData data = dataProvider.getPieChartData();
-		float lastArc = 0;
+		final PieChartData data = dataProvider.getPieChartData();
+		float lastArc = 45;
 		for (ArcValue arcValue : data.getArcs()) {
-			float arc = (arcValue.getValue() / maxSum) * 360f;
+			final float arc = (arcValue.getValue() / maxSum) * 360f;
 			arcPaint.setColor(Utils.pickColor());
-			canvas.drawArc(circleOval, lastArc, arc, true, arcPaint);
+			// canvas.drawArc(circleOval, lastArc + arcSpacing, arc - arcSpacing, true, arcPaint);
+
+			float textX = (float) (circleRadius / 2 * Math.cos(Math.toRadians(lastArc + arc / 2)) + circleOval
+					.centerX());
+			float textY = (float) (circleRadius / 2 * Math.sin(Math.toRadians(lastArc + arc / 2)) + circleOval
+					.centerY());
+
+			// canvas.drawText("TTT", textX, textY, labelPaint);
+
+			textX = textX - circleOval.centerX();
+			textY = textY - circleOval.centerY();
+			float length = (float) Math.sqrt((textX * textX) + (textY * textY));
+			textX = textX / length;
+			textY = textY / length;
+
+			RectF temp = new RectF(circleOval);
+			temp.offset(textX * arcSpacing, textY * arcSpacing);
+			canvas.drawArc(temp, lastArc, arc, true, arcPaint);
 			lastArc += arc;
+
 		}
-		// canvas.drawArc(circleOval, 0, 360, true, arcPaint);
 	}
 
 	@Override

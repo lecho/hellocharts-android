@@ -21,8 +21,7 @@ public class PreviewLineChartRenderer extends LineChartRenderer {
 		super(context, chart, dataProvider);
 		previewPaint.setAntiAlias(true);
 		previewPaint.setColor(Color.LTGRAY);
-		previewPaint.setStrokeWidth(Utils.dp2px(context.getResources().getDisplayMetrics().density,
-				DEFAULT_PREVIEW_STROKE_WIDTH_DP));
+		previewPaint.setStrokeWidth(Utils.dp2px(density, DEFAULT_PREVIEW_STROKE_WIDTH_DP));
 	}
 
 	@Override
