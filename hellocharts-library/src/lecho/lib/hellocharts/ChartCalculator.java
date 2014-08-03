@@ -16,10 +16,6 @@ public class ChartCalculator {
 	 * This rectangle represents the currently visible chart values ranges. The currently visible chart X values are
 	 * from this rectangle's left to its right. The currently visible chart Y values are from this rectangle's top to
 	 * its bottom.
-	 * <p>
-	 * Note that this rectangle's top is actually the smaller Y value, and its bottom is the larger Y value. Since the
-	 * chart is drawn onscreen in such a way that chart Y values increase towards the top of the screen (decreasing
-	 * pixel Y positions), this rectangle's "top" is drawn above this rectangle's "bottom" value.
 	 * 
 	 */
 	protected Viewport currentViewport = new Viewport();
@@ -95,11 +91,9 @@ public class ChartCalculator {
 	}
 
 	/**
-	 * Sets the current viewport (defined by {@link #currentViewport}) to the given X and Y positions. Note that the Y
-	 * value represents the topmost pixel position, and thus the bottom of the {@link #currentViewport} rectangle. For
-	 * more details on why top and bottom are flipped, see {@link #currentViewport}.
+	 * Sets the current viewport (defined by {@link #currentViewport}) to the given X and Y positions.
 	 */
-	public void setViewportBottomLeft(float left, float top) {
+	public void setViewportTopLeft(float left, float top) {
 		/**
 		 * Constrains within the scroll range. The scroll range is simply the viewport extremes (AXIS_X_MAX, etc.) minus
 		 * the viewport size. For example, if the extrema were 0 and 10, and the viewport size was 2, the scroll range

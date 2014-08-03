@@ -35,7 +35,7 @@ public class ChartScroller {
 		float viewportOffsetY = -distanceY * chartCalculator.getCurrentViewport().height()
 				/ chartCalculator.getContentRect().height();
 		chartCalculator.computeScrollSurfaceSize(surfaceSizeBuffer);
-		chartCalculator.setViewportBottomLeft(chartCalculator.getCurrentViewport().left + viewportOffsetX,
+		chartCalculator.setViewportTopLeft(chartCalculator.getCurrentViewport().left + viewportOffsetX,
 				chartCalculator.getCurrentViewport().top + viewportOffsetY);
 		return true;
 	}
@@ -49,7 +49,7 @@ public class ChartScroller {
 					* scroller.getCurrX() / surfaceSizeBuffer.x;
 			float currYRange = chartCalculator.getMaximumViewport().top - chartCalculator.getMaximumViewport().height()
 					* scroller.getCurrY() / surfaceSizeBuffer.y;
-			chartCalculator.setViewportBottomLeft(currXRange, currYRange);
+			chartCalculator.setViewportTopLeft(currXRange, currYRange);
 			return true;
 		}
 		return false;

@@ -36,10 +36,10 @@ public class PreviewColumnChartRenderer extends ColumnChartRenderer {
 		final float bottom = chartCalculator.calculateRawY(currentViewport.bottom);
 		previewPaint.setAlpha(DEFAULT_PREVIEW_TRANSPARENCY);
 		previewPaint.setStyle(Paint.Style.FILL);
-		canvas.drawRect(left, bottom, right, top, previewPaint);
+		canvas.drawRect(left, top, right, bottom, previewPaint);
 		previewPaint.setStyle(Paint.Style.STROKE);
 		previewPaint.setAlpha(FULL_ALPHA);
-		canvas.drawRect(left, bottom, right, top, previewPaint);
+		canvas.drawRect(left, top, right, bottom, previewPaint);
 	}
 
 	public void setPreviewColor(int color) {
