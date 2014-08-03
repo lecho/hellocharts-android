@@ -74,8 +74,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	}
 
 	public boolean checkTouch(float touchX, float touchY) {
-		oldSelectedValue.firstIndex = selectedValue.firstIndex;
-		oldSelectedValue.secondIndex = selectedValue.secondIndex;
+		oldSelectedValue.set(selectedValue);
 		selectedValue.clear();
 		final ColumnChartData data = dataProvider.getColumnChartData();
 		if (data.isStacked()) {
@@ -312,8 +311,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 
 	private void checkRectToDraw(int columnIndex, int valueIndex) {
 		if (drawRect.contains(touchedPoint.x, touchedPoint.y)) {
-			selectedValue.firstIndex = columnIndex;
-			selectedValue.secondIndex = valueIndex;
+			selectedValue.set(columnIndex, valueIndex);
 		}
 	}
 

@@ -88,11 +88,10 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 	@Override
 	public boolean checkTouch(float touchX, float touchY) {
+		oldSelectedValue.set(selectedValue);
+		selectedValue.clear();
 		final LineChartData data = dataProvider.getLineChartData();
 		final ChartCalculator chartCalculator = chart.getChartCalculator();
-		oldSelectedValue.firstIndex = selectedValue.firstIndex;
-		oldSelectedValue.secondIndex = selectedValue.secondIndex;
-		selectedValue.clear();
 		int lineIndex = 0;
 		for (Line line : data.lines) {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
@@ -101,8 +100,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 				final float rawValueX = chartCalculator.calculateRawX(linePoint.getX());
 				final float rawValueY = chartCalculator.calculateRawY(linePoint.getY());
 				if (isInArea(rawValueX, rawValueY, touchX, touchY, pointRadius + touchTolleranceMargin)) {
-					selectedValue.firstIndex = lineIndex;
-					selectedValue.secondIndex = valueIndex;
+					selectedValue.set(lineIndex, valueIndex);
 				}
 				++valueIndex;
 			}

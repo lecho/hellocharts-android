@@ -8,6 +8,16 @@ public class SelectedValue {
 		clear();
 	}
 
+	public void set(int firstIndex, int secondIndex) {
+		this.firstIndex = firstIndex;
+		this.secondIndex = secondIndex;
+	}
+
+	public void set(SelectedValue selectedValue) {
+		this.firstIndex = selectedValue.firstIndex;
+		this.secondIndex = selectedValue.secondIndex;
+	}
+
 	public void clear() {
 		this.firstIndex = Integer.MIN_VALUE;
 		this.secondIndex = Integer.MIN_VALUE;
@@ -44,6 +54,11 @@ public class SelectedValue {
 		if (secondIndex != other.secondIndex)
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "SelectedValue [firstIndex=" + firstIndex + ", secondIndex=" + secondIndex + "]";
 	}
 
 }
