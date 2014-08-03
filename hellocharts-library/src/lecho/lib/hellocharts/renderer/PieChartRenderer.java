@@ -51,18 +51,18 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		calculateCircleOval();
 	}
 
-	private void calculateCircleOval() {
-		Rect contentRect = chart.getChartCalculator().getContentRect();
-		circleRadius = Math.min(contentRect.width() / 2f, contentRect.height() / 2f);
-		float x = contentRect.centerX();
-		float y = contentRect.centerY();
-		circleOval.set(x - circleRadius, y + circleRadius, x + circleRadius, y - circleRadius);
-	}
-
 	@Override
 	public void draw(Canvas canvas) {
 		// TODO
-		canvas.drawArc(circleOval, 0, 360, true, arcPaint);
+		PieChartData data = dataProvider.getPieChartData();
+		float lastArc = 0;
+		for (ArcValue arcValue : data.getArcs()) {
+			float arc = (arcValue.getValue() / maxSum) * 360f;
+			arcPaint.setColor(Utils.pickColor());
+			canvas.drawArc(circleOval, lastArc, arc, true, arcPaint);
+			lastArc += arc;
+		}
+		// canvas.drawArc(circleOval, 0, 360, true, arcPaint);
 	}
 
 	@Override
@@ -96,6 +96,14 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		// return false;
 		// }
 		return isTouched();
+	}
+
+	private void calculateCircleOval() {
+		Rect contentRect = chart.getChartCalculator().getContentRect();
+		circleRadius = Math.min(contentRect.width() / 2f, contentRect.height() / 2f);
+		float x = contentRect.centerX();
+		float y = contentRect.centerY();
+		circleOval.set(x - circleRadius, y - circleRadius, x + circleRadius, y + circleRadius);
 	}
 
 	private void calculateMaxViewport() {
