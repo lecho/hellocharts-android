@@ -8,6 +8,7 @@ import lecho.lib.hellocharts.model.ArcValue;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.PieChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
+import lecho.lib.hellocharts.renderer.PieChartRenderer;
 import android.content.Context;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
@@ -27,7 +28,7 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 
 	public PieChartView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		// chartRenderer = new LineChartRenderer(context, this, this);
+		chartRenderer = new PieChartRenderer(context, this, this);
 		setPieChartData(generateDummyData());
 	}
 
