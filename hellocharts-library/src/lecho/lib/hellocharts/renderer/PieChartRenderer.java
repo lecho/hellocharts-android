@@ -124,8 +124,8 @@ public class PieChartRenderer extends AbstractChartRenderer {
 			arcVector.set(arcCenterX - centerX, arcCenterY - centerY);
 			normalizeVector(arcVector);
 			drawCircleOval.set(orginCircleOval);
-			drawCircleOval.offset(arcVector.x * (arcSpacing + touchAdditional), arcVector.y
-					* (arcSpacing + touchAdditional));
+			drawCircleOval.offset(arcVector.x * arcSpacing, arcVector.y * arcSpacing);
+			drawCircleOval.inset(-touchAdditional, -touchAdditional);
 			canvas.drawArc(drawCircleOval, lastAngle, angle, true, arcPaint);
 
 			canvas.drawText("TTT", arcCenterX, arcCenterY, labelPaint);
@@ -161,7 +161,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		final float touchAngle = (pointToAngle(touchX, touchY, centerX, centerY) - DEFAULT_START_ANGLE + CIRCLE_360)
 				% CIRCLE_360;
 		final float arcScale = CIRCLE_360 / maxSum;
-		float lastAngle = 0f; // No start angle here,
+		float lastAngle = 0f; // No start angle here, see abowe
 		int arcIndex = 0;
 		for (ArcValue arcValue : data.getArcs()) {
 			final float angle = arcValue.getValue() * arcScale;
