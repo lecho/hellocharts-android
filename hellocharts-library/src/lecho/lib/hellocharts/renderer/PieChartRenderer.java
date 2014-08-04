@@ -63,7 +63,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	}
 
 	/**
-	 * Most important thin here is {@link #calculateCircleOval()} method call. Because {@link #initDataAttributes()} is
+	 * Most important thing here is {@link #calculateCircleOval()} call. Because {@link #initDataAttributes()} is
 	 * usually called from onSizeChanged it is good place to calculate max PieChart circle size.
 	 */
 	public void initDataAttributes() {

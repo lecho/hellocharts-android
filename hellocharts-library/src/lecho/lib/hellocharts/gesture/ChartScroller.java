@@ -30,9 +30,9 @@ public class ChartScroller {
 		 * computeScrollSurfaceSize()}. For additional information about the viewport, see the comments for
 		 * {@link mCurrentViewport}.
 		 */
-		float viewportOffsetX = distanceX * chartCalculator.getCurrentViewport().width()
+		float viewportOffsetX = distanceX * chartCalculator.getVisibleViewport().width()
 				/ chartCalculator.getContentRect().width();
-		float viewportOffsetY = -distanceY * chartCalculator.getCurrentViewport().height()
+		float viewportOffsetY = -distanceY * chartCalculator.getVisibleViewport().height()
 				/ chartCalculator.getContentRect().height();
 		chartCalculator.computeScrollSurfaceSize(surfaceSizeBuffer);
 		chartCalculator.setViewportTopLeft(chartCalculator.getCurrentViewport().left + viewportOffsetX,

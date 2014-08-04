@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lecho.lib.hellocharts.PieChartDataProvider;
+import lecho.lib.hellocharts.gesture.PieChartTouchHandler;
 import lecho.lib.hellocharts.model.ArcValue;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.PieChartData;
@@ -29,6 +30,7 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 	public PieChartView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		chartRenderer = new PieChartRenderer(context, this, this);
+		touchHandler = new PieChartTouchHandler(context, this);
 		setPieChartData(generateDummyData());
 	}
 
@@ -102,9 +104,10 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 		final int numValues = 4;
 		PieChartData data = new PieChartData();
 		List<ArcValue> values = new ArrayList<ArcValue>(numValues);
-		for (int i = 1; i <= numValues; ++i) {
-			values.add(new ArcValue((float) Math.random() * 40 + 10));
-		}
+		values.add(new ArcValue(40f));
+		values.add(new ArcValue(20f));
+		values.add(new ArcValue(30f));
+		values.add(new ArcValue(50f));
 		data.setArcs(values);
 		return data;
 	}

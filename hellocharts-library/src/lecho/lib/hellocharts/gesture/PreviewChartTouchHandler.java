@@ -10,7 +10,6 @@ public class PreviewChartTouchHandler extends ChartTouchHandler {
 
 	public PreviewChartTouchHandler(Context context, Chart chart) {
 		super(context, chart);
-		this.chart = chart;
 		gestureDetector = new GestureDetector(context, new ChartGestureListener());
 		scaleGestureDetector = new ScaleGestureDetector(context, new ChartScaleGestureListener());
 
