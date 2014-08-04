@@ -103,7 +103,7 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 		PieChartData data = new PieChartData();
 		List<ArcValue> values = new ArrayList<ArcValue>(numValues);
 		for (int i = 1; i <= numValues; ++i) {
-			values.add(new ArcValue(360 / numValues));
+			values.add(new ArcValue((float) Math.random() * 40 + 10));
 		}
 		data.setArcs(values);
 		return data;

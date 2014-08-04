@@ -5,6 +5,7 @@ import lecho.lib.hellocharts.PieChartDataProvider;
 import lecho.lib.hellocharts.model.ArcValue;
 import lecho.lib.hellocharts.model.PieChartData;
 import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.view.PieChartView;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -13,12 +14,19 @@ import android.graphics.Paint.Align;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.util.Log;
 
+/**
+ * Default renderer for PieChart.
+ * 
+ * @see PieChartView
+ * 
+ * @author Leszek Wach
+ * 
+ */
 public class PieChartRenderer extends AbstractChartRenderer {
 	private static final float MAX_WIDTH_HEIGHT = 100f;
 	private static final float DEFAULT_START_ANGLE = 45;
-	private static final float DEFAULT_ARC_VECTOR_RADIUS_FACTOR = 0.6f;
+	private static final float DEFAULT_ARC_VECTOR_RADIUS_FACTOR = 0.7f;
 	private static final float CIRCLE_360 = 360f;
 	private static final int DEFAULT_ARC_SPACING_DP = 2;
 	private static final int DEFAULT_TOUCH_ADDITIONAL_DP = 4;
@@ -28,7 +36,6 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	private PieChartDataProvider dataProvider;
 
 	private Paint arcPaint = new Paint();
-	private RectF labelRect = new RectF();
 	private float maxSum;
 	private float circleRadius;
 	private RectF orginCircleOval = new RectF();
@@ -48,7 +55,6 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		arcPaint.setColor(Color.LTGRAY);
 
 		labelPaint.setTextAlign(Align.CENTER);
-
 	}
 
 	public void initMaxViewport() {
@@ -56,6 +62,10 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		chart.getChartCalculator().setMaxViewport(tempMaxViewport);
 	}
 
+	/**
+	 * Most important thin here is {@link #calculateCircleOval()} method call. Because {@link #initDataAttributes()} is
+	 * usually called from onSizeChanged it is good place to calculate max PieChart circle size.
+	 */
 	public void initDataAttributes() {
 		chart.getChartCalculator().setInternalMargin(calculateContentAreaMargin());
 		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));
@@ -65,79 +75,10 @@ public class PieChartRenderer extends AbstractChartRenderer {
 
 	@Override
 	public void draw(Canvas canvas) {
-		drawArcs(canvas);
+		drawArcs(canvas, MODE_DRAW);
 		if (isTouched()) {
-			highlightArc(canvas);
+			drawArcs(canvas, MODE_HIGHLIGHT);
 		}
-	}
-
-	private void drawArcs(Canvas canvas) {
-		final PieChartData data = dataProvider.getPieChartData();
-		final float centerX = orginCircleOval.centerX();
-		final float centerY = orginCircleOval.centerY();
-		final float arcScale = CIRCLE_360 / maxSum;
-		float lastAngle = DEFAULT_START_ANGLE;
-		for (ArcValue arcValue : data.getArcs()) {
-			arcPaint.setColor(arcValue.getColor());
-			final float angle = arcValue.getValue() * arcScale;
-
-			final float arcCenterX = (float) (circleRadius * DEFAULT_ARC_VECTOR_RADIUS_FACTOR
-					* Math.cos(Math.toRadians(lastAngle + angle / 2)) + centerX);
-			final float arcCenterY = (float) (circleRadius * DEFAULT_ARC_VECTOR_RADIUS_FACTOR
-					* Math.sin(Math.toRadians(lastAngle + angle / 2)) + centerY);
-
-			// Move arc along vector to add spacing between arcs.
-			arcVector.set(arcCenterX - centerX, arcCenterY - centerY);
-			normalizeVector(arcVector);
-			drawCircleOval.set(orginCircleOval);
-			drawCircleOval.offset(arcVector.x * arcSpacing, arcVector.y * arcSpacing);
-			canvas.drawArc(drawCircleOval, lastAngle, angle, true, arcPaint);
-
-			canvas.drawText("TTT", arcCenterX, arcCenterY, labelPaint);
-
-			lastAngle += angle;
-		}
-	}
-
-	private void highlightArc(Canvas canvas) {
-		final PieChartData data = dataProvider.getPieChartData();
-		final float centerX = orginCircleOval.centerX();
-		final float centerY = orginCircleOval.centerY();
-		final float arcScale = CIRCLE_360 / maxSum;
-		float lastAngle = DEFAULT_START_ANGLE;
-		int arcIndex = 0;
-		for (ArcValue arcValue : data.getArcs()) {
-			arcPaint.setColor(arcValue.getDarkenColor());
-			final float angle = arcValue.getValue() * arcScale;
-			if (selectedValue.firstIndex != arcIndex) {
-				// Not that arc.
-				lastAngle += angle;
-				++arcIndex;
-				continue;
-			}
-			final float arcCenterX = (float) (circleRadius * DEFAULT_ARC_VECTOR_RADIUS_FACTOR
-					* Math.cos(Math.toRadians(lastAngle + angle / 2)) + centerX);
-			final float arcCenterY = (float) (circleRadius * DEFAULT_ARC_VECTOR_RADIUS_FACTOR
-					* Math.sin(Math.toRadians(lastAngle + angle / 2)) + centerY);
-
-			// Move arc along vector to add spacing between arcs.
-			arcVector.set(arcCenterX - centerX, arcCenterY - centerY);
-			normalizeVector(arcVector);
-			drawCircleOval.set(orginCircleOval);
-			drawCircleOval.offset(arcVector.x * arcSpacing, arcVector.y * arcSpacing);
-			drawCircleOval.inset(-touchAdditional, -touchAdditional);
-			canvas.drawArc(drawCircleOval, lastAngle, angle, true, arcPaint);
-
-			canvas.drawText("TTT", arcCenterX, arcCenterY, labelPaint);
-
-			lastAngle += angle;
-			++arcIndex;
-		}
-	}
-
-	private void normalizeVector(PointF point) {
-		final float abs = point.length();
-		point.set(point.x / abs, point.y / abs);
 	}
 
 	@Override
@@ -178,6 +119,82 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		return isTouched();
 	}
 
+	/**
+	 * Draw all arcs for this PieChart, if mode == {@link #MODE_HIGHLIGHT} currently selected arc will be redrawn and
+	 * highlighted.
+	 * 
+	 * @param canvas
+	 * @param mode
+	 */
+	private void drawArcs(Canvas canvas, int mode) {
+		final PieChartData data = dataProvider.getPieChartData();
+		final float arcScale = CIRCLE_360 / maxSum;
+		float lastAngle = DEFAULT_START_ANGLE;
+		int arcIndex = 0;
+		for (ArcValue arcValue : data.getArcs()) {
+			final float angle = arcValue.getValue() * arcScale;
+			if (MODE_DRAW == mode) {
+				drawArc(canvas, data, arcValue, lastAngle, angle, mode);
+			} else if (MODE_HIGHLIGHT == mode) {
+				highlightArc(canvas, data, arcValue, lastAngle, angle, arcIndex);
+			} else {
+				throw new IllegalStateException("Cannot process arc in mode: " + mode);
+			}
+			lastAngle += angle;
+			++arcIndex;
+		}
+	}
+
+	/**
+	 * Method draws single arc from lastAngle to lastAngle+angle, if mode = {@link #MODE_HIGHLIGHT} arc will be darken
+	 * and will have bigger radius.
+	 */
+	private void drawArc(Canvas canvas, PieChartData data, ArcValue arcValue, float lastAngle, float angle, int mode) {
+		// TODO: Maybe move centerX/Y out of this method.
+		final float centerX = orginCircleOval.centerX();
+		final float centerY = orginCircleOval.centerY();
+		final float arcCenterX = (float) (circleRadius * DEFAULT_ARC_VECTOR_RADIUS_FACTOR
+				* Math.cos(Math.toRadians(lastAngle + angle / 2)) + centerX);
+		final float arcCenterY = (float) (circleRadius * DEFAULT_ARC_VECTOR_RADIUS_FACTOR
+				* Math.sin(Math.toRadians(lastAngle + angle / 2)) + centerY);
+
+		// Move arc along vector to add spacing between arcs.
+		arcVector.set(arcCenterX - centerX, arcCenterY - centerY);
+		normalizeVector(arcVector);
+		drawCircleOval.set(orginCircleOval);
+		drawCircleOval.offset(arcVector.x * arcSpacing, arcVector.y * arcSpacing);
+		if (MODE_HIGHLIGHT == mode) {
+			// Add additional touch feedback by setting bigger radius for that arc and darken color.
+			drawCircleOval.inset(-touchAdditional, -touchAdditional);
+			arcPaint.setColor(arcValue.getDarkenColor());
+		} else {
+			arcPaint.setColor(arcValue.getColor());
+		}
+		canvas.drawArc(drawCircleOval, lastAngle, angle, true, arcPaint);
+
+		if (data.hasLabels()) {
+			final int nummChars = data.getFormatter().formatValue(labelBuffer, arcValue.getValue());
+			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, arcCenterX, arcCenterY, labelPaint);
+		}
+	}
+
+	private void highlightArc(Canvas canvas, PieChartData data, ArcValue arcValue, float lastAngle, float angle,
+			int arcIndex) {
+		if (selectedValue.firstIndex != arcIndex) {
+			// Not that arc.
+			return;
+		}
+		drawArc(canvas, data, arcValue, lastAngle, angle, MODE_HIGHLIGHT);
+	}
+
+	private void normalizeVector(PointF point) {
+		final float abs = point.length();
+		point.set(point.x / abs, point.y / abs);
+	}
+
+	/**
+	 * Calculates angle of touched point.
+	 */
 	private float pointToAngle(float x, float y, float centerX, float centerY) {
 		double diffX = x - centerX;
 		double diffY = y - centerY;
@@ -198,6 +215,9 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		return angle;
 	}
 
+	/**
+	 * Calculates rectangle(square) that will constraint chart circle.
+	 */
 	private void calculateCircleOval() {
 		Rect contentRect = chart.getChartCalculator().getContentRect();
 		circleRadius = Math.min(contentRect.width() / 2f, contentRect.height() / 2f);
@@ -210,6 +230,10 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		orginCircleOval.set(left, top, right, bottom);
 	}
 
+	/**
+	 * Viewport is not really important for PieChart, this kind of chart doesn't relay on viewport but uses pixels
+	 * coordinates instead. This method also calculates sum of all ArcValues.
+	 */
 	private void calculateMaxViewport() {
 		tempMaxViewport.set(0, MAX_WIDTH_HEIGHT, MAX_WIDTH_HEIGHT, 0);
 		maxSum = 0.0f;
@@ -218,18 +242,14 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		}
 	}
 
+	/**
+	 * No margin for this chart.
+	 * 
+	 * @see #calculateCircleOval()
+	 * 
+	 * @return
+	 */
 	private int calculateContentAreaMargin() {
-		// int contentAreaMargin = 0;
-		// LineChartData data = dataProvider.getLineChartData();
-		// for (Line line : data.lines) {
-		// if (line.hasPoints()) {
-		// int margin = line.getPointRadius() + DEFAULT_TOUCH_TOLLERANCE_MARGIN_DP;
-		// if (margin > contentAreaMargin) {
-		// contentAreaMargin = margin;
-		// }
-		// }
-		// }
-		// return Utils.dp2px(density, contentAreaMargin);
 		return 0;
 	}
 

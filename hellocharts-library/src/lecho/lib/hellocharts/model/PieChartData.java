@@ -28,7 +28,7 @@ public class PieChartData extends AbstractChartData {
 		}
 	}
 
-	public boolean isHasLabels() {
+	public boolean hasLabels() {
 		return hasLabels;
 	}
 
