@@ -156,19 +156,16 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		if (arcVector.length() > circleRadius + arcSpacing) {
 			return false;
 		}
-		final float touchAngle = pointToAngle(touchX, touchY, centerX, centerY);
+		// Get touchAngle and align touch 0 degrees with chart 0 degrees, that why I subtracting start angle, adding 360
+		// and modulo 360 translates i.e -20 degrees to 340 degrees.
+		final float touchAngle = (pointToAngle(touchX, touchY, centerX, centerY) - DEFAULT_START_ANGLE + CIRCLE_360)
+				% CIRCLE_360;
 		final float arcScale = CIRCLE_360 / maxSum;
-		float lastAngle = DEFAULT_START_ANGLE;
+		float lastAngle = 0f; // No start angle here,
 		int arcIndex = 0;
 		for (ArcValue arcValue : data.getArcs()) {
 			final float angle = arcValue.getValue() * arcScale;
-			final float endAngle = (lastAngle + angle) % CIRCLE_360;
-			if(endAngle >= lastAngle){
-				
-			} else{
-				
-			}
-			if (touchAngle >= lastAngle && touchAngle <= (lastAngle + angle) % CIRCLE_360) {
+			if (touchAngle >= lastAngle) {
 				selectedValue.set(arcIndex, arcIndex);
 			}
 			lastAngle += angle;
