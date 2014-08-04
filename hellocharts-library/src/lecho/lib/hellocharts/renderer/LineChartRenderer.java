@@ -258,10 +258,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			if (chartCalculator.isWithinContentRect((int) rawX, (int) rawY)) {
 				// Draw points only if they are within contentRect
 				if (MODE_DRAW == mode) {
-					drawPoint(canvas, rawX, rawY, pointRadius, line.getPointShape());
-					if (line.hasLabels()) {
-						drawLabel(canvas, line, linePoint, rawX, rawY, pointRadius + labelOffset);
-					}
+					drawPoint(canvas, line, linePoint, rawX, rawY, pointRadius);
 				} else if (MODE_HIGHLIGHT == mode) {
 					highlightPoint(canvas, line, linePoint, rawX, rawY, lineIndex, valueIndex);
 				} else {
@@ -272,11 +269,14 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		}
 	}
 
-	private void drawPoint(Canvas canvas, float rawX, float rawY, float pointRadius, int pointShape) {
-		if (Line.SHAPE_SQUARE == pointShape) {
+	private void drawPoint(Canvas canvas, Line line, LinePoint linePoint, float rawX, float rawY, float pointRadius) {
+		if (Line.SHAPE_SQUARE == line.getPointShape()) {
 			canvas.drawRect(rawX - pointRadius, rawY - pointRadius, rawX + pointRadius, rawY + pointRadius, pointPaint);
 		} else {
 			canvas.drawCircle(rawX, rawY, pointRadius, pointPaint);
+		}
+		if (line.hasLabels()) {
+			drawLabel(canvas, line, linePoint, rawX, rawY, pointRadius + labelOffset);
 		}
 	}
 
@@ -288,13 +288,10 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 	private void highlightPoint(Canvas canvas, Line line, LinePoint linePoint, float rawX, float rawY, int lineIndex,
 			int valueIndex) {
-		int pointRadius = Utils.dp2px(density, line.getPointRadius());
 		if (selectedValue.firstIndex == lineIndex && selectedValue.secondIndex == valueIndex) {
+			int pointRadius = Utils.dp2px(density, line.getPointRadius());
 			pointPaint.setColor(line.getDarkenColor());
-			drawPoint(canvas, rawX, rawY, pointRadius + touchTolleranceMargin, line.getPointShape());
-			if (line.hasLabels()) {
-				drawLabel(canvas, line, linePoint, rawX, rawY, pointRadius + labelOffset);
-			}
+			drawPoint(canvas, line, linePoint, rawX, rawY, pointRadius + touchTolleranceMargin);
 		}
 	}
 
