@@ -11,6 +11,7 @@ import lecho.lib.hellocharts.model.PieChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.renderer.PieChartRenderer;
 import android.content.Context;
+import android.graphics.RectF;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 
@@ -18,6 +19,7 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 	private static final String TAG = "PieChartView";
 	protected PieChartData data;
 	protected PieChartOnValueTouchListener onValueTouchListener = new DummyOnValueTouchListener();
+	protected PieChartRenderer pieChartRenderer;
 
 	public PieChartView(Context context) {
 		this(context, null, 0);
@@ -29,7 +31,8 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 
 	public PieChartView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		chartRenderer = new PieChartRenderer(context, this, this);
+		pieChartRenderer = new PieChartRenderer(context, this, this);
+		chartRenderer = pieChartRenderer;
 		touchHandler = new PieChartTouchHandler(context, this);
 		setPieChartData(generateDummyData());
 	}
@@ -97,6 +100,48 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 		}
 		chartRenderer.initMaxViewport();
 		chartRenderer.initCurrentViewport();
+		ViewCompat.postInvalidateOnAnimation(this);
+	}
+
+	/**
+	 * Returns rectangle that will constraint pie chart area.
+	 * 
+	 * @return
+	 */
+	public RectF getCircleOval() {
+		return pieChartRenderer.getCircleOval();
+	}
+
+	/**
+	 * Use this to change pie chart area. Because by default CircleOval is calculated onSizeChanged() you must call this
+	 * method after size of PieChartView is calculated to make it works.
+	 * 
+	 * @param orginCircleOval
+	 */
+	public void setCircleOval(RectF orginCircleOval) {
+		pieChartRenderer.setCircleOval(orginCircleOval);
+		ViewCompat.postInvalidateOnAnimation(this);
+	}
+
+	/**
+	 * Returns pie chart rotation, 0 rotation means that 0 degrees is at 3 o'clock. Don't confuse with
+	 * {@link View#getRotation()}.
+	 * 
+	 * @return
+	 */
+	public int getChartRotation() {
+		return pieChartRenderer.getChartRotation();
+	}
+
+	/**
+	 * Set pie chart rotation. Don't confuse with {@link View#getRotation()}.
+	 * 
+	 * @param rotation
+	 * 
+	 * @see #getChartRotation()
+	 */
+	public void setChartRotation(int rotation, boolean isAnimated) {
+		pieChartRenderer.setChartRotation(rotation);
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 

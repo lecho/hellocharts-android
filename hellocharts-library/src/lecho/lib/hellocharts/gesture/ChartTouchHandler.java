@@ -28,6 +28,13 @@ public class ChartTouchHandler {
 		chartZoomer = new ChartZoomer(context, ChartZoomer.ZOOM_HORIZONTAL_AND_VERTICAL);
 	}
 
+	/**
+	 * Using first approach of fling animation described here {@link http
+	 * ://developer.android.com/training/custom-views/making-interactive.html}. Consider use of second option with
+	 * ValueAnimator.
+	 * 
+	 * @return
+	 */
 	public boolean computeScroll() {
 		if (!isInteractive) {
 			return false;
