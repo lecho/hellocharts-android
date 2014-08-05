@@ -14,6 +14,7 @@ import android.content.Context;
 import android.graphics.RectF;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.view.View;
 
 /**
  * 

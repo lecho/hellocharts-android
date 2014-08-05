@@ -6,6 +6,7 @@ import android.util.TypedValue;
 
 public abstract class Utils {
 	public static final int POW10[] = { 1, 10, 100, 1000, 10000, 100000, 1000000 };
+
 	public static final int COLOR_BLUE = Color.parseColor("#33B5E5");
 	public static final int COLOR_VIOLET = Color.parseColor("#AA66CC");
 	public static final int COLOR_GREEN = Color.parseColor("#99CC00");
@@ -39,10 +40,12 @@ public abstract class Utils {
 
 	// TODO: that's not threat safe, should it be?
 	public static int darkenColor(int color) {
+		int alpha = Color.alpha(color);
 		Color.colorToHSV(color, hsv);
 		hsv[1] = Math.min(hsv[1] * SATURATION_DARKEN, 1.0f);
 		hsv[2] = hsv[2] * INTENSITY_DARKEN;
-		return Color.HSVToColor(hsv);
+		int tempColor = Color.HSVToColor(hsv);
+		return Color.argb(alpha, Color.red(tempColor), Color.green(tempColor), Color.blue(tempColor));
 	}
 
 	/**
