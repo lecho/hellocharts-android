@@ -175,7 +175,7 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 		}
 	}
 
-	private PieChartData generateDummyData() {
+	protected PieChartData generateDummyData() {
 		final int numValues = 4;
 		PieChartData data = new PieChartData();
 		List<ArcValue> values = new ArrayList<ArcValue>(numValues);

@@ -9,6 +9,13 @@ public class ColumnChartData extends AbstractChartData {
 	private boolean isStacked = false;
 	private float fillRatio = DEFAULT_FILL_RATIO;
 
+	public ColumnChartData() {
+	}
+
+	public ColumnChartData(List<Column> columns) {
+		setColumns(columns);
+	}
+
 	public List<Column> getColumns() {
 		return columns;
 	}

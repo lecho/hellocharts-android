@@ -58,7 +58,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	@Override
 	public void draw(Canvas canvas) {
 		final LineChartData data = dataProvider.getLineChartData();
-		for (Line line : data.lines) {
+		for (Line line : data.getLines()) {
 			if (line.hasLines()) {
 				if (line.isSmooth()) {
 					drawSmoothPath(canvas, line);
@@ -74,7 +74,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	public void drawUnclipped(Canvas canvas) {
 		final LineChartData data = dataProvider.getLineChartData();
 		int lineIndex = 0;
-		for (Line line : data.lines) {
+		for (Line line : data.getLines()) {
 			if (line.hasPoints()) {
 				drawPoints(canvas, line, lineIndex, MODE_DRAW);
 			}
@@ -93,7 +93,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		final LineChartData data = dataProvider.getLineChartData();
 		final ChartCalculator chartCalculator = chart.getChartCalculator();
 		int lineIndex = 0;
-		for (Line line : data.lines) {
+		for (Line line : data.getLines()) {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
 			int valueIndex = 0;
 			for (LinePoint linePoint : line.getPoints()) {
@@ -117,7 +117,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		tempMaxViewport.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
 		LineChartData data = dataProvider.getLineChartData();
 		// TODO: Optimize.
-		for (Line line : data.lines) {
+		for (Line line : data.getLines()) {
 			for (LinePoint linePoint : line.getPoints()) {
 				if (linePoint.getX() < tempMaxViewport.left) {
 					tempMaxViewport.left = linePoint.getX();
@@ -139,7 +139,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private int calculateContentAreaMargin() {
 		int contentAreaMargin = 0;
 		LineChartData data = dataProvider.getLineChartData();
-		for (Line line : data.lines) {
+		for (Line line : data.getLines()) {
 			if (line.hasPoints()) {
 				int margin = line.getPointRadius() + DEFAULT_TOUCH_TOLLERANCE_MARGIN_DP;
 				if (margin > contentAreaMargin) {
@@ -282,7 +282,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 	private void highlightPoints(Canvas canvas) {
 		int lineIndex = selectedValue.firstIndex;
-		Line line = dataProvider.getLineChartData().lines.get(lineIndex);
+		Line line = dataProvider.getLineChartData().getLines().get(lineIndex);
 		drawPoints(canvas, line, lineIndex, MODE_HIGHLIGHT);
 	}
 

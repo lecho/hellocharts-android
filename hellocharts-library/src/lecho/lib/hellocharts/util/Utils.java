@@ -6,8 +6,8 @@ import android.util.TypedValue;
 
 public abstract class Utils {
 	public static final int POW10[] = { 1, 10, 100, 1000, 10000, 100000, 1000000 };
-	public static final int DEFAULT_COLOR = Color.parseColor("#F4F4F4");
-	public static final int DEFAULT_DARKEN_COLOR = Color.parseColor("#F0F0F0");
+	public static final int DEFAULT_COLOR = Color.parseColor("#DFDFDF");
+	public static final int DEFAULT_DARKEN_COLOR = Color.parseColor("#DDDDDD");
 	public static final int COLOR_BLUE = Color.parseColor("#33B5E5");
 	public static final int COLOR_VIOLET = Color.parseColor("#AA66CC");
 	public static final int COLOR_GREEN = Color.parseColor("#99CC00");

@@ -26,13 +26,14 @@ public class LinePoint {
 		}
 	}
 
-	public void set(float x, float y) {
+	public LinePoint set(float x, float y) {
 		this.x = x;
 		this.y = y;
 		this.orginX = x;
 		this.orginY = y;
 		this.diffX = 0;
 		this.diffY = 0;
+		return this;
 	}
 
 	public void setTarget(float targetX, float targetY) {

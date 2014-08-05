@@ -6,16 +6,14 @@ import java.util.List;
 
 import lecho.lib.hellocharts.util.Utils;
 
-import android.graphics.Color;
-
 public class Line {
 	public static final int SHAPE_CIRCLE = 1;
 	public static final int SHAPE_SQUARE = 2;
 	private static final int DEFAULT_LINE_STROKE_WIDTH_DP = 3;
 	private static final int DEFAULT_POINT_RADIUS_DP = 6;
 	private static final int DEFAULT_AREA_TRANSPARENCY = 64;
-	private int color = Color.LTGRAY;
-	private int darkenColor = Color.GRAY;
+	private int color = Utils.DEFAULT_COLOR;
+	private int darkenColor = Utils.DEFAULT_DARKEN_COLOR;
 	private int areaTransparency = DEFAULT_AREA_TRANSPARENCY;
 	private int strokeWidth = DEFAULT_LINE_STROKE_WIDTH_DP;
 	private int pointRadius = DEFAULT_POINT_RADIUS_DP;
