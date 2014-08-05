@@ -58,7 +58,7 @@ public class PieChartTouchHandler extends ChartTouchHandler {
 		if (!isInteractive) {
 			return false;
 		}
-		if (isRotationEnabled) {
+		if (!isRotationEnabled) {
 			return false;
 		}
 		if (scroller.computeScrollOffset()) {
@@ -116,7 +116,7 @@ public class PieChartTouchHandler extends ChartTouchHandler {
 
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-			if (isRotationEnabled) {
+			if (!isRotationEnabled) {
 				return false;
 			}
 			// Set up the Scroller for a fling
