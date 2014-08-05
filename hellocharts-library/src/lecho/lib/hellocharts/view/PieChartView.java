@@ -145,6 +145,25 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
+	public boolean isChartRotationEnabled() {
+		if (touchHandler instanceof PieChartTouchHandler) {
+			return ((PieChartTouchHandler) touchHandler).isRotationEnabled();
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Set false if you don't wont the chart to be rotated by touch gesture. Rotating programmatically will still work.
+	 * 
+	 * @param isRotationEnabled
+	 */
+	public void setChartRotationEnabled(boolean isRotationEnabled) {
+		if (touchHandler instanceof PieChartTouchHandler) {
+			((PieChartTouchHandler) touchHandler).setRotationEnabled(isRotationEnabled);
+		}
+	}
+
 	private PieChartData generateDummyData() {
 		final int numValues = 4;
 		PieChartData data = new PieChartData();

@@ -32,6 +32,8 @@ public class PieChartTouchHandler extends ChartTouchHandler {
 	 */
 	protected PieChartView pieChart;
 
+	private boolean isRotationEnabled = true;
+
 	public PieChartTouchHandler(Context context, Chart chart) {
 		super(context, chart);
 		if (chart instanceof PieChartView) {
@@ -56,11 +58,22 @@ public class PieChartTouchHandler extends ChartTouchHandler {
 		if (!isInteractive) {
 			return false;
 		}
+		if (isRotationEnabled) {
+			return false;
+		}
 		if (scroller.computeScrollOffset()) {
 			pieChart.setChartRotation(scroller.getCurrY(), false);
 			// pieChart.setChartRotation() will invalidate view so no need to return true;
 		}
 		return false;
+	}
+
+	public boolean isRotationEnabled() {
+		return isRotationEnabled;
+	}
+
+	public void setRotationEnabled(boolean isRotationEnabled) {
+		this.isRotationEnabled = isRotationEnabled;
 	}
 
 	private class ChartScaleGestureListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
@@ -75,6 +88,9 @@ public class PieChartTouchHandler extends ChartTouchHandler {
 	private class ChartGestureListener extends GestureDetector.SimpleOnGestureListener {
 		@Override
 		public boolean onDown(MotionEvent e) {
+			if (!isRotationEnabled) {
+				return false;
+			}
 			scroller.abortAnimation();
 			return true;
 		}
@@ -86,6 +102,9 @@ public class PieChartTouchHandler extends ChartTouchHandler {
 
 		@Override
 		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+			if (!isRotationEnabled) {
+				return false;
+			}
 			// Set the pie rotation directly.
 			final RectF circleOval = pieChart.getCircleOval();
 			final float centerX = circleOval.centerX();
@@ -97,6 +116,9 @@ public class PieChartTouchHandler extends ChartTouchHandler {
 
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+			if (isRotationEnabled) {
+				return false;
+			}
 			// Set up the Scroller for a fling
 			final RectF circleOval = pieChart.getCircleOval();
 			final float centerX = circleOval.centerX();
