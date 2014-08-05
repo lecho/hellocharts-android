@@ -1,15 +1,14 @@
 package lecho.lib.hellocharts.model;
 
 import lecho.lib.hellocharts.util.Utils;
-import android.graphics.Color;
 
 public class ArcValue {
 
 	private float value;
 	private float orginValue;
 	private float diff;
-	private int color = Color.LTGRAY;
-	private int darkenColor = Color.GRAY;
+	private int color = Utils.DEFAULT_COLOR;
+	private int darkenColor = Utils.DEFAULT_DARKEN_COLOR;
 
 	public ArcValue(float value) {
 		// point and targetPoint have to be different objects
@@ -39,10 +38,11 @@ public class ArcValue {
 		return value;
 	}
 
-	public void setValue(float value) {
+	public ArcValue setValue(float value) {
 		this.value = value;
 		this.orginValue = value;
 		this.diff = 0;
+		return this;
 	}
 
 	public void setTarget(float target) {
@@ -54,9 +54,10 @@ public class ArcValue {
 		return color;
 	}
 
-	public void setColor(int color) {
+	public ArcValue setColor(int color) {
 		this.color = color;
 		this.darkenColor = Utils.darkenColor(color);
+		return this;
 	}
 
 	public int getDarkenColor() {
