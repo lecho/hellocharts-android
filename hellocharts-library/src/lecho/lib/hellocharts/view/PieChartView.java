@@ -15,6 +15,16 @@ import android.graphics.RectF;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 
+/**
+ * 
+ * PieChart is a little different than others charts. It doesn't have axes. It doesn't support viewport so changing
+ * viewport wont work. Instead it support "Circle Oval". Pinch-to-Zoom and double tap zoom wont work either. Instead of
+ * scroll there is chart rotation if isChartRotationEnabled is set to true. PieChart looks the best when it has the same
+ * width and height, drawing chart on rectangle with proportions other than 1:1 will left some empty spaces.
+ * 
+ * @author Leszek Wach
+ * 
+ */
 public class PieChartView extends AbstractChartView implements PieChartDataProvider {
 	private static final String TAG = "PieChartView";
 	protected PieChartData data;

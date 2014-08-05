@@ -56,6 +56,7 @@ public class ChartTouchHandler {
 		}
 		boolean needInvalidate = false;
 		if (isZoomEnabled) {
+			// TODO: What the heck, why detectros onTouchEvent() always return true?
 			needInvalidate = scaleGestureDetector.onTouchEvent(event);
 			needInvalidate = gestureDetector.onTouchEvent(event) || needInvalidate;
 		}

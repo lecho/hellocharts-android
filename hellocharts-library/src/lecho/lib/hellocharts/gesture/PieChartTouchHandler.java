@@ -1,6 +1,5 @@
 package lecho.lib.hellocharts.gesture;
 
-import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.view.PieChartView;
 import android.content.Context;
 import android.graphics.RectF;
@@ -34,16 +33,13 @@ public class PieChartTouchHandler extends ChartTouchHandler {
 
 	private boolean isRotationEnabled = true;
 
-	public PieChartTouchHandler(Context context, Chart chart) {
+	public PieChartTouchHandler(Context context, PieChartView chart) {
 		super(context, chart);
-		if (chart instanceof PieChartView) {
-			pieChart = (PieChartView) chart;
-		} else {
-			throw new IllegalArgumentException("PieChartTouchHandler can be used only with PieChartView based class!");
-		}
+		pieChart = (PieChartView) chart;
 		scroller = ScrollerCompat.create(context);
 		gestureDetector = new GestureDetector(context, new ChartGestureListener());
 		scaleGestureDetector = new ScaleGestureDetector(context, new ChartScaleGestureListener());
+		isZoomEnabled = false;// Zoom is not supported by PieChart.
 	}
 
 	/**
@@ -66,6 +62,18 @@ public class PieChartTouchHandler extends ChartTouchHandler {
 			// pieChart.setChartRotation() will invalidate view so no need to return true;
 		}
 		return false;
+	}
+
+	public boolean handleTouchEvent(MotionEvent event) {
+		if (!isInteractive) {
+			return false;
+		}
+		boolean needInvalidate = super.handleTouchEvent(event);
+		if (isRotationEnabled) {
+			// TODO: What the heck, why detectros onTouchEvent() always return true?
+			needInvalidate = gestureDetector.onTouchEvent(event) || needInvalidate;
+		}
+		return needInvalidate;
 	}
 
 	public boolean isRotationEnabled() {
