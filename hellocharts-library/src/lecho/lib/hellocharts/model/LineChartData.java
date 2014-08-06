@@ -19,11 +19,12 @@ public class LineChartData extends AbstractChartData {
 		return lines;
 	}
 
-	public void setLines(List<Line> lines) {
+	public LineChartData setLines(List<Line> lines) {
 		if (null == lines) {
 			this.lines = new ArrayList<Line>();
 		} else {
 			this.lines = lines;
 		}
+		return this;
 	}
 }

@@ -20,6 +20,7 @@ public class Line {
 	private boolean hasPoints = true;
 	private boolean hasLines = true;
 	private boolean hasLabels = false;
+	private boolean hasLabelsOnlyForSelected = false;
 	private boolean isSmooth = false;
 	private boolean isFilled = false;
 	private int pointShape = SHAPE_CIRCLE;
@@ -99,6 +100,21 @@ public class Line {
 
 	public Line setHasLabels(boolean hasLabels) {
 		this.hasLabels = hasLabels;
+		if (hasLabels) {
+			this.hasLabelsOnlyForSelected = false;
+		}
+		return this;
+	}
+
+	public boolean hasLabelsOnlyForSelected() {
+		return hasLabelsOnlyForSelected;
+	}
+
+	public Line setHasLabelsOnlyForSelected(boolean hasLabelsOnlyForSelected) {
+		this.hasLabelsOnlyForSelected = hasLabelsOnlyForSelected;
+		if (hasLabelsOnlyForSelected) {
+			this.hasLabels = false;
+		}
 		return this;
 	}
 

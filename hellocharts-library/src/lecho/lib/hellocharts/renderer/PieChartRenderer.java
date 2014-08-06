@@ -167,15 +167,23 @@ public class PieChartRenderer extends AbstractChartRenderer {
 			// Add additional touch feedback by setting bigger radius for that arc and darken color.
 			drawCircleOval.inset(-touchAdditional, -touchAdditional);
 			arcPaint.setColor(arcValue.getDarkenColor());
+			canvas.drawArc(drawCircleOval, lastAngle, angle, true, arcPaint);
+			if (data.hasLabels() || MODE_HIGHLIGHT == mode) {
+				drawLabel(canvas, data, arcValue, arcCenterX, arcCenterY);
+			}
 		} else {
 			arcPaint.setColor(arcValue.getColor());
+			canvas.drawArc(drawCircleOval, lastAngle, angle, true, arcPaint);
+			if (data.hasLabels()) {
+				drawLabel(canvas, data, arcValue, arcCenterX, arcCenterY);
+			}
 		}
-		canvas.drawArc(drawCircleOval, lastAngle, angle, true, arcPaint);
+	}
 
-		if (data.hasLabels()) {
-			final int nummChars = data.getFormatter().formatValue(labelBuffer, arcValue.getValue());
-			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, arcCenterX, arcCenterY, labelPaint);
-		}
+	private void drawLabel(Canvas canvas, PieChartData data, ArcValue arcValue, final float arcCenterX,
+			final float arcCenterY) {
+		final int nummChars = data.getFormatter().formatValue(labelBuffer, arcValue.getValue());
+		canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, arcCenterX, arcCenterY, labelPaint);
 	}
 
 	private void highlightArc(Canvas canvas, PieChartData data, ArcValue arcValue, float lastAngle, float angle,

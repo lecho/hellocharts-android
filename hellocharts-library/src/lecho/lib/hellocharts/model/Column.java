@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Column {
 	private boolean hasLabels = false;
+	private boolean hasLabelsOnlyForSelected = false;
 	private ValueFormatter formatter = new NumberValueFormatter();
 	// TODO: consider Collections.emptyList()
 	private List<ColumnValue> values = new ArrayList<ColumnValue>();
@@ -17,12 +18,13 @@ public class Column {
 		return values;
 	}
 
-	public void setValues(List<ColumnValue> values) {
+	public Column setValues(List<ColumnValue> values) {
 		if (null == values) {
 			this.values = new ArrayList<ColumnValue>();
 		} else {
 			this.values = values;
 		}
+		return this;
 	}
 
 	public boolean hasLabels() {
@@ -31,6 +33,21 @@ public class Column {
 
 	public Column setHasLabels(boolean hasLabels) {
 		this.hasLabels = hasLabels;
+		if (hasLabels) {
+			this.hasLabelsOnlyForSelected = false;
+		}
+		return this;
+	}
+
+	public boolean hasLabelsOnlyForSelected() {
+		return hasLabelsOnlyForSelected;
+	}
+
+	public Column setHasLabelsOnlyForSelected(boolean hasLabelsOnlyForSelected) {
+		this.hasLabelsOnlyForSelected = hasLabelsOnlyForSelected;
+		if (hasLabelsOnlyForSelected) {
+			this.hasLabels = false;
+		}
 		return this;
 	}
 

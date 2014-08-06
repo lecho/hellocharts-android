@@ -20,27 +20,29 @@ public class ColumnChartData extends AbstractChartData {
 		return columns;
 	}
 
-	public void setColumns(List<Column> columns) {
+	public ColumnChartData setColumns(List<Column> columns) {
 		if (null == columns) {
 			this.columns = new ArrayList<Column>();
 		} else {
 			this.columns = columns;
 		}
+		return this;
 	}
 
 	public boolean isStacked() {
 		return isStacked;
 	}
 
-	public void setStacked(boolean isStacked) {
+	public ColumnChartData setStacked(boolean isStacked) {
 		this.isStacked = isStacked;
+		return this;
 	}
 
 	public float getFillRatio() {
 		return fillRatio;
 	}
 
-	public void setFillRatio(float fillRatio) {
+	public ColumnChartData setFillRatio(float fillRatio) {
 		if (fillRatio < 0) {
 			fillRatio = 0;
 		}
@@ -48,5 +50,6 @@ public class ColumnChartData extends AbstractChartData {
 			fillRatio = 1;
 		}
 		this.fillRatio = fillRatio;
+		return this;
 	}
 }

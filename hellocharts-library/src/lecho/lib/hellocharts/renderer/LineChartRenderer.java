@@ -259,6 +259,9 @@ public class LineChartRenderer extends AbstractChartRenderer {
 				// Draw points only if they are within contentRect
 				if (MODE_DRAW == mode) {
 					drawPoint(canvas, line, linePoint, rawX, rawY, pointRadius);
+					if (line.hasLabels()) {
+						drawLabel(canvas, line, linePoint, rawX, rawY, pointRadius + labelOffset);
+					}
 				} else if (MODE_HIGHLIGHT == mode) {
 					highlightPoint(canvas, line, linePoint, rawX, rawY, lineIndex, valueIndex);
 				} else {
@@ -275,9 +278,6 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		} else {
 			canvas.drawCircle(rawX, rawY, pointRadius, pointPaint);
 		}
-		if (line.hasLabels()) {
-			drawLabel(canvas, line, linePoint, rawX, rawY, pointRadius + labelOffset);
-		}
 	}
 
 	private void highlightPoints(Canvas canvas) {
@@ -292,6 +292,9 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
 			pointPaint.setColor(line.getDarkenColor());
 			drawPoint(canvas, line, linePoint, rawX, rawY, pointRadius + touchTolleranceMargin);
+			if (line.hasLabels() || line.hasLabelsOnlyForSelected()) {
+				drawLabel(canvas, line, linePoint, rawX, rawY, pointRadius + labelOffset);
+			}
 		}
 	}
 

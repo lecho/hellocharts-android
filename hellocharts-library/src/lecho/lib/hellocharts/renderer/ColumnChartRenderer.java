@@ -303,7 +303,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 			columnPaint.setColor(columnValue.getDarkenColor());
 			canvas.drawRect(drawRect.left - touchAdditionalWidth, drawRect.top, drawRect.right + touchAdditionalWidth,
 					drawRect.bottom, columnPaint);
-			if (column.hasLabels()) {
+			if (column.hasLabels() || column.hasLabelsOnlyForSelected()) {
 				drawLabel(canvas, column, columnValue, isStacked, labelOffset);
 			}
 		}

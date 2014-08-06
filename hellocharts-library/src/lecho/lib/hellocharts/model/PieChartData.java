@@ -12,6 +12,7 @@ import java.util.List;
 public class PieChartData extends AbstractChartData {
 	private ValueFormatter formatter = new NumberValueFormatter();
 	private boolean hasLabels = false;
+	private boolean hasLabelsOnlyForSelected = false;
 	// TODO: consider Collections.emptyList()
 	private List<ArcValue> arcs = new ArrayList<ArcValue>();
 
@@ -29,20 +30,37 @@ public class PieChartData extends AbstractChartData {
 		return arcs;
 	}
 
-	public void setArcs(List<ArcValue> arcs) {
+	public PieChartData setArcs(List<ArcValue> arcs) {
 		if (null == arcs) {
 			this.arcs = new ArrayList<ArcValue>();
 		} else {
 			this.arcs = arcs;
 		}
+		return this;
 	}
 
 	public boolean hasLabels() {
 		return hasLabels;
 	}
 
-	public void setHasLabels(boolean hasLabels) {
+	public PieChartData setHasLabels(boolean hasLabels) {
 		this.hasLabels = hasLabels;
+		if (hasLabels) {
+			hasLabelsOnlyForSelected = false;
+		}
+		return this;
+	}
+
+	public boolean hasLabelsOnlyForSelected() {
+		return hasLabelsOnlyForSelected;
+	}
+
+	public PieChartData setHasLabelsOnlyForSelected(boolean hasLabelsOnlyForSelected) {
+		this.hasLabelsOnlyForSelected = hasLabelsOnlyForSelected;
+		if (hasLabelsOnlyForSelected) {
+			this.hasLabels = false;
+		}
+		return this;
 	}
 
 	public ValueFormatter getFormatter() {
