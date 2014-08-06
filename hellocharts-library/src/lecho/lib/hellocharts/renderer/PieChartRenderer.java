@@ -36,7 +36,6 @@ public class PieChartRenderer extends AbstractChartRenderer {
 
 	private Paint arcPaint = new Paint();
 	private float maxSum;
-	private float circleRadius;
 	private RectF orginCircleOval = new RectF();
 	private RectF drawCircleOval = new RectF();
 	private PointF arcVector = new PointF();
@@ -90,6 +89,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		final PieChartData data = dataProvider.getPieChartData();
 		final float centerX = orginCircleOval.centerX();
 		final float centerY = orginCircleOval.centerY();
+		final float circleRadius = orginCircleOval.width() / 2f;
 		// Check if touch is on circle area, if not return false;
 		arcVector.set(touchX - centerX, touchY - centerY);
 		if (arcVector.length() > circleRadius + touchAdditional) {
@@ -150,6 +150,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		// TODO: Maybe move centerX/Y out of this method.
 		final float centerX = orginCircleOval.centerX();
 		final float centerY = orginCircleOval.centerY();
+		final float circleRadius = orginCircleOval.width() / 2f;
 		final float arcCenterX = (float) (circleRadius * DEFAULT_ARC_VECTOR_RADIUS_FACTOR
 				* Math.cos(Math.toRadians(lastAngle + angle / 2)) + centerX);
 		final float arcCenterY = (float) (circleRadius * DEFAULT_ARC_VECTOR_RADIUS_FACTOR
@@ -219,7 +220,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	 */
 	private void calculateCircleOval() {
 		Rect contentRect = chart.getChartCalculator().getContentRect();
-		circleRadius = Math.min(contentRect.width() / 2f, contentRect.height() / 2f);
+		final float circleRadius = Math.min(contentRect.width() / 2f, contentRect.height() / 2f);
 		final float centerX = contentRect.centerX();
 		final float centerY = contentRect.centerY();
 		final float left = centerX - circleRadius + touchAdditional;
