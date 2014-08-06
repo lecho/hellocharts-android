@@ -1,5 +1,6 @@
 package lecho.lib.hellocharts.model;
 
+
 public class LinePoint {
 
 	private float x;
@@ -36,10 +37,11 @@ public class LinePoint {
 		return this;
 	}
 
-	public void setTarget(float targetX, float targetY) {
+	public LinePoint setTarget(float targetX, float targetY) {
 		set(x, y);
 		this.diffX = targetX - orginX;
 		this.diffY = targetY - orginY;
+		return this;
 	}
 
 	public float getX() {

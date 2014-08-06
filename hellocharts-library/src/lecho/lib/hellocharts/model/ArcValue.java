@@ -46,9 +46,10 @@ public class ArcValue {
 		return this;
 	}
 
-	public void setTarget(float target) {
+	public ArcValue setTarget(float target) {
 		setValue(value);
 		this.diff = target - orginValue;
+		return this;
 	}
 
 	public int getColor() {

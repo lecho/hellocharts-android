@@ -44,9 +44,10 @@ public class ColumnValue {
 		return this;
 	}
 
-	public void setTarget(float target) {
+	public ColumnValue setTarget(float target) {
 		setValue(value);
 		this.diff = target - orginValue;
+		return this;
 	}
 
 	public int getColor() {
