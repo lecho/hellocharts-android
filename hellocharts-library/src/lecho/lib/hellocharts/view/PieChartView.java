@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lecho.lib.hellocharts.PieChartDataProvider;
+import lecho.lib.hellocharts.animation.PieChartRotationAnimator;
+import lecho.lib.hellocharts.animation.PieChartRotationAnimatorV14;
+import lecho.lib.hellocharts.animation.PieChartRotationAnimatorV8;
 import lecho.lib.hellocharts.gesture.PieChartTouchHandler;
 import lecho.lib.hellocharts.model.ArcValue;
 import lecho.lib.hellocharts.model.ChartData;
@@ -12,6 +15,7 @@ import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.renderer.PieChartRenderer;
 import android.content.Context;
 import android.graphics.RectF;
+import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
@@ -31,6 +35,7 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 	protected PieChartData data;
 	protected PieChartOnValueTouchListener onValueTouchListener = new DummyOnValueTouchListener();
 	protected PieChartRenderer pieChartRenderer;
+	protected PieChartRotationAnimator rotationAnimator;
 
 	public PieChartView(Context context) {
 		this(context, null, 0);
@@ -45,6 +50,11 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 		pieChartRenderer = new PieChartRenderer(context, this, this);
 		chartRenderer = pieChartRenderer;
 		touchHandler = new PieChartTouchHandler(context, this);
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			this.rotationAnimator = new PieChartRotationAnimatorV8(this);
+		} else {
+			this.rotationAnimator = new PieChartRotationAnimatorV14(this);
+		}
 		setPieChartData(generateDummyData());
 	}
 
@@ -140,7 +150,7 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 	 * 
 	 * @return
 	 */
-	public int getChartRotation() {
+	public float getChartRotation() {
 		return pieChartRenderer.getChartRotation();
 	}
 
@@ -151,8 +161,13 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 	 * 
 	 * @see #getChartRotation()
 	 */
-	public void setChartRotation(int rotation, boolean isAnimated) {
-		pieChartRenderer.setChartRotation(rotation);
+	public void setChartRotation(float rotation, boolean isAnimated) {
+		if (isAnimated) {
+			rotationAnimator.cancelAnimation();
+			rotationAnimator.startAnimation(pieChartRenderer.getChartRotation(), rotation);
+		} else {
+			pieChartRenderer.setChartRotation(rotation);
+		}
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 

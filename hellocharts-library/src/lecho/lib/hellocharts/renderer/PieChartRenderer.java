@@ -27,7 +27,6 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	private static final float MAX_WIDTH_HEIGHT = 100f;
 	private static final int DEFAULT_START_ROTATION = 45;
 	private static final float DEFAULT_ARC_VECTOR_RADIUS_FACTOR = 0.7f;
-	private static final float CIRCLE_360 = 360f;
 	private static final int DEFAULT_TOUCH_ADDITIONAL_DP = 8;
 	private static final int MODE_DRAW = 0;
 	private static final int MODE_HIGHLIGHT = 1;
@@ -40,7 +39,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	private RectF drawCircleOval = new RectF();
 	private PointF arcVector = new PointF();
 	private int touchAdditional;
-	private int rotation = DEFAULT_START_ROTATION;
+	private float rotation = DEFAULT_START_ROTATION;
 
 	public PieChartRenderer(Context context, Chart chart, PieChartDataProvider dataProvider) {
 		super(context, chart);
@@ -97,8 +96,8 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		}
 		// Get touchAngle and align touch 0 degrees with chart 0 degrees, that why I subtracting start angle, adding 360
 		// and modulo 360 translates i.e -20 degrees to 340 degrees.
-		final float touchAngle = (pointToAngle(touchX, touchY, centerX, centerY) - rotation + CIRCLE_360) % CIRCLE_360;
-		final float arcScale = CIRCLE_360 / maxSum;
+		final float touchAngle = (pointToAngle(touchX, touchY, centerX, centerY) - rotation + 360f) % 360f;
+		final float arcScale = 360f / maxSum;
 		float lastAngle = 0f; // No start angle here, see abowe
 		int arcIndex = 0;
 		for (ArcValue arcValue : data.getArcs()) {
@@ -125,7 +124,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	 */
 	private void drawArcs(Canvas canvas, int mode) {
 		final PieChartData data = dataProvider.getPieChartData();
-		final float arcScale = CIRCLE_360 / maxSum;
+		final float arcScale = 360f / maxSum;
 		float lastAngle = rotation;
 		int arcIndex = 0;
 		for (ArcValue arcValue : data.getArcs()) {
@@ -209,7 +208,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		// Pass -diffX to get clockwise degrees order.
 		double radian = Math.atan2(-diffX, diffY);
 
-		float angle = ((float) Math.toDegrees(radian) + CIRCLE_360) % CIRCLE_360;
+		float angle = ((float) Math.toDegrees(radian) + 360) % 360;
 		// Add 90 because atan2 returns 0 degrees at 6 o'clock.
 		angle += 90f;
 		return angle;
@@ -261,11 +260,11 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		this.orginCircleOval = orginCircleOval;
 	}
 
-	public int getChartRotation() {
+	public float getChartRotation() {
 		return rotation;
 	}
 
-	public void setChartRotation(int rotation) {
+	public void setChartRotation(float rotation) {
 		rotation = (rotation % 360 + 360) % 360;
 		this.rotation = rotation;
 	}

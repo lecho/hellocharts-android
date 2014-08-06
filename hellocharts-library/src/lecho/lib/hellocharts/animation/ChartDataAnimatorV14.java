@@ -17,7 +17,7 @@ public class ChartDataAnimatorV14 implements ChartDataAnimator, AnimatorListener
 		this(chart, DEFAULT_ANIMATION_DURATION);
 	}
 
-	public ChartDataAnimatorV14(final Chart chart, final long duration) {
+	public ChartDataAnimatorV14(Chart chart, long duration) {
 		this.chart = chart;
 		animator = ValueAnimator.ofFloat(0.0f, 1.0f);
 		animator.setDuration(duration);

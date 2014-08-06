@@ -27,6 +27,8 @@ public class ChartViewportAnimatorV8 implements ChartViewportAnimator {
 			if (elapsed > duration) {
 				isAnimationStarted = false;
 				handler.removeCallbacks(runnable);
+				chart.setViewport(targetViewport, false);
+				animationListener.onAnimationFinished();
 				return;
 			}
 			float scale = Math.min(interpolator.getInterpolation((float) elapsed / duration), 1);
@@ -42,11 +44,11 @@ public class ChartViewportAnimatorV8 implements ChartViewportAnimator {
 		}
 	};
 
-	public ChartViewportAnimatorV8(final Chart chart) {
+	public ChartViewportAnimatorV8(Chart chart) {
 		this(chart, FAST_ANIMATION_DURATION);
 	}
 
-	public ChartViewportAnimatorV8(final Chart chart, final long duration) {
+	public ChartViewportAnimatorV8(Chart chart, long duration) {
 		this.chart = chart;
 		this.duration = duration;
 		this.handler = new Handler();
@@ -65,8 +67,8 @@ public class ChartViewportAnimatorV8 implements ChartViewportAnimator {
 	@Override
 	public void cancelAnimation() {
 		isAnimationStarted = false;
-		chart.setViewport(targetViewport, false);
 		handler.removeCallbacks(runnable);
+		chart.setViewport(targetViewport, false);
 		animationListener.onAnimationFinished();
 	}
 

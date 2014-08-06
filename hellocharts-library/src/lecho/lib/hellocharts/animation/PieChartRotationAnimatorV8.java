@@ -1,16 +1,18 @@
 package lecho.lib.hellocharts.animation;
 
-import lecho.lib.hellocharts.Chart;
+import lecho.lib.hellocharts.view.PieChartView;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 
-public class ChartDataAnimatorV8 implements ChartDataAnimator {
+public class PieChartRotationAnimatorV8 implements PieChartRotationAnimator {
 
 	long start;
 	boolean isAnimationStarted = false;
-	final Chart chart;
+	final PieChartView chart;
+	private float startRotation = 0;
+	private float targetRotation = 0;
 	final long duration;
 	final Handler handler;
 	final Interpolator interpolator = new AccelerateDecelerateInterpolator();
@@ -23,28 +25,32 @@ public class ChartDataAnimatorV8 implements ChartDataAnimator {
 			if (elapsed > duration) {
 				isAnimationStarted = false;
 				handler.removeCallbacks(runnable);
-				chart.animationDataFinished(true);
+				chart.setChartRotation(targetRotation, false);
+				animationListener.onAnimationFinished();
 				return;
 			}
 			float scale = Math.min(interpolator.getInterpolation((float) elapsed / duration), 1);
-			chart.animationDataUpdate(scale);
+			float rotation = startRotation + (targetRotation - startRotation) * scale;
+			rotation = (rotation % 360 + 360) % 360;
+			chart.setChartRotation(rotation, false);
 			handler.postDelayed(this, 16);
-
 		}
 	};
 
-	public ChartDataAnimatorV8(Chart chart) {
-		this(chart, DEFAULT_ANIMATION_DURATION);
+	public PieChartRotationAnimatorV8(PieChartView chart) {
+		this(chart, FAST_ANIMATION_DURATION);
 	}
 
-	public ChartDataAnimatorV8(Chart chart, long duration) {
+	public PieChartRotationAnimatorV8(PieChartView chart, long duration) {
 		this.chart = chart;
 		this.duration = duration;
 		this.handler = new Handler();
 	}
 
 	@Override
-	public void startAnimation() {
+	public void startAnimation(float startRotation, float targetRotation) {
+		this.startRotation = (startRotation % 360 + 360) % 360;
+		this.targetRotation = (targetRotation % 360 + 360) % 360;
 		isAnimationStarted = true;
 		animationListener.onAnimationStarted();
 		start = SystemClock.uptimeMillis();
@@ -55,7 +61,7 @@ public class ChartDataAnimatorV8 implements ChartDataAnimator {
 	public void cancelAnimation() {
 		isAnimationStarted = false;
 		handler.removeCallbacks(runnable);
-		chart.animationDataFinished(false);
+		chart.setChartRotation(targetRotation, false);
 		animationListener.onAnimationFinished();
 	}
 

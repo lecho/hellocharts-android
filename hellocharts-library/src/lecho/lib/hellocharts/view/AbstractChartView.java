@@ -96,6 +96,7 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	@Override
 	public void startDataAnimation() {
+		dataAnimator.cancelAnimation();
 		dataAnimator.startAnimation();
 	}
 
@@ -180,6 +181,7 @@ public abstract class AbstractChartView extends View implements Chart {
 	@Override
 	public void setViewport(Viewport targetViewport, boolean isAnimated) {
 		if (isAnimated) {
+			viewportAnimator.cancelAnimation();
 			viewportAnimator.startAnimation(getViewport(), targetViewport);
 		} else {
 			chartRenderer.setViewport(targetViewport);
