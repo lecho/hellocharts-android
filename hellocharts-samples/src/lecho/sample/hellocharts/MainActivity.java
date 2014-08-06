@@ -76,6 +76,17 @@ public class MainActivity extends ActionBarActivity {
 
 				}
 			});
+
+			Button pieChartButton = (Button) rootView.findViewById(R.id.pie_chart);
+			pieChartButton.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View arg0) {
+					Intent intent = new Intent(getActivity(), PieChartActivity.class);
+					startActivity(intent);
+
+				}
+			});
 			return rootView;
 		}
 	}

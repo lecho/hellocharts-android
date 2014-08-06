@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="lecho.sample.hellocharts.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,12 +23,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="lecho.sample.hellocharts.ColumnChartActivity"
+            android:name=".ColumnChartActivity"
             android:label="@string/title_activity_column_chart" >
         </activity>
         <activity
-            android:name="lecho.sample.hellocharts.LineChartActivity"
+            android:name=".LineChartActivity"
             android:label="@string/title_activity_line_chart" >
+        </activity>
+        <activity
+            android:name=".PieChartActivity"
+            android:label="@string/title_activity_pie_chart" >
         </activity>
     </application>
 

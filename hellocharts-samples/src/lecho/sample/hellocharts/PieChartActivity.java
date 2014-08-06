@@ -3,12 +3,18 @@ package lecho.sample.hellocharts;
 import java.util.ArrayList;
 import java.util.List;
 
+import lecho.lib.hellocharts.model.ArcValue;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.LinePoint;
+import lecho.lib.hellocharts.model.PieChartData;
+import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
+import lecho.lib.hellocharts.view.PieChartView;
+import lecho.lib.hellocharts.view.PieChartView.PieChartOnValueTouchListener;
+import lecho.lib.hellocharts.view.PreviewLineChartView;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,13 +25,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
-public class LineChartActivity extends ActionBarActivity {
+public class PieChartActivity extends ActionBarActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_line_chart);
+		setContentView(R.layout.activity_pie_chart);
 
 		if (savedInstanceState == null) {
 			getSupportFragmentManager().beginTransaction().add(R.id.container, new PlaceholderFragment()).commit();
@@ -63,49 +70,24 @@ public class LineChartActivity extends ActionBarActivity {
 
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_line_chart, container, false);
+			View rootView = inflater.inflate(R.layout.fragment_pie_chart, container, false);
 			LinearLayout layout = (LinearLayout) rootView.findViewById(R.id.layout);
 
-			final LineChartView chart = new LineChartView(getActivity());
-			final LineChartData data = new LineChartData();
-			List<LinePoint> s1 = Utils.generatePoints(NUM_OF_VALUES, 1.0f);
-			List<LinePoint> s2 = Utils.generatePoints(NUM_OF_VALUES, 1.0f);
-			Line l1 = new Line(s1);
-			l1.setColor(Color.parseColor("#FFBB33"));
-			l1.setFilled(false);
-			l1.setHasLines(true);
-			l1.setSmooth(true);
-			Line l2 = new Line(s2);
-			l2.setColor(Color.parseColor("#99CC00")).setFilled(false).setHasLines(true).setSmooth(true)
-					.setHasLabels(true).setHasPoints(true);
-			List<Line> lines = new ArrayList<Line>();
-			lines.add(l2);
-			lines.add(l1);
-			data.setLines(lines);
-			Axis axisX = new Axis();
-			axisX.setValues(Utils.generateAxis(0.0f, 100.0f, 1.0f));
-			axisX.setName("Axis X");
-			data.setAxisX(axisX);
-
-			Axis axisY = new Axis();
-			axisY.setValues(Utils.generateAxis(0.0f, 95.0f, 5.0f));
-			axisY.setName("Axis Y");
-			data.setAxisY(axisY);
-			// chart.setLineChartData(data);
-			chart.setOnValueTouchListener(new LineChartView.LineChartOnValueTouchListener() {
+			final PieChartView chart = new PieChartView(getActivity());
+			final PieChartData data = new PieChartData();
+			layout.addView(chart);
+			chart.setOnValueTouchListener(new PieChartOnValueTouchListener() {
 
 				@Override
-				public void onValueTouched(int selectedLine, int selectedValue, LinePoint point) {
-					// Toast.makeText(getActivity(),
-					// "" + selectedLine + " " + selectedValue + " " + point.getX() + " " + point.getY(),
-					// Toast.LENGTH_SHORT).show();
-					chart.setViewport(new Viewport(2, 45, 4, 20), true);
+				public void onValueTouched(int selectedArc, ArcValue arcValue) {
+					Toast.makeText(getActivity(), "listener", Toast.LENGTH_SHORT).show();
+					chart.setChartRotation(160, true);
 
 				}
 			});
-			// chart.setBackgroundColor(Color.WHITE);
-			// chart.setInteractive(false);
-			layout.addView(chart);
+			// chart.setValueSelectionEnabled(true);
+			// chart.selectValue(new SelectedValue(0, 0));
+			// chart.setChartRotationEnabled(false);
 			return rootView;
 		}
 	}

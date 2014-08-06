@@ -7,10 +7,9 @@ import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.view.ColumnChartView;
-import android.graphics.Color;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -78,19 +77,15 @@ public class ColumnChartActivity extends ActionBarActivity {
 			Axis axisX = new Axis();
 			axisX.setValues(Utils.generateAxis(0.0f, 10.0f, 2.0f));
 			axisX.setName("Axis X");
-			axisX.setTextSize(14);
-			axisX.setColor(Color.parseColor("#FFBB33"));
 			data.setAxisX(axisX);
 
 			Axis axisY = new Axis();
 			axisY.setValues(Utils.generateAxis(0.0f, 10.0f, 2.0f));
 			axisY.setName("Axis Y");
-			axisY.setTextSize(14);
-			axisY.setColor(Color.parseColor("#99CC00"));
 			data.setAxisY(axisY);
 			// data.setStacked(true);
 
-			chart.setData(data);
+			//chart.setColumnChartData(data);
 			// chart.setBackgroundColor(Color.WHITE);
 			// // chart.setPadding(10, 10, 10, 20);
 			layout.addView(chart);
