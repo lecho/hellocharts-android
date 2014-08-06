@@ -77,7 +77,7 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 	}
 
 	@Override
-	public void callTouchListener(SelectedValue selectedValue) {
+	public void callChartTouchListener(SelectedValue selectedValue) {
 		ArcValue arcValue = data.getArcs().get(selectedValue.firstIndex);
 		onValueTouchListener.onValueTouched(selectedValue.firstIndex, arcValue);
 	}

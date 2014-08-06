@@ -8,6 +8,10 @@ public class SelectedValue {
 		clear();
 	}
 
+	public SelectedValue(int firstIndex, int secondIndex) {
+		set(firstIndex, secondIndex);
+	}
+
 	public void set(int firstIndex, int secondIndex) {
 		this.firstIndex = firstIndex;
 		this.secondIndex = secondIndex;

@@ -11,6 +11,7 @@ import lecho.lib.hellocharts.animation.ChartViewportAnimator;
 import lecho.lib.hellocharts.animation.ChartViewportAnimatorV14;
 import lecho.lib.hellocharts.animation.ChartViewportAnimatorV8;
 import lecho.lib.hellocharts.gesture.ChartTouchHandler;
+import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
@@ -213,6 +214,17 @@ public abstract class AbstractChartView extends View implements Chart {
 	@Override
 	public void setValueSelectionEnabled(boolean isValueSelectionEnabled) {
 		touchHandler.setValueSelectionEnabled(isValueSelectionEnabled);
+	}
+
+	@Override
+	public void selectValue(SelectedValue selectedValue) {
+		chartRenderer.selectValue(selectedValue);
+		ViewCompat.postInvalidateOnAnimation(this);
+	}
+
+	@Override
+	public SelectedValue getSelectedValue() {
+		return chartRenderer.getSelectedValue();
 	}
 
 }

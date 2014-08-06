@@ -32,7 +32,7 @@ public interface Chart {
 
 	public void setViewportChangeListener(ViewportChangeListener viewportChangeListener);
 
-	public void callTouchListener(SelectedValue selectedValue);
+	public void callChartTouchListener(SelectedValue selectedValue);
 
 	public boolean isInteractive();
 
@@ -63,5 +63,9 @@ public interface Chart {
 	public boolean isValueSelectionEnabled();
 
 	public void setValueSelectionEnabled(boolean isValueSelectionEnabled);
+
+	public void selectValue(SelectedValue selectedValue);
+
+	public SelectedValue getSelectedValue();
 
 }

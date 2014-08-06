@@ -69,7 +69,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 	}
 
 	@Override
-	public void callTouchListener(SelectedValue selectedValue) {
+	public void callChartTouchListener(SelectedValue selectedValue) {
 		LinePoint point = data.getLines().get(selectedValue.firstIndex).getPoints().get(selectedValue.secondIndex);
 		onValueTouchListener.onValueTouched(selectedValue.firstIndex, selectedValue.secondIndex, point);
 	}

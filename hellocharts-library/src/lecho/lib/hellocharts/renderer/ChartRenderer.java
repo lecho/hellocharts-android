@@ -1,5 +1,6 @@
 package lecho.lib.hellocharts.renderer;
 
+import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.Viewport;
 import android.graphics.Canvas;
 
@@ -21,7 +22,7 @@ public interface ChartRenderer {
 
 	public void clearTouch();
 
-	public void callTouchListener();
+	public void callChartTouchListener();
 
 	public void setMaxViewport(Viewport maxViewport);
 
@@ -30,5 +31,9 @@ public interface ChartRenderer {
 	public void setViewport(Viewport viewport);
 
 	public Viewport getViewport();
+
+	public void selectValue(SelectedValue selectedValue);
+
+	public SelectedValue getSelectedValue();
 
 }

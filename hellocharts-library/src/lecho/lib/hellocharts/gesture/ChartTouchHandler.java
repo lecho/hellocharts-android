@@ -76,7 +76,7 @@ public class ChartTouchHandler {
 		case MotionEvent.ACTION_UP:
 			if (chartRenderer.isTouched()) {
 				if (chartRenderer.checkTouch(event.getX(), event.getY())) {
-					chartRenderer.callTouchListener();
+					chartRenderer.callChartTouchListener();
 					if (!isValueSelectionEnabled) {
 						chartRenderer.clearTouch();
 					}

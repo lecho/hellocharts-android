@@ -60,7 +60,7 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 	}
 
 	@Override
-	public void callTouchListener(SelectedValue selectedValue) {
+	public void callChartTouchListener(SelectedValue selectedValue) {
 		ColumnValue value = data.getColumns().get(selectedValue.firstIndex).getValues().get(selectedValue.secondIndex);
 		onValueTouchListener.onValueTouched(selectedValue.firstIndex, selectedValue.secondIndex, value);
 

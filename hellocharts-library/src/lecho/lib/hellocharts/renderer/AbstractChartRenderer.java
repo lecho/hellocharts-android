@@ -62,8 +62,8 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 	}
 
 	@Override
-	public void callTouchListener() {
-		chart.callTouchListener(selectedValue);
+	public void callChartTouchListener() {
+		chart.callChartTouchListener(selectedValue);
 	}
 
 	@Override
@@ -93,5 +93,15 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 	@Override
 	public Viewport getViewport() {
 		return chart.getChartCalculator().getCurrentViewport();
+	}
+
+	@Override
+	public void selectValue(SelectedValue selectedValue) {
+		this.selectedValue.set(selectedValue);
+	}
+
+	@Override
+	public SelectedValue getSelectedValue() {
+		return selectedValue;
 	}
 }
