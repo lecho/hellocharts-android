@@ -3,12 +3,13 @@ package lecho.lib.hellocharts.model;
 import lecho.lib.hellocharts.util.Utils;
 
 public class ArcValue {
-
+	private static final int DEFAULT_ARC_SPACING_DP = 2;
 	private float value;
 	private float orginValue;
 	private float diff;
 	private int color = Utils.DEFAULT_COLOR;
 	private int darkenColor = Utils.DEFAULT_DARKEN_COLOR;
+	private int arcSpacing = DEFAULT_ARC_SPACING_DP;
 
 	public ArcValue(float value) {
 		// point and targetPoint have to be different objects
@@ -62,5 +63,14 @@ public class ArcValue {
 
 	public int getDarkenColor() {
 		return darkenColor;
+	}
+
+	public int getArcSpacing() {
+		return arcSpacing;
+	}
+
+	public ArcValue setArcSpacing(int arcSpacing) {
+		this.arcSpacing = arcSpacing;
+		return this;
 	}
 }

@@ -28,8 +28,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	private static final int DEFAULT_START_ROTATION = 45;
 	private static final float DEFAULT_ARC_VECTOR_RADIUS_FACTOR = 0.7f;
 	private static final float CIRCLE_360 = 360f;
-	private static final int DEFAULT_ARC_SPACING_DP = 2;
-	private static final int DEFAULT_TOUCH_ADDITIONAL_DP = 4;
+	private static final int DEFAULT_TOUCH_ADDITIONAL_DP = 8;
 	private static final int MODE_DRAW = 0;
 	private static final int MODE_HIGHLIGHT = 1;
 
@@ -41,14 +40,12 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	private RectF orginCircleOval = new RectF();
 	private RectF drawCircleOval = new RectF();
 	private PointF arcVector = new PointF();
-	private float arcSpacing;
 	private int touchAdditional;
 	private int rotation = DEFAULT_START_ROTATION;
 
 	public PieChartRenderer(Context context, Chart chart, PieChartDataProvider dataProvider) {
 		super(context, chart);
 		this.dataProvider = dataProvider;
-		arcSpacing = Utils.dp2px(density, DEFAULT_ARC_SPACING_DP);
 		touchAdditional = Utils.dp2px(density, DEFAULT_TOUCH_ADDITIONAL_DP);
 
 		arcPaint.setAntiAlias(true);
@@ -95,7 +92,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		final float centerY = orginCircleOval.centerY();
 		// Check if touch is on circle area, if not return false;
 		arcVector.set(touchX - centerX, touchY - centerY);
-		if (arcVector.length() > circleRadius + arcSpacing) {
+		if (arcVector.length() > circleRadius + touchAdditional) {
 			return false;
 		}
 		// Get touchAngle and align touch 0 degrees with chart 0 degrees, that why I subtracting start angle, adding 360
@@ -162,6 +159,8 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		arcVector.set(arcCenterX - centerX, arcCenterY - centerY);
 		normalizeVector(arcVector);
 		drawCircleOval.set(orginCircleOval);
+		final float arcSpacing = Utils.dp2px(density, arcValue.getArcSpacing());
+		drawCircleOval.inset(arcSpacing, arcSpacing);
 		drawCircleOval.offset(arcVector.x * arcSpacing, arcVector.y * arcSpacing);
 		if (MODE_HIGHLIGHT == mode) {
 			// Add additional touch feedback by setting bigger radius for that arc and darken color.
@@ -223,10 +222,10 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		circleRadius = Math.min(contentRect.width() / 2f, contentRect.height() / 2f);
 		final float centerX = contentRect.centerX();
 		final float centerY = contentRect.centerY();
-		final float left = centerX - circleRadius + arcSpacing + touchAdditional;
-		final float top = centerY - circleRadius + arcSpacing + touchAdditional;
-		final float right = centerX + circleRadius - arcSpacing - touchAdditional;
-		final float bottom = centerY + circleRadius - arcSpacing - touchAdditional;
+		final float left = centerX - circleRadius + touchAdditional;
+		final float top = centerY - circleRadius + touchAdditional;
+		final float right = centerX + circleRadius - touchAdditional;
+		final float bottom = centerY + circleRadius - touchAdditional;
 		orginCircleOval.set(left, top, right, bottom);
 	}
 
