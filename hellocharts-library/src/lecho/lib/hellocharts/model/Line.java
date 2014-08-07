@@ -26,13 +26,13 @@ public class Line {
 	private int pointShape = SHAPE_CIRCLE;
 	private ValueFormatter formatter = new NumberValueFormatter();
 	// TODO: consider Collections.emptyList()
-	private List<LinePoint> points = new ArrayList<LinePoint>();
+	private List<PointValue> points = new ArrayList<PointValue>();
 
-	public Line(List<LinePoint> points) {
+	public Line(List<PointValue> points) {
 		setPoints(points);
 	}
 
-	public void setPoints(List<LinePoint> points) {
+	public void setPoints(List<PointValue> points) {
 		if (null == points) {
 			this.points = Collections.emptyList();
 		} else {
@@ -40,7 +40,7 @@ public class Line {
 		}
 	}
 
-	public List<LinePoint> getPoints() {
+	public List<PointValue> getPoints() {
 		return this.points;
 	}
 

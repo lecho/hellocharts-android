@@ -1,7 +1,7 @@
 package lecho.lib.hellocharts.model;
 
 
-public class LinePoint {
+public class PointValue {
 
 	private float x;
 	private float y;
@@ -10,7 +10,7 @@ public class LinePoint {
 	private float diffX;
 	private float diffY;
 
-	public LinePoint(float x, float y) {
+	public PointValue(float x, float y) {
 		set(x, y);
 	}
 
@@ -27,7 +27,7 @@ public class LinePoint {
 		}
 	}
 
-	public LinePoint set(float x, float y) {
+	public PointValue set(float x, float y) {
 		this.x = x;
 		this.y = y;
 		this.orginX = x;
@@ -37,7 +37,7 @@ public class LinePoint {
 		return this;
 	}
 
-	public LinePoint setTarget(float targetX, float targetY) {
+	public PointValue setTarget(float targetX, float targetY) {
 		set(x, y);
 		this.diffX = targetX - orginX;
 		this.diffY = targetY - orginY;

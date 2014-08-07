@@ -8,7 +8,7 @@ import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
-import lecho.lib.hellocharts.model.LinePoint;
+import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.renderer.LineChartRenderer;
 import android.annotation.SuppressLint;
@@ -70,7 +70,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 
 	@Override
 	public void callChartTouchListener(SelectedValue selectedValue) {
-		LinePoint point = data.getLines().get(selectedValue.firstIndex).getPoints().get(selectedValue.secondIndex);
+		PointValue point = data.getLines().get(selectedValue.firstIndex).getPoints().get(selectedValue.secondIndex);
 		onValueTouchListener.onValueTouched(selectedValue.firstIndex, selectedValue.secondIndex, point);
 	}
 
@@ -89,7 +89,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 	@Override
 	public void animationDataUpdate(float scale) {
 		for (Line line : data.getLines()) {
-			for (LinePoint point : line.getPoints()) {
+			for (PointValue point : line.getPoints()) {
 				point.update(scale);
 			}
 		}
@@ -101,7 +101,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 	@Override
 	public void animationDataFinished(boolean isFinishedSuccess) {
 		for (Line line : data.getLines()) {
-			for (LinePoint point : line.getPoints()) {
+			for (PointValue point : line.getPoints()) {
 				point.finish(isFinishedSuccess);
 			}
 		}
@@ -113,11 +113,11 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 	protected LineChartData generateDummyData() {
 		final int numValues = 4;
 		LineChartData data = new LineChartData();
-		List<LinePoint> values = new ArrayList<LinePoint>(numValues);
-		values.add(new LinePoint(1, 8));
-		values.add(new LinePoint(2, 6));
-		values.add(new LinePoint(3, 10));
-		values.add(new LinePoint(4, 4));
+		List<PointValue> values = new ArrayList<PointValue>(numValues);
+		values.add(new PointValue(1, 8));
+		values.add(new PointValue(2, 6));
+		values.add(new PointValue(3, 10));
+		values.add(new PointValue(4, 4));
 		Line line = new Line(values);
 		List<Line> lines = new ArrayList<Line>(1);
 		lines.add(line);
@@ -128,13 +128,13 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 	}
 
 	public interface LineChartOnValueTouchListener {
-		public void onValueTouched(int selectedLine, int selectedValue, LinePoint point);
+		public void onValueTouched(int selectedLine, int selectedValue, PointValue point);
 	}
 
 	private static class DummyOnValueTouchListener implements LineChartOnValueTouchListener {
 
 		@Override
-		public void onValueTouched(int selectedLine, int selectedValue, LinePoint point) {
+		public void onValueTouched(int selectedLine, int selectedValue, PointValue point) {
 			// do nothing
 		}
 	}
