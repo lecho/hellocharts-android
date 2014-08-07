@@ -1,7 +1,10 @@
 package lecho.lib.hellocharts.model;
 
-public class BubbleValue {
+import lecho.lib.hellocharts.util.Utils;
 
+public class BubbleValue {
+	public static final int SHAPE_CIRCLE = 1;
+	public static final int SHAPE_SQUARE = 2;
 	private float x;
 	private float y;
 	private float z;
@@ -11,6 +14,9 @@ public class BubbleValue {
 	private float diffX;
 	private float diffY;
 	private float diffZ;
+	private int color = Utils.DEFAULT_COLOR;
+	private int darkenColor = Utils.DEFAULT_DARKEN_COLOR;
+	private int shape = SHAPE_CIRCLE;
 
 	public BubbleValue(float x, float y, float z) {
 		set(x, y, z);
@@ -61,5 +67,32 @@ public class BubbleValue {
 
 	public float getZ() {
 		return this.z;
+	}
+
+	public int getColor() {
+		return color;
+	}
+
+	public BubbleValue setColor(int color) {
+		this.color = color;
+		this.darkenColor = Utils.darkenColor(color);
+		return this;
+	}
+
+	public int getDarkenColor() {
+		return darkenColor;
+	}
+
+	public int getShape() {
+		return shape;
+	}
+
+	public BubbleValue setShape(int shape) {
+		if (SHAPE_SQUARE == shape) {
+			this.shape = SHAPE_SQUARE;
+		} else {
+			this.shape = SHAPE_CIRCLE;
+		}
+		return this;
 	}
 }

@@ -150,7 +150,11 @@ public class Line {
 	}
 
 	public Line setPointShape(int pointShape) {
-		this.pointShape = pointShape;
+		if (SHAPE_SQUARE == pointShape) {
+			this.pointShape = SHAPE_SQUARE;
+		} else {
+			this.pointShape = SHAPE_CIRCLE;
+		}
 		return this;
 	}
 
