@@ -10,9 +10,11 @@ import java.util.List;
  * 
  */
 public class BubbleChartData extends AbstractChartData {
+	public static final int DEFAULT_MIN_BUBBLE_RADIUS_DP = 4;
 	private ValueFormatter formatter = new NumberValueFormatter();
 	private boolean hasLabels = false;
 	private boolean hasLabelsOnlyForSelected = false;
+	private int minBubbleRadius = DEFAULT_TEXT_SIZE_SP;
 	// TODO: consider Collections.emptyList()
 	private List<BubbleValue> values = new ArrayList<BubbleValue>();
 
@@ -58,6 +60,14 @@ public class BubbleChartData extends AbstractChartData {
 			this.hasLabels = false;
 		}
 		return this;
+	}
+
+	public int getMinBubbleRadius() {
+		return minBubbleRadius;
+	}
+
+	public void setMinBubbleRadius(int minBubbleRadius) {
+		this.minBubbleRadius = minBubbleRadius;
 	}
 
 	public ValueFormatter getFormatter() {
