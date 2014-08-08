@@ -88,7 +88,7 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 
 	@Override
 	public void callChartTouchListener(SelectedValue selectedValue) {
-		ArcValue arcValue = data.getArcs().get(selectedValue.firstIndex);
+		ArcValue arcValue = data.getValues().get(selectedValue.firstIndex);
 		onValueTouchListener.onValueTouched(selectedValue.firstIndex, arcValue);
 	}
 
@@ -106,7 +106,7 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 
 	@Override
 	public void animationDataUpdate(float scale) {
-		for (ArcValue arcValue : data.getArcs()) {
+		for (ArcValue arcValue : data.getValues()) {
 			arcValue.update(scale);
 		}
 		chartRenderer.initMaxViewport();
@@ -116,7 +116,7 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 
 	@Override
 	public void animationDataFinished(boolean isFinishedSuccess) {
-		for (ArcValue arcValue : data.getArcs()) {
+		for (ArcValue arcValue : data.getValues()) {
 			arcValue.finish(true);
 		}
 		chartRenderer.initMaxViewport();
@@ -198,18 +198,18 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 		values.add(new ArcValue(20f));
 		values.add(new ArcValue(30f));
 		values.add(new ArcValue(50f));
-		data.setArcs(values);
+		data.setValues(values);
 		return data;
 	}
 
 	public interface PieChartOnValueTouchListener {
-		public void onValueTouched(int selectedArc, ArcValue arcValue);
+		public void onValueTouched(int selectedArc, ArcValue value);
 	}
 
 	private static class DummyOnValueTouchListener implements PieChartOnValueTouchListener {
 
 		@Override
-		public void onValueTouched(int selectedArc, ArcValue arcValue) {
+		public void onValueTouched(int selectedArc, ArcValue value) {
 			// do nothing
 		}
 	}

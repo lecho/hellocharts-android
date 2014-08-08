@@ -100,7 +100,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		final float arcScale = 360f / maxSum;
 		float lastAngle = 0f; // No start angle here, see abowe
 		int arcIndex = 0;
-		for (ArcValue arcValue : data.getArcs()) {
+		for (ArcValue arcValue : data.getValues()) {
 			final float angle = Math.abs(arcValue.getValue()) * arcScale;
 			if (touchAngle >= lastAngle) {
 				selectedValue.set(arcIndex, arcIndex);
@@ -127,7 +127,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		final float arcScale = 360f / maxSum;
 		float lastAngle = rotation;
 		int arcIndex = 0;
-		for (ArcValue arcValue : data.getArcs()) {
+		for (ArcValue arcValue : data.getValues()) {
 			final float angle = Math.abs(arcValue.getValue()) * arcScale;
 			if (MODE_DRAW == mode) {
 				drawArc(canvas, data, arcValue, lastAngle, angle, mode);
@@ -236,7 +236,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	private void calculateMaxViewport() {
 		tempMaxViewport.set(0, MAX_WIDTH_HEIGHT, MAX_WIDTH_HEIGHT, 0);
 		maxSum = 0.0f;
-		for (ArcValue arcValue : dataProvider.getPieChartData().getArcs()) {
+		for (ArcValue arcValue : dataProvider.getPieChartData().getValues()) {
 			maxSum += Math.abs(arcValue.getValue());
 		}
 	}
