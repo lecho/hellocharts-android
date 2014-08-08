@@ -138,7 +138,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 	private int calculateContentAreaMargin() {
 		int contentAreaMargin = 0;
-		LineChartData data = dataProvider.getLineChartData();
+		final LineChartData data = dataProvider.getLineChartData();
 		for (Line line : data.getLines()) {
 			if (line.hasPoints()) {
 				int margin = line.getPointRadius() + DEFAULT_TOUCH_TOLLERANCE_MARGIN_DP;
