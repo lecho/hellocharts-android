@@ -122,7 +122,7 @@ public class ChartCalculator {
 		return distance * (contentRect.width() / currentViewport.width());
 	}
 
-	public float calculateRawDistanceYX(float distance) {
+	public float calculateRawDistanceY(float distance) {
 		return distance * (contentRect.height() / currentViewport.height());
 	}
 
