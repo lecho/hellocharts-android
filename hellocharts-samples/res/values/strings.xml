@@ -7,5 +7,6 @@
     <string name="title_activity_column_chart">ColumnChartActivity</string>
     <string name="title_activity_line_chart">LineChartActivity</string>
     <string name="title_activity_pie_chart">PieChartActivity</string>
+    <string name="title_activity_bubble_chart">BubbleChartActivity</string>
 
 </resources>

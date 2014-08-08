@@ -34,6 +34,10 @@
             android:name=".PieChartActivity"
             android:label="@string/title_activity_pie_chart" >
         </activity>
+        <activity
+            android:name=".BubbleChartActivity"
+            android:label="@string/title_activity_bubble_chart" >
+        </activity>
     </application>
 
 </manifest>

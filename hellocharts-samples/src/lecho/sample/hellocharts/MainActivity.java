@@ -87,6 +87,17 @@ public class MainActivity extends ActionBarActivity {
 
 				}
 			});
+
+			Button bubbleChartButton = (Button) rootView.findViewById(R.id.bubble_chart);
+			bubbleChartButton.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View arg0) {
+					Intent intent = new Intent(getActivity(), BubbleChartActivity.class);
+					startActivity(intent);
+
+				}
+			});
 			return rootView;
 		}
 	}
