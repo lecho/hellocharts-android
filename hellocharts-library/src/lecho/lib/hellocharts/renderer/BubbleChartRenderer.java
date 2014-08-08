@@ -2,24 +2,13 @@ package lecho.lib.hellocharts.renderer;
 
 import lecho.lib.hellocharts.BubbleChartDataProvider;
 import lecho.lib.hellocharts.Chart;
-import lecho.lib.hellocharts.PieChartDataProvider;
-import lecho.lib.hellocharts.model.ArcValue;
+import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.model.BubbleChartData;
 import lecho.lib.hellocharts.model.BubbleValue;
-import lecho.lib.hellocharts.model.Line;
-import lecho.lib.hellocharts.model.LineChartData;
-import lecho.lib.hellocharts.model.PieChartData;
-import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.util.Utils;
-import lecho.lib.hellocharts.view.PieChartView;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Paint.Align;
-import android.graphics.PointF;
-import android.graphics.Rect;
-import android.graphics.RectF;
 
 /**
  * Default renderer for BubbleChartView.
@@ -36,11 +25,18 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	private BubbleChartDataProvider dataProvider;
 
 	private int touchAdditional;
+	private float bubbleAreaScale;
+	private Paint bubblePaint = new Paint();
 
 	public BubbleChartRenderer(Context context, Chart chart, BubbleChartDataProvider dataProvider) {
 		super(context, chart);
 		this.dataProvider = dataProvider;
+
 		touchAdditional = Utils.dp2px(density, DEFAULT_TOUCH_ADDITIONAL_DP);
+
+		bubblePaint.setAntiAlias(true);
+		bubblePaint.setStyle(Paint.Style.FILL);
+
 	}
 
 	public void initMaxViewport() {
@@ -56,6 +52,16 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 
 	@Override
 	public void draw(Canvas canvas) {
+		final BubbleChartData data = dataProvider.getBubbleChartData();
+		final ChartCalculator chartCalculator = chart.getChartCalculator();
+		for (BubbleValue bubbleValue : data.getValues()) {
+			bubblePaint.setColor(bubbleValue.getColor());
+			final float rawX = chartCalculator.calculateRawX(bubbleValue.getX());
+			final float rawY = chartCalculator.calculateRawY(bubbleValue.getY());
+			final float radius = (float) (Math.sqrt(bubbleValue.getZ() / Math.PI) * bubbleAreaScale);
+			final float rawRadius = chartCalculator.calculateRawDistanceX(radius);
+			canvas.drawCircle(rawX, rawY, rawRadius, bubblePaint);
+		}
 	}
 
 	@Override
@@ -95,6 +101,8 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 				tempMaxViewport.top = bubbleValue.getY();
 			}
 		}
+
+		bubbleAreaScale = tempMaxViewport.width() / maxZ;
 	}
 
 	private int calculateContentAreaMargin() {

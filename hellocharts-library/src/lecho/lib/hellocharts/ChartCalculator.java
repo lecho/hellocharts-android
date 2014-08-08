@@ -108,6 +108,7 @@ public class ChartCalculator {
 	}
 
 	public float calculateRawX(float valueX) {
+		// TODO: (contentRect.width() / currentViewport.width()) can be recalculated only when viewport change.
 		final float pixelOffset = (valueX - currentViewport.left) * (contentRect.width() / currentViewport.width());
 		return contentRect.left + pixelOffset;
 	}
@@ -115,6 +116,14 @@ public class ChartCalculator {
 	public float calculateRawY(float valueY) {
 		final float pixelOffset = (valueY - currentViewport.bottom) * (contentRect.height() / currentViewport.height());
 		return contentRect.bottom - pixelOffset;
+	}
+
+	public float calculateRawDistanceX(float distance) {
+		return distance * (contentRect.width() / currentViewport.width());
+	}
+
+	public float calculateRawDistanceYX(float distance) {
+		return distance * (contentRect.height() / currentViewport.height());
 	}
 
 	/**
