@@ -9,6 +9,7 @@ import lecho.lib.hellocharts.util.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 
 /**
  * Default renderer for BubbleChartView.
@@ -25,7 +26,18 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	private BubbleChartDataProvider dataProvider;
 
 	private int touchAdditional;
-	private float bubbleAreaScale;
+	/**
+	 * Scales for bubble radius value, only one is used depending on screen orientation;
+	 */
+	float bubbleScaleX;
+	float bubbleScaleY;
+	/**
+	 * True if bubbleScale = bubbleScaleX so the renderer should used
+	 * {@link ChartCalculator#calculateRawDistanceX(float)}, if false bubbleScale = bubbleScaleY and renderer should use
+	 * {@link ChartCalculator#calculateRawDistanceY(float)}.
+	 */
+	private boolean isScaledByX = true;
+
 	private Paint bubblePaint = new Paint();
 
 	public BubbleChartRenderer(Context context, Chart chart, BubbleChartDataProvider dataProvider) {
@@ -46,6 +58,12 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 
 	public void initDataAttributes() {
 		chart.getChartCalculator().setInternalMargin(calculateContentAreaMargin());
+		Rect contentRect = chart.getChartCalculator().getContentRect();
+		if (contentRect.width() < contentRect.height()) {
+			isScaledByX = true;
+		} else {
+			isScaledByX = false;
+		}
 		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));
 		labelPaint.getFontMetricsInt(fontMetrics);
 	}
@@ -58,8 +76,16 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 			bubblePaint.setColor(bubbleValue.getColor());
 			final float rawX = chartCalculator.calculateRawX(bubbleValue.getX());
 			final float rawY = chartCalculator.calculateRawY(bubbleValue.getY());
-			final float radius = (float) (Math.sqrt(bubbleValue.getZ() / Math.PI) * bubbleAreaScale);
-			final float rawRadius = chartCalculator.calculateRawDistanceX(radius);
+			final float radius;
+			final float rawRadius;
+			if (isScaledByX) {
+				radius = (float) (Math.sqrt(bubbleValue.getZ() / Math.PI) * bubbleScaleX);
+				rawRadius = chartCalculator.calculateRawDistanceX(radius);
+			} else {
+				radius = (float) (Math.sqrt(bubbleValue.getZ() / Math.PI) * bubbleScaleY);
+				rawRadius = chartCalculator.calculateRawDistanceY(radius);
+			}
+
 			canvas.drawCircle(rawX, rawY, rawRadius, bubblePaint);
 		}
 	}
@@ -101,8 +127,11 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 				tempMaxViewport.top = bubbleValue.getY();
 			}
 		}
+		final float maxRadius = (float) Math.sqrt(maxZ / Math.PI);
+		bubbleScaleX = tempMaxViewport.width() / (maxRadius * 4);
+		bubbleScaleY = tempMaxViewport.height() / (maxRadius * 4);
 
-		bubbleAreaScale = tempMaxViewport.width() / maxZ;
+		tempMaxViewport.inset(-maxRadius * bubbleScaleX, -maxRadius * bubbleScaleY);
 	}
 
 	private int calculateContentAreaMargin() {
