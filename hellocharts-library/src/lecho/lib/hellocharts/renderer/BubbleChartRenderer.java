@@ -130,11 +130,14 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		final float maxRadius = (float) Math.sqrt(maxZ / Math.PI);
 		bubbleScaleX = tempMaxViewport.width() / (maxRadius * 4);
 		bubbleScaleY = tempMaxViewport.height() / (maxRadius * 4);
-
+		// For cases when user sets different than 1 bubble scale in BubbleChartData.
+		bubbleScaleX *= data.getBubbleScale();
+		bubbleScaleY *= data.getBubbleScale();
+		// Prevent cutting of bubbles on the edges of chart area.
 		tempMaxViewport.inset(-maxRadius * bubbleScaleX, -maxRadius * bubbleScaleY);
 	}
 
 	private int calculateContentAreaMargin() {
-		return 0;
+		return touchAdditional;
 	}
 }
