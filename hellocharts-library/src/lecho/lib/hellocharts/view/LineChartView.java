@@ -44,6 +44,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 		}
 	}
 
+	@Override
 	public void setLineChartData(LineChartData data) {
 		if (null == data) {
 			this.data = generateDummyData();
@@ -128,13 +129,13 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 	}
 
 	public interface LineChartOnValueTouchListener {
-		public void onValueTouched(int selectedLine, int selectedValue, PointValue point);
+		public void onValueTouched(int selectedLine, int selectedValue, PointValue value);
 	}
 
 	private static class DummyOnValueTouchListener implements LineChartOnValueTouchListener {
 
 		@Override
-		public void onValueTouched(int selectedLine, int selectedValue, PointValue point) {
+		public void onValueTouched(int selectedLine, int selectedValue, PointValue value) {
 			// do nothing
 		}
 	}

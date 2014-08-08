@@ -24,7 +24,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private LineChartDataProvider dataProvider;
 
 	private int touchTolleranceMargin;
-	private Path mLinePath = new Path();
+	private Path linePath = new Path();
 	private Paint linePaint = new Paint();
 	private Paint pointPaint = new Paint();
 	private RectF labelRect = new RectF();
@@ -66,7 +66,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 					drawPath(canvas, line);
 				}
 			}
-			mLinePath.reset();
+			linePath.reset();
 		}
 	}
 
@@ -157,15 +157,15 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			final float rawX = chartCalculator.calculateRawX(pointValue.getX());
 			final float rawY = chartCalculator.calculateRawY(pointValue.getY());
 			if (valueIndex == 0) {
-				mLinePath.moveTo(rawX, rawY);
+				linePath.moveTo(rawX, rawY);
 			} else {
-				mLinePath.lineTo(rawX, rawY);
+				linePath.lineTo(rawX, rawY);
 			}
 			++valueIndex;
 		}
 		linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
 		linePaint.setColor(line.getColor());
-		canvas.drawPath(mLinePath, linePaint);
+		canvas.drawPath(linePath, linePaint);
 		if (line.isFilled()) {
 			drawArea(canvas, line.getAreaTransparency());
 		}
@@ -223,9 +223,9 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			final float secondControlPointY = nextPointY - (LINE_SMOOTHNES * secondDiffY);
 			// Move to start point.
 			if (valueIndex == 0) {
-				mLinePath.moveTo(currentPointX, currentPointY);
+				linePath.moveTo(currentPointX, currentPointY);
 			}
-			mLinePath.cubicTo(firstControlPointX, firstControlPointY, secondControlPointX, secondControlPointY,
+			linePath.cubicTo(firstControlPointX, firstControlPointY, secondControlPointX, secondControlPointY,
 					nextPointX, nextPointY);
 			// Shift values by one to prevent recalculation of values that have
 			// been already calculated.
@@ -238,7 +238,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		}
 		linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
 		linePaint.setColor(line.getColor());
-		canvas.drawPath(mLinePath, linePaint);
+		canvas.drawPath(linePath, linePaint);
 		if (line.isFilled()) {
 			drawArea(canvas, line.getAreaTransparency());
 		}
@@ -330,12 +330,12 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 	private void drawArea(Canvas canvas, int transparency) {
 		final ChartCalculator chartCalculator = chart.getChartCalculator();
-		mLinePath.lineTo(chartCalculator.getContentRect().right, chartCalculator.getContentRect().bottom);
-		mLinePath.lineTo(chartCalculator.getContentRect().left, chartCalculator.getContentRect().bottom);
-		mLinePath.close();
+		linePath.lineTo(chartCalculator.getContentRect().right, chartCalculator.getContentRect().bottom);
+		linePath.lineTo(chartCalculator.getContentRect().left, chartCalculator.getContentRect().bottom);
+		linePath.close();
 		linePaint.setStyle(Paint.Style.FILL);
 		linePaint.setAlpha(transparency);
-		canvas.drawPath(mLinePath, linePaint);
+		canvas.drawPath(linePath, linePaint);
 		linePaint.setStyle(Paint.Style.STROKE);
 	}
 

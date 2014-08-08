@@ -1,21 +1,9 @@
 package lecho.sample.hellocharts;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import lecho.lib.hellocharts.model.ArcValue;
-import lecho.lib.hellocharts.model.Axis;
-import lecho.lib.hellocharts.model.Line;
-import lecho.lib.hellocharts.model.LineChartData;
-import lecho.lib.hellocharts.model.LinePoint;
 import lecho.lib.hellocharts.model.PieChartData;
-import lecho.lib.hellocharts.model.SelectedValue;
-import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.view.LineChartView;
 import lecho.lib.hellocharts.view.PieChartView;
 import lecho.lib.hellocharts.view.PieChartView.PieChartOnValueTouchListener;
-import lecho.lib.hellocharts.view.PreviewLineChartView;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;

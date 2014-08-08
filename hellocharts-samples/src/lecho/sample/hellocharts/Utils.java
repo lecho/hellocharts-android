@@ -6,7 +6,7 @@ import java.util.List;
 import lecho.lib.hellocharts.model.AxisValue;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnValue;
-import lecho.lib.hellocharts.model.LinePoint;
+import lecho.lib.hellocharts.model.PointValue;
 import android.graphics.Color;
 
 public class Utils {
@@ -22,11 +22,11 @@ public class Utils {
 		return colors[(int) Math.round(Math.random() * (colors.length - 1))];
 	}
 
-	public static List<LinePoint> generatePoints(int num, float step) {
+	public static List<PointValue> generatePoints(int num, float step) {
 		float x = 0.0f;
-		List<LinePoint> result = new ArrayList<LinePoint>();
+		List<PointValue> result = new ArrayList<PointValue>();
 		for (float f = 0.0f; f < num; f += step) {
-			result.add(new LinePoint(x, (float) Math.random() * 100.0f));
+			result.add(new PointValue(x, (float) Math.random() * 100.0f));
 			x += step;
 		}
 		return result;
@@ -55,7 +55,7 @@ public class Utils {
 	public static Column generateColumns() {
 		List<ColumnValue> s1 = generateValues(1);
 		Column l1 = new Column(s1);
-		//l1.setHasLabels(true);
+		// l1.setHasLabels(true);
 		return l1;
 	}
 

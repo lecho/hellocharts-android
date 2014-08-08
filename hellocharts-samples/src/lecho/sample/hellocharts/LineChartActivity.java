@@ -6,7 +6,7 @@ import java.util.List;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
-import lecho.lib.hellocharts.model.LinePoint;
+import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
 import android.graphics.Color;
@@ -68,8 +68,8 @@ public class LineChartActivity extends ActionBarActivity {
 
 			final LineChartView chart = new LineChartView(getActivity());
 			final LineChartData data = new LineChartData();
-			List<LinePoint> s1 = Utils.generatePoints(NUM_OF_VALUES, 1.0f);
-			List<LinePoint> s2 = Utils.generatePoints(NUM_OF_VALUES, 1.0f);
+			List<PointValue> s1 = Utils.generatePoints(NUM_OF_VALUES, 1.0f);
+			List<PointValue> s2 = Utils.generatePoints(NUM_OF_VALUES, 1.0f);
 			Line l1 = new Line(s1);
 			l1.setColor(Color.parseColor("#FFBB33"));
 			l1.setFilled(false);
@@ -95,7 +95,7 @@ public class LineChartActivity extends ActionBarActivity {
 			chart.setOnValueTouchListener(new LineChartView.LineChartOnValueTouchListener() {
 
 				@Override
-				public void onValueTouched(int selectedLine, int selectedValue, LinePoint point) {
+				public void onValueTouched(int selectedLine, int selectedValue, PointValue point) {
 					// Toast.makeText(getActivity(),
 					// "" + selectedLine + " " + selectedValue + " " + point.getX() + " " + point.getY(),
 					// Toast.LENGTH_SHORT).show();
