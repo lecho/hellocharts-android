@@ -64,9 +64,9 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	 */
 	public void initDataAttributes() {
 		chart.getChartCalculator().setInternalMargin(calculateContentAreaMargin());
+		calculateCircleOval();
 		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));
 		labelPaint.getFontMetricsInt(fontMetrics);
-		calculateCircleOval();
 	}
 
 	@Override
@@ -242,7 +242,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	}
 
 	/**
-	 * No margin for this chart.
+	 * No margin for this chart. Margin will be calculated with CircleOval.
 	 * 
 	 * @see #calculateCircleOval()
 	 * 
