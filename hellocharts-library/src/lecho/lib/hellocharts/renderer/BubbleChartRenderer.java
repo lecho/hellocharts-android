@@ -5,6 +5,7 @@ import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.model.BubbleChartData;
 import lecho.lib.hellocharts.model.BubbleValue;
+import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -139,6 +140,26 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		bubbleScaleY *= data.getBubbleScale();
 		// Prevent cutting of bubbles on the edges of chart area.
 		tempMaxViewport.inset(-maxRadius * bubbleScaleX, -maxRadius * bubbleScaleY);
+	}
+
+	public void removeMargins() {
+		final ChartCalculator calculator = chart.getChartCalculator();
+		final Rect contentRect = calculator.getContentRect();
+		final float pxX = calculator.calculateRawDistanceX(maxRadius * bubbleScaleX);
+		final float pxY = calculator.calculateRawDistanceY(maxRadius * bubbleScaleY);
+		final float scaleX = tempMaxViewport.width() / contentRect.width();
+		final float scaleY = tempMaxViewport.height() / contentRect.height();
+		float dx = 0;
+		float dy = 0;
+		Viewport viewport = new Viewport(tempMaxViewport);
+		if (isBubbleScaledByX) {
+			dy = (pxY - pxX) * scaleY;
+		} else {
+			dx = (pxX - pxY) * scaleX;
+		}
+		viewport.inset(dx, dy);
+		setMaxViewport(viewport);
+		setViewport(viewport);
 	}
 
 	private int calculateContentAreaMargin() {
