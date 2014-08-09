@@ -32,11 +32,15 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	float bubbleScaleX;
 	float bubbleScaleY;
 	/**
+	 * Maximum bubble radius.
+	 */
+	private float maxRadius;
+	/**
 	 * True if bubbleScale = bubbleScaleX so the renderer should used
 	 * {@link ChartCalculator#calculateRawDistanceX(float)}, if false bubbleScale = bubbleScaleY and renderer should use
 	 * {@link ChartCalculator#calculateRawDistanceY(float)}.
 	 */
-	private boolean isScaledByX = true;
+	private boolean isBubbleScaledByX = true;
 
 	private Paint bubblePaint = new Paint();
 
@@ -60,9 +64,9 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		chart.getChartCalculator().setInternalMargin(calculateContentAreaMargin());
 		Rect contentRect = chart.getChartCalculator().getContentRect();
 		if (contentRect.width() < contentRect.height()) {
-			isScaledByX = true;
+			isBubbleScaledByX = true;
 		} else {
-			isScaledByX = false;
+			isBubbleScaledByX = false;
 		}
 		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));
 		labelPaint.getFontMetricsInt(fontMetrics);
@@ -78,11 +82,11 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 			final float rawY = chartCalculator.calculateRawY(bubbleValue.getY());
 			final float radius;
 			final float rawRadius;
-			if (isScaledByX) {
-				radius = (float) (Math.sqrt(bubbleValue.getZ() / Math.PI) * bubbleScaleX);
+			if (isBubbleScaledByX) {
+				radius = (float) Math.sqrt(bubbleValue.getZ() / Math.PI) * bubbleScaleX;
 				rawRadius = chartCalculator.calculateRawDistanceX(radius);
 			} else {
-				radius = (float) (Math.sqrt(bubbleValue.getZ() / Math.PI) * bubbleScaleY);
+				radius = (float) Math.sqrt(bubbleValue.getZ() / Math.PI) * bubbleScaleY;
 				rawRadius = chartCalculator.calculateRawDistanceY(radius);
 			}
 
@@ -127,7 +131,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 				tempMaxViewport.top = bubbleValue.getY();
 			}
 		}
-		final float maxRadius = (float) Math.sqrt(maxZ / Math.PI);
+		maxRadius = (float) Math.sqrt(maxZ / Math.PI);
 		bubbleScaleX = tempMaxViewport.width() / (maxRadius * 4);
 		bubbleScaleY = tempMaxViewport.height() / (maxRadius * 4);
 		// For cases when user sets different than 1 bubble scale in BubbleChartData.
