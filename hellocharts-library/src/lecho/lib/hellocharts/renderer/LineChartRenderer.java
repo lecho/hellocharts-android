@@ -94,14 +94,14 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		oldSelectedValue.set(selectedValue);
 		selectedValue.clear();
 		final LineChartData data = dataProvider.getLineChartData();
-		final ChartCalculator chartCalculator = chart.getChartCalculator();
+		final ChartCalculator calculator = chart.getChartCalculator();
 		int lineIndex = 0;
 		for (Line line : data.getLines()) {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
 			int valueIndex = 0;
 			for (PointValue pointValue : line.getPoints()) {
-				final float rawValueX = chartCalculator.calculateRawX(pointValue.getX());
-				final float rawValueY = chartCalculator.calculateRawY(pointValue.getY());
+				final float rawValueX = calculator.calculateRawX(pointValue.getX());
+				final float rawValueY = calculator.calculateRawY(pointValue.getY());
 				if (isInArea(rawValueX, rawValueY, touchX, touchY, pointRadius + touchTolleranceMargin)) {
 					selectedValue.set(lineIndex, valueIndex);
 				}
@@ -154,11 +154,11 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void drawPath(Canvas canvas, final Line line) {
-		final ChartCalculator chartCalculator = chart.getChartCalculator();
+		final ChartCalculator calculator = chart.getChartCalculator();
 		int valueIndex = 0;
 		for (PointValue pointValue : line.getPoints()) {
-			final float rawX = chartCalculator.calculateRawX(pointValue.getX());
-			final float rawY = chartCalculator.calculateRawY(pointValue.getY());
+			final float rawX = calculator.calculateRawX(pointValue.getX());
+			final float rawY = calculator.calculateRawY(pointValue.getY());
 			if (valueIndex == 0) {
 				linePath.moveTo(rawX, rawY);
 			} else {
@@ -175,7 +175,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void drawSmoothPath(Canvas canvas, final Line line) {
-		final ChartCalculator chartCalculator = chart.getChartCalculator();
+		final ChartCalculator calculator = chart.getChartCalculator();
 		final int lineSize = line.getPoints().size();
 		float previousPointX = Float.NaN;
 		float previousPointY = Float.NaN;
@@ -186,14 +186,14 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		for (int valueIndex = 0; valueIndex < lineSize - 1; ++valueIndex) {
 			if (Float.isNaN(currentPointX)) {
 				PointValue linePoint = line.getPoints().get(valueIndex);
-				currentPointX = chartCalculator.calculateRawX(linePoint.getX());
-				currentPointY = chartCalculator.calculateRawY(linePoint.getY());
+				currentPointX = calculator.calculateRawX(linePoint.getX());
+				currentPointY = calculator.calculateRawY(linePoint.getY());
 			}
 			if (Float.isNaN(previousPointX)) {
 				if (valueIndex > 0) {
 					PointValue linePoint = line.getPoints().get(valueIndex - 1);
-					previousPointX = chartCalculator.calculateRawX(linePoint.getX());
-					previousPointY = chartCalculator.calculateRawY(linePoint.getY());
+					previousPointX = calculator.calculateRawX(linePoint.getX());
+					previousPointY = calculator.calculateRawY(linePoint.getY());
 				} else {
 					previousPointX = currentPointX;
 					previousPointY = currentPointY;
@@ -201,16 +201,16 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			}
 			if (Float.isNaN(nextPointX)) {
 				PointValue linePoint = line.getPoints().get(valueIndex + 1);
-				nextPointX = chartCalculator.calculateRawX(linePoint.getX());
-				nextPointY = chartCalculator.calculateRawY(linePoint.getY());
+				nextPointX = calculator.calculateRawX(linePoint.getX());
+				nextPointY = calculator.calculateRawY(linePoint.getY());
 			}
 			// afterNextPoint is always new one or it is equal nextPoint.
 			final float afterNextPointX;
 			final float afterNextPointY;
 			if (valueIndex < lineSize - 2) {
 				PointValue linePoint = line.getPoints().get(valueIndex + 2);
-				afterNextPointX = chartCalculator.calculateRawX(linePoint.getX());
-				afterNextPointY = chartCalculator.calculateRawY(linePoint.getY());
+				afterNextPointX = calculator.calculateRawX(linePoint.getX());
+				afterNextPointY = calculator.calculateRawY(linePoint.getY());
 			} else {
 				afterNextPointX = nextPointX;
 				afterNextPointY = nextPointY;
@@ -333,9 +333,9 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void drawArea(Canvas canvas, int transparency) {
-		final ChartCalculator chartCalculator = chart.getChartCalculator();
-		linePath.lineTo(chartCalculator.getContentRect().right, chartCalculator.getContentRect().bottom);
-		linePath.lineTo(chartCalculator.getContentRect().left, chartCalculator.getContentRect().bottom);
+		final ChartCalculator calculator = chart.getChartCalculator();
+		linePath.lineTo(calculator.getContentRect().right, calculator.getContentRect().bottom);
+		linePath.lineTo(calculator.getContentRect().left, calculator.getContentRect().bottom);
 		linePath.close();
 		linePaint.setStyle(Paint.Style.FILL);
 		linePaint.setAlpha(transparency);
