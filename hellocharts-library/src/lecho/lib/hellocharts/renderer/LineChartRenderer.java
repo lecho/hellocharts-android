@@ -11,6 +11,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.graphics.RectF;
 
 public class LineChartRenderer extends AbstractChartRenderer {
@@ -250,22 +251,22 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	// may cause problems in the future with
 	// implementing point styles.
 	private void drawPoints(Canvas canvas, Line line, int lineIndex, int mode) {
-		final ChartCalculator chartCalculator = chart.getChartCalculator();
+		final ChartCalculator calculator = chart.getChartCalculator();
 		pointPaint.setColor(line.getColor());
 		int valueIndex = 0;
 		for (PointValue pointValue : line.getPoints()) {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
-			final float rawX = chartCalculator.calculateRawX(pointValue.getX());
-			final float rawY = chartCalculator.calculateRawY(pointValue.getY());
-			if (chartCalculator.isWithinContentRect((int) rawX, (int) rawY)) {
+			final float rawX = calculator.calculateRawX(pointValue.getX());
+			final float rawY = calculator.calculateRawY(pointValue.getY());
+			if (calculator.isWithinContentRect((int) rawX, (int) rawY)) {
 				// Draw points only if they are within contentRect
 				if (MODE_DRAW == mode) {
 					drawPoint(canvas, line, pointValue, rawX, rawY, pointRadius);
 					if (line.hasLabels()) {
-						drawLabel(canvas, line, pointValue, rawX, rawY, pointRadius + labelOffset);
+						drawLabel(canvas, calculator, line, pointValue, rawX, rawY, pointRadius + labelOffset);
 					}
 				} else if (MODE_HIGHLIGHT == mode) {
-					highlightPoint(canvas, line, pointValue, rawX, rawY, lineIndex, valueIndex);
+					highlightPoint(canvas, calculator, line, pointValue, rawX, rawY, lineIndex, valueIndex);
 				} else {
 					throw new IllegalStateException("Cannot process points in mode: " + mode);
 				}
@@ -288,20 +289,21 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		drawPoints(canvas, line, lineIndex, MODE_HIGHLIGHT);
 	}
 
-	private void highlightPoint(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY, int lineIndex,
-			int valueIndex) {
+	private void highlightPoint(Canvas canvas, ChartCalculator calculator, Line line, PointValue pointValue,
+			float rawX, float rawY, int lineIndex, int valueIndex) {
 		if (selectedValue.firstIndex == lineIndex && selectedValue.secondIndex == valueIndex) {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
 			pointPaint.setColor(line.getDarkenColor());
 			drawPoint(canvas, line, pointValue, rawX, rawY, pointRadius + touchTolleranceMargin);
 			if (line.hasLabels() || line.hasLabelsOnlyForSelected()) {
-				drawLabel(canvas, line, pointValue, rawX, rawY, pointRadius + labelOffset);
+				drawLabel(canvas, calculator, line, pointValue, rawX, rawY, pointRadius + labelOffset);
 			}
 		}
 	}
 
-	private void drawLabel(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY, float offset) {
-		final ChartCalculator chartCalculator = chart.getChartCalculator();
+	private void drawLabel(Canvas canvas, ChartCalculator calculator, Line line, PointValue pointValue, float rawX,
+			float rawY, float offset) {
+		final Rect contentRect = calculator.getContentRect();
 		final int nummChars = line.getFormatter().formatValue(labelBuffer, pointValue.getY());
 		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
@@ -309,15 +311,15 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		float right = rawX + labelWidth / 2 + labelMargin;
 		float top = rawY - offset - labelHeight - labelMargin * 2;
 		float bottom = rawY - offset;
-		if (top < chartCalculator.getContentRect().top) {
+		if (top < contentRect.top) {
 			top = rawY + offset;
 			bottom = rawY + offset + labelHeight + labelMargin * 2;
 		}
-		if (left < chartCalculator.getContentRect().left) {
+		if (left < contentRect.left) {
 			left = rawX;
 			right = rawX + labelWidth + labelMargin * 2;
 		}
-		if (right > chartCalculator.getContentRect().right) {
+		if (right > contentRect.right) {
 			left = rawX - labelWidth - labelMargin * 2;
 			right = rawX;
 		}
