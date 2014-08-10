@@ -13,6 +13,7 @@ import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.PieChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.renderer.PieChartRenderer;
+import lecho.lib.hellocharts.util.Utils;
 import android.content.Context;
 import android.graphics.RectF;
 import android.os.Build;
@@ -194,7 +195,7 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 		final int numValues = 4;
 		PieChartData data = new PieChartData();
 		List<ArcValue> values = new ArrayList<ArcValue>(numValues);
-		values.add(new ArcValue(40f));
+		values.add(new ArcValue(40f).setColor(Utils.pickColor()));
 		values.add(new ArcValue(20f));
 		values.add(new ArcValue(30f));
 		values.add(new ArcValue(50f));

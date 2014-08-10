@@ -10,7 +10,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Paint.Align;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -38,6 +37,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	private RectF orginCircleOval = new RectF();
 	private RectF drawCircleOval = new RectF();
 	private PointF arcVector = new PointF();
+	private RectF labelRect = new RectF();
 	private int touchAdditional;
 	private float rotation = DEFAULT_START_ROTATION;
 
@@ -49,8 +49,6 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		arcPaint.setAntiAlias(true);
 		arcPaint.setStyle(Paint.Style.FILL);
 		arcPaint.setColor(Color.LTGRAY);
-
-		labelPaint.setTextAlign(Align.CENTER);
 	}
 
 	@Override
@@ -181,11 +179,11 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		}
 	}
 
-	private void drawLabel(Canvas canvas, PieChartData data, ArcValue arcValue, final float arcCenterX,
-			final float arcCenterY) {
-		final int nummChars = data.getFormatter().formatValue(labelBuffer, arcValue.getValue());
-		canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, arcCenterX, arcCenterY, labelPaint);
-	}
+	// private void drawLabel(Canvas canvas, PieChartData data, ArcValue arcValue, final float arcCenterX,
+	// final float arcCenterY) {
+	// final int nummChars = data.getFormatter().formatValue(labelBuffer, arcValue.getValue());
+	// canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, arcCenterX, arcCenterY, labelPaint);
+	// }
 
 	private void highlightArc(Canvas canvas, PieChartData data, ArcValue arcValue, float lastAngle, float angle,
 			int arcIndex) {
@@ -194,6 +192,23 @@ public class PieChartRenderer extends AbstractChartRenderer {
 			return;
 		}
 		drawArc(canvas, data, arcValue, lastAngle, angle, MODE_HIGHLIGHT);
+	}
+
+	private void drawLabel(Canvas canvas, PieChartData data, ArcValue arcValue, float rawX, float rawY) {
+		final int nummChars = data.getFormatter().formatValue(labelBuffer, arcValue.getValue());
+		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
+		final int labelHeight = Math.abs(fontMetrics.ascent);
+		float left = rawX - labelWidth / 2 - labelMargin;
+		float right = rawX + labelWidth / 2 + labelMargin;
+		float top = rawY - labelHeight / 2 - labelMargin;
+		float bottom = rawY + labelHeight / 2 + labelMargin;
+		labelRect.set(left, top, right, bottom);
+		int orginColor = labelPaint.getColor();
+		labelPaint.setColor(arcValue.getDarkenColor());
+		canvas.drawRect(left, top, right, bottom, labelPaint);
+		labelPaint.setColor(orginColor);
+		canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, left + labelMargin, bottom
+				- labelMargin, labelPaint);
 	}
 
 	private void normalizeVector(PointF point) {
