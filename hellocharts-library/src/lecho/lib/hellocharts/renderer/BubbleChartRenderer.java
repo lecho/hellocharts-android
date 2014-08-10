@@ -84,21 +84,19 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 
 	private void drawBubbles(Canvas canvas) {
 		final BubbleChartData data = dataProvider.getBubbleChartData();
-		final ChartCalculator chartCalculator = chart.getChartCalculator();
 		for (BubbleValue bubbleValue : data.getValues()) {
-			drawBubble(canvas, chartCalculator, bubbleValue, MODE_DRAW);
+			drawBubble(canvas, data, bubbleValue, MODE_DRAW);
 		}
 	}
 
 	private void highlightBubbles(Canvas canvas) {
 		final BubbleChartData data = dataProvider.getBubbleChartData();
-		final ChartCalculator chartCalculator = chart.getChartCalculator();
 		BubbleValue bubbleValue = data.getValues().get(selectedValue.firstIndex);
-		drawBubble(canvas, chartCalculator, bubbleValue, MODE_HIGHLIGHT);
+		drawBubble(canvas, data, bubbleValue, MODE_HIGHLIGHT);
 	}
 
-	private void drawBubble(Canvas canvas, final ChartCalculator chartCalculator, BubbleValue bubbleValue, int mode) {
-		bubblePaint.setColor(bubbleValue.getColor());
+	private void drawBubble(Canvas canvas, BubbleChartData data, BubbleValue bubbleValue, int mode) {
+		final ChartCalculator chartCalculator = chart.getChartCalculator();
 		final float rawX = chartCalculator.calculateRawX(bubbleValue.getX());
 		final float rawY = chartCalculator.calculateRawY(bubbleValue.getY());
 		float radius = (float) Math.sqrt(bubbleValue.getZ() / Math.PI);
@@ -110,11 +108,18 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 			radius *= bubbleScaleY;
 			rawRadius = chartCalculator.calculateRawDistanceY(radius);
 		}
+		
 		if (MODE_HIGHLIGHT == mode) {
 			bubblePaint.setColor(bubbleValue.getDarkenColor());
+			if (rawRadius < data.getMinBubbleRadius()) {
+				rawRadius = data.getMinBubbleRadius() + touchAdditional;
+			}
 		} else {
-			rawRadius -= touchAdditional;
 			bubblePaint.setColor(bubbleValue.getColor());
+			rawRadius -= touchAdditional;
+			if (rawRadius < data.getMinBubbleRadius()) {
+				rawRadius = data.getMinBubbleRadius();
+			}
 		}
 
 		canvas.drawCircle(rawX, rawY, rawRadius, bubblePaint);
@@ -135,18 +140,24 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		for (BubbleValue bubbleValue : data.getValues()) {
 			final float rawX = chartCalculator.calculateRawX(bubbleValue.getX());
 			final float rawY = chartCalculator.calculateRawY(bubbleValue.getY());
-			final float radius;
-			final float rawRadius;
+			float radius = (float) Math.sqrt(bubbleValue.getZ() / Math.PI);
+			float rawRadius;
 			if (isBubbleScaledByX) {
-				radius = (float) Math.sqrt(bubbleValue.getZ() / Math.PI) * bubbleScaleX;
+				radius *= bubbleScaleX;
 				rawRadius = chartCalculator.calculateRawDistanceX(radius);
 			} else {
-				radius = (float) Math.sqrt(bubbleValue.getZ() / Math.PI) * bubbleScaleY;
+				radius *= bubbleScaleY;
 				rawRadius = chartCalculator.calculateRawDistanceY(radius);
 			}
+
+			if (rawRadius < data.getMinBubbleRadius()) {
+				rawRadius = data.getMinBubbleRadius() + touchAdditional;
+			}
+
 			final float diffX = touchX - rawX;
 			final float diffY = touchY - rawY;
 			final float touchDistance = (float) Math.sqrt((diffX * diffX) + (diffY * diffY));
+
 			if (touchDistance <= rawRadius) {
 				selectedValue.set(valueIndex, valueIndex);
 			}
