@@ -5,7 +5,6 @@ import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.model.BubbleChartData;
 import lecho.lib.hellocharts.model.BubbleValue;
-import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -30,8 +29,8 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	/**
 	 * Scales for bubble radius value, only one is used depending on screen orientation;
 	 */
-	float bubbleScaleX;
-	float bubbleScaleY;
+	private float bubbleScaleX;
+	private float bubbleScaleY;
 	/**
 	 * Maximum bubble radius.
 	 */
@@ -56,11 +55,13 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 
 	}
 
+	@Override
 	public void initMaxViewport() {
 		calculateMaxViewport();
 		chart.getChartCalculator().setMaxViewport(tempMaxViewport);
 	}
 
+	@Override
 	public void initDataAttributes() {
 		chart.getChartCalculator().setInternalMargin(calculateContentAreaMargin());
 		Rect contentRect = chart.getChartCalculator().getContentRect();
@@ -110,6 +111,39 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		return isTouched();
 	}
 
+	/**
+	 * Removes empty spaces on sides of chart(left-right for landscape, top-bottom for portrait). *This method should be
+	 * called after layout had been drawn*. Because most often chart is drawn as rectangle with proportions other than
+	 * 1:1 and bubbles have to be drawn as circles not ellipses I am unable to calculate correct margins based on chart
+	 * data only. I need to know chart dimension to remove extra empty spaces, that bad because viewport depends a
+	 * little on contentRect.
+	 * 
+	 */
+	public void removeMargins() {
+		final ChartCalculator calculator = chart.getChartCalculator();
+		final Rect contentRect = calculator.getContentRect();
+		if (contentRect.height() == 0 || contentRect.width() == 0) {
+			// View probably not yet measured, skip removing margins.
+		}
+		final float pxX = calculator.calculateRawDistanceX(maxRadius * bubbleScaleX);
+		final float pxY = calculator.calculateRawDistanceY(maxRadius * bubbleScaleY);
+		final float scaleX = tempMaxViewport.width() / contentRect.width();
+		final float scaleY = tempMaxViewport.height() / contentRect.height();
+		float dx = 0;
+		float dy = 0;
+		if (isBubbleScaledByX) {
+			dy = (pxY - pxX) * scaleY * 0.75f;
+		} else {
+			dx = (pxX - pxY) * scaleX * 0.75f;
+		}
+		float left = tempMaxViewport.left + dx;
+		float top = tempMaxViewport.top - dy;
+		float right = tempMaxViewport.right - dx;
+		float bottom = tempMaxViewport.bottom + dy;
+		calculator.setMaxViewport(left, top, right, bottom);
+		calculator.setCurrentViewport(left, top, right, bottom);
+	}
+
 	private void calculateMaxViewport() {
 		float maxZ = Float.MIN_VALUE;
 		tempMaxViewport.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
@@ -140,26 +174,6 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		bubbleScaleY *= data.getBubbleScale();
 		// Prevent cutting of bubbles on the edges of chart area.
 		tempMaxViewport.inset(-maxRadius * bubbleScaleX, -maxRadius * bubbleScaleY);
-	}
-
-	public void removeMargins() {
-		final ChartCalculator calculator = chart.getChartCalculator();
-		final Rect contentRect = calculator.getContentRect();
-		final float pxX = calculator.calculateRawDistanceX(maxRadius * bubbleScaleX);
-		final float pxY = calculator.calculateRawDistanceY(maxRadius * bubbleScaleY);
-		final float scaleX = tempMaxViewport.width() / contentRect.width();
-		final float scaleY = tempMaxViewport.height() / contentRect.height();
-		float dx = 0;
-		float dy = 0;
-		Viewport viewport = new Viewport(tempMaxViewport);
-		if (isBubbleScaledByX) {
-			dy = (pxY - pxX) * scaleY;
-		} else {
-			dx = (pxX - pxY) * scaleX;
-		}
-		viewport.inset(dx, dy);
-		setMaxViewport(viewport);
-		setViewport(viewport);
 	}
 
 	private int calculateContentAreaMargin() {

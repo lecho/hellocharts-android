@@ -185,7 +185,11 @@ public class ChartCalculator {
 	}
 
 	public void setMaxViewport(Viewport maxViewport) {
-		this.maxViewport.set(maxViewport.left, maxViewport.top, maxViewport.right, maxViewport.bottom);
+		setMaxViewport(maxViewport.left, maxViewport.top, maxViewport.right, maxViewport.bottom);
+	}
+
+	public void setMaxViewport(float left, float top, float right, float bottom) {
+		this.maxViewport.set(left, top, right, bottom);
 		minViewportWidth = this.maxViewport.width() / MAXIMUM_SCALE;
 		minViewportHeight = this.maxViewport.height() / MAXIMUM_SCALE;
 	}

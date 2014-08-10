@@ -44,11 +44,13 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 	}
 
+	@Override
 	public void initMaxViewport() {
 		calculateMaxViewport();
 		chart.getChartCalculator().setMaxViewport(tempMaxViewport);
 	}
 
+	@Override
 	public void initDataAttributes() {
 		chart.getChartCalculator().setInternalMargin(calculateContentAreaMargin());
 		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));
