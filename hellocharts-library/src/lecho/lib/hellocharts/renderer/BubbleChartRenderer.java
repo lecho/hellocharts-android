@@ -22,8 +22,6 @@ import android.graphics.RectF;
  */
 public class BubbleChartRenderer extends AbstractChartRenderer {
 	private static final int DEFAULT_TOUCH_ADDITIONAL_DP = 4;
-	private static final int MODE_DRAW = 0;
-	private static final int MODE_HIGHLIGHT = 1;
 
 	private BubbleChartDataProvider dataProvider;
 
@@ -45,6 +43,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	private float maxRadius;
 	private PointF bubbleCenter = new PointF();
 	private Paint bubblePaint = new Paint();
+	private RectF labelRect = new RectF();
 
 	public BubbleChartRenderer(Context context, Chart chart, BubbleChartDataProvider dataProvider) {
 		super(context, chart);
@@ -82,64 +81,6 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		if (isTouched()) {
 			highlightBubbles(canvas);
 		}
-	}
-
-	private void drawBubbles(Canvas canvas) {
-		final BubbleChartData data = dataProvider.getBubbleChartData();
-		for (BubbleValue bubbleValue : data.getValues()) {
-			drawBubble(canvas, data, bubbleValue, MODE_DRAW);
-		}
-	}
-
-	private void highlightBubbles(Canvas canvas) {
-		final BubbleChartData data = dataProvider.getBubbleChartData();
-		BubbleValue bubbleValue = data.getValues().get(selectedValue.firstIndex);
-		drawBubble(canvas, data, bubbleValue, MODE_HIGHLIGHT);
-	}
-
-	/**
-	 * Calculate bubble radius and center x and y coordinates. Center x and x will be stored in point parameter, radius
-	 * will be returned as float value.
-	 * 
-	 * @param calculator
-	 * @param data
-	 * @param bubbleValue
-	 * @param point
-	 * @return
-	 */
-	private float processBubble(ChartCalculator calculator, BubbleChartData data, BubbleValue bubbleValue, PointF point) {
-		final float rawX = calculator.calculateRawX(bubbleValue.getX());
-		final float rawY = calculator.calculateRawY(bubbleValue.getY());
-		float radius = (float) Math.sqrt(bubbleValue.getZ() / Math.PI);
-		float rawRadius;
-		if (isBubbleScaledByX) {
-			radius *= bubbleScaleX;
-			rawRadius = calculator.calculateRawDistanceX(radius);
-		} else {
-			radius *= bubbleScaleY;
-			rawRadius = calculator.calculateRawDistanceY(radius);
-		}
-
-		if (rawRadius < data.getMinBubbleRadius()) {
-			rawRadius = data.getMinBubbleRadius() + touchAdditional;
-		}
-
-		bubbleCenter.set(rawX, rawY);
-		return rawRadius;
-	}
-
-	private void drawBubble(Canvas canvas, BubbleChartData data, BubbleValue bubbleValue, int mode) {
-		final ChartCalculator calculator = chart.getChartCalculator();
-		float rawRadius = processBubble(calculator, data, bubbleValue, bubbleCenter);
-
-		if (MODE_HIGHLIGHT == mode) {
-			bubblePaint.setColor(bubbleValue.getDarkenColor());
-		} else {
-			bubblePaint.setColor(bubbleValue.getColor());
-			rawRadius -= touchAdditional;
-		}
-
-		canvas.drawCircle(bubbleCenter.x, bubbleCenter.y, rawRadius, bubblePaint);
 	}
 
 	@Override
@@ -203,6 +144,108 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		float bottom = tempMaxViewport.bottom + dy;
 		calculator.setMaxViewport(left, top, right, bottom);
 		calculator.setCurrentViewport(left, top, right, bottom);
+	}
+
+	private void drawBubbles(Canvas canvas) {
+		final BubbleChartData data = dataProvider.getBubbleChartData();
+		for (BubbleValue bubbleValue : data.getValues()) {
+			drawBubble(canvas, data, bubbleValue);
+		}
+	}
+
+	private void drawBubble(Canvas canvas, BubbleChartData data, BubbleValue bubbleValue) {
+		final ChartCalculator calculator = chart.getChartCalculator();
+		float rawRadius = processBubble(calculator, data, bubbleValue, bubbleCenter);
+
+		bubblePaint.setColor(bubbleValue.getColor());
+		rawRadius -= touchAdditional;
+		canvas.drawCircle(bubbleCenter.x, bubbleCenter.y, rawRadius, bubblePaint);
+		if (data.hasLabels()) {
+			drawLabel(canvas, calculator, data, bubbleValue, bubbleCenter.x, bubbleCenter.y);
+		}
+	}
+
+	private void highlightBubbles(Canvas canvas) {
+		final BubbleChartData data = dataProvider.getBubbleChartData();
+		BubbleValue bubbleValue = data.getValues().get(selectedValue.firstIndex);
+		highlightBubble(canvas, data, bubbleValue);
+	}
+
+	private void highlightBubble(Canvas canvas, BubbleChartData data, BubbleValue bubbleValue) {
+		final ChartCalculator calculator = chart.getChartCalculator();
+		float rawRadius = processBubble(calculator, data, bubbleValue, bubbleCenter);
+
+		bubblePaint.setColor(bubbleValue.getDarkenColor());
+		canvas.drawCircle(bubbleCenter.x, bubbleCenter.y, rawRadius, bubblePaint);
+		if (data.hasLabels() || data.hasLabelsOnlyForSelected()) {
+			drawLabel(canvas, calculator, data, bubbleValue, bubbleCenter.x, bubbleCenter.y);
+		}
+	}
+
+	/**
+	 * Calculate bubble radius and center x and y coordinates. Center x and x will be stored in point parameter, radius
+	 * will be returned as float value.
+	 * 
+	 * @param calculator
+	 * @param data
+	 * @param bubbleValue
+	 * @param point
+	 * @return
+	 */
+	private float processBubble(ChartCalculator calculator, BubbleChartData data, BubbleValue bubbleValue, PointF point) {
+		final float rawX = calculator.calculateRawX(bubbleValue.getX());
+		final float rawY = calculator.calculateRawY(bubbleValue.getY());
+		float radius = (float) Math.sqrt(bubbleValue.getZ() / Math.PI);
+		float rawRadius;
+		if (isBubbleScaledByX) {
+			radius *= bubbleScaleX;
+			rawRadius = calculator.calculateRawDistanceX(radius);
+		} else {
+			radius *= bubbleScaleY;
+			rawRadius = calculator.calculateRawDistanceY(radius);
+		}
+
+		if (rawRadius < data.getMinBubbleRadius()) {
+			rawRadius = data.getMinBubbleRadius() + touchAdditional;
+		}
+
+		bubbleCenter.set(rawX, rawY);
+		return rawRadius;
+	}
+
+	private void drawLabel(Canvas canvas, ChartCalculator calculator, BubbleChartData data, BubbleValue bubbleValue,
+			float rawX, float rawY) {
+		final Rect contentRect = calculator.getContentRect();
+		final int nummChars = data.getFormatter().formatValue(labelBuffer, bubbleValue.getZ());
+		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
+		final int labelHeight = Math.abs(fontMetrics.ascent);
+		float left = rawX - labelWidth / 2 - labelMargin;
+		float right = rawX + labelWidth / 2 + labelMargin;
+		float top = rawY - labelHeight / 2 - labelMargin;
+		float bottom = rawY + labelHeight / 2 + labelMargin;
+		if (top < contentRect.top) {
+			top = rawY;
+			bottom = rawY + labelHeight + labelMargin * 2;
+		}
+		if (bottom > contentRect.bottom) {
+			top = rawY - labelHeight - labelMargin * 2;
+			bottom = rawY;
+		}
+		if (left < contentRect.left) {
+			left = rawX;
+			right = rawX + labelWidth + labelMargin * 2;
+		}
+		if (right > contentRect.right) {
+			left = rawX - labelWidth - labelMargin * 2;
+			right = rawX;
+		}
+		labelRect.set(left, top, right, bottom);
+		int orginColor = labelPaint.getColor();
+		labelPaint.setColor(bubbleValue.getDarkenColor());
+		canvas.drawRect(left, top, right, bottom, labelPaint);
+		labelPaint.setColor(orginColor);
+		canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, left + labelMargin, bottom
+				- labelMargin, labelPaint);
 	}
 
 	private void calculateMaxViewport() {
