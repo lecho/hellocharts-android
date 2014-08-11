@@ -58,11 +58,11 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	}
 
 	/**
-	 * Most important thing here is {@link #calculateCircleOval()} call. Because {@link #initDataAttributes()} is
+	 * Most important thing here is {@link #calculateCircleOval()} call. Because {@link #initDimensions()} is
 	 * usually called from onSizeChanged it is good place to calculate max PieChart circle size.
 	 */
 	@Override
-	public void initDataAttributes() {
+	public void initDimensions() {
 		chart.getChartCalculator().setInternalMargin(calculateContentAreaMargin());
 		calculateCircleOval();
 		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));

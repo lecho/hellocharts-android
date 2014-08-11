@@ -45,7 +45,7 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
 		}
 		chartRenderer.initMaxViewport();
 		chartRenderer.initCurrentViewport();
-		chartRenderer.initDataAttributes();
+		chartRenderer.initDimensions();
 		axesRenderer.initAxesAttributes();
 
 		ViewCompat.postInvalidateOnAnimation(BubbleChartView.this);
