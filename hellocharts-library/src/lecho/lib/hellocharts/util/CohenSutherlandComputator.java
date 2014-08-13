@@ -46,7 +46,7 @@ public abstract class CohenSutherlandComputator {
 	 * @return true if line segment is clipped or is entirely inside clipRect, false if line segment has no intersection
 	 *         points with clipRect.
 	 */
-	public static boolean clipLine(RectF clipRect, float[] points) {
+	public static boolean clipLine(RectF clipRect, float[] points, ClipResult clippResult) {
 		if (points.length != 4) {
 			throw new IllegalArgumentException("Points array must have 4 values in format [x1,y1, x2,y2]");
 		}
@@ -78,7 +78,15 @@ public abstract class CohenSutherlandComputator {
 				final float clipY;
 
 				// At least one end-point is outside the clip rectangle; pick it.
-				final byte outCode = (code1 != INSIDE) ? code1 : code2;
+				final byte outCode;
+
+				if (code1 != INSIDE) {
+					outCode = code1;
+					clippResult.isFirstClipped = true;
+				} else {
+					outCode = code2;
+					clippResult.isSecondClipped = true;
+				}
 
 				// Find the intersection point;
 				// Use formulas y = y0 + slope * (x - x0), x = x0 + (1 / slope) * (y - y0)
@@ -124,5 +132,21 @@ public abstract class CohenSutherlandComputator {
 		points[3] = y2;
 
 		return isClipped;
+	}
+
+	public static class ClipResult {
+		public boolean isFirstClipped = false;
+		public boolean isSecondClipped = false;
+
+		public void reset() {
+			isFirstClipped = false;
+			isSecondClipped = false;
+		}
+
+		@Override
+		public String toString() {
+			return "ClipResult [isFirstClipped=" + isFirstClipped + ", isSecondClipped=" + isSecondClipped + "]";
+		}
+
 	}
 }
