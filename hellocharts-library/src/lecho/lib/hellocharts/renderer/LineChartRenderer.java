@@ -6,11 +6,14 @@ import lecho.lib.hellocharts.LineChartDataProvider;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.util.CohenSutherlandComputator;
+import lecho.lib.hellocharts.util.CohenSutherlandComputator.ClipResult;
 import lecho.lib.hellocharts.util.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
@@ -29,6 +32,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private Paint linePaint = new Paint();
 	private Paint pointPaint = new Paint();
 	private RectF labelRect = new RectF();
+	private PathCompat pathCompat = new PathCompat();
 
 	public LineChartRenderer(Context context, Chart chart, LineChartDataProvider dataProvider) {
 		super(context, chart);
@@ -70,6 +74,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 				}
 			}
 			linePath.reset();
+			pathCompat.reset();
 		}
 	}
 
@@ -156,19 +161,25 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private void drawPath(Canvas canvas, final Line line) {
 		final ChartCalculator calculator = chart.getChartCalculator();
 		int valueIndex = 0;
+		pathCompat.setFilled(line.isFilled());
+		pathCompat.setClipRect(calculator.getContentRect());
 		for (PointValue pointValue : line.getPoints()) {
 			final float rawX = calculator.calculateRawX(pointValue.getX());
 			final float rawY = calculator.calculateRawY(pointValue.getY());
 			if (valueIndex == 0) {
-				linePath.moveTo(rawX, rawY);
+				// linePath.moveTo(rawX, rawY);
+				pathCompat.moveTo(rawX, rawY);
 			} else {
-				linePath.lineTo(rawX, rawY);
+				// linePath.lineTo(rawX, rawY);
+				pathCompat.lineTo(rawX, rawY);
 			}
 			++valueIndex;
 		}
+
 		linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
 		linePaint.setColor(line.getColor());
-		canvas.drawPath(linePath, linePaint);
+		// canvas.drawPath(linePath, linePaint);
+		pathCompat.drawLine(canvas, linePaint);
 		if (line.isFilled()) {
 			drawArea(canvas, line.getAreaTransparency());
 		}
@@ -339,7 +350,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		linePath.close();
 		linePaint.setStyle(Paint.Style.FILL);
 		linePaint.setAlpha(transparency);
-		canvas.drawPath(linePath, linePaint);
+		// canvas.drawPath(linePath, linePaint);
+		pathCompat.drawArea(canvas, linePaint);
 		linePaint.setStyle(Paint.Style.STROKE);
 	}
 
@@ -347,6 +359,195 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		float diffX = touchX - x;
 		float diffY = touchY - y;
 		return Math.pow(diffX, 2) + Math.pow(diffY, 2) <= 2 * Math.pow(radius, 2);
+	}
+
+	/**
+	 * PathCompat uses Canvas.drawLines instead Canvas.drawPath, drawPath is used only to fill area. Warning!: doesn't
+	 * support breaks in line so line has to be continuous.
+	 * 
+	 * TODO: Implement bezier curves
+	 * 
+	 * @author Leszek Wach
+	 * 
+	 */
+	public class PathCompat {
+		private float[] buffer = new float[128];
+		private int bufferIndex = 0;
+
+		/**
+		 * Attributes for filling area.
+		 */
+		private boolean isFilled = false;
+		private Path areaPath = new Path();
+		private RectF clipRect = new RectF(Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+		private float[] clipBuffer = new float[4];
+		private ClipResult clipResult = new ClipResult();
+		private PointF firstClip = new PointF();
+		private PointF lastClip = new PointF();
+		private float baseline = Float.NaN;
+
+		public boolean isBufferFull() {
+			if (bufferIndex == buffer.length) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		public boolean moveTo(float x, float y) {
+			if (bufferIndex == buffer.length) {
+				// Buffer full.
+				return false;
+			}
+			buffer[bufferIndex++] = x;
+			buffer[bufferIndex++] = y;
+
+			return true;
+		}
+
+		public boolean lineTo(float x, float y) {
+			// TODO: more buffer size checks.
+			if (bufferIndex == buffer.length) {
+				// Buffer full.
+				return false;
+			}
+			if (bufferIndex == 0) {
+				// No moveTo() called before lineTo()
+				return false;
+			}
+			if (isFilled) {
+				clipAreaPath(x, y);
+			}
+
+			buffer[bufferIndex++] = x;
+			buffer[bufferIndex++] = y;
+			buffer[bufferIndex++] = x;
+			buffer[bufferIndex++] = y;
+
+			return true;
+		}
+
+		private void clipAreaPath(float x, float y) {
+			// Add last point and current point to clipBuffer.
+			clipBuffer[0] = buffer[bufferIndex - 2];
+			clipBuffer[1] = buffer[bufferIndex - 1];
+			clipBuffer[2] = x;
+			clipBuffer[3] = y;
+
+			if (CohenSutherlandComputator.clipLine(clipRect, clipBuffer, clipResult)) {
+				if (areaPath.isEmpty()) {
+					areaPath.moveTo(clipBuffer[0], clipBuffer[1]);
+					firstClip.set(clipBuffer[0], clipBuffer[1]);
+				} else if (clipResult.isFirstClipped) {
+					areaPath.lineTo(clipBuffer[0], clipBuffer[1]);
+				}
+
+				areaPath.lineTo(clipBuffer[2], clipBuffer[3]);
+				lastClip.set(clipBuffer[2], clipBuffer[3]);
+				clipResult.reset();
+			}
+		}
+
+		/**
+		 * Close areaPath to fill chart area.
+		 */
+		private void closeAreaPath() {
+			if (areaPath.isEmpty()) {
+				// Probably all lines are outside clipRect(huge zoom), fill whole clipRect, that is not always
+				// accurate(i.e. baseline != clipRect.bottom) but for now must be like that.
+				areaPath.moveTo(clipRect.left, clipRect.top);
+				areaPath.lineTo(clipRect.right, clipRect.top);
+				areaPath.lineTo(clipRect.right, clipRect.bottom);
+				areaPath.lineTo(clipRect.left, clipRect.bottom);
+				areaPath.close();
+				return;
+			}
+
+			if (Float.isNaN(baseline)) {
+				// If baselane is not set use clipRect.bottom.
+				baseline = clipRect.bottom;
+			}
+
+			// Last path segment went high above or bellow clipRect.
+			if (lastClip.x < clipRect.right) {
+				if (lastClip.y == clipRect.top) {
+					areaPath.lineTo(clipRect.right, clipRect.top);
+				} else {
+					areaPath.lineTo(clipRect.right, clipRect.bottom);
+				}
+			}
+			areaPath.lineTo(clipRect.right, baseline);
+
+			areaPath.lineTo(clipRect.left, baseline);
+
+			// First path segment started high above or bellow clipRect.
+			if (firstClip.x > clipRect.left) {
+				if (firstClip.y == clipRect.top) {
+					areaPath.lineTo(clipRect.left, clipRect.top);
+				} else {
+					areaPath.lineTo(clipRect.left, clipRect.bottom);
+				}
+			}
+
+			areaPath.close();
+		}
+
+		public boolean cubicTo() {
+			// TODO:
+			return false;
+		}
+
+		public void reset() {
+			bufferIndex = 0;
+			areaPath.reset();
+			clipRect.set(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
+			isFilled = false;
+			clipResult.reset();
+		}
+
+		public void drawLine(Canvas canvas, Paint paint) {
+			canvas.drawLines(buffer, 0, bufferIndex, paint);
+			bufferIndex = 0;
+		}
+
+		public void drawArea(Canvas canvas, Paint paint) {
+			closeAreaPath();
+			canvas.drawPath(areaPath, paint);
+			areaPath.reset();
+		}
+
+		public boolean isFilled() {
+			return isFilled;
+		}
+
+		public void setFilled(boolean isFilled) {
+			this.isFilled = isFilled;
+		}
+
+		public RectF getClipRect() {
+			return clipRect;
+		}
+
+		public void setClipRect(Rect clipRect) {
+			this.clipRect.set(clipRect);
+			this.firstClip.set(clipRect.left, clipRect.top);
+			this.lastClip.set(clipRect.right, clipRect.bottom);
+		}
+
+		public void setClipRect(RectF clipRect) {
+			this.clipRect.set(clipRect);
+			this.firstClip.set(clipRect.left, clipRect.top);
+			this.lastClip.set(clipRect.right, clipRect.bottom);
+		}
+
+		public float getBaseline() {
+			return baseline;
+		}
+
+		public void setBaseline(float baseline) {
+			this.baseline = baseline;
+		}
+
 	}
 
 }
