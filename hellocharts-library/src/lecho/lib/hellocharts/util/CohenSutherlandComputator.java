@@ -92,12 +92,12 @@ public abstract class CohenSutherlandComputator {
 					clipY = clipRect.bottom;
 				} else if ((outCode & RIGHT) != INSIDE) {
 					// Point is to the right of clip rectangle.
-					clipX = y1 + (y2 - y1) * (clipRect.right - x1) / (x2 - x1);
-					clipY = clipRect.right;
+					clipY = y1 + (y2 - y1) * (clipRect.right - x1) / (x2 - x1);
+					clipX = clipRect.right;
 				} else if ((outCode & LEFT) != INSIDE) {
 					// Point is to the left of clip rectangle.
-					clipX = y1 + (y2 - y1) * (clipRect.left - x1) / (x2 - x1);
-					clipY = clipRect.left;
+					clipY = y1 + (y2 - y1) * (clipRect.left - x1) / (x2 - x1);
+					clipX = clipRect.left;
 				} else {
 					clipX = Float.NaN;
 					clipY = Float.NaN;
