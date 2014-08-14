@@ -374,15 +374,18 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	public class PathCompat {
 		private static final int LINE_SEGMENTS_NUMBER = 32;
 		private static final int COORDINATES_PER_LINE_SEGMENT = 4;
+
 		/**
 		 * Bufer for point coordinates to avoid calling drawLine for every line segment, instead call drawLines if
 		 * buffer is full.
 		 */
 		private float[] buffer = new float[LINE_SEGMENTS_NUMBER * COORDINATES_PER_LINE_SEGMENT];
+
 		/**
 		 * Number of points in buffer, index where put next line segment coordinate.
 		 */
 		private int bufferIndex = 0;
+
 		/**
 		 * De Casteljau's algorithm implementation to draw cubic Bezier's curves with hardware acceleration without
 		 * using Path. For filling area Path still has to be used but it will be clipped to contentRect.
@@ -390,34 +393,52 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		private CasteljauComputator casteljauComputator = new CasteljauComputator();
 
 		/**
+		 * Buffer for cubic Bezier's curve points coordinate, four points(start point, end point, two control points),
+		 * two coordinate each.
+		 */
+		private float[] bezierBuffer = new float[8];
+
+		/**
+		 * Step in pixels for drawing Bezier's curve
+		 */
+		private int step = 16;
+
+		/**
 		 * Indicates if area under line should be filled
 		 */
 		private boolean isFilled = false;
+
 		/**
 		 * Path used to draw filled area, unfortunately drawVertices not working for HW layer. Path suffers from
 		 * "Shape too large..." on hardware accelerated view so it has to be clipped to contentRect.
 		 */
 		private Path areaPath = new Path();
+
 		/**
 		 * Rect for clipping areaPath, before draw it should be set to be equal contentRect.
 		 */
 		private RectF clipRect = new RectF(Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+
 		/**
 		 * Buffer for coordinates for clipping line segment.
 		 */
 		private float[] clipBuffer = new float[4];
+
 		/**
 		 * Holds information which point of line segment was clipped.
 		 */
 		private ClipResult clipResult = new ClipResult();
+
 		/**
 		 * First clipped point for whole path so it will hold coordinates of first visible pixel of fillPath.
 		 */
 		private PointF firstClip = new PointF();
+
 		/**
 		 * Last clipped point for whole path so it will hold coordinates of last visible pixel of fillPath.
 		 */
 		private PointF lastClip = new PointF();
+
 		/**
 		 * Baseline for filled area, most often equals contentRect.bottom but if chart has negative value it could be
 		 * set to rawX of value 0.0. In that case it may cause small glitches for huge zoom.
@@ -450,11 +471,12 @@ public class LineChartRenderer extends AbstractChartRenderer {
 				return false;
 			}
 			if (bufferIndex == 0) {
-				// No moveTo() called before lineTo()
+				// No moveTo() called before lineTo().
 				return false;
 			}
 			if (isFilled) {
-				clipAreaPath(x, y);
+				// Clip line segment from last point to current point.
+				clipLineSegment(buffer[bufferIndex - 2], buffer[bufferIndex - 1], x, y);
 			}
 
 			buffer[bufferIndex++] = x;
@@ -465,12 +487,17 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			return true;
 		}
 
-		private void clipAreaPath(float x, float y) {
+		public boolean cubicTo(float x1, float y1, float x2, float y2, float x3, float y3) {
+
+			return false;
+		}
+
+		private void clipLineSegment(float x1, float y1, float x2, float y2) {
 			// Add last point and current point to clipBuffer, that's the line segment to be clipped.
-			clipBuffer[0] = buffer[bufferIndex - 2];
-			clipBuffer[1] = buffer[bufferIndex - 1];
-			clipBuffer[2] = x;
-			clipBuffer[3] = y;
+			clipBuffer[0] = x1;
+			clipBuffer[1] = y1;
+			clipBuffer[2] = x2;
+			clipBuffer[3] = y2;
 
 			if (CohenSutherlandComputator.clipLine(clipRect, clipBuffer, clipResult)) {
 				if (areaPath.isEmpty()) {
@@ -530,11 +557,6 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			areaPath.close();
 		}
 
-		public boolean cubicTo() {
-			// TODO:
-			return false;
-		}
-
 		/**
 		 * Resets internal state of PathCompat and prepare it to draw next line.
 		 */
@@ -555,6 +577,14 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			closeAreaPath();
 			canvas.drawPath(areaPath, paint);
 			areaPath.reset();
+		}
+
+		public int getStep() {
+			return step;
+		}
+
+		public void setStep(int step) {
+			this.step = step;
 		}
 
 		public boolean isFilled() {
