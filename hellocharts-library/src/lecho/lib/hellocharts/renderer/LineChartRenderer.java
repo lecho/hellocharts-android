@@ -6,6 +6,7 @@ import lecho.lib.hellocharts.LineChartDataProvider;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.util.CasteljauComputator;
 import lecho.lib.hellocharts.util.CohenSutherlandComputator;
 import lecho.lib.hellocharts.util.CohenSutherlandComputator.ClipResult;
 import lecho.lib.hellocharts.util.Utils;
@@ -371,19 +372,56 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	 * 
 	 */
 	public class PathCompat {
-		private float[] buffer = new float[128];
+		private static final int LINE_SEGMENTS_NUMBER = 32;
+		private static final int COORDINATES_PER_LINE_SEGMENT = 4;
+		/**
+		 * Bufer for point coordinates to avoid calling drawLine for every line segment, instead call drawLines if
+		 * buffer is full.
+		 */
+		private float[] buffer = new float[LINE_SEGMENTS_NUMBER * COORDINATES_PER_LINE_SEGMENT];
+		/**
+		 * Number of points in buffer, index where put next line segment coordinate.
+		 */
 		private int bufferIndex = 0;
+		/**
+		 * De Casteljau's algorithm implementation to draw cubic Bezier's curves with hardware acceleration without
+		 * using Path. For filling area Path still has to be used but it will be clipped to contentRect.
+		 */
+		private CasteljauComputator casteljauComputator = new CasteljauComputator();
 
 		/**
-		 * Attributes for filling area.
+		 * Indicates if area under line should be filled
 		 */
 		private boolean isFilled = false;
+		/**
+		 * Path used to draw filled area, unfortunately drawVertices not working for HW layer. Path suffers from
+		 * "Shape too large..." on hardware accelerated view so it has to be clipped to contentRect.
+		 */
 		private Path areaPath = new Path();
+		/**
+		 * Rect for clipping areaPath, before draw it should be set to be equal contentRect.
+		 */
 		private RectF clipRect = new RectF(Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+		/**
+		 * Buffer for coordinates for clipping line segment.
+		 */
 		private float[] clipBuffer = new float[4];
+		/**
+		 * Holds information which point of line segment was clipped.
+		 */
 		private ClipResult clipResult = new ClipResult();
+		/**
+		 * First clipped point for whole path so it will hold coordinates of first visible pixel of fillPath.
+		 */
 		private PointF firstClip = new PointF();
+		/**
+		 * Last clipped point for whole path so it will hold coordinates of last visible pixel of fillPath.
+		 */
 		private PointF lastClip = new PointF();
+		/**
+		 * Baseline for filled area, most often equals contentRect.bottom but if chart has negative value it could be
+		 * set to rawX of value 0.0. In that case it may cause small glitches for huge zoom.
+		 */
 		private float baseline = Float.NaN;
 
 		public boolean isBufferFull() {
@@ -428,7 +466,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		}
 
 		private void clipAreaPath(float x, float y) {
-			// Add last point and current point to clipBuffer.
+			// Add last point and current point to clipBuffer, that's the line segment to be clipped.
 			clipBuffer[0] = buffer[bufferIndex - 2];
 			clipBuffer[1] = buffer[bufferIndex - 1];
 			clipBuffer[2] = x;
@@ -497,6 +535,9 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			return false;
 		}
 
+		/**
+		 * Resets internal state of PathCompat and prepare it to draw next line.
+		 */
 		public void reset() {
 			bufferIndex = 0;
 			areaPath.reset();
