@@ -7,8 +7,6 @@ import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.util.CasteljauComputator;
-import lecho.lib.hellocharts.util.CohenSutherlandComputator;
-import lecho.lib.hellocharts.util.CohenSutherlandComputator.ClipResult;
 import lecho.lib.hellocharts.util.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -125,8 +123,10 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private void calculateMaxViewport() {
 		tempMaxViewport.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
 		LineChartData data = dataProvider.getLineChartData();
+
 		// TODO: Optimize.
 		for (Line line : data.getLines()) {
+			// Calculate max and min for viewport.
 			for (PointValue pointValue : line.getPoints()) {
 				if (pointValue.getX() < tempMaxViewport.left) {
 					tempMaxViewport.left = pointValue.getX();
@@ -162,8 +162,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private void drawPath(Canvas canvas, final Line line) {
 		final ChartCalculator calculator = chart.getChartCalculator();
 		int valueIndex = 0;
-		pathCompat.setFilled(line.isFilled());
-		pathCompat.setClipRect(calculator.getContentRect());
+		linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
+		linePaint.setColor(line.getColor());
 		for (PointValue pointValue : line.getPoints()) {
 			final float rawX = calculator.calculateRawX(pointValue.getX());
 			final float rawY = calculator.calculateRawY(pointValue.getY());
@@ -172,15 +172,13 @@ public class LineChartRenderer extends AbstractChartRenderer {
 				pathCompat.moveTo(rawX, rawY);
 			} else {
 				// linePath.lineTo(rawX, rawY);
-				pathCompat.lineTo(rawX, rawY);
+				pathCompat.lineTo(canvas, linePaint, rawX, rawY);
 			}
 			++valueIndex;
 		}
 
-		linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
-		linePaint.setColor(line.getColor());
 		// canvas.drawPath(linePath, linePaint);
-		pathCompat.drawLine(canvas, linePaint);
+		pathCompat.drawPath(canvas, linePaint);
 		if (line.isFilled()) {
 			drawArea(canvas, line.getAreaTransparency());
 		}
@@ -188,6 +186,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 	private void drawSmoothPath(Canvas canvas, final Line line) {
 		final ChartCalculator calculator = chart.getChartCalculator();
+		linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
+		linePaint.setColor(line.getColor());
 		final int lineSize = line.getPoints().size();
 		float previousPointX = Float.NaN;
 		float previousPointY = Float.NaN;
@@ -238,10 +238,13 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			final float secondControlPointY = nextPointY - (LINE_SMOOTHNES * secondDiffY);
 			// Move to start point.
 			if (valueIndex == 0) {
-				linePath.moveTo(currentPointX, currentPointY);
+				// linePath.moveTo(currentPointX, currentPointY);
+				pathCompat.moveTo(currentPointX, currentPointY);
 			}
-			linePath.cubicTo(firstControlPointX, firstControlPointY, secondControlPointX, secondControlPointY,
-					nextPointX, nextPointY);
+			// linePath.cubicTo(firstControlPointX, firstControlPointY, secondControlPointX, secondControlPointY,
+			// nextPointX, nextPointY);
+			pathCompat.cubicTo(canvas, linePaint, firstControlPointX, firstControlPointY, secondControlPointX,
+					secondControlPointY, nextPointX, nextPointY);
 			// Shift values by one to prevent recalculation of values that have
 			// been already calculated.
 			previousPointX = currentPointX;
@@ -251,9 +254,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			nextPointX = afterNextPointX;
 			nextPointY = afterNextPointY;
 		}
-		linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
-		linePaint.setColor(line.getColor());
-		canvas.drawPath(linePath, linePaint);
+		// canvas.drawPath(linePath, linePaint);
+		pathCompat.drawPath(canvas, linePaint);
 		if (line.isFilled()) {
 			drawArea(canvas, line.getAreaTransparency());
 		}
@@ -352,7 +354,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		linePaint.setStyle(Paint.Style.FILL);
 		linePaint.setAlpha(transparency);
 		// canvas.drawPath(linePath, linePaint);
-		pathCompat.drawArea(canvas, linePaint);
+		// pathCompat.drawAreaPath(canvas, linePaint);
 		linePaint.setStyle(Paint.Style.STROKE);
 	}
 
@@ -363,23 +365,19 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	}
 
 	/**
-	 * PathCompat uses Canvas.drawLines instead Canvas.drawPath, drawPath is used only to fill area. Warning!: doesn't
-	 * support breaks in line so line has to be continuous.
-	 * 
-	 * TODO: Implement bezier curves
+	 * PathCompat uses Canvas.drawLines instead Canvas.drawPath. Supports normal lines and cubic Bezier's lines.
+	 * Warning!: doesn't support breaks in line so line has to be continuous and doesn't support area chart.
 	 * 
 	 * @author Leszek Wach
 	 * 
 	 */
 	public class PathCompat {
-		private static final int LINE_SEGMENTS_NUMBER = 32;
-		private static final int COORDINATES_PER_LINE_SEGMENT = 4;
+		private static final int DEFAULT_BUFFER_SIZE = 1024;
 
 		/**
-		 * Bufer for point coordinates to avoid calling drawLine for every line segment, instead call drawLines if
-		 * buffer is full.
+		 * Bufer for point coordinates to avoid calling drawLine for every line segment, instead call drawLines.
 		 */
-		private float[] buffer = new float[LINE_SEGMENTS_NUMBER * COORDINATES_PER_LINE_SEGMENT];
+		private float[] buffer = new float[DEFAULT_BUFFER_SIZE];
 
 		/**
 		 * Number of points in buffer, index where put next line segment coordinate.
@@ -399,162 +397,94 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		private float[] bezierBuffer = new float[8];
 
 		/**
+		 * Computed bezier line point, as private member to avoid allocation.
+		 */
+		private PointF bezierOutPoint = new PointF();
+
+		/**
 		 * Step in pixels for drawing Bezier's curve
 		 */
-		private int step = 16;
+		private int pixelStep = 8;
 
-		/**
-		 * Indicates if area under line should be filled
-		 */
-		private boolean isFilled = false;
-
-		/**
-		 * Path used to draw filled area, unfortunately drawVertices not working for HW layer. Path suffers from
-		 * "Shape too large..." on hardware accelerated view so it has to be clipped to contentRect.
-		 */
-		private Path areaPath = new Path();
-
-		/**
-		 * Rect for clipping areaPath, before draw it should be set to be equal contentRect.
-		 */
-		private RectF clipRect = new RectF(Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
-
-		/**
-		 * Buffer for coordinates for clipping line segment.
-		 */
-		private float[] clipBuffer = new float[4];
-
-		/**
-		 * Holds information which point of line segment was clipped.
-		 */
-		private ClipResult clipResult = new ClipResult();
-
-		/**
-		 * First clipped point for whole path so it will hold coordinates of first visible pixel of fillPath.
-		 */
-		private PointF firstClip = new PointF();
-
-		/**
-		 * Last clipped point for whole path so it will hold coordinates of last visible pixel of fillPath.
-		 */
-		private PointF lastClip = new PointF();
-
-		/**
-		 * Baseline for filled area, most often equals contentRect.bottom but if chart has negative value it could be
-		 * set to rawX of value 0.0. In that case it may cause small glitches for huge zoom.
-		 */
-		private float baseline = Float.NaN;
-
-		public boolean isBufferFull() {
-			if (bufferIndex == buffer.length) {
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		public boolean moveTo(float x, float y) {
-			if (bufferIndex == buffer.length) {
-				// Buffer full.
-				return false;
-			}
-			buffer[bufferIndex++] = x;
-			buffer[bufferIndex++] = y;
-
-			return true;
-		}
-
-		public boolean lineTo(float x, float y) {
-			// TODO: more buffer size checks.
-			if (bufferIndex == buffer.length) {
-				// Buffer full.
-				return false;
-			}
-			if (bufferIndex == 0) {
-				// No moveTo() called before lineTo().
-				return false;
-			}
-			if (isFilled) {
-				// Clip line segment from last point to current point.
-				clipLineSegment(buffer[bufferIndex - 2], buffer[bufferIndex - 1], x, y);
-			}
-
-			buffer[bufferIndex++] = x;
-			buffer[bufferIndex++] = y;
-			buffer[bufferIndex++] = x;
-			buffer[bufferIndex++] = y;
-
-			return true;
-		}
-
-		public boolean cubicTo(float x1, float y1, float x2, float y2, float x3, float y3) {
-
-			return false;
-		}
-
-		private void clipLineSegment(float x1, float y1, float x2, float y2) {
-			// Add last point and current point to clipBuffer, that's the line segment to be clipped.
-			clipBuffer[0] = x1;
-			clipBuffer[1] = y1;
-			clipBuffer[2] = x2;
-			clipBuffer[3] = y2;
-
-			if (CohenSutherlandComputator.clipLine(clipRect, clipBuffer, clipResult)) {
-				if (areaPath.isEmpty()) {
-					areaPath.moveTo(clipBuffer[0], clipBuffer[1]);
-					firstClip.set(clipBuffer[0], clipBuffer[1]);
-				} else if (clipResult.isFirstClipped) {
-					areaPath.lineTo(clipBuffer[0], clipBuffer[1]);
-				}
-
-				areaPath.lineTo(clipBuffer[2], clipBuffer[3]);
-				lastClip.set(clipBuffer[2], clipBuffer[3]);
-				clipResult.reset();
-			}
-		}
-
-		/**
-		 * Close areaPath to fill chart area.
-		 */
-		private void closeAreaPath() {
-			if (areaPath.isEmpty()) {
-				// Probably all lines are outside clipRect(huge zoom), fill whole clipRect, that is not always
-				// accurate(i.e. baseline != clipRect.bottom) but for now must be like that.
-				areaPath.moveTo(clipRect.left, clipRect.top);
-				areaPath.lineTo(clipRect.right, clipRect.top);
-				areaPath.lineTo(clipRect.right, clipRect.bottom);
-				areaPath.lineTo(clipRect.left, clipRect.bottom);
-				areaPath.close();
+		public void moveTo(float x, float y) {
+			if (bufferIndex != 0) {
+				// Move too only works for starting point.
 				return;
 			}
+			buffer[bufferIndex++] = x;
+			buffer[bufferIndex++] = y;
+		}
 
-			if (Float.isNaN(baseline)) {
-				// If baselane is not set use clipRect.bottom.
-				baseline = clipRect.bottom;
+		public void lineTo(Canvas canvas, Paint paint, float x, float y) {
+
+			addLineToBuffer(x, y);
+
+			drawLinesIfNeeded(canvas, paint);
+		}
+
+		private void drawLinesIfNeeded(Canvas canvas, Paint paint) {
+			if (bufferIndex == buffer.length) {
+				// Buffer full, draw lines and remember last point as the first point in buffer.
+				canvas.drawLines(buffer, 0, bufferIndex, paint);
+				final float lastX = buffer[bufferIndex - 2];
+				final float lastY = buffer[bufferIndex - 1];
+				bufferIndex = 0;
+				buffer[bufferIndex++] = lastX;
+				buffer[bufferIndex++] = lastY;
+			}
+		}
+
+		private void addLineToBuffer(float x, float y) {
+			if (bufferIndex == 0) {
+				// No moveTo, set starting point to 0,0.
+				buffer[bufferIndex++] = 0;
+				buffer[bufferIndex++] = 0;
 			}
 
-			// Last path segment went high above or bellow clipRect.
-			if (lastClip.x < clipRect.right) {
-				if (lastClip.y == clipRect.top) {
-					areaPath.lineTo(clipRect.right, clipRect.top);
-				} else {
-					areaPath.lineTo(clipRect.right, clipRect.bottom);
-				}
+			if (bufferIndex == 2) {
+				// First segment.
+				buffer[bufferIndex++] = x;
+				buffer[bufferIndex++] = y;
+			} else {
+				final float lastX = buffer[bufferIndex - 2];
+				final float lastY = buffer[bufferIndex - 1];
+				buffer[bufferIndex++] = lastX;
+				buffer[bufferIndex++] = lastY;
+				buffer[bufferIndex++] = x;
+				buffer[bufferIndex++] = y;
 			}
-			areaPath.lineTo(clipRect.right, baseline);
+		}
 
-			areaPath.lineTo(clipRect.left, baseline);
+		public void cubicTo(Canvas canvas, Paint paint, float x1, float y1, float x2, float y2, float x3, float y3) {
+			if (bufferIndex == 0) {
+				// No moveTo, set starting point to 0,0.
+				bezierBuffer[0] = 0;
+				bezierBuffer[1] = 0;
+			} else {
+				bezierBuffer[0] = buffer[bufferIndex - 2];
+				bezierBuffer[1] = buffer[bufferIndex - 1];
+			}
+			bezierBuffer[2] = x1;
+			bezierBuffer[3] = y1;
+			bezierBuffer[4] = x2;
+			bezierBuffer[5] = y2;
+			bezierBuffer[6] = x3;
+			bezierBuffer[7] = y3;
 
-			// First path segment started high above or bellow clipRect.
-			if (firstClip.x > clipRect.left) {
-				if (firstClip.y == clipRect.top) {
-					areaPath.lineTo(clipRect.left, clipRect.top);
-				} else {
-					areaPath.lineTo(clipRect.left, clipRect.bottom);
-				}
+			// First subline.
+			addLineToBuffer(bezierBuffer[0], bezierBuffer[1]);
+			drawLinesIfNeeded(canvas, paint);
+
+			final float stepT = 1.0f / ((float) Math.abs((bezierBuffer[0] - x3)) / pixelStep);
+			for (float t = stepT; t < 1.0f; t += stepT) {
+				casteljauComputator.computePoint(t, bezierBuffer, bezierOutPoint);
+				addLineToBuffer(bezierOutPoint.x, bezierOutPoint.y);
+				drawLinesIfNeeded(canvas, paint);
 			}
 
-			areaPath.close();
+			// Last subline.
+			addLineToBuffer(x3, y3);
+			drawLinesIfNeeded(canvas, paint);
 		}
 
 		/**
@@ -562,61 +492,19 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		 */
 		public void reset() {
 			bufferIndex = 0;
-			areaPath.reset();
-			clipRect.set(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
-			isFilled = false;
-			clipResult.reset();
 		}
 
-		public void drawLine(Canvas canvas, Paint paint) {
+		public void drawPath(Canvas canvas, Paint paint) {
 			canvas.drawLines(buffer, 0, bufferIndex, paint);
 			bufferIndex = 0;
 		}
 
-		public void drawArea(Canvas canvas, Paint paint) {
-			closeAreaPath();
-			canvas.drawPath(areaPath, paint);
-			areaPath.reset();
-		}
-
 		public int getStep() {
-			return step;
+			return pixelStep;
 		}
 
 		public void setStep(int step) {
-			this.step = step;
-		}
-
-		public boolean isFilled() {
-			return isFilled;
-		}
-
-		public void setFilled(boolean isFilled) {
-			this.isFilled = isFilled;
-		}
-
-		public RectF getClipRect() {
-			return clipRect;
-		}
-
-		public void setClipRect(Rect clipRect) {
-			this.clipRect.set(clipRect);
-			this.firstClip.set(clipRect.left, clipRect.top);
-			this.lastClip.set(clipRect.right, clipRect.bottom);
-		}
-
-		public void setClipRect(RectF clipRect) {
-			this.clipRect.set(clipRect);
-			this.firstClip.set(clipRect.left, clipRect.top);
-			this.lastClip.set(clipRect.right, clipRect.bottom);
-		}
-
-		public float getBaseline() {
-			return baseline;
-		}
-
-		public void setBaseline(float baseline) {
-			this.baseline = baseline;
+			this.pixelStep = step;
 		}
 
 	}
