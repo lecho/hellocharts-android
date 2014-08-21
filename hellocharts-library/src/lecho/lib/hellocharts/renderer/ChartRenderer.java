@@ -10,7 +10,7 @@ public interface ChartRenderer {
 
 	public void initCurrentViewport();
 
-	public void initDimensions();
+	public void initDataAttributes();
 
 	public void draw(Canvas canvas);
 

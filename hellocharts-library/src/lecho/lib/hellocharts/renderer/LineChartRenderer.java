@@ -6,13 +6,14 @@ import lecho.lib.hellocharts.LineChartDataProvider;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
-import lecho.lib.hellocharts.util.CasteljauComputator;
 import lecho.lib.hellocharts.util.Utils;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PointF;
+import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
@@ -31,7 +32,15 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private Paint linePaint = new Paint();
 	private Paint pointPaint = new Paint();
 	private RectF labelRect = new RectF();
-	private PathCompat pathCompat = new PathCompat();
+	/**
+	 * Not hardware rendered bitmap used to draw Path(smooth lines and filled area). Bitmap has size of contentRect so
+	 * it is usually smaller than the view so you should used relative coordinates to draw on it.
+	 */
+	private Bitmap secondBitmap;
+	/**
+	 * Canvas to draw on secondBitmap.
+	 */
+	private Canvas secondCanvas = new Canvas();
 
 	public LineChartRenderer(Context context, Chart chart, LineChartDataProvider dataProvider) {
 		super(context, chart);
@@ -55,26 +64,37 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	}
 
 	@Override
-	public void initDimensions() {
+	public void initDataAttributes() {
 		chart.getChartCalculator().setInternalMargin(calculateContentAreaMargin());
 		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));
 		labelPaint.getFontMetricsInt(fontMetrics);
+
+		Rect contentRect = chart.getChartCalculator().getContentRect();
+		final int width = contentRect.width();
+		final int height = contentRect.height();
+		if (width > 0 && height > 0) {
+			secondBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+			secondCanvas.setBitmap(secondBitmap);
+		}
 	}
 
 	@Override
 	public void draw(Canvas canvas) {
 		final LineChartData data = dataProvider.getLineChartData();
+		final ChartCalculator calculator = chart.getChartCalculator();
+		final Rect contentRect = calculator.getContentRect();
+		secondCanvas.drawColor(Color.TRANSPARENT, Mode.CLEAR);
 		for (Line line : data.getLines()) {
 			if (line.hasLines()) {
 				if (line.isSmooth()) {
-					drawSmoothPath(canvas, line);
+					drawSmoothPath(secondCanvas, line);
 				} else {
-					drawPath(canvas, line);
+					drawPath(secondCanvas, line);
 				}
 			}
 			linePath.reset();
-			pathCompat.reset();
 		}
+		canvas.drawBitmap(secondBitmap, contentRect.left, contentRect.top, null);
 	}
 
 	@Override
@@ -165,20 +185,17 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
 		linePaint.setColor(line.getColor());
 		for (PointValue pointValue : line.getPoints()) {
-			final float rawX = calculator.calculateRawX(pointValue.getX());
-			final float rawY = calculator.calculateRawY(pointValue.getY());
+			final float rawX = calculator.calculateRelativeRawX(pointValue.getX());
+			final float rawY = calculator.calculateRelativeRawY(pointValue.getY());
 			if (valueIndex == 0) {
-				// linePath.moveTo(rawX, rawY);
-				pathCompat.moveTo(rawX, rawY);
+				linePath.moveTo(rawX, rawY);
 			} else {
-				// linePath.lineTo(rawX, rawY);
-				pathCompat.lineTo(canvas, linePaint, rawX, rawY);
+				linePath.lineTo(rawX, rawY);
 			}
 			++valueIndex;
 		}
 
-		// canvas.drawPath(linePath, linePaint);
-		pathCompat.drawPath(canvas, linePaint);
+		canvas.drawPath(linePath, linePaint);
 		if (line.isFilled()) {
 			drawArea(canvas, line.getAreaTransparency());
 		}
@@ -198,14 +215,14 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		for (int valueIndex = 0; valueIndex < lineSize - 1; ++valueIndex) {
 			if (Float.isNaN(currentPointX)) {
 				PointValue linePoint = line.getPoints().get(valueIndex);
-				currentPointX = calculator.calculateRawX(linePoint.getX());
-				currentPointY = calculator.calculateRawY(linePoint.getY());
+				currentPointX = calculator.calculateRelativeRawX(linePoint.getX());
+				currentPointY = calculator.calculateRelativeRawY(linePoint.getY());
 			}
 			if (Float.isNaN(previousPointX)) {
 				if (valueIndex > 0) {
 					PointValue linePoint = line.getPoints().get(valueIndex - 1);
-					previousPointX = calculator.calculateRawX(linePoint.getX());
-					previousPointY = calculator.calculateRawY(linePoint.getY());
+					previousPointX = calculator.calculateRelativeRawX(linePoint.getX());
+					previousPointY = calculator.calculateRelativeRawY(linePoint.getY());
 				} else {
 					previousPointX = currentPointX;
 					previousPointY = currentPointY;
@@ -213,16 +230,16 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			}
 			if (Float.isNaN(nextPointX)) {
 				PointValue linePoint = line.getPoints().get(valueIndex + 1);
-				nextPointX = calculator.calculateRawX(linePoint.getX());
-				nextPointY = calculator.calculateRawY(linePoint.getY());
+				nextPointX = calculator.calculateRelativeRawX(linePoint.getX());
+				nextPointY = calculator.calculateRelativeRawY(linePoint.getY());
 			}
 			// afterNextPoint is always new one or it is equal nextPoint.
 			final float afterNextPointX;
 			final float afterNextPointY;
 			if (valueIndex < lineSize - 2) {
 				PointValue linePoint = line.getPoints().get(valueIndex + 2);
-				afterNextPointX = calculator.calculateRawX(linePoint.getX());
-				afterNextPointY = calculator.calculateRawY(linePoint.getY());
+				afterNextPointX = calculator.calculateRelativeRawX(linePoint.getX());
+				afterNextPointY = calculator.calculateRelativeRawY(linePoint.getY());
 			} else {
 				afterNextPointX = nextPointX;
 				afterNextPointY = nextPointY;
@@ -238,13 +255,10 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			final float secondControlPointY = nextPointY - (LINE_SMOOTHNES * secondDiffY);
 			// Move to start point.
 			if (valueIndex == 0) {
-				// linePath.moveTo(currentPointX, currentPointY);
-				pathCompat.moveTo(currentPointX, currentPointY);
+				linePath.moveTo(currentPointX, currentPointY);
 			}
-			// linePath.cubicTo(firstControlPointX, firstControlPointY, secondControlPointX, secondControlPointY,
-			// nextPointX, nextPointY);
-			pathCompat.cubicTo(canvas, linePaint, firstControlPointX, firstControlPointY, secondControlPointX,
-					secondControlPointY, nextPointX, nextPointY);
+			linePath.cubicTo(firstControlPointX, firstControlPointY, secondControlPointX, secondControlPointY,
+					nextPointX, nextPointY);
 			// Shift values by one to prevent recalculation of values that have
 			// been already calculated.
 			previousPointX = currentPointX;
@@ -254,8 +268,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			nextPointX = afterNextPointX;
 			nextPointY = afterNextPointY;
 		}
-		// canvas.drawPath(linePath, linePaint);
-		pathCompat.drawPath(canvas, linePaint);
+		canvas.drawPath(linePath, linePaint);
 		if (line.isFilled()) {
 			drawArea(canvas, line.getAreaTransparency());
 		}
@@ -362,151 +375,6 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		float diffX = touchX - x;
 		float diffY = touchY - y;
 		return Math.pow(diffX, 2) + Math.pow(diffY, 2) <= 2 * Math.pow(radius, 2);
-	}
-
-	/**
-	 * PathCompat uses Canvas.drawLines instead Canvas.drawPath. Supports normal lines and cubic Bezier's lines.
-	 * Warning!: doesn't support breaks in line so line has to be continuous and doesn't support area chart.
-	 * 
-	 * @author Leszek Wach
-	 * 
-	 */
-	public class PathCompat {
-		private static final int DEFAULT_BUFFER_SIZE = 1024;
-
-		/**
-		 * Bufer for point coordinates to avoid calling drawLine for every line segment, instead call drawLines.
-		 */
-		private float[] buffer = new float[DEFAULT_BUFFER_SIZE];
-
-		/**
-		 * Number of points in buffer, index where put next line segment coordinate.
-		 */
-		private int bufferIndex = 0;
-
-		/**
-		 * De Casteljau's algorithm implementation to draw cubic Bezier's curves with hardware acceleration without
-		 * using Path. For filling area Path still has to be used but it will be clipped to contentRect.
-		 */
-		private CasteljauComputator casteljauComputator = new CasteljauComputator();
-
-		/**
-		 * Buffer for cubic Bezier's curve points coordinate, four points(start point, end point, two control points),
-		 * two coordinate each.
-		 */
-		private float[] bezierBuffer = new float[8];
-
-		/**
-		 * Computed bezier line point, as private member to avoid allocation.
-		 */
-		private PointF bezierOutPoint = new PointF();
-
-		/**
-		 * Step in pixels for drawing Bezier's curve
-		 */
-		private int pixelStep = 8;
-
-		public void moveTo(float x, float y) {
-			if (bufferIndex != 0) {
-				// Move too only works for starting point.
-				return;
-			}
-			buffer[bufferIndex++] = x;
-			buffer[bufferIndex++] = y;
-		}
-
-		public void lineTo(Canvas canvas, Paint paint, float x, float y) {
-
-			addLineToBuffer(x, y);
-
-			drawLinesIfNeeded(canvas, paint);
-		}
-
-		private void drawLinesIfNeeded(Canvas canvas, Paint paint) {
-			if (bufferIndex == buffer.length) {
-				// Buffer full, draw lines and remember last point as the first point in buffer.
-				canvas.drawLines(buffer, 0, bufferIndex, paint);
-				final float lastX = buffer[bufferIndex - 2];
-				final float lastY = buffer[bufferIndex - 1];
-				bufferIndex = 0;
-				buffer[bufferIndex++] = lastX;
-				buffer[bufferIndex++] = lastY;
-			}
-		}
-
-		private void addLineToBuffer(float x, float y) {
-			if (bufferIndex == 0) {
-				// No moveTo, set starting point to 0,0.
-				buffer[bufferIndex++] = 0;
-				buffer[bufferIndex++] = 0;
-			}
-
-			if (bufferIndex == 2) {
-				// First segment.
-				buffer[bufferIndex++] = x;
-				buffer[bufferIndex++] = y;
-			} else {
-				final float lastX = buffer[bufferIndex - 2];
-				final float lastY = buffer[bufferIndex - 1];
-				buffer[bufferIndex++] = lastX;
-				buffer[bufferIndex++] = lastY;
-				buffer[bufferIndex++] = x;
-				buffer[bufferIndex++] = y;
-			}
-		}
-
-		public void cubicTo(Canvas canvas, Paint paint, float x1, float y1, float x2, float y2, float x3, float y3) {
-			if (bufferIndex == 0) {
-				// No moveTo, set starting point to 0,0.
-				bezierBuffer[0] = 0;
-				bezierBuffer[1] = 0;
-			} else {
-				bezierBuffer[0] = buffer[bufferIndex - 2];
-				bezierBuffer[1] = buffer[bufferIndex - 1];
-			}
-			bezierBuffer[2] = x1;
-			bezierBuffer[3] = y1;
-			bezierBuffer[4] = x2;
-			bezierBuffer[5] = y2;
-			bezierBuffer[6] = x3;
-			bezierBuffer[7] = y3;
-
-			// First subline.
-			addLineToBuffer(bezierBuffer[0], bezierBuffer[1]);
-			drawLinesIfNeeded(canvas, paint);
-
-			final float stepT = 1.0f / ((float) Math.abs((bezierBuffer[0] - x3)) / pixelStep);
-			for (float t = stepT; t < 1.0f; t += stepT) {
-				casteljauComputator.computePoint(t, bezierBuffer, bezierOutPoint);
-				addLineToBuffer(bezierOutPoint.x, bezierOutPoint.y);
-				drawLinesIfNeeded(canvas, paint);
-			}
-
-			// Last subline.
-			addLineToBuffer(x3, y3);
-			drawLinesIfNeeded(canvas, paint);
-		}
-
-		/**
-		 * Resets internal state of PathCompat and prepare it to draw next line.
-		 */
-		public void reset() {
-			bufferIndex = 0;
-		}
-
-		public void drawPath(Canvas canvas, Paint paint) {
-			canvas.drawLines(buffer, 0, bufferIndex, paint);
-			bufferIndex = 0;
-		}
-
-		public int getStep() {
-			return pixelStep;
-		}
-
-		public void setStep(int step) {
-			this.pixelStep = step;
-		}
-
 	}
 
 }

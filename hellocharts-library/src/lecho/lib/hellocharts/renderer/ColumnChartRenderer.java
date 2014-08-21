@@ -49,7 +49,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	}
 
 	@Override
-	public void initDimensions() {
+	public void initDataAttributes() {
 		chart.getChartCalculator().setInternalMargin(labelMargin);// Using label margin because I'm lazy:P
 		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));
 		labelPaint.getFontMetricsInt(fontMetrics);

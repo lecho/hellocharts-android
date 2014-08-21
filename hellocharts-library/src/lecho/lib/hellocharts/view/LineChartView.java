@@ -34,7 +34,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 		super(context, attrs, defStyle);
 		chartRenderer = new LineChartRenderer(context, this, this);
 		setLineChartData(generateDummyData());
-		initAttributes();
+		// initAttributes();
 	}
 
 	@SuppressLint("NewApi")
@@ -53,7 +53,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 		}
 		chartRenderer.initMaxViewport();
 		chartRenderer.initCurrentViewport();
-		chartRenderer.initDimensions();
+		chartRenderer.initDataAttributes();
 		axesRenderer.initAxesAttributes();
 
 		ViewCompat.postInvalidateOnAnimation(LineChartView.this);
