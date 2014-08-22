@@ -5,6 +5,7 @@ import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.model.BubbleChartData;
 import lecho.lib.hellocharts.model.BubbleValue;
+import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -126,6 +127,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		final Rect contentRect = calculator.getContentRect();
 		if (contentRect.height() == 0 || contentRect.width() == 0) {
 			// View probably not yet measured, skip removing margins.
+			return;
 		}
 		final float pxX = calculator.calculateRawDistanceX(maxRadius * bubbleScaleX);
 		final float pxY = calculator.calculateRawDistanceY(maxRadius * bubbleScaleY);
@@ -138,12 +140,17 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		} else {
 			dx = (pxX - pxY) * scaleX * 0.75f;
 		}
-		float left = tempMaxViewport.left + dx;
-		float top = tempMaxViewport.top - dy;
-		float right = tempMaxViewport.right - dx;
-		float bottom = tempMaxViewport.bottom + dy;
-		calculator.setMaxViewport(left, top, right, bottom);
-		calculator.setCurrentViewport(left, top, right, bottom);
+
+		Viewport maxViewport = calculator.getMaximumViewport();
+		maxViewport.inset(dx, dy);
+		Viewport currentViewport = calculator.getCurrentViewport();
+		currentViewport.inset(dx, dy);
+		// float left = tempMaxViewport.left + dx;
+		// float top = tempMaxViewport.top - dy;
+		// float right = tempMaxViewport.right - dx;
+		// float bottom = tempMaxViewport.bottom + dy;
+		calculator.setMaxViewport(maxViewport);
+		calculator.setCurrentViewport(currentViewport);
 	}
 
 	private void drawBubbles(Canvas canvas) {
