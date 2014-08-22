@@ -42,6 +42,9 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	 */
 	private Canvas secondCanvas = new Canvas();
 
+	/**
+	 * Simple Path implementation that uses drawLines() method.
+	 */
 	private PathCompat pathCompat = new PathCompat();
 
 	public LineChartRenderer(Context context, Chart chart, LineChartDataProvider dataProvider) {
@@ -185,9 +188,9 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	 */
 	private void drawPath(Canvas canvas, final Line line) {
 		final ChartCalculator calculator = chart.getChartCalculator();
-		int valueIndex = 0;
 		linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
 		linePaint.setColor(line.getColor());
+		int valueIndex = 0;
 		for (PointValue pointValue : line.getPoints()) {
 			float rawX = calculator.calculateRawX(pointValue.getX());
 			float rawY = calculator.calculateRawY(pointValue.getY());
@@ -198,6 +201,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			}
 
 			if (line.isFilled()) {
+				// For filled line use path.
 				rawX = calculator.calculateRelativeRawX(pointValue.getX());
 				rawY = calculator.calculateRelativeRawY(pointValue.getY());
 				if (valueIndex == 0) {
@@ -225,13 +229,15 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
 		linePaint.setColor(line.getColor());
 		final int lineSize = line.getPoints().size();
+		float prepreviousPointX = Float.NaN;
+		float prepreviousPointY = Float.NaN;
 		float previousPointX = Float.NaN;
 		float previousPointY = Float.NaN;
 		float currentPointX = Float.NaN;
 		float currentPointY = Float.NaN;
 		float nextPointX = Float.NaN;
 		float nextPointY = Float.NaN;
-		for (int valueIndex = 0; valueIndex < lineSize - 1; ++valueIndex) {
+		for (int valueIndex = 0; valueIndex < lineSize; ++valueIndex) {
 			if (Float.isNaN(currentPointX)) {
 				PointValue linePoint = line.getPoints().get(valueIndex);
 				currentPointX = calculator.calculateRelativeRawX(linePoint.getX());
@@ -247,46 +253,56 @@ public class LineChartRenderer extends AbstractChartRenderer {
 					previousPointY = currentPointY;
 				}
 			}
-			if (Float.isNaN(nextPointX)) {
+
+			if (Float.isNaN(prepreviousPointX)) {
+				if (valueIndex > 1) {
+					PointValue linePoint = line.getPoints().get(valueIndex - 2);
+					prepreviousPointX = calculator.calculateRelativeRawX(linePoint.getX());
+					prepreviousPointY = calculator.calculateRelativeRawY(linePoint.getY());
+				} else {
+					prepreviousPointX = previousPointX;
+					prepreviousPointY = previousPointY;
+				}
+			}
+
+			// nextPoint is always new one or it is equal currentPoint.
+			if (valueIndex < lineSize - 1) {
 				PointValue linePoint = line.getPoints().get(valueIndex + 1);
 				nextPointX = calculator.calculateRelativeRawX(linePoint.getX());
 				nextPointY = calculator.calculateRelativeRawY(linePoint.getY());
-			}
-			// afterNextPoint is always new one or it is equal nextPoint.
-			final float afterNextPointX;
-			final float afterNextPointY;
-			if (valueIndex < lineSize - 2) {
-				PointValue linePoint = line.getPoints().get(valueIndex + 2);
-				afterNextPointX = calculator.calculateRelativeRawX(linePoint.getX());
-				afterNextPointY = calculator.calculateRelativeRawY(linePoint.getY());
 			} else {
-				afterNextPointX = nextPointX;
-				afterNextPointY = nextPointY;
+				nextPointX = currentPointX;
+				nextPointY = currentPointY;
 			}
+
 			// Calculate control points.
-			final float firstDiffX = (nextPointX - previousPointX);
-			final float firstDiffY = (nextPointY - previousPointY);
-			final float secondDiffX = (afterNextPointX - currentPointX);
-			final float secondDiffY = (afterNextPointY - currentPointY);
-			final float firstControlPointX = currentPointX + (LINE_SMOOTHNES * firstDiffX);
-			final float firstControlPointY = currentPointY + (LINE_SMOOTHNES * firstDiffY);
-			final float secondControlPointX = nextPointX - (LINE_SMOOTHNES * secondDiffX);
-			final float secondControlPointY = nextPointY - (LINE_SMOOTHNES * secondDiffY);
-			// Move to start point.
+			final float firstDiffX = (currentPointX - prepreviousPointX);
+			final float firstDiffY = (currentPointY - prepreviousPointY);
+			final float secondDiffX = (nextPointX - previousPointX);
+			final float secondDiffY = (nextPointY - previousPointY);
+			final float firstControlPointX = previousPointX + (LINE_SMOOTHNES * firstDiffX);
+			final float firstControlPointY = previousPointY + (LINE_SMOOTHNES * firstDiffY);
+			final float secondControlPointX = currentPointX - (LINE_SMOOTHNES * secondDiffX);
+			final float secondControlPointY = currentPointY - (LINE_SMOOTHNES * secondDiffY);
+
 			if (valueIndex == 0) {
+				// Move to start point.
 				path.moveTo(currentPointX, currentPointY);
+			} else {
+				path.cubicTo(firstControlPointX, firstControlPointY, secondControlPointX, secondControlPointY,
+						currentPointX, currentPointY);
 			}
-			path.cubicTo(firstControlPointX, firstControlPointY, secondControlPointX, secondControlPointY, nextPointX,
-					nextPointY);
-			// Shift values by one to prevent recalculation of values that have
+
+			// Shift values by one back to prevent recalculation of values that have
 			// been already calculated.
+			prepreviousPointX = previousPointX;
+			prepreviousPointY = previousPointY;
 			previousPointX = currentPointX;
 			previousPointY = currentPointY;
 			currentPointX = nextPointX;
 			currentPointY = nextPointY;
-			nextPointX = afterNextPointX;
-			nextPointY = afterNextPointY;
 		}
+
 		secondCanvas.drawPath(path, linePaint);
 		if (line.isFilled()) {
 			drawArea(canvas, line.getAreaTransparency());
@@ -402,12 +418,14 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	 * continuous and doesn't support filled area, dashed lines etc. For complete implementation with Bezier's curves
 	 * see gist {@link https://gist.github.com/lecho/a903e68fe7cccac131d0}
 	 */
-	public static class PathCompat {
-
-		private static final int DEFAULT_BUFFER_SIZE = 32;
+	private static class PathCompat {
+		/**
+		 * Initial buffer size, enough for 64 line segments = 65 points
+		 */
+		private static final int DEFAULT_BUFFER_SIZE = 256;
 
 		/**
-		 * Bufer for point coordinates to avoid calling drawLine for every line segment, instead call drawLines.
+		 * Buffer for point coordinates to avoid calling drawLine for every line segment, instead call drawLines.
 		 */
 		private float[] buffer = new float[DEFAULT_BUFFER_SIZE];
 
