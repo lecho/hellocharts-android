@@ -28,19 +28,21 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private LineChartDataProvider dataProvider;
 
 	private int touchTolleranceMargin;
-	private Path linePath = new Path();
+	private Path path = new Path();
 	private Paint linePaint = new Paint();
 	private Paint pointPaint = new Paint();
 	private RectF labelRect = new RectF();
 	/**
-	 * Not hardware rendered bitmap used to draw Path(smooth lines and filled area). Bitmap has size of contentRect so
-	 * it is usually smaller than the view so you should used relative coordinates to draw on it.
+	 * Not hardware accelerated bitmap used to draw Path(smooth lines and filled area). Bitmap has size of contentRect
+	 * so it is usually smaller than the view so you should used relative coordinates to draw on it.
 	 */
 	private Bitmap secondBitmap;
 	/**
 	 * Canvas to draw on secondBitmap.
 	 */
 	private Canvas secondCanvas = new Canvas();
+
+	private PathCompat pathCompat = new PathCompat();
 
 	public LineChartRenderer(Context context, Chart chart, LineChartDataProvider dataProvider) {
 		super(context, chart);
@@ -87,12 +89,11 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		for (Line line : data.getLines()) {
 			if (line.hasLines()) {
 				if (line.isSmooth()) {
-					drawSmoothPath(secondCanvas, line);
+					drawSmoothPath(canvas, line);
 				} else {
-					drawPath(secondCanvas, line);
+					drawPath(canvas, line);
 				}
 			}
-			linePath.reset();
 		}
 		canvas.drawBitmap(secondBitmap, contentRect.left, contentRect.top, null);
 	}
@@ -179,28 +180,46 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		return Utils.dp2px(density, contentAreaMargin);
 	}
 
+	/**
+	 * Draws lines, uses path for drawing filled area on secondCanvas. Line is drawn with canvas.drawLines() method.
+	 */
 	private void drawPath(Canvas canvas, final Line line) {
 		final ChartCalculator calculator = chart.getChartCalculator();
 		int valueIndex = 0;
 		linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
 		linePaint.setColor(line.getColor());
 		for (PointValue pointValue : line.getPoints()) {
-			final float rawX = calculator.calculateRelativeRawX(pointValue.getX());
-			final float rawY = calculator.calculateRelativeRawY(pointValue.getY());
+			float rawX = calculator.calculateRawX(pointValue.getX());
+			float rawY = calculator.calculateRawY(pointValue.getY());
 			if (valueIndex == 0) {
-				linePath.moveTo(rawX, rawY);
+				pathCompat.moveTo(rawX, rawY);
 			} else {
-				linePath.lineTo(rawX, rawY);
+				pathCompat.lineTo(canvas, linePaint, rawX, rawY);
+			}
+
+			if (line.isFilled()) {
+				rawX = calculator.calculateRelativeRawX(pointValue.getX());
+				rawY = calculator.calculateRelativeRawY(pointValue.getY());
+				if (valueIndex == 0) {
+					path.moveTo(rawX, rawY);
+				} else {
+					path.lineTo(rawX, rawY);
+				}
 			}
 			++valueIndex;
 		}
 
-		canvas.drawPath(linePath, linePaint);
+		pathCompat.drawPath(canvas, linePaint);
 		if (line.isFilled()) {
 			drawArea(canvas, line.getAreaTransparency());
 		}
+		path.reset();
 	}
 
+	/**
+	 * Draws Besier's curve. Uses path so drawing has to be done on secondCanvas to avoid problem with hardware
+	 * acceleration.
+	 */
 	private void drawSmoothPath(Canvas canvas, final Line line) {
 		final ChartCalculator calculator = chart.getChartCalculator();
 		linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
@@ -255,10 +274,10 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			final float secondControlPointY = nextPointY - (LINE_SMOOTHNES * secondDiffY);
 			// Move to start point.
 			if (valueIndex == 0) {
-				linePath.moveTo(currentPointX, currentPointY);
+				path.moveTo(currentPointX, currentPointY);
 			}
-			linePath.cubicTo(firstControlPointX, firstControlPointY, secondControlPointX, secondControlPointY,
-					nextPointX, nextPointY);
+			path.cubicTo(firstControlPointX, firstControlPointY, secondControlPointX, secondControlPointY, nextPointX,
+					nextPointY);
 			// Shift values by one to prevent recalculation of values that have
 			// been already calculated.
 			previousPointX = currentPointX;
@@ -268,10 +287,11 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			nextPointX = afterNextPointX;
 			nextPointY = afterNextPointY;
 		}
-		canvas.drawPath(linePath, linePaint);
+		secondCanvas.drawPath(path, linePaint);
 		if (line.isFilled()) {
 			drawArea(canvas, line.getAreaTransparency());
 		}
+		path.reset();
 	}
 
 	// TODO Drawing points can be done in the same loop as drawing lines but it
@@ -361,13 +381,13 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 	private void drawArea(Canvas canvas, int transparency) {
 		final ChartCalculator calculator = chart.getChartCalculator();
-		linePath.lineTo(calculator.getContentRect().right, calculator.getContentRect().bottom);
-		linePath.lineTo(calculator.getContentRect().left, calculator.getContentRect().bottom);
-		linePath.close();
+		final Rect contentRect = calculator.getContentRect();
+		path.lineTo(contentRect.width(), contentRect.height());
+		path.lineTo(0, contentRect.height());
+		path.close();
 		linePaint.setStyle(Paint.Style.FILL);
 		linePaint.setAlpha(transparency);
-		// canvas.drawPath(linePath, linePaint);
-		// pathCompat.drawAreaPath(canvas, linePaint);
+		secondCanvas.drawPath(path, linePaint);
 		linePaint.setStyle(Paint.Style.STROKE);
 	}
 
@@ -375,6 +395,94 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		float diffX = touchX - x;
 		float diffY = touchY - y;
 		return Math.pow(diffX, 2) + Math.pow(diffY, 2) <= 2 * Math.pow(radius, 2);
+	}
+
+	/**
+	 * PathCompat uses Canvas.drawLines instead Canvas.drawPath. Supports only normal lines. Warning!:line has to be
+	 * continuous and doesn't support filled area, dashed lines etc. For complete implementation with Bezier's curves
+	 * see gist {@link https://gist.github.com/lecho/a903e68fe7cccac131d0}
+	 */
+	public static class PathCompat {
+
+		private static final int DEFAULT_BUFFER_SIZE = 32;
+
+		/**
+		 * Bufer for point coordinates to avoid calling drawLine for every line segment, instead call drawLines.
+		 */
+		private float[] buffer = new float[DEFAULT_BUFFER_SIZE];
+
+		/**
+		 * Number of points in buffer, index where put next line segment coordinate.
+		 */
+		private int bufferIndex = 0;
+
+		public void moveTo(float x, float y) {
+			if (bufferIndex != 0) {
+				// Move too only works for starting point.
+				return;
+			}
+			buffer[bufferIndex++] = x;
+			buffer[bufferIndex++] = y;
+		}
+
+		public void lineTo(Canvas canvas, Paint paint, float x, float y) {
+
+			addLineToBuffer(x, y);
+
+			drawLinesIfNeeded(canvas, paint);
+		}
+
+		private void drawLinesIfNeeded(Canvas canvas, Paint paint) {
+			if (bufferIndex == buffer.length) {
+				// Buffer full, draw lines and remember last point as the first point in buffer.
+				canvas.drawLines(buffer, 0, bufferIndex, paint);
+				final float lastX = buffer[bufferIndex - 2];
+				final float lastY = buffer[bufferIndex - 1];
+				bufferIndex = 0;
+				buffer[bufferIndex++] = lastX;
+				buffer[bufferIndex++] = lastY;
+			}
+		}
+
+		private void addLineToBuffer(float x, float y) {
+			if (bufferIndex == 0) {
+				// No moveTo, set starting point to 0,0.
+				buffer[bufferIndex++] = 0;
+				buffer[bufferIndex++] = 0;
+			}
+
+			if (bufferIndex == 2) {
+				// First segment.
+				buffer[bufferIndex++] = x;
+				buffer[bufferIndex++] = y;
+			} else {
+				final float lastX = buffer[bufferIndex - 2];
+				final float lastY = buffer[bufferIndex - 1];
+				buffer[bufferIndex++] = lastX;
+				buffer[bufferIndex++] = lastY;
+				buffer[bufferIndex++] = x;
+				buffer[bufferIndex++] = y;
+			}
+		}
+
+		/**
+		 * Resets internal state of PathCompat and prepare it to draw next line.
+		 */
+		public void reset() {
+			bufferIndex = 0;
+		}
+
+		/**
+		 * Draw line segment if there is any not drawn before.
+		 * 
+		 */
+		public void drawPath(Canvas canvas, Paint paint) {
+			if (bufferIndex >= 4) {
+				canvas.drawLines(buffer, 0, bufferIndex, paint);
+			}
+			reset();
+		}
+
 	}
 
 }
