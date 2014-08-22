@@ -6,6 +6,7 @@ import java.util.List;
 public class LineChartData extends AbstractChartData {
 
 	private List<Line> lines = new ArrayList<Line>();
+	private float baseValue = Float.NaN;
 
 	public LineChartData() {
 
@@ -25,6 +26,15 @@ public class LineChartData extends AbstractChartData {
 		} else {
 			this.lines = lines;
 		}
+		return this;
+	}
+
+	public float getBaseValue() {
+		return baseValue;
+	}
+
+	public LineChartData setBaseValue(float baseValue) {
+		this.baseValue = baseValue;
 		return this;
 	}
 }

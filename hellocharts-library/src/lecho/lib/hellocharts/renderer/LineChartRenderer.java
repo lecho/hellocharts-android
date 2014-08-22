@@ -398,8 +398,16 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private void drawArea(Canvas canvas, int transparency) {
 		final ChartCalculator calculator = chart.getChartCalculator();
 		final Rect contentRect = calculator.getContentRect();
-		path.lineTo(contentRect.width(), contentRect.height());
-		path.lineTo(0, contentRect.height());
+		float baseRelativeRawValue;
+		final float baseValue = dataProvider.getLineChartData().getBaseValue();
+		if (Float.isNaN(baseValue)) {
+			baseRelativeRawValue = contentRect.height();
+		} else {
+			baseRelativeRawValue = calculator.calculateRelativeRawY(baseValue);
+			baseRelativeRawValue = Math.min(contentRect.height(), Math.max(baseRelativeRawValue, 0));
+		}
+		path.lineTo(contentRect.width(), baseRelativeRawValue);
+		path.lineTo(0, baseRelativeRawValue);
 		path.close();
 		linePaint.setStyle(Paint.Style.FILL);
 		linePaint.setAlpha(transparency);
