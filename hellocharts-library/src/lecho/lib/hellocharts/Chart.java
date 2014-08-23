@@ -16,7 +16,7 @@ public interface Chart {
 
 	public AxesRenderer getAxesRenderer();
 
-	public ChartCalculator getChartCalculator();
+	public ChartComputator getChartComputator();
 
 	public ChartTouchHandler getTouchHandler();
 

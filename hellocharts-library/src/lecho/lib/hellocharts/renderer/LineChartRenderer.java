@@ -1,7 +1,7 @@
 package lecho.lib.hellocharts.renderer;
 
 import lecho.lib.hellocharts.Chart;
-import lecho.lib.hellocharts.ChartCalculator;
+import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.LineChartDataProvider;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
@@ -65,16 +65,16 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	@Override
 	public void initMaxViewport() {
 		calculateMaxViewport();
-		chart.getChartCalculator().setMaxViewport(tempMaxViewport);
+		chart.getChartComputator().setMaxViewport(tempMaxViewport);
 	}
 
 	@Override
 	public void initDataMeasuremetns() {
-		chart.getChartCalculator().setInternalMargin(calculateContentAreaMargin());
+		chart.getChartComputator().setInternalMargin(calculateContentAreaMargin());
 		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));
 		labelPaint.getFontMetricsInt(fontMetrics);
 
-		Rect contentRect = chart.getChartCalculator().getContentRect();
+		Rect contentRect = chart.getChartComputator().getContentRect();
 		final int width = contentRect.width();
 		final int height = contentRect.height();
 		if (width > 0 && height > 0) {
@@ -86,8 +86,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	@Override
 	public void draw(Canvas canvas) {
 		final LineChartData data = dataProvider.getLineChartData();
-		final ChartCalculator calculator = chart.getChartCalculator();
-		final Rect contentRect = calculator.getContentRect();
+		final ChartComputator computator = chart.getChartComputator();
+		final Rect contentRect = computator.getContentRect();
 		secondCanvas.drawColor(Color.TRANSPARENT, Mode.CLEAR);
 		for (Line line : data.getLines()) {
 			if (line.hasLines()) {
@@ -122,14 +122,14 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		oldSelectedValue.set(selectedValue);
 		selectedValue.clear();
 		final LineChartData data = dataProvider.getLineChartData();
-		final ChartCalculator calculator = chart.getChartCalculator();
+		final ChartComputator computator = chart.getChartComputator();
 		int lineIndex = 0;
 		for (Line line : data.getLines()) {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
 			int valueIndex = 0;
 			for (PointValue pointValue : line.getPoints()) {
-				final float rawValueX = calculator.calculateRawX(pointValue.getX());
-				final float rawValueY = calculator.calculateRawY(pointValue.getY());
+				final float rawValueX = computator.computeRawX(pointValue.getX());
+				final float rawValueY = computator.computeRawY(pointValue.getY());
 				if (isInArea(rawValueX, rawValueY, touchX, touchY, pointRadius + touchTolleranceMargin)) {
 					selectedValue.set(lineIndex, valueIndex);
 				}
@@ -187,13 +187,13 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	 * Draws lines, uses path for drawing filled area on secondCanvas. Line is drawn with canvas.drawLines() method.
 	 */
 	private void drawPath(Canvas canvas, final Line line) {
-		final ChartCalculator calculator = chart.getChartCalculator();
+		final ChartComputator computator = chart.getChartComputator();
 		linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
 		linePaint.setColor(line.getColor());
 		int valueIndex = 0;
 		for (PointValue pointValue : line.getPoints()) {
-			float rawX = calculator.calculateRawX(pointValue.getX());
-			float rawY = calculator.calculateRawY(pointValue.getY());
+			float rawX = computator.computeRawX(pointValue.getX());
+			float rawY = computator.computeRawY(pointValue.getY());
 			if (valueIndex == 0) {
 				pathCompat.moveTo(rawX, rawY);
 			} else {
@@ -202,8 +202,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 			if (line.isFilled()) {
 				// For filled line use path.
-				rawX = calculator.calculateRelativeRawX(pointValue.getX());
-				rawY = calculator.calculateRelativeRawY(pointValue.getY());
+				rawX = computator.computeRelativeRawX(pointValue.getX());
+				rawY = computator.computeRelativeRawY(pointValue.getY());
 				if (valueIndex == 0) {
 					path.moveTo(rawX, rawY);
 				} else {
@@ -225,7 +225,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	 * acceleration.
 	 */
 	private void drawSmoothPath(Canvas canvas, final Line line) {
-		final ChartCalculator calculator = chart.getChartCalculator();
+		final ChartComputator computator = chart.getChartComputator();
 		linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
 		linePaint.setColor(line.getColor());
 		final int lineSize = line.getPoints().size();
@@ -240,14 +240,14 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		for (int valueIndex = 0; valueIndex < lineSize; ++valueIndex) {
 			if (Float.isNaN(currentPointX)) {
 				PointValue linePoint = line.getPoints().get(valueIndex);
-				currentPointX = calculator.calculateRelativeRawX(linePoint.getX());
-				currentPointY = calculator.calculateRelativeRawY(linePoint.getY());
+				currentPointX = computator.computeRelativeRawX(linePoint.getX());
+				currentPointY = computator.computeRelativeRawY(linePoint.getY());
 			}
 			if (Float.isNaN(previousPointX)) {
 				if (valueIndex > 0) {
 					PointValue linePoint = line.getPoints().get(valueIndex - 1);
-					previousPointX = calculator.calculateRelativeRawX(linePoint.getX());
-					previousPointY = calculator.calculateRelativeRawY(linePoint.getY());
+					previousPointX = computator.computeRelativeRawX(linePoint.getX());
+					previousPointY = computator.computeRelativeRawY(linePoint.getY());
 				} else {
 					previousPointX = currentPointX;
 					previousPointY = currentPointY;
@@ -257,8 +257,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			if (Float.isNaN(prepreviousPointX)) {
 				if (valueIndex > 1) {
 					PointValue linePoint = line.getPoints().get(valueIndex - 2);
-					prepreviousPointX = calculator.calculateRelativeRawX(linePoint.getX());
-					prepreviousPointY = calculator.calculateRelativeRawY(linePoint.getY());
+					prepreviousPointX = computator.computeRelativeRawX(linePoint.getX());
+					prepreviousPointY = computator.computeRelativeRawY(linePoint.getY());
 				} else {
 					prepreviousPointX = previousPointX;
 					prepreviousPointY = previousPointY;
@@ -268,8 +268,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			// nextPoint is always new one or it is equal currentPoint.
 			if (valueIndex < lineSize - 1) {
 				PointValue linePoint = line.getPoints().get(valueIndex + 1);
-				nextPointX = calculator.calculateRelativeRawX(linePoint.getX());
-				nextPointY = calculator.calculateRelativeRawY(linePoint.getY());
+				nextPointX = computator.computeRelativeRawX(linePoint.getX());
+				nextPointY = computator.computeRelativeRawY(linePoint.getY());
 			} else {
 				nextPointX = currentPointX;
 				nextPointY = currentPointY;
@@ -314,22 +314,22 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	// may cause problems in the future with
 	// implementing point styles.
 	private void drawPoints(Canvas canvas, Line line, int lineIndex, int mode) {
-		final ChartCalculator calculator = chart.getChartCalculator();
+		final ChartComputator computator = chart.getChartComputator();
 		pointPaint.setColor(line.getColor());
 		int valueIndex = 0;
 		for (PointValue pointValue : line.getPoints()) {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
-			final float rawX = calculator.calculateRawX(pointValue.getX());
-			final float rawY = calculator.calculateRawY(pointValue.getY());
-			if (calculator.isWithinContentRect((int) rawX, (int) rawY)) {
+			final float rawX = computator.computeRawX(pointValue.getX());
+			final float rawY = computator.computeRawY(pointValue.getY());
+			if (computator.isWithinContentRect((int) rawX, (int) rawY)) {
 				// Draw points only if they are within contentRect
 				if (MODE_DRAW == mode) {
 					drawPoint(canvas, line, pointValue, rawX, rawY, pointRadius);
 					if (line.hasLabels()) {
-						drawLabel(canvas, calculator, line, pointValue, rawX, rawY, pointRadius + labelOffset);
+						drawLabel(canvas, computator, line, pointValue, rawX, rawY, pointRadius + labelOffset);
 					}
 				} else if (MODE_HIGHLIGHT == mode) {
-					highlightPoint(canvas, calculator, line, pointValue, rawX, rawY, lineIndex, valueIndex);
+					highlightPoint(canvas, computator, line, pointValue, rawX, rawY, lineIndex, valueIndex);
 				} else {
 					throw new IllegalStateException("Cannot process points in mode: " + mode);
 				}
@@ -352,21 +352,21 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		drawPoints(canvas, line, lineIndex, MODE_HIGHLIGHT);
 	}
 
-	private void highlightPoint(Canvas canvas, ChartCalculator calculator, Line line, PointValue pointValue,
+	private void highlightPoint(Canvas canvas, ChartComputator computator, Line line, PointValue pointValue,
 			float rawX, float rawY, int lineIndex, int valueIndex) {
 		if (selectedValue.firstIndex == lineIndex && selectedValue.secondIndex == valueIndex) {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
 			pointPaint.setColor(line.getDarkenColor());
 			drawPoint(canvas, line, pointValue, rawX, rawY, pointRadius + touchTolleranceMargin);
 			if (line.hasLabels() || line.hasLabelsOnlyForSelected()) {
-				drawLabel(canvas, calculator, line, pointValue, rawX, rawY, pointRadius + labelOffset);
+				drawLabel(canvas, computator, line, pointValue, rawX, rawY, pointRadius + labelOffset);
 			}
 		}
 	}
 
-	private void drawLabel(Canvas canvas, ChartCalculator calculator, Line line, PointValue pointValue, float rawX,
+	private void drawLabel(Canvas canvas, ChartComputator computator, Line line, PointValue pointValue, float rawX,
 			float rawY, float offset) {
-		final Rect contentRect = calculator.getContentRect();
+		final Rect contentRect = computator.getContentRect();
 		final int nummChars = line.getFormatter().formatValue(labelBuffer, pointValue.getY());
 		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
@@ -396,14 +396,14 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void drawArea(Canvas canvas, int transparency) {
-		final ChartCalculator calculator = chart.getChartCalculator();
-		final Rect contentRect = calculator.getContentRect();
+		final ChartComputator computator = chart.getChartComputator();
+		final Rect contentRect = computator.getContentRect();
 		float baseRelativeRawValue;
 		final float baseValue = dataProvider.getLineChartData().getBaseValue();
 		if (Float.isNaN(baseValue)) {
 			baseRelativeRawValue = contentRect.height();
 		} else {
-			baseRelativeRawValue = calculator.calculateRelativeRawY(baseValue);
+			baseRelativeRawValue = computator.computeRelativeRawY(baseValue);
 			baseRelativeRawValue = Math.min(contentRect.height(), Math.max(baseRelativeRawValue, 0));
 		}
 		path.lineTo(contentRect.width(), baseRelativeRawValue);

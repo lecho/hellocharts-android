@@ -1,6 +1,6 @@
 package lecho.lib.hellocharts.gesture;
 
-import lecho.lib.hellocharts.ChartCalculator;
+import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.model.Viewport;
 import android.content.Context;
 import android.graphics.PointF;
@@ -22,10 +22,10 @@ public class ChartZoomer {
 		this.zoomType = zoomType;
 	}
 
-	public boolean startZoom(MotionEvent e, ChartCalculator chartCalculator) {
+	public boolean startZoom(MotionEvent e, ChartComputator computator) {
 		zoomer.forceFinished(true);
-		scrollerStartViewport.set(chartCalculator.getCurrentViewport());
-		if (!chartCalculator.rawPixelsToDataPoint(e.getX(), e.getY(), zoomFocalPoint)) {
+		scrollerStartViewport.set(computator.getCurrentViewport());
+		if (!computator.rawPixelsToDataPoint(e.getX(), e.getY(), zoomFocalPoint)) {
 			// Focus point is not within content area.
 			return false;
 		}
@@ -33,15 +33,15 @@ public class ChartZoomer {
 		return true;
 	}
 
-	public boolean startZoom(float x, float y, float zoom, ChartCalculator chartCalculator) {
+	public boolean startZoom(float x, float y, float zoom, ChartComputator computator) {
 		zoomer.forceFinished(true);
-		scrollerStartViewport.set(chartCalculator.getCurrentViewport());
+		scrollerStartViewport.set(computator.getCurrentViewport());
 		zoomFocalPoint.set(x, y);
 		zoomer.startZoom(zoom);
 		return true;
 	}
 
-	public boolean computeZoom(ChartCalculator chartCalculator) {
+	public boolean computeZoom(ChartComputator computator) {
 		if (zoomer.computeZoom()) {
 			// Performs the zoom since a zoom is in progress (either programmatically or via
 			// double-touch).
@@ -56,41 +56,41 @@ public class ChartZoomer {
 			float top = zoomFocalPoint.y + newHeight * (1 - pointWithinViewportY);
 			float right = zoomFocalPoint.x + newWidth * (1 - pointWithinViewportX);
 			float bottom = zoomFocalPoint.y - newHeight * pointWithinViewportY;
-			setCurrentViewport(chartCalculator, left, top, right, bottom);
+			setCurrentViewport(computator, left, top, right, bottom);
 			return true;
 		}
 		return false;
 	}
 
-	public boolean scale(ChartCalculator chartCalculator, float focusX, float focusY, float scale) {
+	public boolean scale(ChartComputator computator, float focusX, float focusY, float scale) {
 		/**
 		 * Smaller viewport means bigger zoom so for zoomIn scale should have value <1, for zoomOout >1
 		 */
-		final float newWidth = scale * chartCalculator.getCurrentViewport().width();
-		final float newHeight = scale * chartCalculator.getCurrentViewport().height();
-		if (!chartCalculator.rawPixelsToDataPoint(focusX, focusY, viewportFocus)) {
+		final float newWidth = scale * computator.getCurrentViewport().width();
+		final float newHeight = scale * computator.getCurrentViewport().height();
+		if (!computator.rawPixelsToDataPoint(focusX, focusY, viewportFocus)) {
 			// Focus point is not within content area.
 			return false;
 		}
 
-		float left = viewportFocus.x - (focusX - chartCalculator.getContentRect().left)
-				* (newWidth / chartCalculator.getContentRect().width());
-		float top = viewportFocus.y + (focusY - chartCalculator.getContentRect().top)
-				* (newHeight / chartCalculator.getContentRect().height());
+		float left = viewportFocus.x - (focusX - computator.getContentRect().left)
+				* (newWidth / computator.getContentRect().width());
+		float top = viewportFocus.y + (focusY - computator.getContentRect().top)
+				* (newHeight / computator.getContentRect().height());
 		float right = left + newWidth;
 		float bottom = top - newHeight;
-		setCurrentViewport(chartCalculator, left, top, right, bottom);
+		setCurrentViewport(computator, left, top, right, bottom);
 		return true;
 	}
 
-	private void setCurrentViewport(ChartCalculator chartCalculator, float left, float top, float right, float bottom) {
-		Viewport currentViewport = chartCalculator.getCurrentViewport();
+	private void setCurrentViewport(ChartComputator computator, float left, float top, float right, float bottom) {
+		Viewport currentViewport = computator.getCurrentViewport();
 		if (zoomType == ZOOM_HORIZONTAL_AND_VERTICAL) {
-			chartCalculator.setCurrentViewport(left, top, right, bottom);
+			computator.setCurrentViewport(left, top, right, bottom);
 		} else if (zoomType == ZOOM_HORIZONTAL) {
-			chartCalculator.setCurrentViewport(left, currentViewport.top, right, currentViewport.bottom);
+			computator.setCurrentViewport(left, currentViewport.top, right, currentViewport.bottom);
 		} else if (zoomType == ZOOM_VERTICAL) {
-			chartCalculator.setCurrentViewport(currentViewport.left, top, currentViewport.right, bottom);
+			computator.setCurrentViewport(currentViewport.left, top, currentViewport.right, bottom);
 		}
 	}
 

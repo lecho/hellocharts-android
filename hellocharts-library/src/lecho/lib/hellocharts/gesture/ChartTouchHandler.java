@@ -1,7 +1,7 @@
 package lecho.lib.hellocharts.gesture;
 
 import lecho.lib.hellocharts.Chart;
-import lecho.lib.hellocharts.ChartCalculator;
+import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
 import android.content.Context;
 import android.view.GestureDetector;
@@ -39,12 +39,12 @@ public class ChartTouchHandler {
 		if (!isInteractive) {
 			return false;
 		}
-		final ChartCalculator chartCalculator = chart.getChartCalculator();
+		final ChartComputator computator = chart.getChartComputator();
 		boolean needInvalidate = false;
-		if (isZoomEnabled && chartScroller.computeScrollOffset(chartCalculator)) {
+		if (isZoomEnabled && chartScroller.computeScrollOffset(computator)) {
 			needInvalidate = true;
 		}
-		if (isZoomEnabled && chartZoomer.computeZoom(chartCalculator)) {
+		if (isZoomEnabled && chartZoomer.computeZoom(computator)) {
 			needInvalidate = true;
 		}
 		return needInvalidate;
@@ -148,7 +148,7 @@ public class ChartTouchHandler {
 	}
 
 	public void startZoom(float x, float y, float zoom) {
-		chartZoomer.startZoom(x, y, zoom, chart.getChartCalculator());
+		chartZoomer.startZoom(x, y, zoom, chart.getChartComputator());
 
 	}
 
@@ -160,29 +160,29 @@ public class ChartTouchHandler {
 			if (Float.isInfinite(scale)) {
 				scale = 1;
 			}
-			return chartZoomer.scale(chart.getChartCalculator(), detector.getFocusX(), detector.getFocusY(), scale);
+			return chartZoomer.scale(chart.getChartComputator(), detector.getFocusX(), detector.getFocusY(), scale);
 		}
 	}
 
 	private class ChartGestureListener extends GestureDetector.SimpleOnGestureListener {
 		@Override
 		public boolean onDown(MotionEvent e) {
-			return chartScroller.startScroll(chart.getChartCalculator());
+			return chartScroller.startScroll(chart.getChartComputator());
 		}
 
 		@Override
 		public boolean onDoubleTap(MotionEvent e) {
-			return chartZoomer.startZoom(e, chart.getChartCalculator());
+			return chartZoomer.startZoom(e, chart.getChartComputator());
 		}
 
 		@Override
 		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-			return chartScroller.scroll(distanceX, distanceY, chart.getChartCalculator());
+			return chartScroller.scroll(distanceX, distanceY, chart.getChartComputator());
 		}
 
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-			return chartScroller.fling((int) -velocityX, (int) -velocityY, chart.getChartCalculator());
+			return chartScroller.fling((int) -velocityX, (int) -velocityY, chart.getChartComputator());
 		}
 	}
 

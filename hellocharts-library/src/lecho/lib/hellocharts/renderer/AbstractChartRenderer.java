@@ -1,7 +1,7 @@
 package lecho.lib.hellocharts.renderer;
 
 import lecho.lib.hellocharts.Chart;
-import lecho.lib.hellocharts.ChartCalculator;
+import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.Utils;
@@ -45,8 +45,8 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 	}
 
 	public void initCurrentViewport() {
-		ChartCalculator chartCalculator = chart.getChartCalculator();
-		chartCalculator.setCurrentViewport(chartCalculator.getMaximumViewport());
+		ChartComputator computator = chart.getChartComputator();
+		computator.setCurrentViewport(computator.getMaximumViewport());
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 			initMaxViewport();
 		} else {
 			this.tempMaxViewport.set(maxViewport);
-			chart.getChartCalculator().setMaxViewport(maxViewport);
+			chart.getChartComputator().setMaxViewport(maxViewport);
 		}
 	}
 
@@ -86,13 +86,13 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 		if (null == viewport) {
 			initCurrentViewport();
 		} else {
-			chart.getChartCalculator().setCurrentViewport(viewport);
+			chart.getChartComputator().setCurrentViewport(viewport);
 		}
 	}
 
 	@Override
 	public Viewport getViewport() {
-		return chart.getChartCalculator().getCurrentViewport();
+		return chart.getChartComputator().getCurrentViewport();
 	}
 
 	@Override

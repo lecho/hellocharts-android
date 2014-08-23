@@ -1,7 +1,7 @@
 package lecho.lib.hellocharts.renderer;
 
 import lecho.lib.hellocharts.Chart;
-import lecho.lib.hellocharts.ChartCalculator;
+import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.ColumnChartDataProvider;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.Utils;
@@ -27,12 +27,12 @@ public class PreviewColumnChartRenderer extends ColumnChartRenderer {
 	@Override
 	public void drawUnclipped(Canvas canvas) {
 		super.drawUnclipped(canvas);
-		final ChartCalculator chartCalculator = chart.getChartCalculator();
-		final Viewport currentViewport = chartCalculator.getCurrentViewport();
-		final float left = chartCalculator.calculateRawX(currentViewport.left);
-		final float top = chartCalculator.calculateRawY(currentViewport.top);
-		final float right = chartCalculator.calculateRawX(currentViewport.right);
-		final float bottom = chartCalculator.calculateRawY(currentViewport.bottom);
+		final ChartComputator computator = chart.getChartComputator();
+		final Viewport currentViewport = computator.getCurrentViewport();
+		final float left = computator.computeRawX(currentViewport.left);
+		final float top = computator.computeRawY(currentViewport.top);
+		final float right = computator.computeRawX(currentViewport.right);
+		final float bottom = computator.computeRawY(currentViewport.bottom);
 		previewPaint.setAlpha(DEFAULT_PREVIEW_TRANSPARENCY);
 		previewPaint.setStyle(Paint.Style.FILL);
 		canvas.drawRect(left, top, right, bottom, previewPaint);

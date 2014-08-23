@@ -2,7 +2,7 @@ package lecho.lib.hellocharts.renderer;
 
 import lecho.lib.hellocharts.BubbleChartDataProvider;
 import lecho.lib.hellocharts.Chart;
-import lecho.lib.hellocharts.ChartCalculator;
+import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.model.BubbleChartData;
 import lecho.lib.hellocharts.model.BubbleValue;
 import lecho.lib.hellocharts.model.Viewport;
@@ -34,8 +34,8 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	private float bubbleScaleY;
 	/**
 	 * True if bubbleScale = bubbleScaleX so the renderer should used
-	 * {@link ChartCalculator#calculateRawDistanceX(float)}, if false bubbleScale = bubbleScaleY and renderer should use
-	 * {@link ChartCalculator#calculateRawDistanceY(float)}.
+	 * {@link ChartComputator#computeRawDistanceX(float)}, if false bubbleScale = bubbleScaleY and renderer should use
+	 * {@link ChartComputator#calculateRawDistanceY(float)}.
 	 */
 	private boolean isBubbleScaledByX = true;
 	/**
@@ -60,13 +60,13 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	@Override
 	public void initMaxViewport() {
 		calculateMaxViewport();
-		chart.getChartCalculator().setMaxViewport(tempMaxViewport);
+		chart.getChartComputator().setMaxViewport(tempMaxViewport);
 	}
 
 	@Override
 	public void initDataMeasuremetns() {
-		chart.getChartCalculator().setInternalMargin(calculateContentAreaMargin());
-		Rect contentRect = chart.getChartCalculator().getContentRect();
+		chart.getChartComputator().setInternalMargin(calculateContentAreaMargin());
+		Rect contentRect = chart.getChartComputator().getContentRect();
 		if (contentRect.width() < contentRect.height()) {
 			isBubbleScaledByX = true;
 		} else {
@@ -93,10 +93,10 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		oldSelectedValue.set(selectedValue);
 		selectedValue.clear();
 		final BubbleChartData data = dataProvider.getBubbleChartData();
-		final ChartCalculator calculator = chart.getChartCalculator();
+		final ChartComputator computator = chart.getChartComputator();
 		int valueIndex = 0;
 		for (BubbleValue bubbleValue : data.getValues()) {
-			float rawRadius = processBubble(calculator, data, bubbleValue, bubbleCenter);
+			float rawRadius = processBubble(computator, data, bubbleValue, bubbleCenter);
 
 			final float diffX = touchX - bubbleCenter.x;
 			final float diffY = touchY - bubbleCenter.y;
@@ -123,14 +123,14 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	 * 
 	 */
 	public void removeMargins() {
-		final ChartCalculator calculator = chart.getChartCalculator();
-		final Rect contentRect = calculator.getContentRect();
+		final ChartComputator computator = chart.getChartComputator();
+		final Rect contentRect = computator.getContentRect();
 		if (contentRect.height() == 0 || contentRect.width() == 0) {
 			// View probably not yet measured, skip removing margins.
 			return;
 		}
-		final float pxX = calculator.calculateRawDistanceX(maxRadius * bubbleScaleX);
-		final float pxY = calculator.calculateRawDistanceY(maxRadius * bubbleScaleY);
+		final float pxX = computator.computeRawDistanceX(maxRadius * bubbleScaleX);
+		final float pxY = computator.calculateRawDistanceY(maxRadius * bubbleScaleY);
 		final float scaleX = tempMaxViewport.width() / contentRect.width();
 		final float scaleY = tempMaxViewport.height() / contentRect.height();
 		float dx = 0;
@@ -141,16 +141,16 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 			dx = (pxX - pxY) * scaleX * 0.75f;
 		}
 
-		Viewport maxViewport = calculator.getMaximumViewport();
+		Viewport maxViewport = computator.getMaximumViewport();
 		maxViewport.inset(dx, dy);
-		Viewport currentViewport = calculator.getCurrentViewport();
+		Viewport currentViewport = computator.getCurrentViewport();
 		currentViewport.inset(dx, dy);
 		// float left = tempMaxViewport.left + dx;
 		// float top = tempMaxViewport.top - dy;
 		// float right = tempMaxViewport.right - dx;
 		// float bottom = tempMaxViewport.bottom + dy;
-		calculator.setMaxViewport(maxViewport);
-		calculator.setCurrentViewport(currentViewport);
+		computator.setMaxViewport(maxViewport);
+		computator.setCurrentViewport(currentViewport);
 	}
 
 	private void drawBubbles(Canvas canvas) {
@@ -161,14 +161,14 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void drawBubble(Canvas canvas, BubbleChartData data, BubbleValue bubbleValue) {
-		final ChartCalculator calculator = chart.getChartCalculator();
-		float rawRadius = processBubble(calculator, data, bubbleValue, bubbleCenter);
+		final ChartComputator computator = chart.getChartComputator();
+		float rawRadius = processBubble(computator, data, bubbleValue, bubbleCenter);
 
 		bubblePaint.setColor(bubbleValue.getColor());
 		rawRadius -= touchAdditional;
 		canvas.drawCircle(bubbleCenter.x, bubbleCenter.y, rawRadius, bubblePaint);
 		if (data.hasLabels()) {
-			drawLabel(canvas, calculator, data, bubbleValue, bubbleCenter.x, bubbleCenter.y);
+			drawLabel(canvas, computator, data, bubbleValue, bubbleCenter.x, bubbleCenter.y);
 		}
 	}
 
@@ -179,13 +179,13 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void highlightBubble(Canvas canvas, BubbleChartData data, BubbleValue bubbleValue) {
-		final ChartCalculator calculator = chart.getChartCalculator();
-		float rawRadius = processBubble(calculator, data, bubbleValue, bubbleCenter);
+		final ChartComputator computator = chart.getChartComputator();
+		float rawRadius = processBubble(computator, data, bubbleValue, bubbleCenter);
 
 		bubblePaint.setColor(bubbleValue.getDarkenColor());
 		canvas.drawCircle(bubbleCenter.x, bubbleCenter.y, rawRadius, bubblePaint);
 		if (data.hasLabels() || data.hasLabelsOnlyForSelected()) {
-			drawLabel(canvas, calculator, data, bubbleValue, bubbleCenter.x, bubbleCenter.y);
+			drawLabel(canvas, computator, data, bubbleValue, bubbleCenter.x, bubbleCenter.y);
 		}
 	}
 
@@ -193,23 +193,23 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	 * Calculate bubble radius and center x and y coordinates. Center x and x will be stored in point parameter, radius
 	 * will be returned as float value.
 	 * 
-	 * @param calculator
+	 * @param computator
 	 * @param data
 	 * @param bubbleValue
 	 * @param point
 	 * @return
 	 */
-	private float processBubble(ChartCalculator calculator, BubbleChartData data, BubbleValue bubbleValue, PointF point) {
-		final float rawX = calculator.calculateRawX(bubbleValue.getX());
-		final float rawY = calculator.calculateRawY(bubbleValue.getY());
+	private float processBubble(ChartComputator computator, BubbleChartData data, BubbleValue bubbleValue, PointF point) {
+		final float rawX = computator.computeRawX(bubbleValue.getX());
+		final float rawY = computator.computeRawY(bubbleValue.getY());
 		float radius = (float) Math.sqrt(bubbleValue.getZ() / Math.PI);
 		float rawRadius;
 		if (isBubbleScaledByX) {
 			radius *= bubbleScaleX;
-			rawRadius = calculator.calculateRawDistanceX(radius);
+			rawRadius = computator.computeRawDistanceX(radius);
 		} else {
 			radius *= bubbleScaleY;
-			rawRadius = calculator.calculateRawDistanceY(radius);
+			rawRadius = computator.calculateRawDistanceY(radius);
 		}
 
 		if (rawRadius < data.getMinBubbleRadius()) {
@@ -220,9 +220,9 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		return rawRadius;
 	}
 
-	private void drawLabel(Canvas canvas, ChartCalculator calculator, BubbleChartData data, BubbleValue bubbleValue,
+	private void drawLabel(Canvas canvas, ChartComputator computator, BubbleChartData data, BubbleValue bubbleValue,
 			float rawX, float rawY) {
-		final Rect contentRect = calculator.getContentRect();
+		final Rect contentRect = computator.getContentRect();
 		final int nummChars = data.getFormatter().formatValue(labelBuffer, bubbleValue.getZ());
 		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
 		final int labelHeight = Math.abs(fontMetrics.ascent);

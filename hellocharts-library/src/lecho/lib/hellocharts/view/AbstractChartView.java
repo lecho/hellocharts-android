@@ -1,7 +1,7 @@
 package lecho.lib.hellocharts.view;
 
 import lecho.lib.hellocharts.Chart;
-import lecho.lib.hellocharts.ChartCalculator;
+import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.ViewportChangeListener;
 import lecho.lib.hellocharts.animation.ChartAnimationListener;
 import lecho.lib.hellocharts.animation.ChartDataAnimator;
@@ -26,7 +26,7 @@ import android.view.View;
 
 public abstract class AbstractChartView extends View implements Chart {
 	private static final String TAG = "AbstractChartView";
-	protected ChartCalculator chartCalculator;
+	protected ChartComputator chartComputator;
 	protected AxesRenderer axesRenderer;
 	protected ChartTouchHandler touchHandler;
 	protected ChartRenderer chartRenderer;
@@ -43,7 +43,7 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	public AbstractChartView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-		chartCalculator = new ChartCalculator();
+		chartComputator = new ChartComputator();
 		axesRenderer = new AxesRenderer(context, this);
 		touchHandler = new ChartTouchHandler(context, this);
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -58,8 +58,8 @@ public abstract class AbstractChartView extends View implements Chart {
 	@Override
 	protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
-		chartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
-				getPaddingRight(), getPaddingBottom());
+		chartComputator.setContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(), getPaddingRight(),
+				getPaddingBottom());
 		axesRenderer.initAxesMeasurements();
 		chartRenderer.initDataMeasuremetns();
 	}
@@ -70,7 +70,7 @@ public abstract class AbstractChartView extends View implements Chart {
 		super.onDraw(canvas);
 		axesRenderer.draw(canvas);
 		int clipRestoreCount = canvas.save();
-		canvas.clipRect(chartCalculator.getContentRect());
+		canvas.clipRect(chartComputator.getContentRect());
 		chartRenderer.draw(canvas);
 		canvas.restoreToCount(clipRestoreCount);
 		chartRenderer.drawUnclipped(canvas);
@@ -112,7 +112,7 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	@Override
 	public void setViewportChangeListener(ViewportChangeListener viewportChangeListener) {
-		chartCalculator.setViewportChangeListener(viewportChangeListener);
+		chartComputator.setViewportChangeListener(viewportChangeListener);
 	}
 
 	public ChartRenderer getChartRenderer() {
@@ -123,8 +123,8 @@ public abstract class AbstractChartView extends View implements Chart {
 		return axesRenderer;
 	}
 
-	public ChartCalculator getChartCalculator() {
-		return chartCalculator;
+	public ChartComputator getChartComputator() {
+		return chartComputator;
 	}
 
 	public ChartTouchHandler getTouchHandler() {
@@ -202,7 +202,7 @@ public abstract class AbstractChartView extends View implements Chart {
 	 */
 	@Override
 	public void zoom(float x, float y, float zoomAmout) {
-		if (chartCalculator.getVisibleViewport().contains(x, y)) {
+		if (chartComputator.getVisibleViewport().contains(x, y)) {
 			touchHandler.startZoom(x, y, zoomAmout);
 			ViewCompat.postInvalidateOnAnimation(this);
 		}

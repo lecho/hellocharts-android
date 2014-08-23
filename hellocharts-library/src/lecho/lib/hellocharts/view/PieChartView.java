@@ -66,7 +66,7 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 			this.data = data;
 		}
 		// TODO calculateContentArea is not needed here.
-		chartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
+		chartComputator.setContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
 		chartRenderer.initMaxViewport();
 		chartRenderer.initCurrentViewport();

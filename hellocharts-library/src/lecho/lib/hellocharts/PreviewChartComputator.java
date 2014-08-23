@@ -2,14 +2,14 @@ package lecho.lib.hellocharts;
 
 import lecho.lib.hellocharts.model.Viewport;
 
-public class PreviewChartCalculator extends ChartCalculator {
+public class PreviewChartComputator extends ChartComputator {
 
-	public float calculateRawX(float valueX) {
+	public float computeRawX(float valueX) {
 		final float pixelOffset = (valueX - maxViewport.left) * (contentRect.width() / maxViewport.width());
 		return contentRect.left + pixelOffset;
 	}
 
-	public float calculateRawY(float valueY) {
+	public float computeRawY(float valueY) {
 		final float pixelOffset = (valueY - maxViewport.bottom) * (contentRect.height() / maxViewport.height());
 		return contentRect.bottom - pixelOffset;
 	}

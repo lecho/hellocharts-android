@@ -26,29 +26,29 @@ public class PreviewChartTouchHandler extends ChartTouchHandler {
 			if (Float.isInfinite(scale)) {
 				scale = 1;
 			}
-			return chartZoomer.scale(chart.getChartCalculator(), detector.getFocusX(), detector.getFocusY(), scale);
+			return chartZoomer.scale(chart.getChartComputator(), detector.getFocusX(), detector.getFocusY(), scale);
 		}
 	}
 
 	private class ChartGestureListener extends GestureDetector.SimpleOnGestureListener {
 		@Override
 		public boolean onDown(MotionEvent e) {
-			return chartScroller.startScroll(chart.getChartCalculator());
+			return chartScroller.startScroll(chart.getChartComputator());
 		}
 
 		@Override
 		public boolean onDoubleTap(MotionEvent e) {
-			return chartZoomer.startZoom(e, chart.getChartCalculator());
+			return chartZoomer.startZoom(e, chart.getChartComputator());
 		}
 
 		@Override
 		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-			return chartScroller.scroll(-distanceX, -distanceY, chart.getChartCalculator());
+			return chartScroller.scroll(-distanceX, -distanceY, chart.getChartComputator());
 		}
 
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-			return chartScroller.fling((int) velocityX, (int) velocityY, chart.getChartCalculator());
+			return chartScroller.fling((int) velocityX, (int) velocityY, chart.getChartComputator());
 		}
 	}
 

@@ -5,13 +5,22 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 
-public class ChartCalculator {
+/**
+ * Computes raw points coordinates(in pixels), holds content area dimensions and chart viewport.
+ * 
+ */
+public class ChartComputator {
+	/**
+	 * Maximum chart zoom.
+	 */
 	protected static final float MAXIMUM_SCALE = 10f;
+
 	/**
 	 * The current area (in pixels) for chart data, including mCoomonMargin. Labels are drawn outside this area.
 	 */
 	protected Rect contentRect = new Rect();
 	protected Rect contentRectWithMargins = new Rect();
+
 	/**
 	 * This rectangle represents the currently visible chart values ranges. The currently visible chart X values are
 	 * from this rectangle's left to its right. The currently visible chart Y values are from this rectangle's top to
@@ -25,15 +34,15 @@ public class ChartCalculator {
 	protected float minViewportHeight;
 
 	/**
-	 * Warning! Viewport listener is disabled for all charts beside preview charts to avoid addidtional method calls
+	 * Warning! Viewport listener is disabled for all charts beside preview charts to avoid additional method calls
 	 * during animations.
 	 */
 	protected ViewportChangeListener viewportChangeListener = new DummyVieportChangeListener();
 
 	/**
-	 * Calculates available width and height. Should be called when chart dimensions or chart data change.
+	 * Calculates available width and height. Should be called when chart dimensions change.
 	 */
-	public void calculateContentArea(int width, int height, int paddingLeft, int paddingTop, int paddingRight,
+	public void setContentArea(int width, int height, int paddingLeft, int paddingTop, int paddingRight,
 			int paddingBottom) {
 		contentRectWithMargins.set(paddingLeft, paddingTop, width - paddingRight, height - paddingBottom);
 		contentRect.set(contentRectWithMargins);
@@ -60,6 +69,9 @@ public class ChartCalculator {
 		contentRect.bottom = contentRect.bottom - axisXMarginBottom;
 	}
 
+	/**
+	 * Checks if new viewport dimensions doesn't exceed max available viewport.
+	 */
 	public void constrainViewport(float left, float top, float right, float bottom) {
 		if (right - left < minViewportWidth) {
 			// Minimum width - constrain horizontal zoom!
@@ -107,32 +119,54 @@ public class ChartCalculator {
 		constrainViewport(left, top, left + curWidth, top - curHeight);
 	}
 
-	public float calculateRawX(float valueX) {
+	/**
+	 * Translates chart value into raw pixel value. Returned value is absolute pixel X coordinate. If this method return
+	 * 0 that means left most pixel of the screen.
+	 */
+	public float computeRawX(float valueX) {
 		// TODO: (contentRect.width() / currentViewport.width()) can be recalculated only when viewport change.
 		final float pixelOffset = (valueX - currentViewport.left) * (contentRect.width() / currentViewport.width());
 		return contentRect.left + pixelOffset;
 	}
 
-	public float calculateRawY(float valueY) {
+	/**
+	 * Translates chart value into raw pixel value. Returned value is absolute pixel Y coordinate. If this method return
+	 * 0 that means top most pixel of the screen.
+	 */
+	public float computeRawY(float valueY) {
 		final float pixelOffset = (valueY - currentViewport.bottom) * (contentRect.height() / currentViewport.height());
 		return contentRect.bottom - pixelOffset;
 	}
 
-	public float calculateRelativeRawX(float valueX) {
+	/**
+	 * Translates chart value into relative pixel value. Returned value is relative pixel X coordinate. If this method
+	 * return 0 that means left most pixel of chart(not the screen).
+	 */
+	public float computeRelativeRawX(float valueX) {
 		// TODO: (contentRect.width() / currentViewport.width()) can be recalculated only when viewport change.
 		final float pixelOffset = (valueX - currentViewport.left) * (contentRect.width() / currentViewport.width());
 		return pixelOffset;
 	}
 
-	public float calculateRelativeRawY(float valueY) {
+	/**
+	 * Translates chart value into relative pixel value. Returned value is relative pixel Y coordinate.If this method
+	 * return 0 that means top most pixel of chart(not the screen).
+	 */
+	public float computeRelativeRawY(float valueY) {
 		final float pixelOffset = (valueY - currentViewport.bottom) * (contentRect.height() / currentViewport.height());
 		return contentRect.height() - pixelOffset;
 	}
 
-	public float calculateRawDistanceX(float distance) {
+	/**
+	 * Translates viewport distance int pixel distance for X coordinates.
+	 */
+	public float computeRawDistanceX(float distance) {
 		return distance * (contentRect.width() / currentViewport.width());
 	}
 
+	/**
+	 * Translates viewport distance int pixel distance for X coordinates.
+	 */
 	public float calculateRawDistanceY(float distance) {
 		return distance * (contentRect.height() / currentViewport.height());
 	}
@@ -162,6 +196,9 @@ public class ChartCalculator {
 				(int) (maxViewport.height() * contentRect.height() / currentViewport.height()));
 	}
 
+	/**
+	 * Check if given coordinates lies inside contentRect.
+	 */
 	public boolean isWithinContentRect(int x, int y) {
 		if (x >= contentRect.left && x <= contentRect.right) {
 			if (y <= contentRect.bottom && y >= contentRect.top) {
