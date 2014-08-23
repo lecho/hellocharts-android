@@ -4,10 +4,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Partial copy of android.graphics.RectF. Viewport holds four float coordinates for a viewport rectangle. The rectangle
- * is represented by the coordinates of its 4 edges (left, top, right bottom). These fields can be accessed directly.
- * Use width() and height() to retrieve the rectangle's width and height. Note: most methods do not check to see that
- * the coordinates are sorted correctly (i.e. left <= right and bottom <= top).
+ * Partial copy of android.graphics.RectF but top should be greater then bottom. Viewport holds four float coordinates
+ * for a viewport rectangle. The rectangle is represented by the coordinates of its 4 edges (left, top, right bottom).
+ * These fields can be accessed directly. Use width() and height() to retrieve the rectangle's width and height. Note:
+ * most methods do not check to see that the coordinates are sorted correctly (i.e. left <= right and bottom <= top).
  * 
  * Viewport implements Parcerable.
  */

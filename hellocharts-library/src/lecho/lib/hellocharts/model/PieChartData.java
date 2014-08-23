@@ -5,9 +5,6 @@ import java.util.List;
 
 /**
  * Data for PieChart, by default it doesn't have axes.
- * 
- * @author Leszek Wach
- * 
  */
 public class PieChartData extends AbstractChartData {
 	private ValueFormatter formatter = new NumberValueFormatter();

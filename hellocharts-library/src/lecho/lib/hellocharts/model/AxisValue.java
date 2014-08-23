@@ -1,5 +1,8 @@
 package lecho.lib.hellocharts.model;
 
+/**
+ * Single axis value, Use it to manually set axis labels position. Warning! valueName is not used for now.
+ */
 public class AxisValue {
 	private float value;
 	private String valueName;

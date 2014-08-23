@@ -3,6 +3,10 @@ package lecho.lib.hellocharts.model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Single column for ColumnChart. One column can be divided into multiple sub-columns(ColumnValues) especially for
+ * stacked ColumnChart.
+ */
 public class Column {
 	private boolean hasLabels = false;
 	private boolean hasLabelsOnlyForSelected = false;

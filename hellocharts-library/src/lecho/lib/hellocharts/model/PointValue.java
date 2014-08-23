@@ -1,6 +1,8 @@
 package lecho.lib.hellocharts.model;
 
-
+/**
+ * Single point coordinates.
+ */
 public class PointValue {
 
 	private float x;

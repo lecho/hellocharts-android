@@ -40,8 +40,8 @@ public abstract class Utils {
 				.getDisplayMetrics()) + 0.5f);
 	}
 
-	// TODO: that's not threat safe, should it be?
 	public static int darkenColor(int color) {
+		// TODO: that's not threat safe, should it be?
 		int alpha = Color.alpha(color);
 		Color.colorToHSV(color, hsv);
 		hsv[1] = Math.min(hsv[1] * SATURATION_DARKEN, 1.0f);
@@ -148,7 +148,7 @@ public abstract class Utils {
 	 * 
 	 * @return number of characters of formatted value
 	 */
-	public static int formatFloat(final char[] formattedValue, float value, int endIndex, int digits) {
+	public static int formatFloat(final char[] formattedValue, float value, int endIndex, int digits, char separator) {
 		if (digits >= POW10.length) {
 			formattedValue[endIndex - 1] = '.';
 			return 1;
@@ -175,7 +175,7 @@ public abstract class Utils {
 			formattedValue[index--] = (char) (digit + '0');
 			charCount++;
 			if (charCount == digits) {
-				formattedValue[index--] = '.';
+				formattedValue[index--] = separator;
 				charCount++;
 			}
 		}
