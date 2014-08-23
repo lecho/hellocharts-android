@@ -10,6 +10,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+/**
+ * Renderer for preview chart based on ColumnChart. In addition to drawing chart data it also draw current viewport as
+ * preview area.
+ */
 public class PreviewColumnChartRenderer extends ColumnChartRenderer {
 	private static final int DEFAULT_PREVIEW_TRANSPARENCY = 64;
 	private static final int FULL_ALPHA = 255;

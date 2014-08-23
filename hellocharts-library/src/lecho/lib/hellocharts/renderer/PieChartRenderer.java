@@ -5,7 +5,6 @@ import lecho.lib.hellocharts.PieChartDataProvider;
 import lecho.lib.hellocharts.model.ArcValue;
 import lecho.lib.hellocharts.model.PieChartData;
 import lecho.lib.hellocharts.util.Utils;
-import lecho.lib.hellocharts.view.PieChartView;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -15,12 +14,8 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 
 /**
- * Default renderer for PieChart.
- * 
- * @see PieChartView
- * 
- * @author Leszek Wach
- * 
+ * Default renderer for PieChart. PieChart doesn't use viewport concept so it a little different than others chart
+ * types.
  */
 public class PieChartRenderer extends AbstractChartRenderer {
 	private static final float MAX_WIDTH_HEIGHT = 100f;

@@ -2,6 +2,9 @@ package lecho.lib.hellocharts.model;
 
 import lecho.lib.hellocharts.util.Utils;
 
+/**
+ * Model representing single slice/arc on PieChart.
+ */
 public class ArcValue {
 	private static final int DEFAULT_ARC_SPACING_DP = 2;
 	private float value;

@@ -2,6 +2,9 @@ package lecho.lib.hellocharts.model;
 
 import android.graphics.Color;
 
+/**
+ * Base class for most chart data models.
+ */
 public abstract class AbstractChartData implements ChartData {
 	public static final int DEFAULT_TEXT_SIZE_SP = 12;
 	protected Axis axisX = new Axis();
@@ -71,7 +74,7 @@ public abstract class AbstractChartData implements ChartData {
 	}
 
 	@Override
-	public int getMaxLabelChars() {
+	public int getMaxAxisLabelChars() {
 		return maxLabelChars;
 	}
 

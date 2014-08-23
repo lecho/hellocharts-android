@@ -14,13 +14,6 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
-/**
- * Default renderer for BubbleChartView.
- * 
- * 
- * @author Leszek Wach
- * 
- */
 public class BubbleChartRenderer extends AbstractChartRenderer {
 	private static final int DEFAULT_TOUCH_ADDITIONAL_DP = 4;
 
@@ -33,8 +26,8 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	private float bubbleScaleX;
 	private float bubbleScaleY;
 	/**
-	 * True if bubbleScale = bubbleScaleX so the renderer should used
-	 * {@link ChartComputator#computeRawDistanceX(float)}, if false bubbleScale = bubbleScaleY and renderer should use
+	 * True if bubbleScale = bubbleScaleX so the renderer should used {@link ChartComputator#computeRawDistanceX(float)}
+	 * , if false bubbleScale = bubbleScaleY and renderer should use
 	 * {@link ChartComputator#calculateRawDistanceY(float)}.
 	 */
 	private boolean isBubbleScaledByX = true;
