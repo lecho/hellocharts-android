@@ -15,6 +15,8 @@ import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
+import lecho.lib.hellocharts.renderer.DefaultAxesRenderer;
+import lecho.lib.hellocharts.util.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.os.Build;
@@ -44,7 +46,7 @@ public abstract class AbstractChartView extends View implements Chart {
 	public AbstractChartView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 		chartComputator = new ChartComputator();
-		axesRenderer = new AxesRenderer(context, this);
+		axesRenderer = new DefaultAxesRenderer(context, this);
 		touchHandler = new ChartTouchHandler(context, this);
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
 			this.dataAnimator = new ChartDataAnimatorV8(this);
@@ -68,12 +70,16 @@ public abstract class AbstractChartView extends View implements Chart {
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
 		super.onDraw(canvas);
-		axesRenderer.draw(canvas);
-		int clipRestoreCount = canvas.save();
-		canvas.clipRect(chartComputator.getContentRect());
-		chartRenderer.draw(canvas);
-		canvas.restoreToCount(clipRestoreCount);
-		chartRenderer.drawUnclipped(canvas);
+		if (isEnabled()) {
+			axesRenderer.draw(canvas);
+			int clipRestoreCount = canvas.save();
+			canvas.clipRect(chartComputator.getContentRect());
+			chartRenderer.draw(canvas);
+			canvas.restoreToCount(clipRestoreCount);
+			chartRenderer.drawUnclipped(canvas);
+		} else {
+			canvas.drawColor(Utils.DEFAULT_COLOR);
+		}
 		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
 	}
 

@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 public class LineChartActivity extends ActionBarActivity {
 
@@ -101,14 +102,13 @@ public class LineChartActivity extends ActionBarActivity {
 					// Toast.makeText(getActivity(),
 					// "" + selectedLine + " " + selectedValue + " " + point.getX() + " " + point.getY(),
 					// Toast.LENGTH_SHORT).show();
-					chart.setViewport(new Viewport(2, 45, 4, 20), true);
+					// chart.setViewport(new Viewport(2, 45, 4, 20), true);
 
 				}
 			});
 			// chart.setBackgroundColor(Color.WHITE);
 			// chart.setInteractive(false);
 			layout.addView(chart);
-			chart.setBackgroundColor(Color.BLUE);
 			return rootView;
 		}
 	}
