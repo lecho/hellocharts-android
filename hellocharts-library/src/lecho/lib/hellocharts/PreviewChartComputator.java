@@ -2,6 +2,10 @@ package lecho.lib.hellocharts;
 
 import lecho.lib.hellocharts.model.Viewport;
 
+/**
+ * Version of ChartComputator for preview charts. It always uses maxViewport as visible viewport and currentViewport as
+ * preview area.
+ */
 public class PreviewChartComputator extends ChartComputator {
 
 	public float computeRawX(float valueX) {
