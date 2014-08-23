@@ -43,10 +43,12 @@ public class ChartScroller {
 			// The scroller isn't finished, meaning a fling or programmatic pan operation is
 			// currently active.
 			computator.computeScrollSurfaceSize(surfaceSizeBuffer);
-			float currXRange = computator.getMaximumViewport().left + computator.getMaximumViewport().width()
+
+			final float currXRange = computator.getMaximumViewport().left + computator.getMaximumViewport().width()
 					* scroller.getCurrX() / surfaceSizeBuffer.x;
-			float currYRange = computator.getMaximumViewport().top - computator.getMaximumViewport().height()
+			final float currYRange = computator.getMaximumViewport().top - computator.getMaximumViewport().height()
 					* scroller.getCurrY() / surfaceSizeBuffer.y;
+
 			computator.setViewportTopLeft(currXRange, currYRange);
 			return true;
 		}
@@ -57,10 +59,12 @@ public class ChartScroller {
 		// Flings use math in pixels (as opposed to math based on the viewport).
 		computator.computeScrollSurfaceSize(surfaceSizeBuffer);
 		scrollerStartViewport.set(computator.getCurrentViewport());
+
 		int startX = (int) (surfaceSizeBuffer.x * (scrollerStartViewport.left - computator.getMaximumViewport().left) / computator
 				.getMaximumViewport().width());
 		int startY = (int) (surfaceSizeBuffer.y * (computator.getMaximumViewport().top - scrollerStartViewport.top) / computator
 				.getMaximumViewport().height());
+
 		// TODO probably should be mScroller.forceFinish but ScrollerCompat doesn't have that method.
 		scroller.abortAnimation();
 		scroller.fling(startX, startY, velocityX, velocityY, 0, surfaceSizeBuffer.x
