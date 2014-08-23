@@ -56,7 +56,7 @@ public class LineChartActivity extends ActionBarActivity {
 	 * A placeholder fragment containing a simple view.
 	 */
 	public static class PlaceholderFragment extends Fragment {
-		private static final int NUM_OF_VALUES = 5;
+		private static final int NUM_OF_VALUES = 20;
 
 		public PlaceholderFragment() {
 		}
@@ -76,12 +76,14 @@ public class LineChartActivity extends ActionBarActivity {
 			l1.setHasLines(true);
 			l1.setSmooth(true);
 			Line l2 = new Line(s2);
-			l2.setColor(Color.parseColor("#99CC00")).setFilled(false).setHasLines(true).setSmooth(true)
-					.setHasLabels(true).setHasPoints(true);
+			l2.setColor(Color.parseColor("#99CC00")).setFilled(true).setHasLines(true).setSmooth(false)
+					.setHasLabels(false).setHasPoints(true);
 			List<Line> lines = new ArrayList<Line>();
+			// l2.getPoints().add(new PointValue(3.5f, 45f));
 			lines.add(l2);
-			lines.add(l1);
+			// lines.add(l1);
 			data.setLines(lines);
+			data.setBaseValue(-23420f);
 			Axis axisX = new Axis();
 			axisX.setValues(Utils.generateAxis(0.0f, 100.0f, 1.0f));
 			axisX.setName("Axis X");
@@ -91,7 +93,7 @@ public class LineChartActivity extends ActionBarActivity {
 			axisY.setValues(Utils.generateAxis(0.0f, 95.0f, 5.0f));
 			axisY.setName("Axis Y");
 			data.setAxisY(axisY);
-			// chart.setLineChartData(data);
+			chart.setLineChartData(data);
 			chart.setOnValueTouchListener(new LineChartView.LineChartOnValueTouchListener() {
 
 				@Override
@@ -106,6 +108,7 @@ public class LineChartActivity extends ActionBarActivity {
 			// chart.setBackgroundColor(Color.WHITE);
 			// chart.setInteractive(false);
 			layout.addView(chart);
+			chart.setBackgroundColor(Color.BLUE);
 			return rootView;
 		}
 	}

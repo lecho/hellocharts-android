@@ -70,8 +70,8 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 				getPaddingRight(), getPaddingBottom());
 		chartRenderer.initMaxViewport();
 		chartRenderer.initCurrentViewport();
-		chartRenderer.initDataAttributes();
-		axesRenderer.initAxesAttributes();
+		chartRenderer.initDataMeasuremetns();
+		axesRenderer.initAxesMeasurements();
 
 		ViewCompat.postInvalidateOnAnimation(PieChartView.this);
 	}

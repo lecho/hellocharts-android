@@ -50,7 +50,7 @@ public class AxesRenderer {
 		textPaint.setStrokeWidth(1);
 	}
 
-	public void initAxesAttributes() {
+	public void initAxesMeasurements() {
 		linePaint.setColor(chart.getChartData().getAxesColor());
 		textPaint.setColor(chart.getChartData().getAxesColor());
 		textPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getAxesLabelTextSize()));

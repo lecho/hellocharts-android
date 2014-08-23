@@ -1,6 +1,9 @@
 package lecho.sample.hellocharts;
 
+import lecho.lib.hellocharts.model.BubbleValue;
 import lecho.lib.hellocharts.view.BubbleChartView;
+import lecho.lib.hellocharts.view.BubbleChartView.BubbleChartOnValueTouchListener;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -58,6 +61,14 @@ public class BubbleChartActivity extends ActionBarActivity {
 
 			final BubbleChartView chart = new BubbleChartView(getActivity());
 			layout.addView(chart);
+			chart.setOnValueTouchListener(new BubbleChartOnValueTouchListener() {
+
+				@Override
+				public void onValueTouched(int selectedBubble, BubbleValue value) {
+					chart.removeMargins();
+
+				}
+			});
 			return rootView;
 		}
 	}

@@ -69,7 +69,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	}
 
 	@Override
-	public void initDataAttributes() {
+	public void initDataMeasuremetns() {
 		chart.getChartCalculator().setInternalMargin(calculateContentAreaMargin());
 		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));
 		labelPaint.getFontMetricsInt(fontMetrics);

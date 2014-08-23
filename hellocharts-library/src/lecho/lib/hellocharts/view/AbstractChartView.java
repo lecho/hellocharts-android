@@ -60,8 +60,8 @@ public abstract class AbstractChartView extends View implements Chart {
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
 		chartCalculator.calculateContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
 				getPaddingRight(), getPaddingBottom());
-		axesRenderer.initAxesAttributes();
-		chartRenderer.initDataAttributes();
+		axesRenderer.initAxesMeasurements();
+		chartRenderer.initDataMeasuremetns();
 	}
 
 	@Override
