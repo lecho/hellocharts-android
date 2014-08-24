@@ -195,7 +195,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	private float processBubble(ChartComputator computator, BubbleChartData data, BubbleValue bubbleValue, PointF point) {
 		final float rawX = computator.computeRawX(bubbleValue.getX());
 		final float rawY = computator.computeRawY(bubbleValue.getY());
-		float radius = (float) Math.sqrt(bubbleValue.getZ() / Math.PI);
+		float radius = (float) Math.sqrt(Math.abs(bubbleValue.getZ()) / Math.PI);
 		float rawRadius;
 		if (isBubbleScaledByX) {
 			radius *= bubbleScaleX;
@@ -254,8 +254,8 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		BubbleChartData data = dataProvider.getBubbleChartData();
 		// TODO: Optimize.
 		for (BubbleValue bubbleValue : data.getValues()) {
-			if (bubbleValue.getZ() > maxZ) {
-				maxZ = bubbleValue.getZ();
+			if (Math.abs(bubbleValue.getZ()) > maxZ) {
+				maxZ = Math.abs(bubbleValue.getZ());
 			}
 			if (bubbleValue.getX() < tempMaxViewport.left) {
 				tempMaxViewport.left = bubbleValue.getX();
