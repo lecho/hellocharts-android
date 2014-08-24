@@ -3,6 +3,7 @@ package lecho.lib.hellocharts.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import lecho.lib.hellocharts.BuildConfig;
 import lecho.lib.hellocharts.PieChartDataProvider;
 import lecho.lib.hellocharts.animation.PieChartRotationAnimator;
 import lecho.lib.hellocharts.animation.PieChartRotationAnimatorV14;
@@ -18,6 +19,7 @@ import android.graphics.RectF;
 import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -60,14 +62,18 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 
 	@Override
 	public void setPieChartData(PieChartData data) {
+		if (BuildConfig.DEBUG) {
+			Log.d(TAG, "Setting data for ColumnChartView");
+		}
+
 		if (null == data) {
 			this.data = generateDummyData();
 		} else {
 			this.data = data;
 		}
 		// TODO calculateContentArea is not needed here.
-		chartComputator.setContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(),
-				getPaddingRight(), getPaddingBottom());
+		chartComputator.setContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(), getPaddingRight(),
+				getPaddingBottom());
 		chartRenderer.initMaxViewport();
 		chartRenderer.initCurrentViewport();
 		chartRenderer.initDataMeasuremetns();
