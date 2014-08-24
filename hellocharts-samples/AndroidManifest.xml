@@ -30,6 +30,10 @@
             android:name=".ColumnChartActivity"
             android:label="@string/title_activity_column_chart" >
         </activity>
+        <activity
+            android:name=".PieChartActivity"
+            android:label="@string/title_activity_pie_chart" >
+        </activity>
     </application>
 
 </manifest>

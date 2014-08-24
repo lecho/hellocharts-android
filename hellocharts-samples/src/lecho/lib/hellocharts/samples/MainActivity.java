@@ -87,6 +87,8 @@ public class MainActivity extends ActionBarActivity {
 				break;
 			case 2:
 				// Pie Chart;
+				intent = new Intent(getActivity(), PieChartActivity.class);
+				startActivity(intent);
 				break;
 			case 3:
 				// Bubble Chart;

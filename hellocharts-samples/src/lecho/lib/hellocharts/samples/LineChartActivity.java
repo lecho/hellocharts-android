@@ -136,6 +136,15 @@ public class LineChartActivity extends ActionBarActivity {
 						Toast.LENGTH_SHORT).show();
 				return true;
 			}
+			if (id == R.id.action_toggle_label_for_selected) {
+				toggleLabelForSelected();
+				chart.setLineChartData(data);
+				Toast.makeText(
+						getActivity(),
+						"Label for selected to " + data.getLines().get(0).hasLabelsOnlyForSelected()
+								+ ". Works best with value selection mode.", Toast.LENGTH_SHORT).show();
+				return true;
+			}
 			if (id == R.id.action_toggle_touch_zoom) {
 				chart.setZoomEnabled(!chart.isZoomEnabled());
 				Toast.makeText(getActivity(), "IsZoomEnabled " + chart.isZoomEnabled(), Toast.LENGTH_SHORT).show();
@@ -257,6 +266,12 @@ public class LineChartActivity extends ActionBarActivity {
 		private void toggleLabels() {
 			for (Line line : data.getLines()) {
 				line.setHasLabels(!line.hasLabels());
+			}
+		}
+
+		private void toggleLabelForSelected() {
+			for (Line line : data.getLines()) {
+				line.setHasLabelsOnlyForSelected(!line.hasLabelsOnlyForSelected());
 			}
 		}
 

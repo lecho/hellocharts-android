@@ -44,6 +44,10 @@
         android:title="Toggle selection mode"
         app:showAsAction="never"/>
     <item
+        android:id="@+id/action_toggle_label_for_selected"
+        android:title="Toggle label for selected"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/action_toggle_touch_zoom"
         android:title="Toggle touch zoom"
         app:showAsAction="never"/>

@@ -9,10 +9,9 @@ import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.ColumnValue;
-import lecho.lib.hellocharts.model.LineChartData;
+import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.ColumnChartView;
-import lecho.lib.hellocharts.view.LineChartView;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -99,6 +98,15 @@ public class ColumnChartActivity extends ActionBarActivity {
 			if (id == R.id.action_toggle_labels) {
 				toggleLabels();
 				chart.setColumnChartData(data);
+				return true;
+			}
+			if (id == R.id.action_toggle_label_for_selected) {
+				toggleLabelForSelected();
+				chart.setColumnChartData(data);
+				Toast.makeText(
+						getActivity(),
+						"Label for selected to " + data.getColumns().get(0).hasLabelsOnlyForSelected()
+								+ ". Works best with value selection mode.", Toast.LENGTH_SHORT).show();
 				return true;
 			}
 			if (id == R.id.action_toggle_axes) {
@@ -281,6 +289,12 @@ public class ColumnChartActivity extends ActionBarActivity {
 			}
 		}
 
+		private void toggleLabelForSelected() {
+			for (Column column : data.getColumns()) {
+				column.setHasLabelsOnlyForSelected(!column.hasLabelsOnlyForSelected());
+			}
+		}
+
 		private void toggleAxes() {
 			if (!hasAxes) {
 				// by default axes are auto-generated;
@@ -315,13 +329,11 @@ public class ColumnChartActivity extends ActionBarActivity {
 
 		/**
 		 * To animate values you have to change targets values and then call {@link Chart#startDataAnimation()}
-		 * method(don't confuse with View.animate()). If you operate on data that was set before you don't have to call
-		 * {@link LineChartView#setLineChartData(LineChartData)} again.
+		 * method(don't confuse with View.animate()).
 		 */
 		private void prepareDataAnimation() {
 			for (Column column : data.getColumns()) {
 				for (ColumnValue value : column.getValues()) {
-					// Here I modify target only for Y values but it is OK to modify X targets as well.
 					value.setTarget((float) Math.random() * 100);
 				}
 			}
