@@ -49,7 +49,8 @@ public class ChartComputator {
 	protected ViewportChangeListener viewportChangeListener = new DummyVieportChangeListener();
 
 	/**
-	 * Calculates available width and height. Should be called when chart dimensions change.
+	 * Calculates available width and height. Should be called when chart dimensions change. ContentRect is relative to
+	 * chart view not the devide's screen.
 	 */
 	public void setContentArea(int width, int height, int paddingLeft, int paddingTop, int paddingRight,
 			int paddingBottom) {
@@ -58,10 +59,16 @@ public class ChartComputator {
 		contentRect.set(maxContentRect);
 	}
 
+	/**
+	 * Set internal chart margin i.e. spaces between chart data and axes labels. Don't confuse with view margins.
+	 */
 	public void setInternalMargin(int margin) {
 		setInternalMargin(margin, margin, margin, margin);
 	}
 
+	/**
+	 * Set internal chart margin i.e. spaces between chart data and axes labels. Don't confuse with view margins.
+	 */
 	public void setInternalMargin(int marginLeft, int marginTop, int marginRight, int marginBottom) {
 		this.marginLeft = marginLeft;
 		this.marginTop = marginTop;
@@ -74,6 +81,9 @@ public class ChartComputator {
 		contentRect.bottom = contentRectWithMargins.bottom - marginBottom;
 	}
 
+	/**
+	 * Set additional margins that will be used to draw axes. That prevent axes from being overdrawn by chart data.
+	 */
 	public void setAxesMargin(int axisXMarginTop, int axisXMarginBottom, int axisYMarginLeft, int axisYMarginRight) {
 		contentRectWithMargins.left = maxContentRect.left + axisYMarginLeft;
 		contentRectWithMargins.top = maxContentRect.top + axisXMarginTop;
