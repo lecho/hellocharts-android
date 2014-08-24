@@ -9,7 +9,7 @@
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_explode"
-        android:title="Explode chart!!!"
+        android:title="Explode chart"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_single_arc_separation"
