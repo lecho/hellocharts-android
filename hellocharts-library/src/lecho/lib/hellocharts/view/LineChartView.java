@@ -61,7 +61,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 
 	@Override
 	public void callChartTouchListener(SelectedValue selectedValue) {
-		PointValue point = data.getLines().get(selectedValue.firstIndex).getPoints().get(selectedValue.secondIndex);
+		PointValue point = data.getLines().get(selectedValue.firstIndex).getValues().get(selectedValue.secondIndex);
 		onValueTouchListener.onValueTouched(selectedValue.firstIndex, selectedValue.secondIndex, point);
 	}
 
@@ -80,7 +80,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 	@Override
 	public void animationDataUpdate(float scale) {
 		for (Line line : data.getLines()) {
-			for (PointValue point : line.getPoints()) {
+			for (PointValue point : line.getValues()) {
 				point.update(scale);
 			}
 		}
@@ -92,7 +92,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 	@Override
 	public void animationDataFinished(boolean isFinishedSuccess) {
 		for (Line line : data.getLines()) {
-			for (PointValue point : line.getPoints()) {
+			for (PointValue point : line.getValues()) {
 				point.finish(isFinishedSuccess);
 			}
 		}

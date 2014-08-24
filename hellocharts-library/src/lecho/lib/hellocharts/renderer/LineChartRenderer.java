@@ -127,7 +127,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		for (Line line : data.getLines()) {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
 			int valueIndex = 0;
-			for (PointValue pointValue : line.getPoints()) {
+			for (PointValue pointValue : line.getValues()) {
 				final float rawValueX = computator.computeRawX(pointValue.getX());
 				final float rawValueY = computator.computeRawY(pointValue.getY());
 				if (isInArea(rawValueX, rawValueY, touchX, touchY, pointRadius + touchTolleranceMargin)) {
@@ -151,7 +151,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		// TODO: Optimize.
 		for (Line line : data.getLines()) {
 			// Calculate max and min for viewport.
-			for (PointValue pointValue : line.getPoints()) {
+			for (PointValue pointValue : line.getValues()) {
 				if (pointValue.getX() < tempMaxViewport.left) {
 					tempMaxViewport.left = pointValue.getX();
 				}
@@ -191,7 +191,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
 		linePaint.setColor(line.getColor());
 		int valueIndex = 0;
-		for (PointValue pointValue : line.getPoints()) {
+		for (PointValue pointValue : line.getValues()) {
 			float rawX = computator.computeRawX(pointValue.getX());
 			float rawY = computator.computeRawY(pointValue.getY());
 			if (valueIndex == 0) {
@@ -228,7 +228,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		final ChartComputator computator = chart.getChartComputator();
 		linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
 		linePaint.setColor(line.getColor());
-		final int lineSize = line.getPoints().size();
+		final int lineSize = line.getValues().size();
 		float prepreviousPointX = Float.NaN;
 		float prepreviousPointY = Float.NaN;
 		float previousPointX = Float.NaN;
@@ -239,13 +239,13 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		float nextPointY = Float.NaN;
 		for (int valueIndex = 0; valueIndex < lineSize; ++valueIndex) {
 			if (Float.isNaN(currentPointX)) {
-				PointValue linePoint = line.getPoints().get(valueIndex);
+				PointValue linePoint = line.getValues().get(valueIndex);
 				currentPointX = computator.computeRelativeRawX(linePoint.getX());
 				currentPointY = computator.computeRelativeRawY(linePoint.getY());
 			}
 			if (Float.isNaN(previousPointX)) {
 				if (valueIndex > 0) {
-					PointValue linePoint = line.getPoints().get(valueIndex - 1);
+					PointValue linePoint = line.getValues().get(valueIndex - 1);
 					previousPointX = computator.computeRelativeRawX(linePoint.getX());
 					previousPointY = computator.computeRelativeRawY(linePoint.getY());
 				} else {
@@ -256,7 +256,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 			if (Float.isNaN(prepreviousPointX)) {
 				if (valueIndex > 1) {
-					PointValue linePoint = line.getPoints().get(valueIndex - 2);
+					PointValue linePoint = line.getValues().get(valueIndex - 2);
 					prepreviousPointX = computator.computeRelativeRawX(linePoint.getX());
 					prepreviousPointY = computator.computeRelativeRawY(linePoint.getY());
 				} else {
@@ -267,7 +267,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 			// nextPoint is always new one or it is equal currentPoint.
 			if (valueIndex < lineSize - 1) {
-				PointValue linePoint = line.getPoints().get(valueIndex + 1);
+				PointValue linePoint = line.getValues().get(valueIndex + 1);
 				nextPointX = computator.computeRelativeRawX(linePoint.getX());
 				nextPointY = computator.computeRelativeRawY(linePoint.getY());
 			} else {
@@ -317,7 +317,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		final ChartComputator computator = chart.getChartComputator();
 		pointPaint.setColor(line.getColor());
 		int valueIndex = 0;
-		for (PointValue pointValue : line.getPoints()) {
+		for (PointValue pointValue : line.getValues()) {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
 			final float rawX = computator.computeRawX(pointValue.getX());
 			final float rawY = computator.computeRawY(pointValue.getY());

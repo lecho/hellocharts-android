@@ -33,10 +33,10 @@ public class Line {
 	}
 
 	public Line(List<PointValue> values) {
-		setPoints(values);
+		setValues(values);
 	}
 
-	public void setPoints(List<PointValue> values) {
+	public void setValues(List<PointValue> values) {
 		if (null == values) {
 			this.values = Collections.emptyList();
 		} else {
@@ -44,7 +44,7 @@ public class Line {
 		}
 	}
 
-	public List<PointValue> getPoints() {
+	public List<PointValue> getValues() {
 		return this.values;
 	}
 
