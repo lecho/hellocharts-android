@@ -3,6 +3,6 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="lecho.sample.hellocharts.LineChartActivity"
+    tools:context="lecho.lib.hellocharts.samples.LineChartActivity"
     tools:ignore="MergeRootFrame" />
 

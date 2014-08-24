@@ -28,6 +28,10 @@ public class Line {
 	// TODO: consider Collections.emptyList()
 	private List<PointValue> points = new ArrayList<PointValue>();
 
+	public Line() {
+
+	}
+
 	public Line(List<PointValue> points) {
 		setPoints(points);
 	}

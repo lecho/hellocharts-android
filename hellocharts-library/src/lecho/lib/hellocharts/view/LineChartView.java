@@ -11,9 +11,7 @@ import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.renderer.LineChartRenderer;
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 
@@ -34,14 +32,6 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 		super(context, attrs, defStyle);
 		chartRenderer = new LineChartRenderer(context, this, this);
 		setLineChartData(generateDummyData());
-		// initAttributes();
-	}
-
-	@SuppressLint("NewApi")
-	private void initAttributes() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			setLayerType(LAYER_TYPE_SOFTWARE, null);
-		}
 	}
 
 	@Override

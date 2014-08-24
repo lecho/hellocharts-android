@@ -20,6 +20,15 @@ public class ChartComputator {
 	 */
 	protected Rect contentRect = new Rect();
 	protected Rect contentRectWithMargins = new Rect();
+	protected Rect maxContentRect = new Rect();
+
+	/**
+	 * Internal margins i.e. for axes.
+	 */
+	protected int marginLeft;
+	protected int marginTop;
+	protected int marginRight;
+	protected int marginBottom;
 
 	/**
 	 * This rectangle represents the currently visible chart values ranges. The currently visible chart X values are
@@ -44,18 +53,21 @@ public class ChartComputator {
 	 */
 	public void setContentArea(int width, int height, int paddingLeft, int paddingTop, int paddingRight,
 			int paddingBottom) {
-		contentRectWithMargins.set(paddingLeft, paddingTop, width - paddingRight, height - paddingBottom);
-		contentRect.set(contentRectWithMargins);
+		maxContentRect.set(paddingLeft, paddingTop, width - paddingRight, height - paddingBottom);
+		contentRectWithMargins.set(maxContentRect);
+		contentRect.set(maxContentRect);
 	}
 
 	public void setInternalMargin(int margin) {
-		contentRect.left = contentRectWithMargins.left + margin;
-		contentRect.top = contentRectWithMargins.top + margin;
-		contentRect.right = contentRectWithMargins.right - margin;
-		contentRect.bottom = contentRectWithMargins.bottom - margin;
+		setInternalMargin(margin, margin, margin, margin);
 	}
 
 	public void setInternalMargin(int marginLeft, int marginTop, int marginRight, int marginBottom) {
+		this.marginLeft = marginLeft;
+		this.marginTop = marginTop;
+		this.marginRight = marginRight;
+		this.marginBottom = marginBottom;
+
 		contentRect.left = contentRectWithMargins.left + marginLeft;
 		contentRect.top = contentRectWithMargins.top + marginTop;
 		contentRect.right = contentRectWithMargins.right - marginRight;
@@ -63,10 +75,12 @@ public class ChartComputator {
 	}
 
 	public void setAxesMargin(int axisXMarginTop, int axisXMarginBottom, int axisYMarginLeft, int axisYMarginRight) {
-		contentRectWithMargins.bottom = contentRectWithMargins.bottom - axisXMarginBottom;
-		contentRectWithMargins.left = contentRectWithMargins.left + axisYMarginLeft;
-		contentRect.left = contentRect.left + axisYMarginLeft;
-		contentRect.bottom = contentRect.bottom - axisXMarginBottom;
+		contentRectWithMargins.left = maxContentRect.left + axisYMarginLeft;
+		contentRectWithMargins.top = maxContentRect.top + axisXMarginTop;
+		contentRectWithMargins.right = maxContentRect.right - axisYMarginRight;
+		contentRectWithMargins.bottom = maxContentRect.bottom - axisXMarginBottom;
+
+		setInternalMargin(marginLeft, marginTop, marginRight, marginBottom);
 	}
 
 	/**
