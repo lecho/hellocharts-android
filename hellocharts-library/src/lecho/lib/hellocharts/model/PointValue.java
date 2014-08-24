@@ -59,11 +59,6 @@ public class PointValue {
 	}
 
 	@Override
-	public String toString() {
-		return "PointValue [x=" + x + ", y=" + y + "]";
-	}
-
-	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -86,6 +81,11 @@ public class PointValue {
 		if (Float.floatToIntBits(y) != Float.floatToIntBits(other.y))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "PointValue [x=" + x + ", y=" + y + "]";
 	}
 
 }

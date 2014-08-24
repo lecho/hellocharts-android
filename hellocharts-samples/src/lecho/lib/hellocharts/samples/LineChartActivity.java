@@ -3,7 +3,9 @@ package lecho.lib.hellocharts.samples;
 import java.util.ArrayList;
 import java.util.List;
 
+import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.gesture.ChartZoomer;
+import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
@@ -12,6 +14,7 @@ import lecho.lib.hellocharts.view.LineChartView;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,6 +41,7 @@ public class LineChartActivity extends ActionBarActivity {
 
 		private LineChartView chart;
 		private LineChartData data;
+		private boolean hasAxes = true;
 
 		public PlaceholderFragment() {
 		}
@@ -61,6 +65,99 @@ public class LineChartActivity extends ActionBarActivity {
 			inflater.inflate(R.menu.line_chart, menu);
 		}
 
+		@Override
+		public boolean onOptionsItemSelected(MenuItem item) {
+			// Handle action bar item clicks here. The action bar will
+			// automatically handle clicks on the Home/Up button, so long
+			// as you specify a parent activity in AndroidManifest.xml.
+			int id = item.getItemId();
+			if (id == R.id.action_reset) {
+				generateDefaultData();
+				chart.setLineChartData(data);
+				return true;
+			}
+			if (id == R.id.action_add_line) {
+				addLineToData();
+				chart.setLineChartData(data);
+				return true;
+			}
+			if (id == R.id.action_toggle_lines) {
+				toggleLines();
+				chart.setLineChartData(data);
+				return true;
+			}
+			if (id == R.id.action_toggle_points) {
+				togglePoints();
+				chart.setLineChartData(data);
+				return true;
+			}
+			if (id == R.id.action_toggle_bezier) {
+				toggleBezier();
+				chart.setLineChartData(data);
+				return true;
+			}
+			if (id == R.id.action_toggle_area) {
+				toggleArea();
+				chart.setLineChartData(data);
+				return true;
+			}
+			if (id == R.id.action_shape_circles) {
+				setCircles();
+				chart.setLineChartData(data);
+				return true;
+			}
+			if (id == R.id.action_shape_square) {
+				setSquares();
+				chart.setLineChartData(data);
+				return true;
+			}
+			if (id == R.id.action_toggle_labels) {
+				toggleLabels();
+				chart.setLineChartData(data);
+				return true;
+			}
+			if (id == R.id.action_toggle_axes) {
+				toggleAxes();
+				chart.setLineChartData(data);
+				return true;
+			}
+			if (id == R.id.action_toggle_axes_names) {
+				toggleAxesNames();
+				chart.setLineChartData(data);
+				return true;
+			}
+			if (id == R.id.action_animate) {
+				prepareDataAnimation();
+				chart.startDataAnimation();
+				return true;
+			}
+			if (id == R.id.action_toggle_selection_mode) {
+				chart.setValueSelectionEnabled(!chart.isValueSelectionEnabled());
+				Toast.makeText(getActivity(),
+						"Selection mode set to " + chart.isValueSelectionEnabled() + " select any point.",
+						Toast.LENGTH_SHORT).show();
+				return true;
+			}
+			if (id == R.id.action_toggle_touch_zoom) {
+				chart.setZoomEnabled(!chart.isZoomEnabled());
+				Toast.makeText(getActivity(), "IsZoomEnabled " + chart.isZoomEnabled(), Toast.LENGTH_SHORT).show();
+				return true;
+			}
+			if (id == R.id.action_zoom_both) {
+				chart.setZoomType(ChartZoomer.ZOOM_HORIZONTAL_AND_VERTICAL);
+				return true;
+			}
+			if (id == R.id.action_zoom_horizontal) {
+				chart.setZoomType(ChartZoomer.ZOOM_HORIZONTAL);
+				return true;
+			}
+			if (id == R.id.action_zoom_vertical) {
+				chart.setZoomType(ChartZoomer.ZOOM_VERTICAL);
+				return true;
+			}
+			return super.onOptionsItemSelected(item);
+		}
+
 		private void generateDefaultData() {
 			int numValues = 12;
 
@@ -82,6 +179,10 @@ public class LineChartActivity extends ActionBarActivity {
 
 		}
 
+		/**
+		 * Adds lines to data, after that data should be set again with
+		 * {@link LineChartView#setLineChartData(LineChartData)}. Last 4th line has non-monotonically x values.
+		 */
 		private void addLineToData() {
 			if (data.getLines().size() >= 4) {
 				Toast.makeText(getActivity(), "Samples app uses max 4 lines!", Toast.LENGTH_SHORT).show();
@@ -91,7 +192,7 @@ public class LineChartActivity extends ActionBarActivity {
 			int numValues = 12;
 			List<PointValue> values = new ArrayList<PointValue>();
 			for (int i = 0; i < numValues; ++i) {
-				values.add(new PointValue((float) Math.random() * 12, (float) Math.random() * 100));
+				values.add(new PointValue(i, (float) Math.random() * 100));
 			}
 
 			Line line = new Line();
@@ -104,84 +205,107 @@ public class LineChartActivity extends ActionBarActivity {
 			case 2:
 				line.setColor(Utils.COLOR_ORANGE);
 				break;
-			case 3:
-				line.setColor(Utils.COLOR_VIOLET);
-				break;
 			default:
-				line.setColor(Utils.COLOR_RED);
+				// Line chart support lines with different X values and X values don't have to be monotonically.
+				line.setColor(Utils.COLOR_VIOLET);
+				values = new ArrayList<PointValue>();
+				for (int i = 0; i < numValues; ++i) {
+					values.add(new PointValue((float) Math.random() * 12, (float) Math.random() * 100));
+				}
+				Toast.makeText(getActivity(), "Crazy violet line:)", Toast.LENGTH_SHORT).show();
 				break;
 			}
 
+			line.setValues(values);
 			data.getLines().add(line);
 		}
 
-		@Override
-		public boolean onOptionsItemSelected(MenuItem item) {
-			// Handle action bar item clicks here. The action bar will
-			// automatically handle clicks on the Home/Up button, so long
-			// as you specify a parent activity in AndroidManifest.xml.
-			int id = item.getItemId();
-			if (id == R.id.action_reset) {
-				generateDefaultData();
-				chart.setLineChartData(data);
-				return true;
+		private void toggleLines() {
+			for (Line line : data.getLines()) {
+				line.setHasLines(!line.hasLines());
 			}
-			if (id == R.id.action_add_line) {
-				addLineToData();
-				chart.setLineChartData(data);
-				return true;
+		}
+
+		private void togglePoints() {
+			for (Line line : data.getLines()) {
+				line.setHasPoints(!line.hasPoints());
 			}
-			if (id == R.id.action_toggle_lines) {
-				return true;
+		}
+
+		private void toggleBezier() {
+			for (Line line : data.getLines()) {
+				line.setSmooth(!line.isSmooth());
 			}
-			if (id == R.id.action_toggle_points) {
-				return true;
+		}
+
+		private void toggleArea() {
+			for (Line line : data.getLines()) {
+				line.setFilled(!line.isFilled());
 			}
-			if (id == R.id.action_toggle_bezier) {
-				return true;
+		}
+
+		private void setCircles() {
+			for (Line line : data.getLines()) {
+				line.setPointShape(Line.SHAPE_CIRCLE);
 			}
-			if (id == R.id.action_toggle_area) {
-				return true;
+		}
+
+		private void setSquares() {
+			for (Line line : data.getLines()) {
+				line.setPointShape(Line.SHAPE_SQUARE);
 			}
-			if (id == R.id.action_shape_circles) {
-				return true;
+		}
+
+		private void toggleLabels() {
+			for (Line line : data.getLines()) {
+				line.setHasLabels(!line.hasLabels());
 			}
-			if (id == R.id.action_shape_square) {
-				return true;
+		}
+
+		private void toggleAxes() {
+			if (!hasAxes) {
+				// by default axes are auto-generated;
+				data.setAxisX(new Axis().setName("Axis X"));
+				data.setAxisY(new Axis().setName("Axis Y"));
+			} else {
+				// to disable axes set them to null;
+				data.setAxisX(null);
+				data.setAxisY(null);
 			}
-			if (id == R.id.action_toggle_axes) {
-				return true;
+			hasAxes = !hasAxes;
+		}
+
+		private void toggleAxesNames() {
+			if (hasAxes) {
+				// by default axes are auto-generated;
+				Axis axisX = data.getAxisX();
+				if (TextUtils.isEmpty(axisX.getName())) {
+					axisX.setName("Axis X");
+				} else {
+					axisX.setName(null);
+				}
+
+				Axis axisY = data.getAxisY();
+				if (TextUtils.isEmpty(axisY.getName())) {
+					axisY.setName("Axis Y");
+				} else {
+					axisY.setName(null);
+				}
 			}
-			if (id == R.id.action_toggle_axes_names) {
-				return true;
+		}
+
+		/**
+		 * To animate values you have to change targets values and then call {@link Chart#startDataAnimation()}
+		 * method(don't confuse with View.animate()). If you operate on data that was set before you don't have to call
+		 * {@link LineChartView#setLineChartData(LineChartData)} again.
+		 */
+		private void prepareDataAnimation() {
+			for (Line line : data.getLines()) {
+				for (PointValue value : line.getValues()) {
+					// Here I modify target only for Y values but it is OK to modify X targets as well.
+					value.setTarget(value.getX(), (float) Math.random() * 100);
+				}
 			}
-			if (id == R.id.action_toggle_labels) {
-				return true;
-			}
-			if (id == R.id.action_animate) {
-				return true;
-			}
-			if (id == R.id.action_toggle_selection_mode) {
-				chart.setValueSelectionEnabled(!chart.isValueSelectionEnabled());
-				return true;
-			}
-			if (id == R.id.action_toggle_touch_zoom) {
-				chart.setZoomEnabled(!chart.isZoomEnabled());
-				return true;
-			}
-			if (id == R.id.action_zoom_both) {
-				chart.setZoomType(ChartZoomer.ZOOM_HORIZONTAL_AND_VERTICAL);
-				return true;
-			}
-			if (id == R.id.action_zoom_horizontal) {
-				chart.setZoomType(ChartZoomer.ZOOM_HORIZONTAL);
-				return true;
-			}
-			if (id == R.id.action_zoom_vertical) {
-				chart.setZoomType(ChartZoomer.ZOOM_VERTICAL);
-				return true;
-			}
-			return super.onOptionsItemSelected(item);
 		}
 
 		private class ValueTouchListener implements LineChartView.LineChartOnValueTouchListener {

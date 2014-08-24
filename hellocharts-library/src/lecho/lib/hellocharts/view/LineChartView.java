@@ -3,6 +3,7 @@ package lecho.lib.hellocharts.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import lecho.lib.hellocharts.BuildConfig;
 import lecho.lib.hellocharts.LineChartDataProvider;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.ChartData;
@@ -14,6 +15,7 @@ import lecho.lib.hellocharts.renderer.LineChartRenderer;
 import android.content.Context;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 
 public class LineChartView extends AbstractChartView implements LineChartDataProvider {
 	private static final String TAG = "LineChartView";
@@ -36,6 +38,10 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 
 	@Override
 	public void setLineChartData(LineChartData data) {
+		if (BuildConfig.DEBUG) {
+			Log.d(TAG, "Setting data for LineChartView");
+		}
+
 		if (null == data) {
 			this.data = generateDummyData();
 		} else {
