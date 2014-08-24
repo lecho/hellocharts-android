@@ -162,7 +162,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 			drawCircleOval.inset(-touchAdditional, -touchAdditional);
 			arcPaint.setColor(arcValue.getDarkenColor());
 			canvas.drawArc(drawCircleOval, lastAngle, angle, true, arcPaint);
-			if (data.hasLabels() || MODE_HIGHLIGHT == mode) {
+			if (data.hasLabels() || data.hasLabelsOnlyForSelected()) {
 				drawLabel(canvas, data, arcValue, arcCenterX, arcCenterY);
 			}
 		} else {

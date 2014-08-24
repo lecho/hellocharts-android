@@ -43,7 +43,7 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 	@Override
 	public void setColumnChartData(ColumnChartData data) {
 		if (BuildConfig.DEBUG) {
-			Log.d(TAG, "Setting data for LineChartView");
+			Log.d(TAG, "Setting data for ColumnChartView");
 		}
 
 		if (null == data) {
