@@ -14,6 +14,10 @@ public class Column {
 	// TODO: consider Collections.emptyList()
 	private List<ColumnValue> values = new ArrayList<ColumnValue>();
 
+	public Column() {
+
+	}
+
 	public Column(List<ColumnValue> values) {
 		setValues(values);
 	}

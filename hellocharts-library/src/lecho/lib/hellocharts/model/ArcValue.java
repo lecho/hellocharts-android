@@ -14,6 +14,10 @@ public class ArcValue {
 	private int darkenColor = Utils.DEFAULT_DARKEN_COLOR;
 	private int arcSpacing = DEFAULT_ARC_SPACING_DP;
 
+	public ArcValue() {
+
+	}
+
 	public ArcValue(float value) {
 		// point and targetPoint have to be different objects
 		setValue(value);
