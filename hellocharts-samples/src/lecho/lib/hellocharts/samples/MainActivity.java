@@ -82,6 +82,8 @@ public class MainActivity extends ActionBarActivity {
 				break;
 			case 1:
 				// Column Chart;
+				intent = new Intent(getActivity(), ColumnChartActivity.class);
+				startActivity(intent);
 				break;
 			case 2:
 				// Pie Chart;

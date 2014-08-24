@@ -3,6 +3,7 @@ package lecho.lib.hellocharts.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import lecho.lib.hellocharts.BuildConfig;
 import lecho.lib.hellocharts.ColumnChartDataProvider;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Column;
@@ -13,6 +14,7 @@ import lecho.lib.hellocharts.renderer.ColumnChartRenderer;
 import android.content.Context;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 
 public class ColumnChartView extends AbstractChartView implements ColumnChartDataProvider {
 	private static final String TAG = "ColumnChartView";
@@ -40,6 +42,10 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 
 	@Override
 	public void setColumnChartData(ColumnChartData data) {
+		if (BuildConfig.DEBUG) {
+			Log.d(TAG, "Setting data for LineChartView");
+		}
+
 		if (null == data) {
 			this.data = generateDummyData();
 		} else {
@@ -126,7 +132,7 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 	private static class DummyOnValueTouchListener implements ColumnChartOnValueTouchListener {
 
 		@Override
-		public void onValueTouched(int selectedLine, int selectedValue, ColumnValue point) {
+		public void onValueTouched(int selectedLine, int selectedValue, ColumnValue value) {
 			// do nothing
 		}
 	}

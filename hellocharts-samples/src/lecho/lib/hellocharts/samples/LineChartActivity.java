@@ -35,7 +35,7 @@ public class LineChartActivity extends ActionBarActivity {
 	}
 
 	/**
-	 * A placeholder fragment containing a line chart.
+	 * A fragment containing a line chart.
 	 */
 	public static class PlaceholderFragment extends Fragment {
 
@@ -50,6 +50,7 @@ public class LineChartActivity extends ActionBarActivity {
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			setHasOptionsMenu(true);
 			View rootView = inflater.inflate(R.layout.fragment_line_chart, container, false);
+
 			chart = (LineChartView) rootView.findViewById(R.id.chart);
 			chart.setOnValueTouchListener(new ValueTouchListener());
 
@@ -67,9 +68,6 @@ public class LineChartActivity extends ActionBarActivity {
 
 		@Override
 		public boolean onOptionsItemSelected(MenuItem item) {
-			// Handle action bar item clicks here. The action bar will
-			// automatically handle clicks on the Home/Up button, so long
-			// as you specify a parent activity in AndroidManifest.xml.
 			int id = item.getItemId();
 			if (id == R.id.action_reset) {
 				generateDefaultData();

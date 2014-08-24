@@ -26,6 +26,10 @@
             android:name=".LineChartActivity"
             android:label="@string/title_activity_line_chart" >
         </activity>
+        <activity
+            android:name=".ColumnChartActivity"
+            android:label="@string/title_activity_column_chart" >
+        </activity>
     </application>
 
 </manifest>

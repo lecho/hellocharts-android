@@ -16,7 +16,7 @@ import android.graphics.RectF;
 
 public class ColumnChartRenderer extends AbstractChartRenderer {
 	public static final int DEFAULT_SUBCOLUMN_SPACING_DP = 1;
-	public static final int DEFAULT_COLUMN_TOUCH_ADDITIONAL_WIDTH_DP = 2;
+	public static final int DEFAULT_COLUMN_TOUCH_ADDITIONAL_WIDTH_DP = 4;
 
 	private static final float DEFAULT_BASE_VALUE = 0.0f;
 	private static final int MODE_DRAW = 0;

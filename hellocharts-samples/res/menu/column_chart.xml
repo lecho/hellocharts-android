@@ -1,0 +1,63 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="lecho.lib.hellocharts.samples.ColumnChartActivity" >
+
+    <item
+        android:id="@+id/action_reset"
+        android:title="Reset chart"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_subcolumns"
+        android:title="Subcolumns"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_stacked"
+        android:title="Stacked"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_negative_subcolumns"
+        android:title="Negative subcolumns"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_negative_stacked"
+        android:title="Negative stacked"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_toggle_axes"
+        android:title="Togle axes"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_toggle_axes_names"
+        android:title="Togle axes names"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_toggle_labels"
+        android:title="Toggle labels"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_animate"
+        android:title="Animate chart"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_toggle_selection_mode"
+        android:title="Toggle selection mode"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_toggle_touch_zoom"
+        android:title="Toggle touch zoom"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_zoom_both"
+        android:title="Zoom X/Y"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_zoom_horizontal"
+        android:title="Zoom X"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_zoom_vertical"
+        android:title="Zoom Y"
+        app:showAsAction="never"/>
+
+</menu>
