@@ -26,26 +26,26 @@ public class Line {
 	private int pointShape = SHAPE_CIRCLE;
 	private ValueFormatter formatter = new NumberValueFormatter();
 	// TODO: consider Collections.emptyList()
-	private List<PointValue> points = new ArrayList<PointValue>();
+	private List<PointValue> values = new ArrayList<PointValue>();
 
 	public Line() {
 
 	}
 
-	public Line(List<PointValue> points) {
-		setPoints(points);
+	public Line(List<PointValue> values) {
+		setPoints(values);
 	}
 
-	public void setPoints(List<PointValue> points) {
-		if (null == points) {
-			this.points = Collections.emptyList();
+	public void setPoints(List<PointValue> values) {
+		if (null == values) {
+			this.values = Collections.emptyList();
 		} else {
-			this.points = points;
+			this.values = values;
 		}
 	}
 
 	public List<PointValue> getPoints() {
-		return this.points;
+		return this.values;
 	}
 
 	public int getColor() {

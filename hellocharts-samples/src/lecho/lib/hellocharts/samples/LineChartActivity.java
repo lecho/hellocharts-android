@@ -62,7 +62,7 @@ public class LineChartActivity extends ActionBarActivity {
 		}
 
 		private void generateDefaultData() {
-			final int numValues = 12;
+			int numValues = 12;
 
 			List<PointValue> values = new ArrayList<PointValue>();
 			for (int i = 0; i < numValues; ++i) {
@@ -70,7 +70,7 @@ public class LineChartActivity extends ActionBarActivity {
 			}
 
 			Line line = new Line(values);
-			line.setColor(Utils.COLOR_ORANGE);
+			line.setColor(Utils.COLOR_GREEN);
 
 			List<Line> lines = new ArrayList<Line>();
 			lines.add(line);
@@ -80,6 +80,39 @@ public class LineChartActivity extends ActionBarActivity {
 			data.getAxisX().setName("Axis X");
 			data.getAxisY().setName("Axis Y");
 
+		}
+
+		private void addLineToData() {
+			if (data.getLines().size() >= 4) {
+				Toast.makeText(getActivity(), "Samples app uses max 4 lines!", Toast.LENGTH_SHORT).show();
+				return;
+			}
+
+			int numValues = 12;
+			List<PointValue> values = new ArrayList<PointValue>();
+			for (int i = 0; i < numValues; ++i) {
+				values.add(new PointValue((float) Math.random() * 12, (float) Math.random() * 100));
+			}
+
+			Line line = new Line();
+
+			int linesNum = data.getLines().size();
+			switch (linesNum) {
+			case 1:
+				line.setColor(Utils.COLOR_BLUE);
+				break;
+			case 2:
+				line.setColor(Utils.COLOR_ORANGE);
+				break;
+			case 3:
+				line.setColor(Utils.COLOR_VIOLET);
+				break;
+			default:
+				line.setColor(Utils.COLOR_RED);
+				break;
+			}
+
+			data.getLines().add(line);
 		}
 
 		@Override
@@ -94,6 +127,8 @@ public class LineChartActivity extends ActionBarActivity {
 				return true;
 			}
 			if (id == R.id.action_add_line) {
+				addLineToData();
+				chart.setLineChartData(data);
 				return true;
 			}
 			if (id == R.id.action_toggle_lines) {
