@@ -1,31 +1,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="lecho.lib.hellocharts.samples.ColumnChartActivity" >
+    tools:context="lecho.lib.hellocharts.samples.BubbleChartActivity" >
 
     <item
         android:id="@+id/action_reset"
         android:title="Reset chart"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/action_subcolumns"
-        android:title="Subcolumns"
+        android:id="@+id/action_shape_circles"
+        android:title="Circle shape"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/action_stacked"
-        android:title="Stacked"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/action_negative_subcolumns"
-        android:title="Negative subcolumns"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/action_negative_stacked"
-        android:title="Negative stacked"
+        android:id="@+id/action_shape_square"
+        android:title="Square shape"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_toggle_axes"
-        android:title="Toglge axes"
+        android:title="Toggle axes"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_toggle_axes_names"

@@ -92,6 +92,8 @@ public class MainActivity extends ActionBarActivity {
 				break;
 			case 3:
 				// Bubble Chart;
+				intent = new Intent(getActivity(), BubbleChartActivity.class);
+				startActivity(intent);
 				break;
 			default:
 				break;

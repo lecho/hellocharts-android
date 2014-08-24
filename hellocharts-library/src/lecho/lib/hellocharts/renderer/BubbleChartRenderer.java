@@ -20,24 +20,37 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	private BubbleChartDataProvider dataProvider;
 
 	private int touchAdditional;
+
 	/**
 	 * Scales for bubble radius value, only one is used depending on screen orientation;
 	 */
 	private float bubbleScaleX;
 	private float bubbleScaleY;
+
 	/**
 	 * True if bubbleScale = bubbleScaleX so the renderer should used {@link ChartComputator#computeRawDistanceX(float)}
 	 * , if false bubbleScale = bubbleScaleY and renderer should use
 	 * {@link ChartComputator#calculateRawDistanceY(float)}.
 	 */
 	private boolean isBubbleScaledByX = true;
+
 	/**
 	 * Maximum bubble radius.
 	 */
 	private float maxRadius;
+
+	/**
+	 * Minimal bubble radius in pixels.
+	 */
+	private float minRawRadius;
 	private PointF bubbleCenter = new PointF();
 	private Paint bubblePaint = new Paint();
 	private RectF labelRect = new RectF();
+
+	/**
+	 * Rect used for drawing bubbles with SHAPE_SQUARE.
+	 */
+	private RectF bubbleRect = new RectF();
 
 	public BubbleChartRenderer(Context context, Chart chart, BubbleChartDataProvider dataProvider) {
 		super(context, chart);
@@ -91,12 +104,18 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		for (BubbleValue bubbleValue : data.getValues()) {
 			float rawRadius = processBubble(computator, data, bubbleValue, bubbleCenter);
 
-			final float diffX = touchX - bubbleCenter.x;
-			final float diffY = touchY - bubbleCenter.y;
-			final float touchDistance = (float) Math.sqrt((diffX * diffX) + (diffY * diffY));
+			if (bubbleValue.getShape() == BubbleValue.SHAPE_SQUARE) {
+				if (bubbleRect.contains(touchX, touchY)) {
+					selectedValue.set(valueIndex, valueIndex);
+				}
+			} else {
+				final float diffX = touchX - bubbleCenter.x;
+				final float diffY = touchY - bubbleCenter.y;
+				final float touchDistance = (float) Math.sqrt((diffX * diffX) + (diffY * diffY));
 
-			if (touchDistance <= rawRadius) {
-				selectedValue.set(valueIndex, valueIndex);
+				if (touchDistance <= rawRadius) {
+					selectedValue.set(valueIndex, valueIndex);
+				}
 			}
 			++valueIndex;
 		}
@@ -138,10 +157,6 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		maxViewport.inset(dx, dy);
 		Viewport currentViewport = computator.getCurrentViewport();
 		currentViewport.inset(dx, dy);
-		// float left = tempMaxViewport.left + dx;
-		// float top = tempMaxViewport.top - dy;
-		// float right = tempMaxViewport.right - dx;
-		// float bottom = tempMaxViewport.bottom + dy;
 		computator.setMaxViewport(maxViewport);
 		computator.setCurrentViewport(currentViewport);
 	}
@@ -156,12 +171,23 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	private void drawBubble(Canvas canvas, BubbleChartData data, BubbleValue bubbleValue) {
 		final ChartComputator computator = chart.getChartComputator();
 		float rawRadius = processBubble(computator, data, bubbleValue, bubbleCenter);
-
-		bubblePaint.setColor(bubbleValue.getColor());
+		// Not touched bubbles are a little smaller than touched to give user touch feedback.
 		rawRadius -= touchAdditional;
-		canvas.drawCircle(bubbleCenter.x, bubbleCenter.y, rawRadius, bubblePaint);
+		bubbleRect.inset(touchAdditional, touchAdditional);
+		bubblePaint.setColor(bubbleValue.getColor());
+		drawBubbleShapeAndLabel(canvas, data, bubbleValue, rawRadius);
+
+	}
+
+	private void drawBubbleShapeAndLabel(Canvas canvas, BubbleChartData data, BubbleValue bubbleValue, float rawRadius) {
+		if (bubbleValue.getShape() == BubbleValue.SHAPE_SQUARE) {
+			canvas.drawRect(bubbleRect, bubblePaint);
+		} else {
+			canvas.drawCircle(bubbleCenter.x, bubbleCenter.y, rawRadius, bubblePaint);
+		}
+
 		if (data.hasLabels()) {
-			drawLabel(canvas, computator, data, bubbleValue, bubbleCenter.x, bubbleCenter.y);
+			drawLabel(canvas, data, bubbleValue, bubbleCenter.x, bubbleCenter.y);
 		}
 	}
 
@@ -174,12 +200,8 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	private void highlightBubble(Canvas canvas, BubbleChartData data, BubbleValue bubbleValue) {
 		final ChartComputator computator = chart.getChartComputator();
 		float rawRadius = processBubble(computator, data, bubbleValue, bubbleCenter);
-
 		bubblePaint.setColor(bubbleValue.getDarkenColor());
-		canvas.drawCircle(bubbleCenter.x, bubbleCenter.y, rawRadius, bubblePaint);
-		if (data.hasLabels() || data.hasLabelsOnlyForSelected()) {
-			drawLabel(canvas, computator, data, bubbleValue, bubbleCenter.x, bubbleCenter.y);
-		}
+		drawBubbleShapeAndLabel(canvas, data, bubbleValue, rawRadius);
 	}
 
 	/**
@@ -205,16 +227,19 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 			rawRadius = computator.calculateRawDistanceY(radius);
 		}
 
-		if (rawRadius < data.getMinBubbleRadius()) {
-			rawRadius = data.getMinBubbleRadius() + touchAdditional;
+		if (rawRadius < minRawRadius + touchAdditional) {
+			rawRadius = minRawRadius + touchAdditional;
 		}
 
 		bubbleCenter.set(rawX, rawY);
+		if (bubbleValue.getShape() == BubbleValue.SHAPE_SQUARE) {
+			bubbleRect.set(rawX - rawRadius, rawY - rawRadius, rawX + rawRadius, rawY + rawRadius);
+		}
 		return rawRadius;
 	}
 
-	private void drawLabel(Canvas canvas, ChartComputator computator, BubbleChartData data, BubbleValue bubbleValue,
-			float rawX, float rawY) {
+	private void drawLabel(Canvas canvas, BubbleChartData data, BubbleValue bubbleValue, float rawX, float rawY) {
+		final ChartComputator computator = chart.getChartComputator();
 		final Rect contentRect = computator.getContentRect();
 		final int nummChars = data.getFormatter().formatValue(labelBuffer, bubbleValue.getZ());
 		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
@@ -278,6 +303,8 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		bubbleScaleY *= data.getBubbleScale();
 		// Prevent cutting of bubbles on the edges of chart area.
 		tempMaxViewport.inset(-maxRadius * bubbleScaleX, -maxRadius * bubbleScaleY);
+
+		minRawRadius = Utils.dp2px(density, dataProvider.getBubbleChartData().getMinBubbleRadius());
 	}
 
 	private int calculateContentAreaMargin() {

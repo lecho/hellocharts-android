@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lecho.lib.hellocharts.BubbleChartDataProvider;
+import lecho.lib.hellocharts.BuildConfig;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.BubbleChartData;
 import lecho.lib.hellocharts.model.BubbleValue;
@@ -13,6 +14,7 @@ import lecho.lib.hellocharts.renderer.BubbleChartRenderer;
 import android.content.Context;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 
 public class BubbleChartView extends AbstractChartView implements BubbleChartDataProvider {
 	private static final String TAG = "BubbleChartView";
@@ -38,6 +40,10 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
 
 	@Override
 	public void setBubbleChartData(BubbleChartData data) {
+		if (BuildConfig.DEBUG) {
+			Log.d(TAG, "Setting data for BubbleChartView");
+		}
+
 		if (null == data) {
 			this.data = generateDummyData();
 		} else {

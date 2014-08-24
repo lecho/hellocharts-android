@@ -10,12 +10,12 @@ import java.util.List;
  * 
  */
 public class BubbleChartData extends AbstractChartData {
-	public static final int DEFAULT_MIN_BUBBLE_RADIUS_DP = 4;
+	public static final int DEFAULT_MIN_BUBBLE_RADIUS_DP = 6;
 	public static final float DEFAULT_BUBBLE_SCALE = 1f;
 	private ValueFormatter formatter = new NumberValueFormatter();
 	private boolean hasLabels = false;
 	private boolean hasLabelsOnlyForSelected = false;
-	private int minBubbleRadius = DEFAULT_TEXT_SIZE_SP;
+	private int minBubbleRadius = DEFAULT_MIN_BUBBLE_RADIUS_DP;
 	private float bubbleScale = DEFAULT_BUBBLE_SCALE;
 	// TODO: consider Collections.emptyList()
 	private List<BubbleValue> values = new ArrayList<BubbleValue>();

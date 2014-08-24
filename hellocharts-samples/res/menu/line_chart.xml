@@ -37,11 +37,11 @@
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_toggle_axes"
-        android:title="Togle axes"
+        android:title="Toggle axes"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_toggle_axes_names"
-        android:title="Togle axes names"
+        android:title="Toggle axes names"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_toggle_labels"

@@ -32,7 +32,7 @@ public class PieChartActivity extends ActionBarActivity {
 	}
 
 	/**
-	 * A placeholder fragment containing a simple view.
+	 * A fragment containing a pie chart.
 	 */
 	public static class PlaceholderFragment extends Fragment {
 
