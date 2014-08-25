@@ -25,6 +25,11 @@ public class ColumnValue {
 		setColor(color);
 	}
 
+	public ColumnValue(ColumnValue columnValue) {
+		setValue(columnValue.value);
+		setColor(columnValue.color);
+	}
+
 	public void update(float scale) {
 		value = orginValue + diff * scale;
 	}

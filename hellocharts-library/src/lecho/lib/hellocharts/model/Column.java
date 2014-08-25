@@ -22,6 +22,16 @@ public class Column {
 		setValues(values);
 	}
 
+	public Column(Column column) {
+		this.hasLabels = column.hasLabels;
+		this.hasLabelsOnlyForSelected = column.hasLabelsOnlyForSelected;
+		this.formatter = column.formatter;
+
+		for (ColumnValue columnValue : column.values) {
+			this.values.add(new ColumnValue(columnValue));
+		}
+	}
+
 	public List<ColumnValue> getValues() {
 		return values;
 	}

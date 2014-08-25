@@ -16,6 +16,19 @@ public class ColumnChartData extends AbstractChartData {
 		setColumns(columns);
 	}
 
+	/**
+	 * Copy constructor for deep copy.
+	 */
+	public ColumnChartData(ColumnChartData data) {
+		super(data);
+		this.isStacked = data.isStacked;
+		this.fillRatio = data.fillRatio;
+
+		for (Column column : data.columns) {
+			this.columns.add(new Column(column));
+		}
+	}
+
 	public List<Column> getColumns() {
 		return columns;
 	}
