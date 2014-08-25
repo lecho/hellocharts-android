@@ -136,7 +136,13 @@ public class PreviewColumnChartActivity extends ActionBarActivity {
 			// data.getAxisY().setName("Axis Y");
 
 			// prepare preview data, is better to use separate deep copy for preview chart.
+			// set color to grey to make preview area more visible.
 			previewData = new ColumnChartData(data);
+			for (Column column : previewData.getColumns()) {
+				for (ColumnValue value : column.getValues()) {
+					value.setColor(Utils.DEFAULT_COLOR);
+				}
+			}
 
 		}
 

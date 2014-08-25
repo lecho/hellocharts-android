@@ -136,8 +136,9 @@ public class PreviewLineChartActivity extends ActionBarActivity {
 			// data.getAxisY().setName("Axis Y");
 
 			// prepare preview data, is better to use separate deep copy for preview chart.
+			// Set color to grey to make preview area more visible.
 			previewData = new LineChartData(data);
-			previewData.getLines().get(0).setColor(Utils.COLOR_ORANGE);
+			previewData.getLines().get(0).setColor(Utils.DEFAULT_COLOR);
 
 		}
 

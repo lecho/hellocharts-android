@@ -122,7 +122,7 @@ public class PieChartActivity extends ActionBarActivity {
 
 		private void explodeChart() {
 			for (ArcValue value : data.getValues()) {
-				value.setArcSpacing(16);
+				value.setArcSpacing(24);
 			}
 		}
 
