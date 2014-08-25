@@ -17,7 +17,6 @@ public class PieChartData extends AbstractChartData {
 	private List<ArcValue> values = new ArrayList<ArcValue>();
 
 	public PieChartData() {
-		this(null);
 	};
 
 	public PieChartData(List<ArcValue> values) {
@@ -25,6 +24,17 @@ public class PieChartData extends AbstractChartData {
 		// Empty axes. Pie chart don't need axes.
 		setAxisX(null);
 		setAxisY(null);
+	}
+
+	public PieChartData(PieChartData data) {
+		super(data);
+		this.formatter = data.formatter;
+		this.hasLabels = data.hasLabels;
+		this.hasLabelsOnlyForSelected = data.hasLabelsOnlyForSelected;
+
+		for (ArcValue arcValue : data.values) {
+			this.values.add(new ArcValue(arcValue));
+		}
 	}
 
 	/**

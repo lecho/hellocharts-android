@@ -22,15 +22,24 @@ public class ArcValue {
 	}
 
 	public ArcValue(float value) {
-		// point and targetPoint have to be different objects
 		setValue(value);
 	}
 
 	public ArcValue(float value, int color) {
-		// point and targetPoint have to be different objects
 		setValue(value);
-		this.color = color;
-		this.darkenColor = Utils.darkenColor(color);
+		setColor(color);
+	}
+
+	public ArcValue(float value, int color, int arcSpacing) {
+		setValue(value);
+		setColor(color);
+		this.arcSpacing = arcSpacing;
+	}
+
+	public ArcValue(ArcValue arcValue) {
+		setValue(arcValue.value);
+		setColor(arcValue.color);
+		this.arcSpacing = arcValue.arcSpacing;
 	}
 
 	public void update(float scale) {
