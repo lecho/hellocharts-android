@@ -9,12 +9,12 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="lecho.lib.hellocharts.samples.PreviewLineChartActivity$PlaceholderFragment" >
 
-    <lecho.lib.hellocharts.view.LineChartView
+    <lecho.lib.hellocharts.view.ColumnChartView
         android:id="@+id/chart"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" >
-    </lecho.lib.hellocharts.view.LineChartView>
+    </lecho.lib.hellocharts.view.ColumnChartView>
 
     <View
         android:layout_width="match_parent"
@@ -23,11 +23,11 @@
         android:layout_marginTop="8dp"
         android:background="@android:color/darker_gray" />
 
-    <lecho.lib.hellocharts.view.PreviewLineChartView
+    <lecho.lib.hellocharts.view.PreviewColumnChartView
         android:id="@+id/chart_preview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" >
-    </lecho.lib.hellocharts.view.PreviewLineChartView>
+    </lecho.lib.hellocharts.view.PreviewColumnChartView>
 
 </LinearLayout>

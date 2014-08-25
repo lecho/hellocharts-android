@@ -1,11 +1,13 @@
 package lecho.lib.hellocharts.view;
 
+import lecho.lib.hellocharts.BuildConfig;
 import lecho.lib.hellocharts.PreviewChartComputator;
 import lecho.lib.hellocharts.gesture.PreviewChartTouchHandler;
 import lecho.lib.hellocharts.renderer.PreviewColumnChartRenderer;
 import android.content.Context;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 
 public class PreviewColumnChartView extends ColumnChartView {
 	private static final String TAG = "ColumnChartView";
@@ -26,9 +28,14 @@ public class PreviewColumnChartView extends ColumnChartView {
 		previewChartRenderer = new PreviewColumnChartRenderer(context, this, this);
 		chartRenderer = previewChartRenderer;
 		touchHandler = new PreviewChartTouchHandler(context, this);
+		setColumnChartData(getColumnChartData());
 	}
 
 	public void setPreviewColor(int color) {
+		if (BuildConfig.DEBUG) {
+			Log.d(TAG, "Changing preview area color");
+		}
+
 		previewChartRenderer.setPreviewColor(color);
 		ViewCompat.postInvalidateOnAnimation(this);
 	}

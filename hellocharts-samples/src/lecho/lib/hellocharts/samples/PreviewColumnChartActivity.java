@@ -5,13 +5,13 @@ import java.util.List;
 
 import lecho.lib.hellocharts.ViewportChangeListener;
 import lecho.lib.hellocharts.gesture.ChartZoomer;
-import lecho.lib.hellocharts.model.Line;
-import lecho.lib.hellocharts.model.LineChartData;
-import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.model.Column;
+import lecho.lib.hellocharts.model.ColumnChartData;
+import lecho.lib.hellocharts.model.ColumnValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.Utils;
-import lecho.lib.hellocharts.view.LineChartView;
-import lecho.lib.hellocharts.view.PreviewLineChartView;
+import lecho.lib.hellocharts.view.ColumnChartView;
+import lecho.lib.hellocharts.view.PreviewColumnChartView;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -22,29 +22,29 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class PreviewLineChartActivity extends ActionBarActivity {
+public class PreviewColumnChartActivity extends ActionBarActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_preview_line_chart);
+		setContentView(R.layout.activity_preview_column_chart);
 		if (savedInstanceState == null) {
 			getSupportFragmentManager().beginTransaction().add(R.id.container, new PlaceholderFragment()).commit();
 		}
 	}
 
 	/**
-	 * A fragment containing a line chart and preview line chart.
+	 * A placeholder fragment containing a simple view.
 	 */
 	public static class PlaceholderFragment extends Fragment {
 
-		private LineChartView chart;
-		private PreviewLineChartView previewChart;
-		private LineChartData data;
+		private ColumnChartView chart;
+		private PreviewColumnChartView previewChart;
+		private ColumnChartData data;
 		/**
 		 * Deep copy of data.
 		 */
-		private LineChartData previewData;
+		private ColumnChartData previewData;
 
 		public PlaceholderFragment() {
 		}
@@ -52,21 +52,21 @@ public class PreviewLineChartActivity extends ActionBarActivity {
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			setHasOptionsMenu(true);
-			View rootView = inflater.inflate(R.layout.fragment_preview_line_chart, container, false);
+			View rootView = inflater.inflate(R.layout.fragment_preview_column_chart, container, false);
 
-			chart = (LineChartView) rootView.findViewById(R.id.chart);
-			previewChart = (PreviewLineChartView) rootView.findViewById(R.id.chart_preview);
+			chart = (ColumnChartView) rootView.findViewById(R.id.chart);
+			previewChart = (PreviewColumnChartView) rootView.findViewById(R.id.chart_preview);
 
 			// Generate data for previewed chart and copy of that data for preview chart.
 			generateDefaultData();
 
-			chart.setLineChartData(data);
+			chart.setColumnChartData(data);
 			// Disable zoom/scroll for previewed chart, visible chart ranges depends on preview chart viewport so
 			// zoom/scroll is unnecessary.
 			chart.setZoomEnabled(false);
 			chart.setScrollEnabled(false);
 
-			previewChart.setLineChartData(previewData);
+			previewChart.setColumnChartData(previewData);
 			previewChart.setViewportChangeListener(new ViewportListener());
 
 			previewXY(false);
@@ -77,7 +77,7 @@ public class PreviewLineChartActivity extends ActionBarActivity {
 		// MENU
 		@Override
 		public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-			inflater.inflate(R.menu.preview_line_chart, menu);
+			inflater.inflate(R.menu.preview_column_chart, menu);
 		}
 
 		@Override
@@ -85,8 +85,8 @@ public class PreviewLineChartActivity extends ActionBarActivity {
 			int id = item.getItemId();
 			if (id == R.id.action_reset) {
 				generateDefaultData();
-				chart.setLineChartData(data);
-				previewChart.setLineChartData(previewData);
+				chart.setColumnChartData(data);
+				previewChart.setColumnChartData(previewData);
 				previewXY(true);
 				return true;
 			}
@@ -115,29 +115,28 @@ public class PreviewLineChartActivity extends ActionBarActivity {
 		}
 
 		private void generateDefaultData() {
-			int numValues = 50;
+			int numSubcolumns = 1;
+			int numColumns = 50;
+			List<Column> columns = new ArrayList<Column>();
+			List<ColumnValue> values;
+			for (int i = 0; i < numColumns; ++i) {
 
-			List<PointValue> values = new ArrayList<PointValue>();
-			for (int i = 0; i < numValues; ++i) {
-				values.add(new PointValue(i, (float) Math.random() * 100f));
+				values = new ArrayList<ColumnValue>();
+				for (int j = 0; j < numSubcolumns; ++j) {
+					values.add(new ColumnValue((float) Math.random() * 50f + 5, Utils.pickColor()));
+				}
+
+				columns.add(new Column(values));
 			}
 
-			Line line = new Line(values);
-			line.setColor(Utils.COLOR_GREEN);
-			line.setHasPoints(false);// too many values so don't draw points.
+			data = new ColumnChartData(columns);
 
-			List<Line> lines = new ArrayList<Line>();
-			lines.add(line);
-
-			data = new LineChartData(lines);
-
-			// Disable axes, no needed for demo.
+			// Auto-generated axes with empty names.
 			// data.getAxisX().setName("Axis X");
 			// data.getAxisY().setName("Axis Y");
 
 			// prepare preview data, is better to use separate deep copy for preview chart.
-			previewData = new LineChartData(data);
-			previewData.getLines().get(0).setColor(Utils.COLOR_ORANGE);
+			previewData = new ColumnChartData(data);
 
 		}
 
@@ -175,11 +174,11 @@ public class PreviewLineChartActivity extends ActionBarActivity {
 
 			@Override
 			public void onViewportChanged(Viewport newViewport) {
-				// don't use animation, it is unnecessary when using preview chart.
+				// don't use animation, it is unnecessary when using preview chart because usually viewport changes
+				// happens to often.
 				chart.setViewport(newViewport, false);
 			}
 
 		}
-
 	}
 }

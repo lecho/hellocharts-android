@@ -42,6 +42,10 @@
             android:name=".PreviewLineChartActivity"
             android:label="@string/title_activity_preview_line_chart" >
         </activity>
+        <activity
+            android:name=".PreviewColumnChartActivity"
+            android:label="@string/title_activity_preview_column_chart" >
+        </activity>
     </application>
 
 </manifest>

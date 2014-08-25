@@ -9,5 +9,6 @@
     <string name="title_activity_pie_chart">PieChartActivity</string>
     <string name="title_activity_bubble_chart">BubbleChartActivity</string>
     <string name="title_activity_preview_line_chart">PreviewLineChartActivity</string>
+    <string name="title_activity_preview_column_chart">PreviewColumnChartActivity</string>
 
 </resources>
