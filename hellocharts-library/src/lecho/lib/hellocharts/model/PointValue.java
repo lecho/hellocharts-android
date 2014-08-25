@@ -20,6 +20,10 @@ public class PointValue {
 		set(x, y);
 	}
 
+	public PointValue(PointValue pointValue) {
+		set(pointValue.x, pointValue.y);
+	}
+
 	public void update(float scale) {
 		x = orginX + diffX * scale;
 		y = orginY + diffY * scale;

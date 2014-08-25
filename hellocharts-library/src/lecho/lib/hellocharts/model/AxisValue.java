@@ -16,6 +16,11 @@ public class AxisValue {
 		this.valueName = valueName;
 	}
 
+	public AxisValue(AxisValue axisValue) {
+		this.value = axisValue.value;
+		this.valueName = axisValue.valueName;
+	}
+
 	public float getValue() {
 		return value;
 	}

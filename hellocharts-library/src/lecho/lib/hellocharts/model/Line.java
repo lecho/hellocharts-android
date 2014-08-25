@@ -25,7 +25,6 @@ public class Line {
 	private boolean isFilled = false;
 	private int pointShape = SHAPE_CIRCLE;
 	private ValueFormatter formatter = new NumberValueFormatter();
-	// TODO: consider Collections.emptyList()
 	private List<PointValue> values = new ArrayList<PointValue>();
 
 	public Line() {
@@ -34,6 +33,26 @@ public class Line {
 
 	public Line(List<PointValue> values) {
 		setValues(values);
+	}
+
+	public Line(Line line) {
+		this.color = line.color;
+		this.darkenColor = line.color;
+		this.areaTransparency = line.areaTransparency;
+		this.strokeWidth = line.strokeWidth;
+		this.pointRadius = line.pointRadius;
+		this.hasPoints = line.hasPoints;
+		this.hasLines = line.hasLines;
+		this.hasLabels = line.hasLabels;
+		this.hasLabelsOnlyForSelected = line.hasLabelsOnlyForSelected;
+		this.isSmooth = line.isSmooth;
+		this.isFilled = line.isFilled;
+		this.pointShape = line.pointShape;
+		this.formatter = line.formatter;
+
+		for (PointValue pointValue : line.values) {
+			this.values.add(new PointValue(pointValue));
+		}
 	}
 
 	public void setValues(List<PointValue> values) {

@@ -16,6 +16,18 @@ public class LineChartData extends AbstractChartData {
 		setLines(lines);
 	}
 
+	/**
+	 * Copy constructor to perform deep copy of chart data.
+	 */
+	public LineChartData(LineChartData data) {
+		super(data);
+		this.baseValue = data.baseValue;
+
+		for (Line line : data.lines) {
+			this.lines.add(new Line(line));
+		}
+	}
+
 	public List<Line> getLines() {
 		return lines;
 	}
