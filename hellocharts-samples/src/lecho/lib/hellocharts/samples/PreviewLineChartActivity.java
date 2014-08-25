@@ -69,7 +69,7 @@ public class PreviewLineChartActivity extends ActionBarActivity {
 			previewChart.setLineChartData(previewData);
 			previewChart.setViewportChangeListener(new ViewportListener());
 
-			previewXY(false);
+			previewX(false);
 
 			return rootView;
 		}
@@ -87,16 +87,16 @@ public class PreviewLineChartActivity extends ActionBarActivity {
 				generateDefaultData();
 				chart.setLineChartData(data);
 				previewChart.setLineChartData(previewData);
-				previewXY(true);
+				previewX(true);
 				return true;
 			}
 			if (id == R.id.action_preview_both) {
-				previewXY(true);
+				previewXY();
 				previewChart.setZoomType(ChartZoomer.ZOOM_HORIZONTAL_AND_VERTICAL);
 				return true;
 			}
 			if (id == R.id.action_preview_horizontal) {
-				previewX();
+				previewX(true);
 				return true;
 			}
 			if (id == R.id.action_preview_vertical) {
@@ -138,7 +138,7 @@ public class PreviewLineChartActivity extends ActionBarActivity {
 			// prepare preview data, is better to use separate deep copy for preview chart.
 			// Set color to grey to make preview area more visible.
 			previewData = new LineChartData(data);
-			previewData.getLines().get(0).setColor(Utils.DEFAULT_COLOR);
+			previewData.getLines().get(0).setColor(Utils.DEFAULT_DARKEN_COLOR);
 
 		}
 
@@ -150,22 +150,22 @@ public class PreviewLineChartActivity extends ActionBarActivity {
 			previewChart.setZoomType(ChartZoomer.ZOOM_VERTICAL);
 		}
 
-		private void previewX() {
+		private void previewX(boolean animate) {
 			Viewport tempViewport = new Viewport(chart.getMaxViewport());
 			float dx = tempViewport.width() / 4;
 			tempViewport.inset(dx, 0);
-			previewChart.setViewport(tempViewport, true);
+			previewChart.setViewport(tempViewport, animate);
 			previewChart.setZoomType(ChartZoomer.ZOOM_HORIZONTAL);
 		}
 
-		private void previewXY(boolean animate) {
+		private void previewXY() {
 			// Better to not modify viewport of any chart directly so create a copy.
 			Viewport tempViewport = new Viewport(chart.getMaxViewport());
 			// Make temp viewport smaller.
 			float dx = tempViewport.width() / 4;
 			float dy = tempViewport.height() / 4;
 			tempViewport.inset(dx, dy);
-			previewChart.setViewport(tempViewport, animate);
+			previewChart.setViewport(tempViewport, true);
 		}
 
 		/**

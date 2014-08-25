@@ -43,6 +43,13 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private Canvas secondCanvas = new Canvas();
 
 	/**
+	 * Indicates when secondBitmap needs to be drawn, that is when chart uses Bezier's curves or filled area. If set to
+	 * false secondBitmap will not be drawn and therefore chart will be rendered much faster. This flag is set in
+	 * {@link #calculateMaxViewport()} method.
+	 */
+	private boolean needSecondBitmap = false;
+
+	/**
 	 * Simple Path implementation that uses drawLines() method.
 	 */
 	private PathCompat pathCompat = new PathCompat();
@@ -77,7 +84,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		Rect contentRect = chart.getChartComputator().getContentRect();
 		final int width = contentRect.width();
 		final int height = contentRect.height();
-		if (width > 0 && height > 0) {
+		if (width > 0 && height > 0 && needSecondBitmap) {
 			secondBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 			secondCanvas.setBitmap(secondBitmap);
 		}
@@ -86,9 +93,11 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	@Override
 	public void draw(Canvas canvas) {
 		final LineChartData data = dataProvider.getLineChartData();
-		final ChartComputator computator = chart.getChartComputator();
-		final Rect contentRect = computator.getContentRect();
-		secondCanvas.drawColor(Color.TRANSPARENT, Mode.CLEAR);
+
+		if (needSecondBitmap) {
+			secondCanvas.drawColor(Color.TRANSPARENT, Mode.CLEAR);
+		}
+
 		for (Line line : data.getLines()) {
 			if (line.hasLines()) {
 				if (line.isSmooth()) {
@@ -98,7 +107,12 @@ public class LineChartRenderer extends AbstractChartRenderer {
 				}
 			}
 		}
-		canvas.drawBitmap(secondBitmap, contentRect.left, contentRect.top, null);
+
+		if (needSecondBitmap) {
+			final ChartComputator computator = chart.getChartComputator();
+			final Rect contentRect = computator.getContentRect();
+			canvas.drawBitmap(secondBitmap, contentRect.left, contentRect.top, null);
+		}
 	}
 
 	@Override
@@ -148,8 +162,11 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		tempMaxViewport.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
 		LineChartData data = dataProvider.getLineChartData();
 
-		// TODO: Optimize.
+		needSecondBitmap = false;
 		for (Line line : data.getLines()) {
+			if (line.isFilled() || line.isSmooth()) {
+				needSecondBitmap = true;
+			}
 			// Calculate max and min for viewport.
 			for (PointValue pointValue : line.getValues()) {
 				if (pointValue.getX() < tempMaxViewport.left) {
