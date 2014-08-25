@@ -1,0 +1,27 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="lecho.lib.hellocharts.samples.PreviewLineChartActivity" >
+
+    <item
+        android:id="@+id/action_reset"
+        android:title="Reset chart"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_preview_both"
+        android:title="Preview X/Y"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_preview_horizontal"
+        android:title="Preveiw X"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_preview_vertical"
+        android:title="Preview Y"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_change_color"
+        android:title="Change color"
+        app:showAsAction="never"/>
+
+</menu>

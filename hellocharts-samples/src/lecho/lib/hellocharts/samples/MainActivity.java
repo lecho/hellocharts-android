@@ -95,6 +95,11 @@ public class MainActivity extends ActionBarActivity {
 				intent = new Intent(getActivity(), BubbleChartActivity.class);
 				startActivity(intent);
 				break;
+			case 4:
+				// Preview Line Chart;
+				intent = new Intent(getActivity(), PreviewLineChartActivity.class);
+				startActivity(intent);
+				break;
 			default:
 				break;
 			}
@@ -107,6 +112,7 @@ public class MainActivity extends ActionBarActivity {
 			list.add(new ChartSampleDescription("Column Chart", ""));
 			list.add(new ChartSampleDescription("Pie Chart", ""));
 			list.add(new ChartSampleDescription("Bubble Chart", ""));
+			list.add(new ChartSampleDescription("Preview Line Chart", ""));
 
 			return list;
 		}

@@ -4,6 +4,9 @@ import lecho.lib.hellocharts.model.Viewport;
 
 public interface ViewportChangeListener {
 
-	public void onViewportChanged(Viewport newViewport);
+	/**
+	 * Called when current viewport of chart changed. You should not modify that viewport.
+	 */
+	public void onViewportChanged(Viewport viewport);
 
 }
