@@ -66,7 +66,7 @@ public class PreviewLineChartActivity extends ActionBarActivity {
 			previewChart.setLineChartData(previewData);
 			previewChart.setViewportChangeListener(new ViewportListener());
 
-			previewXY();
+			previewXY(false);
 
 			return rootView;
 		}
@@ -84,11 +84,11 @@ public class PreviewLineChartActivity extends ActionBarActivity {
 				generateDefaultData();
 				chart.setLineChartData(data);
 				previewChart.setLineChartData(previewData);
-				previewXY();
+				previewXY(true);
 				return true;
 			}
 			if (id == R.id.action_preview_both) {
-				previewXY();
+				previewXY(true);
 				previewChart.setZoomType(ChartZoomer.ZOOM_HORIZONTAL_AND_VERTICAL);
 				return true;
 			}
@@ -105,7 +105,7 @@ public class PreviewLineChartActivity extends ActionBarActivity {
 				while (color == previewChart.getPreviewColor()) {
 					color = Utils.pickColor();
 				}
-				previewChart.setPreviewColor(Utils.pickColor());
+				previewChart.setPreviewColor(color);
 				return true;
 			}
 			return super.onOptionsItemSelected(item);
@@ -154,14 +154,14 @@ public class PreviewLineChartActivity extends ActionBarActivity {
 			previewChart.setZoomType(ChartZoomer.ZOOM_HORIZONTAL);
 		}
 
-		private void previewXY() {
+		private void previewXY(boolean animate) {
 			// Better to not modify viewport of any chart directly so create a copy.
 			Viewport tempViewport = new Viewport(chart.getMaxViewport());
 			// Make temp viewport smaller.
 			float dx = tempViewport.width() / 4;
 			float dy = tempViewport.height() / 4;
 			tempViewport.inset(dx, dy);
-			previewChart.setViewport(tempViewport, false);
+			previewChart.setViewport(tempViewport, animate);
 		}
 
 		/**
