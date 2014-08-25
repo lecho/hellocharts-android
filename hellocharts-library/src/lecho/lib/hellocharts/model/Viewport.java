@@ -10,6 +10,9 @@ import android.os.Parcelable;
  * most methods do not check to see that the coordinates are sorted correctly (i.e. left <= right and bottom <= top).
  * 
  * Viewport implements Parcerable.
+ * 
+ * @author Leszek Wach
+ * 
  */
 public class Viewport implements Parcelable {
 

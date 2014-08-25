@@ -9,6 +9,9 @@ import java.util.List;
  * will be ignored. Change how axis labels are displayed by changing formatter {@link #setFormatter(ValueFormatter)}.
  * Axis can have a name that should be displayed next to labels(that depends on renderer implementation), you can change
  * name using {@link #setName(String)}, by default axis name is empty and therefore not displayed.
+ * 
+ * @author Leszek Wach
+ * 
  */
 public class Axis {
 	private List<AxisValue> values = new ArrayList<AxisValue>();

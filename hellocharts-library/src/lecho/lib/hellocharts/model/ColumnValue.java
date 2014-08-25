@@ -5,6 +5,9 @@ import lecho.lib.hellocharts.util.Utils;
 /**
  * Single value for ColumnChart. Column values are drown side by side for default Column configuration. If ColumnChart
  * is stacked ColumnValues are drown above or below each other.
+ * 
+ * @author Leszek Wach
+ * 
  */
 public class ColumnValue {
 

@@ -3,6 +3,12 @@ package lecho.lib.hellocharts.model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Data model for line chart.
+ * 
+ * @author Leszek Wach
+ * 
+ */
 public class LineChartData extends AbstractChartData {
 
 	private List<Line> lines = new ArrayList<Line>();

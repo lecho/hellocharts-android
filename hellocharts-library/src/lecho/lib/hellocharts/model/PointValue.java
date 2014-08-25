@@ -2,6 +2,9 @@ package lecho.lib.hellocharts.model;
 
 /**
  * Single point coordinates.
+ * 
+ * @author Leszek Wach
+ * 
  */
 public class PointValue {
 

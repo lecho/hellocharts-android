@@ -3,6 +3,12 @@ package lecho.lib.hellocharts.model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Data model for column chart.
+ * 
+ * @author Leszek Wach
+ * 
+ */
 public class ColumnChartData extends AbstractChartData {
 	public static final float DEFAULT_FILL_RATIO = 0.75f;
 	private List<Column> columns = new ArrayList<Column>();

@@ -6,6 +6,12 @@ import java.util.List;
 
 import lecho.lib.hellocharts.util.Utils;
 
+/**
+ * Single line for line chart.
+ * 
+ * @author Leszek Wach
+ * 
+ */
 public class Line {
 	public static final int SHAPE_CIRCLE = 1;
 	public static final int SHAPE_SQUARE = 2;

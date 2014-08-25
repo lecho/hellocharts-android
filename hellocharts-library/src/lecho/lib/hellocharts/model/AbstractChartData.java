@@ -4,6 +4,9 @@ import android.graphics.Color;
 
 /**
  * Base class for most chart data models.
+ * 
+ * @author Leszek Wach
+ * 
  */
 public abstract class AbstractChartData implements ChartData {
 	public static final int DEFAULT_TEXT_SIZE_SP = 12;

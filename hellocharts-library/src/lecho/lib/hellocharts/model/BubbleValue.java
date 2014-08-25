@@ -4,6 +4,9 @@ import lecho.lib.hellocharts.util.Utils;
 
 /**
  * Single value drawn as bubble on BubbleChart.
+ * 
+ * @author Leszek Wach
+ * 
  */
 public class BubbleValue {
 	public static final int SHAPE_CIRCLE = 1;

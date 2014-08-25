@@ -2,6 +2,9 @@ package lecho.lib.hellocharts.model;
 
 /**
  * Base interface for all chart data models.
+ * 
+ * @author Leszek Wach
+ * 
  */
 public interface ChartData {
 

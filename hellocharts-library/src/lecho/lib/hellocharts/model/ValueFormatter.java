@@ -2,6 +2,9 @@ package lecho.lib.hellocharts.model;
 
 /**
  * Interface for all value formatters used for axes and value labels.
+ * 
+ * @author Leszek Wach
+ * 
  */
 public interface ValueFormatter {
 

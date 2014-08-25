@@ -9,6 +9,9 @@ import lecho.lib.hellocharts.util.Utils;
  * Default value formatter. Can be used for axes and for value labels. Method {@link #formatValue(char[], float, int)}
  * is used only if formatter is used for auto-generated axis. Maximum number of characters in formated value should be
  * less or equals 32.
+ * 
+ * @author Leszek Wach
+ * 
  */
 public class NumberValueFormatter implements ValueFormatter {
 	protected static final int DEFAULT_DIGITS_NUMBER = 0;
