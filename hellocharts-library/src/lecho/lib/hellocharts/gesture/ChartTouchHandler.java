@@ -17,6 +17,7 @@ public class ChartTouchHandler {
 	// TODO: consider using dummy zoomer and scroller instead of boolean flags
 	protected boolean isInteractive = true;
 	protected boolean isZoomEnabled = true;
+	private boolean isScrollEnabled = true;
 	protected boolean isValueTouchEnabled = true;
 	protected boolean isValueSelectionEnabled = false;
 
@@ -41,7 +42,7 @@ public class ChartTouchHandler {
 		}
 		final ChartComputator computator = chart.getChartComputator();
 		boolean needInvalidate = false;
-		if (isZoomEnabled && chartScroller.computeScrollOffset(computator)) {
+		if (isScrollEnabled && chartScroller.computeScrollOffset(computator)) {
 			needInvalidate = true;
 		}
 		if (isZoomEnabled && chartZoomer.computeZoom(computator)) {
@@ -55,14 +56,15 @@ public class ChartTouchHandler {
 			return false;
 		}
 		boolean needInvalidate = false;
-		if (isZoomEnabled) {
-			// TODO: What the heck, why detectros onTouchEvent() always return true?
-			needInvalidate = scaleGestureDetector.onTouchEvent(event);
-			needInvalidate = gestureDetector.onTouchEvent(event) || needInvalidate;
-		}
+		// TODO: What the heck, why onTouchEvent() always return true?
+
+		needInvalidate = scaleGestureDetector.onTouchEvent(event);
+		needInvalidate = gestureDetector.onTouchEvent(event) || needInvalidate;
+
 		if (isValueTouchEnabled) {
 			needInvalidate = computeTouch(event) || needInvalidate;
 		}
+
 		return needInvalidate;
 	}
 
@@ -123,6 +125,14 @@ public class ChartTouchHandler {
 		return isZoomEnabled;
 	}
 
+	public boolean isScrollEnabled() {
+		return isScrollEnabled;
+	}
+
+	public void setScrollEnabled(boolean isScrollEnabled) {
+		this.isScrollEnabled = isScrollEnabled;
+	}
+
 	public void setZoomType(int zoomType) {
 		chartZoomer.setZoomType(zoomType);
 	}
@@ -156,33 +166,53 @@ public class ChartTouchHandler {
 
 		@Override
 		public boolean onScale(ScaleGestureDetector detector) {
-			float scale = 2.0f - detector.getScaleFactor();
-			if (Float.isInfinite(scale)) {
-				scale = 1;
+			if (isZoomEnabled) {
+				float scale = 2.0f - detector.getScaleFactor();
+				if (Float.isInfinite(scale)) {
+					scale = 1;
+				}
+				return chartZoomer.scale(chart.getChartComputator(), detector.getFocusX(), detector.getFocusY(), scale);
+			} else {
+				return false;
 			}
-			return chartZoomer.scale(chart.getChartComputator(), detector.getFocusX(), detector.getFocusY(), scale);
 		}
 	}
 
 	private class ChartGestureListener extends GestureDetector.SimpleOnGestureListener {
 		@Override
 		public boolean onDown(MotionEvent e) {
-			return chartScroller.startScroll(chart.getChartComputator());
+			if (isScrollEnabled) {
+				return chartScroller.startScroll(chart.getChartComputator());
+			} else {
+				return false;
+			}
 		}
 
 		@Override
 		public boolean onDoubleTap(MotionEvent e) {
-			return chartZoomer.startZoom(e, chart.getChartComputator());
+			if (isZoomEnabled) {
+				return chartZoomer.startZoom(e, chart.getChartComputator());
+			} else {
+				return false;
+			}
 		}
 
 		@Override
 		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-			return chartScroller.scroll(distanceX, distanceY, chart.getChartComputator());
+			if (isScrollEnabled) {
+				return chartScroller.scroll(distanceX, distanceY, chart.getChartComputator());
+			} else {
+				return false;
+			}
 		}
 
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-			return chartScroller.fling((int) -velocityX, (int) -velocityY, chart.getChartComputator());
+			if (isScrollEnabled) {
+				return chartScroller.fling((int) -velocityX, (int) -velocityY, chart.getChartComputator());
+			} else {
+				return false;
+			}
 		}
 	}
 

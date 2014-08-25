@@ -93,6 +93,18 @@ public interface Chart {
 	public void setZoomEnabled(boolean isZoomEnabled);
 
 	/**
+	 * Returns true if scrolling is enabled.
+	 * 
+	 * @see #setScrollEnabled(boolean)
+	 */
+	public boolean isScrollEnabled();
+
+	/**
+	 * Set true to enable scroll, false to disable, by default true;
+	 */
+	public void setScrollEnabled(boolean isScrollEnabled);
+
+	/**
 	 * Returns current zoom type for this chart.
 	 * 
 	 * @see #setZoomType(int)

@@ -121,38 +121,57 @@ public abstract class AbstractChartView extends View implements Chart {
 		chartComputator.setViewportChangeListener(viewportChangeListener);
 	}
 
+	@Override
 	public ChartRenderer getChartRenderer() {
 		return chartRenderer;
 	}
 
+	@Override
 	public AxesRenderer getAxesRenderer() {
 		return axesRenderer;
 	}
 
+	@Override
 	public ChartComputator getChartComputator() {
 		return chartComputator;
 	}
 
+	@Override
 	public ChartTouchHandler getTouchHandler() {
 		return touchHandler;
 	}
 
+	@Override
 	public boolean isInteractive() {
 		return touchHandler.isInteractive();
 	}
 
+	@Override
 	public void setInteractive(boolean isInteractive) {
 		touchHandler.setInteractive(isInteractive);
 	}
 
+	@Override
 	public boolean isZoomEnabled() {
 		return touchHandler.isZoomEnabled();
 	}
 
+	@Override
 	public void setZoomEnabled(boolean isZoomEnabled) {
 		touchHandler.setZoomEnabled(isZoomEnabled);
 	}
 
+	@Override
+	public boolean isScrollEnabled() {
+		return touchHandler.isScrollEnabled();
+	}
+
+	@Override
+	public void setScrollEnabled(boolean isScrollEnabled) {
+		touchHandler.setScrollEnabled(isScrollEnabled);
+	}
+
+	@Override
 	public boolean isValueTouchEnabled() {
 		return touchHandler.isValueTouchEnabled();
 	}
