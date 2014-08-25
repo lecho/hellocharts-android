@@ -27,6 +27,22 @@ public class BubbleChartData extends AbstractChartData {
 		setValues(values);
 	}
 
+	/**
+	 * Copy constructor for deep copy.
+	 */
+	public BubbleChartData(BubbleChartData data) {
+		super(data);
+		this.formatter = data.formatter;
+		this.hasLabels = data.hasLabels;
+		this.hasLabelsOnlyForSelected = data.hasLabelsOnlyForSelected;
+		this.minBubbleRadius = data.minBubbleRadius;
+		this.bubbleScale = data.bubbleScale;
+
+		for (BubbleValue bubbleValue : data.getValues()) {
+			this.values.add(new BubbleValue(bubbleValue));
+		}
+	}
+
 	public List<BubbleValue> getValues() {
 		return values;
 	}
@@ -64,18 +80,35 @@ public class BubbleChartData extends AbstractChartData {
 		return this;
 	}
 
+	/**
+	 * Returns minimal bubble radius in dp.
+	 * 
+	 * @see #setMinBubbleRadius(int)
+	 */
 	public int getMinBubbleRadius() {
 		return minBubbleRadius;
 	}
 
+	/**
+	 * Set minimal bubble radius in dp, helpful when you want small bubbles to be visible on chart, default 6dp
+	 */
 	public void setMinBubbleRadius(int minBubbleRadius) {
 		this.minBubbleRadius = minBubbleRadius;
 	}
 
+	/**
+	 * Returns bubble scale which is used to adjust bubble size.
+	 * 
+	 * @see #setBubbleScale(float)
+	 */
 	public float getBubbleScale() {
 		return bubbleScale;
 	}
 
+	/**
+	 * Set bubble scale which is used to adjust bubble size. If you want smaller bubbles set scale <0, 1>, if you want
+	 * bigger bubbles set scale >1, default 1.0f.
+	 */
 	public void setBubbleScale(float bubbleScale) {
 		this.bubbleScale = bubbleScale;
 	}

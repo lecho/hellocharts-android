@@ -14,6 +14,10 @@ public class ColumnValue {
 	private int color = Utils.DEFAULT_COLOR;
 	private int darkenColor = Utils.DEFAULT_DARKEN_COLOR;
 
+	public ColumnValue() {
+		setValue(0);
+	}
+
 	public ColumnValue(float value) {
 		// point and targetPoint have to be different objects
 		setValue(value);

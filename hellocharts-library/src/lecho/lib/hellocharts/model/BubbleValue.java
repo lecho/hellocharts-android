@@ -21,8 +21,22 @@ public class BubbleValue {
 	private int darkenColor = Utils.DEFAULT_DARKEN_COLOR;
 	private int shape = SHAPE_CIRCLE;
 
+	public BubbleValue() {
+		set(0, 0, 0);
+	}
+
 	public BubbleValue(float x, float y, float z) {
 		set(x, y, z);
+	}
+
+	public BubbleValue(float x, float y, float z, int color) {
+		set(x, y, z);
+		setColor(color);
+	}
+
+	public BubbleValue(BubbleValue bubbleValue) {
+		set(bubbleValue.x, bubbleValue.y, bubbleValue.z);
+		setColor(bubbleValue.color);
 	}
 
 	public void update(float scale) {

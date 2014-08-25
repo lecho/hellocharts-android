@@ -15,7 +15,7 @@ public class ArcValue {
 	private int arcSpacing = DEFAULT_ARC_SPACING_DP;
 
 	public ArcValue() {
-
+		setValue(0);
 	}
 
 	public ArcValue(float value) {
