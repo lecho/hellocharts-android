@@ -16,6 +16,8 @@ import android.graphics.RectF;
 
 public class BubbleChartRenderer extends AbstractChartRenderer {
 	private static final int DEFAULT_TOUCH_ADDITIONAL_DP = 4;
+	private static final int MODE_DRAW = 0;
+	private static final int MODE_HIGHLIGHT = 1;
 
 	private BubbleChartDataProvider dataProvider;
 
@@ -175,19 +177,28 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		rawRadius -= touchAdditional;
 		bubbleRect.inset(touchAdditional, touchAdditional);
 		bubblePaint.setColor(bubbleValue.getColor());
-		drawBubbleShapeAndLabel(canvas, data, bubbleValue, rawRadius);
+		drawBubbleShapeAndLabel(canvas, data, bubbleValue, rawRadius, MODE_DRAW);
 
 	}
 
-	private void drawBubbleShapeAndLabel(Canvas canvas, BubbleChartData data, BubbleValue bubbleValue, float rawRadius) {
+	private void drawBubbleShapeAndLabel(Canvas canvas, BubbleChartData data, BubbleValue bubbleValue, float rawRadius,
+			int mode) {
 		if (bubbleValue.getShape() == BubbleValue.SHAPE_SQUARE) {
 			canvas.drawRect(bubbleRect, bubblePaint);
 		} else {
 			canvas.drawCircle(bubbleCenter.x, bubbleCenter.y, rawRadius, bubblePaint);
 		}
 
-		if (data.hasLabels()) {
-			drawLabel(canvas, data, bubbleValue, bubbleCenter.x, bubbleCenter.y);
+		if (MODE_HIGHLIGHT == mode) {
+			if (data.hasLabels() || data.hasLabelsOnlyForSelected()) {
+				drawLabel(canvas, data, bubbleValue, bubbleCenter.x, bubbleCenter.y);
+			}
+		} else if (MODE_DRAW == mode) {
+			if (data.hasLabels()) {
+				drawLabel(canvas, data, bubbleValue, bubbleCenter.x, bubbleCenter.y);
+			}
+		} else {
+			throw new IllegalStateException("Cannot process bubble in mode: " + mode);
 		}
 	}
 
@@ -201,7 +212,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		final ChartComputator computator = chart.getChartComputator();
 		float rawRadius = processBubble(computator, data, bubbleValue, bubbleCenter);
 		bubblePaint.setColor(bubbleValue.getDarkenColor());
-		drawBubbleShapeAndLabel(canvas, data, bubbleValue, rawRadius);
+		drawBubbleShapeAndLabel(canvas, data, bubbleValue, rawRadius, MODE_HIGHLIGHT);
 	}
 
 	/**
