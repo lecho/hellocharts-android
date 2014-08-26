@@ -347,8 +347,8 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 		float right = drawRect.centerX() + labelWidth / 2 + labelMargin;
 		float top;
 		float bottom;
-		if (isStacked && labelHeight < drawRect.height()) {
-			// For stacked columns draw label only if label height is less than subcolumn height
+		if (isStacked && labelHeight < drawRect.height() - (2 * labelMargin)) {
+			// For stacked columns draw label only if label height is less than subcolumn height - (2 * labelMargin).
 			if (columnValue.getValue() >= DEFAULT_BASE_VALUE) {
 				top = drawRect.top;
 				bottom = drawRect.top + labelHeight + labelMargin * 2;
@@ -356,8 +356,6 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 				top = drawRect.bottom - labelHeight - labelMargin * 2;
 				bottom = drawRect.bottom;
 			}
-			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, left + labelMargin, bottom
-					- labelMargin, labelPaint);
 		} else if (!isStacked) {
 			// For not stacked draw label at the top for positive and at the bottom for negative values
 			if (columnValue.getValue() >= DEFAULT_BASE_VALUE) {
@@ -377,15 +375,17 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 					top = drawRect.bottom + offset;
 				}
 			}
-			int orginColor = labelPaint.getColor();
-			labelPaint.setColor(columnValue.getDarkenColor());
-			canvas.drawRect(left, top, right, bottom, labelPaint);
-			labelPaint.setColor(orginColor);
-			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, left + labelMargin, bottom
-					- labelMargin, labelPaint);
 		} else {
-			// do nothing
+			return;
 		}
+
+		int orginColor = labelPaint.getColor();
+		labelPaint.setColor(columnValue.getDarkenColor());
+		canvas.drawRect(left, top, right, bottom, labelPaint);
+		labelPaint.setColor(orginColor);
+		canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, left + labelMargin, bottom
+				- labelMargin, labelPaint);
+
 	}
 
 }
