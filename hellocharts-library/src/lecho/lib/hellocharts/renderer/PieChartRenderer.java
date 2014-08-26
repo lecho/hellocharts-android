@@ -70,6 +70,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		if (isTouched()) {
 			drawArcs(canvas, MODE_HIGHLIGHT);
 		}
+
 	}
 
 	@Override
@@ -141,14 +142,22 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	 * and will have bigger radius.
 	 */
 	private void drawArc(Canvas canvas, PieChartData data, ArcValue arcValue, float lastAngle, float angle, int mode) {
-		// TODO: Maybe move centerX/Y out of this method.
+		// TODO: Move centerX/Y out of this method.
 		final float centerX = orginCircleOval.centerX();
 		final float centerY = orginCircleOval.centerY();
 		final float circleRadius = orginCircleOval.width() / 2f;
-		final float arcCenterX = (float) (circleRadius * DEFAULT_ARC_VECTOR_RADIUS_FACTOR
-				* Math.cos(Math.toRadians(lastAngle + angle / 2)) + centerX);
-		final float arcCenterY = (float) (circleRadius * DEFAULT_ARC_VECTOR_RADIUS_FACTOR
-				* Math.sin(Math.toRadians(lastAngle + angle / 2)) + centerY);
+		final float labelRadius;
+
+		if (data.hasCenterCircle()) {
+			float x = (circleRadius - (circleRadius * data.getCenterCircleScale())) / 2;
+			labelRadius = circleRadius - x;
+
+		} else {
+			labelRadius = circleRadius * DEFAULT_ARC_VECTOR_RADIUS_FACTOR;
+		}
+
+		final float arcCenterX = (float) (labelRadius * Math.cos(Math.toRadians(lastAngle + angle / 2)) + centerX);
+		final float arcCenterY = (float) (labelRadius * Math.sin(Math.toRadians(lastAngle + angle / 2)) + centerY);
 
 		// Move arc along vector to add spacing between arcs.
 		arcVector.set(arcCenterX - centerX, arcCenterY - centerY);

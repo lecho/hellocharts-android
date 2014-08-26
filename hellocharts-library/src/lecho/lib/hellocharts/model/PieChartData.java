@@ -3,6 +3,8 @@ package lecho.lib.hellocharts.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.graphics.Color;
+
 /**
  * Data for PieChart, by default it doesn't have axes.
  * 
@@ -10,10 +12,17 @@ import java.util.List;
  * 
  */
 public class PieChartData extends AbstractChartData {
+	public static final int DEFAULT_CENTER_TEXT_SIZE_SP = 16;
+	public static final float DEFAULT_CENTER_CIRCLE_SCALE = 0.6f;
 	private ValueFormatter formatter = new NumberValueFormatter();
 	private boolean hasLabels = false;
 	private boolean hasLabelsOnlyForSelected = false;
-	// TODO: consider Collections.emptyList()
+	private boolean hasCenterCircle = false;
+	private int centerTextColor = Color.BLACK;
+	private int centerTextFontSize = DEFAULT_CENTER_TEXT_SIZE_SP;
+	private String centerText;
+	private int centerCircleColor = Color.WHITE;
+	private float centerCircleScale = 0.6f;
 	private List<ArcValue> values = new ArrayList<ArcValue>();
 
 	public PieChartData() {
@@ -88,6 +97,54 @@ public class PieChartData extends AbstractChartData {
 			this.hasLabels = false;
 		}
 		return this;
+	}
+
+	public boolean hasCenterCircle() {
+		return hasCenterCircle;
+	}
+
+	public void setHasCenterCircle(boolean hasCenterCircle) {
+		this.hasCenterCircle = hasCenterCircle;
+	}
+
+	public int getCenterTextColor() {
+		return centerTextColor;
+	}
+
+	public void setCenterTextColor(int centerTextColor) {
+		this.centerTextColor = centerTextColor;
+	}
+
+	public int getCenterTextFontSize() {
+		return centerTextFontSize;
+	}
+
+	public void setCenterTextFontSize(int centerTextFontSize) {
+		this.centerTextFontSize = centerTextFontSize;
+	}
+
+	public String getCenterText() {
+		return centerText;
+	}
+
+	public void setCenterText(String centerText) {
+		this.centerText = centerText;
+	}
+
+	public int getCenterCircleColor() {
+		return centerCircleColor;
+	}
+
+	public void setCenterCircleColor(int centerCircleColor) {
+		this.centerCircleColor = centerCircleColor;
+	}
+
+	public float getCenterCircleScale() {
+		return centerCircleScale;
+	}
+
+	public void setCenterCircleScale(float centerCircleScale) {
+		this.centerCircleScale = centerCircleScale;
 	}
 
 	public ValueFormatter getFormatter() {
