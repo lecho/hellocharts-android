@@ -173,15 +173,15 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		// Draw center text1 and text2 if not empty.
 		if (!TextUtils.isEmpty(data.getCenterText1())) {
 
-			final int text1Bottom = Math.abs(centerCircleText1FontMetrics.bottom);
+			final int text1Height = Math.abs(centerCircleText1FontMetrics.ascent);
 
 			if (!TextUtils.isEmpty(data.getCenterText2())) {
 				// Draw text 2 only if text 1 is not empty.
 				final int text2Height = Math.abs(centerCircleText2FontMetrics.ascent);
-				canvas.drawText(data.getCenterText1(), centerX, centerY - text1Bottom, centerCircleText1Paint);
+				canvas.drawText(data.getCenterText1(), centerX, centerY - text1Height * 0.2f, centerCircleText1Paint);
 				canvas.drawText(data.getCenterText2(), centerX, centerY + text2Height, centerCircleText2Paint);
 			} else {
-				canvas.drawText(data.getCenterText1(), centerX, centerY + text1Bottom, centerCircleText1Paint);
+				canvas.drawText(data.getCenterText1(), centerX, centerY + text1Height / 4, centerCircleText1Paint);
 			}
 		}
 	}

@@ -187,6 +187,9 @@ public class PieChartData extends AbstractChartData {
 		return centerText2;
 	}
 
+	/**
+	 * Note that centerText2 will be drawn only if centerText1 is not empty/null.
+	 */
 	public void setCenterText2(String centerText2) {
 		this.centerText2 = centerText2;
 	}
