@@ -16,6 +16,18 @@
         android:title="Separate single arc"
         app:showAsAction="never"/>
     <item
+        android:id="@+id/action_center_circle"
+        android:title="Center circle"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_center_text1"
+        android:title="Center circle text 1"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_center_text2"
+        android:title="Center circle text 2"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/action_toggle_labels"
         android:title="Toggle labels"
         app:showAsAction="never"/>

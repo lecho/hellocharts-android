@@ -85,6 +85,30 @@ public class PieChartActivity extends ActionBarActivity {
 				chart.setPieChartData(data);
 				return true;
 			}
+			if (id == R.id.action_center_circle) {
+				data.setHasCenterCircle(!data.hasCenterCircle());
+				chart.setPieChartData(data);
+				return true;
+			}
+			if (id == R.id.action_center_text1) {
+				data.setHasCenterCircle(true);
+				data.setCenterText1("Hello!");
+				data.setCenterText2(null);
+				Typeface tf = Typeface.createFromAsset(getActivity().getAssets(), "Roboto-Italic.ttf");
+				data.setCenterText1Typeface(tf);
+				chart.setPieChartData(data);
+				return true;
+			}
+			if (id == R.id.action_center_text2) {
+				data.setHasCenterCircle(true);
+				data.setCenterText1("Hello!");
+				data.setCenterText2("Charts (Roboto Italic)");
+				Typeface tf = Typeface.createFromAsset(getActivity().getAssets(), "Roboto-Italic.ttf");
+				data.setCenterText1Typeface(tf);
+				data.setCenterText2Typeface(tf);
+				chart.setPieChartData(data);
+				return true;
+			}
 			if (id == R.id.action_toggle_labels) {
 				toggleLabels();
 				chart.setPieChartData(data);
