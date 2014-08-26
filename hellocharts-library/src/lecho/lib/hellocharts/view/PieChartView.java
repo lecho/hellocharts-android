@@ -202,6 +202,8 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 		values.add(new ArcValue(30f));
 		values.add(new ArcValue(50f));
 		data.setValues(values);
+		data.setAxisX(null);
+		data.setAxisY(null);
 		return data;
 	}
 

@@ -7,11 +7,13 @@ import lecho.lib.hellocharts.model.PieChartData;
 import lecho.lib.hellocharts.util.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
+import android.graphics.Paint.FontMetricsInt;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.text.TextUtils;
 
 /**
  * Default renderer for PieChart. PieChart doesn't use viewport concept so it a little different than others chart
@@ -36,6 +38,16 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	private int touchAdditional;
 	private float rotation = DEFAULT_START_ROTATION;
 
+	// Center circle related attributes
+	private boolean hasCenterCircle = false;
+	private Paint centerCirclePaint = new Paint();
+	// Text1
+	private Paint centerCircleText1Paint = new Paint();
+	private FontMetricsInt centerCircleText1FontMetrics = new FontMetricsInt();
+	// Text2
+	private Paint centerCircleText2Paint = new Paint();
+	private FontMetricsInt centerCircleText2FontMetrics = new FontMetricsInt();
+
 	public PieChartRenderer(Context context, Chart chart, PieChartDataProvider dataProvider) {
 		super(context, chart);
 		this.dataProvider = dataProvider;
@@ -43,7 +55,15 @@ public class PieChartRenderer extends AbstractChartRenderer {
 
 		arcPaint.setAntiAlias(true);
 		arcPaint.setStyle(Paint.Style.FILL);
-		arcPaint.setColor(Color.LTGRAY);
+
+		centerCirclePaint.setAntiAlias(true);
+		centerCirclePaint.setStyle(Paint.Style.FILL);
+
+		centerCircleText1Paint.setAntiAlias(true);
+		centerCircleText1Paint.setTextAlign(Align.CENTER);
+
+		centerCircleText2Paint.setAntiAlias(true);
+		centerCircleText2Paint.setTextAlign(Align.CENTER);
 	}
 
 	@Override
@@ -60,15 +80,42 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	public void initDataMeasuremetns() {
 		chart.getChartComputator().setInternalMargin(calculateContentAreaMargin());
 		calculateCircleOval();
-		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));
+
+		final PieChartData data = dataProvider.getPieChartData();
+
+		labelPaint.setTextSize(Utils.sp2px(scaledDensity, data.getValueLabelTextSize()));
 		labelPaint.getFontMetricsInt(fontMetrics);
+
+		hasCenterCircle = data.hasCenterCircle();
+
+		centerCirclePaint.setColor(data.getCenterCircleColor());
+
+		centerCircleText1Paint.setTextSize(Utils.sp2px(scaledDensity, data.getCenterText1FontSize()));
+		centerCircleText1Paint.setColor(data.getCenterText1Color());
+		centerCircleText1Paint.getFontMetricsInt(centerCircleText1FontMetrics);
+		if (null != data.getCenterText1Typeface()) {
+			centerCircleText1Paint.setTypeface(data.getCenterText1Typeface());
+		}
+
+		centerCircleText2Paint.setTextSize(Utils.sp2px(scaledDensity, data.getCenterText2FontSize()));
+		centerCircleText2Paint.setColor(data.getCenterText2Color());
+		centerCircleText2Paint.getFontMetricsInt(centerCircleText2FontMetrics);
+		if (null != data.getCenterText2Typeface()) {
+			centerCircleText2Paint.setTypeface(data.getCenterText2Typeface());
+		}
+
 	}
 
 	@Override
 	public void draw(Canvas canvas) {
 		drawArcs(canvas, MODE_DRAW);
+
 		if (isTouched()) {
 			drawArcs(canvas, MODE_HIGHLIGHT);
+		}
+
+		if (hasCenterCircle) {
+			drawCenterCircle(canvas);
 		}
 
 	}
@@ -112,6 +159,34 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	}
 
 	/**
+	 * Draw center circle with text if {@link PieChartData#hasCenterCircle()} is set true.
+	 */
+	private void drawCenterCircle(Canvas canvas) {
+		final PieChartData data = dataProvider.getPieChartData();
+		final float circleRadius = orginCircleOval.width() / 2f;
+		final float centerRadius = circleRadius * data.getCenterCircleScale();
+		final float centerX = orginCircleOval.centerX();
+		final float centerY = orginCircleOval.centerY();
+
+		canvas.drawCircle(centerX, centerY, centerRadius, centerCirclePaint);
+
+		// Draw center text1 and text2 if not empty.
+		if (!TextUtils.isEmpty(data.getCenterText1())) {
+
+			final int text1Bottom = Math.abs(centerCircleText1FontMetrics.bottom);
+
+			if (!TextUtils.isEmpty(data.getCenterText2())) {
+				// Draw text 2 only if text 1 is not empty.
+				final int text2Height = Math.abs(centerCircleText2FontMetrics.ascent);
+				canvas.drawText(data.getCenterText1(), centerX, centerY - text1Bottom, centerCircleText1Paint);
+				canvas.drawText(data.getCenterText2(), centerX, centerY + text2Height, centerCircleText2Paint);
+			} else {
+				canvas.drawText(data.getCenterText1(), centerX, centerY + text1Bottom, centerCircleText1Paint);
+			}
+		}
+	}
+
+	/**
 	 * Draw all arcs for this PieChart, if mode == {@link #MODE_HIGHLIGHT} currently selected arc will be redrawn and
 	 * highlighted.
 	 * 
@@ -148,7 +223,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		final float circleRadius = orginCircleOval.width() / 2f;
 		final float labelRadius;
 
-		if (data.hasCenterCircle()) {
+		if (hasCenterCircle) {
 			float x = (circleRadius - (circleRadius * data.getCenterCircleScale())) / 2;
 			labelRadius = circleRadius - x;
 
