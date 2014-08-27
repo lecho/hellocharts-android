@@ -4,9 +4,64 @@
     tools:context="lecho.lib.hellocharts.samples.ComboLineColumnChartActivity" >
 
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:id="@+id/action_reset"
+        android:title="Reset chart"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_add_line"
+        android:title="Add line"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_toggle_lines"
+        android:title="Toggle lines/scattered"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_toggle_points"
+        android:title="Toggle points"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_toggle_bezier"
+        android:title="Toggle Bezier&apos;s curve"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_toggle_axes"
+        android:title="Toggle axes"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_toggle_axes_names"
+        android:title="Toggle axes names"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_toggle_labels"
+        android:title="Toggle labels"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_animate"
+        android:title="Animate chart"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_toggle_selection_mode"
+        android:title="Toggle selection mode"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_toggle_label_for_selected"
+        android:title="Toggle label for selected"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_toggle_touch_zoom"
+        android:title="Toggle touch zoom"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_zoom_both"
+        android:title="Zoom X/Y"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_zoom_horizontal"
+        android:title="Zoom X"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_zoom_vertical"
+        android:title="Zoom Y"
         app:showAsAction="never"/>
 
 </menu>
