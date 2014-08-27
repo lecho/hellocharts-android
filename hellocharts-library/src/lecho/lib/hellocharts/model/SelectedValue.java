@@ -7,8 +7,22 @@ package lecho.lib.hellocharts.model;
  * 
  */
 public class SelectedValue {
-	public int firstIndex;
-	public int secondIndex;
+
+	/**
+	 * First index i.e for LineChart that will be line index.
+	 */
+	private int firstIndex;
+
+	/**
+	 * Second index i.e for LineChart that will be PointValue index.
+	 */
+	private int secondIndex;
+
+	/**
+	 * Used only for combo charts i.e 1 means user selected LinePoint, 2 means user selected ColumnValue, this attribute
+	 * is not used for checking if selectedValue is set.
+	 */
+	private int dataType;
 
 	public SelectedValue() {
 		clear();
@@ -24,51 +38,55 @@ public class SelectedValue {
 	}
 
 	public void set(SelectedValue selectedValue) {
-		this.firstIndex = selectedValue.firstIndex;
-		this.secondIndex = selectedValue.secondIndex;
+		this.firstIndex = selectedValue.getFirstIndex();
+		this.secondIndex = selectedValue.getSecondIndex();
 	}
 
 	public void clear() {
-		this.firstIndex = Integer.MIN_VALUE;
-		this.secondIndex = Integer.MIN_VALUE;
+		set(Integer.MIN_VALUE, Integer.MIN_VALUE);
+		this.dataType = Integer.MIN_VALUE;
 	}
 
 	public boolean isSet() {
-		if (firstIndex >= 0 && secondIndex >= 0) {
+		if (getFirstIndex() >= 0 && getSecondIndex() >= 0) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + firstIndex;
-		result = prime * result + secondIndex;
-		return result;
+	/**
+	 * First index i.e for LineChart that will be line index.
+	 */
+	public int getFirstIndex() {
+		return firstIndex;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		SelectedValue other = (SelectedValue) obj;
-		if (firstIndex != other.firstIndex)
-			return false;
-		if (secondIndex != other.secondIndex)
-			return false;
-		return true;
+	public void setFirstIndex(int firstIndex) {
+		this.firstIndex = firstIndex;
 	}
 
-	@Override
-	public String toString() {
-		return "SelectedValue [firstIndex=" + firstIndex + ", secondIndex=" + secondIndex + "]";
+	/**
+	 * Second index i.e for LineChart that will be PointValue index.
+	 */
+	public int getSecondIndex() {
+		return secondIndex;
+	}
+
+	public void setSecondIndex(int secondIndex) {
+		this.secondIndex = secondIndex;
+	}
+
+	/**
+	 * Used only for combo charts i.e 1 means user selected LinePoint, 2 means user selected ColumnValue, this attribute
+	 * is not used for checking if selectedValue is set.
+	 */
+	public int getDataType() {
+		return dataType;
+	}
+
+	public void setDataType(int dataType) {
+		this.dataType = dataType;
 	}
 
 }
