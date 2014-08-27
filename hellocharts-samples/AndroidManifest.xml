@@ -46,6 +46,10 @@
             android:name=".PreviewColumnChartActivity"
             android:label="@string/title_activity_preview_column_chart" >
         </activity>
+        <activity
+            android:name=".ComboLineColumnChartActivity"
+            android:label="@string/title_activity_combo_line_column_chart" >
+        </activity>
     </application>
 
 </manifest>
