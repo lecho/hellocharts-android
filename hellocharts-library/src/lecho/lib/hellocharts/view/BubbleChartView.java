@@ -1,8 +1,5 @@
 package lecho.lib.hellocharts.view;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import lecho.lib.hellocharts.BubbleChartDataProvider;
 import lecho.lib.hellocharts.BuildConfig;
 import lecho.lib.hellocharts.model.BubbleChartData;
@@ -34,7 +31,7 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
 		super(context, attrs, defStyle);
 		bubbleChartRenderer = new BubbleChartRenderer(context, this, this);
 		chartRenderer = bubbleChartRenderer;
-		setBubbleChartData(generateDummyData());
+		setBubbleChartData(BubbleChartData.generateDummyData());
 	}
 
 	@Override
@@ -44,7 +41,7 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
 		}
 
 		if (null == data) {
-			this.data = generateDummyData();
+			this.data = BubbleChartData.generateDummyData();
 		} else {
 			this.data = data;
 		}
@@ -68,8 +65,8 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
 
 	@Override
 	public void callChartTouchListener(SelectedValue selectedValue) {
-		BubbleValue value = data.getValues().get(selectedValue.firstIndex);
-		onValueTouchListener.onValueTouched(selectedValue.firstIndex, value);
+		BubbleValue value = data.getValues().get(selectedValue.getFirstIndex());
+		onValueTouchListener.onValueTouched(selectedValue.getFirstIndex(), value);
 	}
 
 	public BubbleChartOnValueTouchListener getOnValueTouchListener() {
@@ -112,21 +109,6 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
 	 */
 	public void removeMargins() {
 		bubbleChartRenderer.removeMargins();
-	}
-
-	protected BubbleChartData generateDummyData() {
-		final int numValues = 4;
-		BubbleChartData data = new BubbleChartData();
-		List<BubbleValue> values = new ArrayList<BubbleValue>(numValues);
-		values.add(new BubbleValue(1, 20, 15000));
-		values.add(new BubbleValue(3, 22, 20000));
-		values.add(new BubbleValue(5, 25, 5000));
-		values.add(new BubbleValue(7, 30, 30000));
-		values.add(new BubbleValue(11, 22, 10));
-		data.setValues(values);
-		data.setAxisX(null);
-		data.setAxisY(null);
-		return data;
 	}
 
 	public interface BubbleChartOnValueTouchListener {

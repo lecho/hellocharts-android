@@ -364,14 +364,14 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void highlightPoints(Canvas canvas) {
-		int lineIndex = selectedValue.firstIndex;
+		int lineIndex = selectedValue.getFirstIndex();
 		Line line = dataProvider.getLineChartData().getLines().get(lineIndex);
 		drawPoints(canvas, line, lineIndex, MODE_HIGHLIGHT);
 	}
 
 	private void highlightPoint(Canvas canvas, ChartComputator computator, Line line, PointValue pointValue,
 			float rawX, float rawY, int lineIndex, int valueIndex) {
-		if (selectedValue.firstIndex == lineIndex && selectedValue.secondIndex == valueIndex) {
+		if (selectedValue.getFirstIndex() == lineIndex && selectedValue.getSecondIndex() == valueIndex) {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
 			pointPaint.setColor(line.getDarkenColor());
 			drawPoint(canvas, line, pointValue, rawX, rawY, pointRadius + touchTolleranceMargin);

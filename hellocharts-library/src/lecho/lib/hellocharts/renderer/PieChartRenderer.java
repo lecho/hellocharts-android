@@ -266,7 +266,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 
 	private void highlightArc(Canvas canvas, PieChartData data, ArcValue arcValue, float lastAngle, float angle,
 			int arcIndex) {
-		if (selectedValue.firstIndex != arcIndex) {
+		if (selectedValue.getFirstIndex() != arcIndex) {
 			// Not that arc.
 			return;
 		}
