@@ -146,7 +146,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		for (ArcValue arcValue : data.getValues()) {
 			final float angle = Math.abs(arcValue.getValue()) * arcScale;
 			if (touchAngle >= lastAngle) {
-				selectedValue.set(arcIndex, arcIndex);
+				selectedValue.set(arcIndex, arcIndex, 0);
 			}
 			lastAngle += angle;
 			++arcIndex;

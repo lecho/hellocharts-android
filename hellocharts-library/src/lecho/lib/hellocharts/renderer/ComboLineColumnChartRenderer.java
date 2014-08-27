@@ -23,9 +23,13 @@ public class ComboLineColumnChartRenderer extends AbstractChartRenderer {
 
 	@Override
 	public void initMaxViewport() {
-		// Start with LineChart, ColumnChart maxViewport should override LineChart maxViewport.
-		this.lineChartRenderer.initMaxViewport();
 		this.columnChartRenderer.initMaxViewport();
+		this.lineChartRenderer.initMaxViewport();
+
+		// Union maxViewports from both renderers.
+		tempMaxViewport = this.lineChartRenderer.tempMaxViewport;
+		tempMaxViewport.union(this.columnChartRenderer.tempMaxViewport);
+		chart.getChartComputator().setMaxViewport(tempMaxViewport);
 
 	}
 
@@ -52,14 +56,12 @@ public class ComboLineColumnChartRenderer extends AbstractChartRenderer {
 
 		// Start with LineChartRenderer because lines are drawn on top, if no line point is selected and only then
 		// check ColumnChartRenderer.
-		if (!this.lineChartRenderer.checkTouch(touchX, touchY)) {
-			if (this.columnChartRenderer.checkTouch(touchX, touchY)) {
-				selectedValue.set(this.columnChartRenderer.getSelectedValue());
-				selectedValue.setDataType(TYPE_COLUMN);
-			}
-		} else {
+		if (this.lineChartRenderer.checkTouch(touchX, touchY)) {
 			selectedValue.set(this.lineChartRenderer.getSelectedValue());
-			selectedValue.setDataType(TYPE_LINE);
+			selectedValue.setThirdIndex(TYPE_LINE);
+		} else if (this.columnChartRenderer.checkTouch(touchX, touchY)) {
+			selectedValue.set(this.columnChartRenderer.getSelectedValue());
+			selectedValue.setThirdIndex(TYPE_COLUMN);
 		}
 
 		// Check if touch is still on the same value, if not return false.
@@ -67,6 +69,17 @@ public class ComboLineColumnChartRenderer extends AbstractChartRenderer {
 			return false;
 		}
 
-		return this.lineChartRenderer.isTouched() || this.columnChartRenderer.isTouched();
+		return isTouched();
+	}
+
+	@Override
+	public void clearTouch() {
+
+		this.lineChartRenderer.clearTouch();
+		this.columnChartRenderer.clearTouch();
+
+		selectedValue.clear();
+		oldSelectedValue.clear();
+
 	}
 }

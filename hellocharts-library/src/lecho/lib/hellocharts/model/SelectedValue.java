@@ -19,36 +19,36 @@ public class SelectedValue {
 	private int secondIndex;
 
 	/**
-	 * Used only for combo charts i.e 1 means user selected LinePoint, 2 means user selected ColumnValue, this attribute
-	 * is not used for checking if selectedValue is set.
+	 * Used only for combo charts i.e 1 means user selected LinePoint, 2 means user selected ColumnValue.
 	 */
-	private int dataType;
+	private int thirdIndex;
 
 	public SelectedValue() {
 		clear();
 	}
 
-	public SelectedValue(int firstIndex, int secondIndex) {
-		set(firstIndex, secondIndex);
+	public SelectedValue(int firstIndex, int secondIndex, int dataType) {
+		set(firstIndex, secondIndex, dataType);
 	}
 
-	public void set(int firstIndex, int secondIndex) {
+	public void set(int firstIndex, int secondIndex, int third) {
 		this.firstIndex = firstIndex;
 		this.secondIndex = secondIndex;
+		this.thirdIndex = third;
 	}
 
 	public void set(SelectedValue selectedValue) {
-		this.firstIndex = selectedValue.getFirstIndex();
-		this.secondIndex = selectedValue.getSecondIndex();
+		this.firstIndex = selectedValue.firstIndex;
+		this.secondIndex = selectedValue.secondIndex;
+		this.thirdIndex = selectedValue.thirdIndex;
 	}
 
 	public void clear() {
-		set(Integer.MIN_VALUE, Integer.MIN_VALUE);
-		this.dataType = Integer.MIN_VALUE;
+		set(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
 	}
 
 	public boolean isSet() {
-		if (getFirstIndex() >= 0 && getSecondIndex() >= 0) {
+		if (firstIndex >= 0 && secondIndex >= 0 && thirdIndex >= 0) {
 			return true;
 		} else {
 			return false;
@@ -78,15 +78,48 @@ public class SelectedValue {
 	}
 
 	/**
-	 * Used only for combo charts i.e 1 means user selected LinePoint, 2 means user selected ColumnValue, this attribute
-	 * is not used for checking if selectedValue is set.
+	 * Used only for combo charts i.e 1 means user selected LinePoint, 2 means user selected ColumnValue,.
 	 */
-	public int getDataType() {
-		return dataType;
+	public int getThirdIndex() {
+		return thirdIndex;
 	}
 
-	public void setDataType(int dataType) {
-		this.dataType = dataType;
+	public void setThirdIndex(int thirdIndex) {
+		this.thirdIndex = thirdIndex;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + thirdIndex;
+		result = prime * result + firstIndex;
+		result = prime * result + secondIndex;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SelectedValue other = (SelectedValue) obj;
+		if (thirdIndex != other.thirdIndex)
+			return false;
+		if (firstIndex != other.firstIndex)
+			return false;
+		if (secondIndex != other.secondIndex)
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "SelectedValue [firstIndex=" + firstIndex + ", secondIndex=" + secondIndex + ", thirdIndex="
+				+ thirdIndex + "]";
 	}
 
 }

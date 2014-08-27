@@ -4,10 +4,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Partial copy of android.graphics.RectF but top should be greater then bottom. Viewport holds four float coordinates
- * for a viewport rectangle. The rectangle is represented by the coordinates of its 4 edges (left, top, right bottom).
- * These fields can be accessed directly. Use width() and height() to retrieve the rectangle's width and height. Note:
- * most methods do not check to see that the coordinates are sorted correctly (i.e. left <= right and bottom <= top).
+ * Partial copy of android.graphics.Viewport but top should be greater then bottom. Viewport holds four float
+ * coordinates for a viewport viewport. The viewport is represented by the coordinates of its 4 edges (left, top,
+ * right bottom). These fields can be accessed directly. Use width() and height() to retrieve the viewport's width and
+ * height. Note: most methods do not check to see that the coordinates are sorted correctly (i.e. left <= right and
+ * bottom <= top).
  * 
  * Viewport implements Parcerable.
  * 
@@ -42,23 +43,23 @@ public class Viewport implements Parcelable {
 	public float bottom;
 
 	/**
-	 * Create a new empty RectF. All coordinates are initialized to 0.
+	 * Create a new empty Viewport. All coordinates are initialized to 0.
 	 */
 	public Viewport() {
 	}
 
 	/**
-	 * Create a new rectangle with the specified coordinates. Note: no range checking is performed, so the caller must
+	 * Create a new viewport with the specified coordinates. Note: no range checking is performed, so the caller must
 	 * ensure that left <= right and bottom <= top.
 	 * 
 	 * @param left
-	 *            The X coordinate of the left side of the rectangle
+	 *            The X coordinate of the left side of the viewport
 	 * @param top
-	 *            The Y coordinate of the top of the rectangle
+	 *            The Y coordinate of the top of the viewport
 	 * @param right
-	 *            The X coordinate of the right side of the rectangle
+	 *            The X coordinate of the right side of the viewport
 	 * @param bottom
-	 *            The Y coordinate of the bottom of the rectangle
+	 *            The Y coordinate of the bottom of the viewport
 	 */
 	public Viewport(float left, float top, float right, float bottom) {
 		this.left = left;
@@ -68,10 +69,10 @@ public class Viewport implements Parcelable {
 	}
 
 	/**
-	 * Create a new rectangle, initialized with the values in the specified rectangle (which is left unmodified).
+	 * Create a new viewport, initialized with the values in the specified viewport (which is left unmodified).
 	 * 
 	 * @param v
-	 *            The rectangle whose coordinates are copied into the new rectangle.
+	 *            The viewport whose coordinates are copied into the new viewport.
 	 */
 	public Viewport(Viewport v) {
 		if (v == null) {
@@ -85,21 +86,21 @@ public class Viewport implements Parcelable {
 	}
 
 	/**
-	 * Returns true if the rectangle is empty (left >= right or bottom >= top)
+	 * Returns true if the viewport is empty (left >= right or bottom >= top)
 	 */
 	public final boolean isEmpty() {
 		return left >= right || bottom >= top;
 	}
 
 	/**
-	 * Set the rectangle to (0,0,0,0)
+	 * Set the viewport to (0,0,0,0)
 	 */
 	public void setEmpty() {
 		left = right = top = bottom = 0;
 	}
 
 	/**
-	 * @return the rectangle's width. This does not check for a valid rectangle (i.e. left <= right) so the result may
+	 * @return the viewport's width. This does not check for a valid viewport (i.e. left <= right) so the result may
 	 *         be negative.
 	 */
 	public final float width() {
@@ -107,7 +108,7 @@ public class Viewport implements Parcelable {
 	}
 
 	/**
-	 * @return the rectangle's height. This does not check for a valid rectangle (i.e. top <= bottom) so the result may
+	 * @return the viewport's height. This does not check for a valid viewport (i.e. top <= bottom) so the result may
 	 *         be negative.
 	 */
 	public final float height() {
@@ -115,31 +116,31 @@ public class Viewport implements Parcelable {
 	}
 
 	/**
-	 * @return the horizontal center of the rectangle. This does not check for a valid rectangle (i.e. left <= right)
+	 * @return the horizontal center of the viewport. This does not check for a valid viewport (i.e. left <= right)
 	 */
 	public final float centerX() {
 		return (left + right) * 0.5f;
 	}
 
 	/**
-	 * @return the vertical center of the rectangle. This does not check for a valid rectangle (i.e. bottom <= top)
+	 * @return the vertical center of the viewport. This does not check for a valid viewport (i.e. bottom <= top)
 	 */
 	public final float centerY() {
 		return (top + bottom) * 0.5f;
 	}
 
 	/**
-	 * Set the rectangle's coordinates to the specified values. Note: no range checking is performed, so it is up to the
+	 * Set the viewport's coordinates to the specified values. Note: no range checking is performed, so it is up to the
 	 * caller to ensure that left <= right and bottom <= top.
 	 * 
 	 * @param left
-	 *            The X coordinate of the left side of the rectangle
+	 *            The X coordinate of the left side of the viewport
 	 * @param top
-	 *            The Y coordinate of the top of the rectangle
+	 *            The Y coordinate of the top of the viewport
 	 * @param right
-	 *            The X coordinate of the right side of the rectangle
+	 *            The X coordinate of the right side of the viewport
 	 * @param bottom
-	 *            The Y coordinate of the bottom of the rectangle
+	 *            The Y coordinate of the bottom of the viewport
 	 */
 	public void set(float left, float top, float right, float bottom) {
 		this.left = left;
@@ -149,10 +150,10 @@ public class Viewport implements Parcelable {
 	}
 
 	/**
-	 * Copy the coordinates from src into this rectangle.
+	 * Copy the coordinates from src into this viewport.
 	 * 
 	 * @param src
-	 *            The rectangle whose coordinates are copied into this rectangle.
+	 *            The viewport whose coordinates are copied into this viewport.
 	 */
 	public void set(Viewport src) {
 		this.left = src.left;
@@ -162,13 +163,13 @@ public class Viewport implements Parcelable {
 	}
 
 	/**
-	 * Offset the rectangle by adding dx to its left and right coordinates, and adding dy to its top and bottom
+	 * Offset the viewport by adding dx to its left and right coordinates, and adding dy to its top and bottom
 	 * coordinates.
 	 * 
 	 * @param dx
-	 *            The amount to add to the rectangle's left and right coordinates
+	 *            The amount to add to the viewport's left and right coordinates
 	 * @param dy
-	 *            The amount to add to the rectangle's top and bottom coordinates
+	 *            The amount to add to the viewport's top and bottom coordinates
 	 */
 	public void offset(float dx, float dy) {
 		left += dx;
@@ -178,12 +179,12 @@ public class Viewport implements Parcelable {
 	}
 
 	/**
-	 * Offset the rectangle to a specific (left, top) position, keeping its width and height the same.
+	 * Offset the viewport to a specific (left, top) position, keeping its width and height the same.
 	 * 
 	 * @param newLeft
-	 *            The new "left" coordinate for the rectangle
+	 *            The new "left" coordinate for the viewport
 	 * @param newTop
-	 *            The new "top" coordinate for the rectangle
+	 *            The new "top" coordinate for the viewport
 	 */
 	public void offsetTo(float newLeft, float newTop) {
 		right += newLeft - left;
@@ -193,14 +194,14 @@ public class Viewport implements Parcelable {
 	}
 
 	/**
-	 * Inset the rectangle by (dx,dy). If dx is positive, then the sides are moved inwards, making the rectangle
-	 * narrower. If dx is negative, then the sides are moved outwards, making the rectangle wider. The same holds true
+	 * Inset the viewport by (dx,dy). If dx is positive, then the sides are moved inwards, making the viewport
+	 * narrower. If dx is negative, then the sides are moved outwards, making the viewport wider. The same holds true
 	 * for dy and the top and bottom.
 	 * 
 	 * @param dx
-	 *            The amount to add(subtract) from the rectangle's left(right)
+	 *            The amount to add(subtract) from the viewport's left(right)
 	 * @param dy
-	 *            The amount to add(subtract) from the rectangle's top(bottom)
+	 *            The amount to add(subtract) from the viewport's top(bottom)
 	 */
 	public void inset(float dx, float dy) {
 		left += dx;
@@ -210,15 +211,15 @@ public class Viewport implements Parcelable {
 	}
 
 	/**
-	 * Returns true if (x,y) is inside the rectangle. The left and top are considered to be inside, while the right and
+	 * Returns true if (x,y) is inside the viewport. The left and top are considered to be inside, while the right and
 	 * bottom are not. This means that for a x,y to be contained: left <= x < right and bottom <= y < top. An empty
-	 * rectangle never contains any point.
+	 * viewport never contains any point.
 	 * 
 	 * @param x
 	 *            The X coordinate of the point being tested for containment
 	 * @param y
 	 *            The Y coordinate of the point being tested for containment
-	 * @return true iff (x,y) are contained by the rectangle, where containment means left <= x < right and top <= y <
+	 * @return true iff (x,y) are contained by the viewport, where containment means left <= x < right and top <= y <
 	 *         bottom
 	 */
 	public boolean contains(float x, float y) {
@@ -227,18 +228,18 @@ public class Viewport implements Parcelable {
 	}
 
 	/**
-	 * Returns true iff the 4 specified sides of a rectangle are inside or equal to this rectangle. i.e. is this
-	 * rectangle a superset of the specified rectangle. An empty rectangle never contains another rectangle.
+	 * Returns true iff the 4 specified sides of a viewport are inside or equal to this viewport. i.e. is this
+	 * viewport a superset of the specified viewport. An empty viewport never contains another viewport.
 	 * 
 	 * @param left
-	 *            The left side of the rectangle being tested for containment
+	 *            The left side of the viewport being tested for containment
 	 * @param top
-	 *            The top of the rectangle being tested for containment
+	 *            The top of the viewport being tested for containment
 	 * @param right
-	 *            The right side of the rectangle being tested for containment
+	 *            The right side of the viewport being tested for containment
 	 * @param bottom
-	 *            The bottom of the rectangle being tested for containment
-	 * @return true iff the the 4 specified sides of a rectangle are inside or equal to this rectangle
+	 *            The bottom of the viewport being tested for containment
+	 * @return true iff the the 4 specified sides of a viewport are inside or equal to this viewport
 	 */
 	public boolean contains(float left, float top, float right, float bottom) {
 		// check for empty first
@@ -248,18 +249,111 @@ public class Viewport implements Parcelable {
 	}
 
 	/**
-	 * Returns true iff the specified rectangle r is inside or equal to this rectangle. An empty rectangle never
-	 * contains another rectangle.
+	 * Returns true iff the specified viewport r is inside or equal to this viewport. An empty viewport never
+	 * contains another viewport.
 	 * 
 	 * @param v
-	 *            The rectangle being tested for containment.
-	 * @return true iff the specified rectangle r is inside or equal to this rectangle
+	 *            The viewport being tested for containment.
+	 * @return true iff the specified viewport r is inside or equal to this viewport
 	 */
 	public boolean contains(Viewport v) {
 		// check for empty first
 		return this.left < this.right && this.bottom < this.top
 		// now check for containment
 				&& left <= v.left && top >= v.top && right >= v.right && bottom <= v.bottom;
+	}
+
+	/**
+	 * Update this Viewport to enclose itself and the specified viewport. If the specified viewport is empty, nothing is
+	 * done. If this viewport is empty it is set to the specified viewport.
+	 * 
+	 * @param left
+	 *            The left edge being unioned with this viewport
+	 * @param top
+	 *            The top edge being unioned with this viewport
+	 * @param right
+	 *            The right edge being unioned with this viewport
+	 * @param bottom
+	 *            The bottom edge being unioned with this viewport
+	 */
+	public void union(float left, float top, float right, float bottom) {
+		if ((left < right) && (bottom < top)) {
+			if ((this.left < this.right) && (this.bottom < this.top)) {
+				if (this.left > left)
+					this.left = left;
+				if (this.top < top)
+					this.top = top;
+				if (this.right < right)
+					this.right = right;
+				if (this.bottom > bottom)
+					this.bottom = bottom;
+			} else {
+				this.left = left;
+				this.top = top;
+				this.right = right;
+				this.bottom = bottom;
+			}
+		}
+	}
+
+	/**
+	 * Update this Viewport to enclose itself and the specified viewport. If the specified viewport is empty, nothing is
+	 * done. If this viewport is empty it is set to the specified viewport.
+	 * 
+	 * @param v
+	 *            The viewport being unioned with this viewport
+	 */
+	public void union(Viewport v) {
+		union(v.left, v.top, v.right, v.bottom);
+	}
+
+	/**
+	 * If the viewport specified by left,top,right,bottom intersects this viewport, return true and set this viewport
+	 * to that intersection, otherwise return false and do not change this viewport. No check is performed to see if
+	 * either viewport is empty. Note: To just test for intersection, use intersects()
+	 * 
+	 * @param left
+	 *            The left side of the viewport being intersected with this viewport
+	 * @param top
+	 *            The top of the viewport being intersected with this viewport
+	 * @param right
+	 *            The right side of the viewport being intersected with this viewport.
+	 * @param bottom
+	 *            The bottom of the viewport being intersected with this viewport.
+	 * @return true if the specified viewport and this viewport intersect (and this viewport is then set to that
+	 *         intersection) else return false and do not change this viewport.
+	 */
+	public boolean intersect(float left, float top, float right, float bottom) {
+		if (this.left < right && left < this.right && this.bottom < top && bottom < this.top) {
+			if (this.left < left) {
+				this.left = left;
+			}
+			if (this.top > top) {
+				this.top = top;
+			}
+			if (this.right > right) {
+				this.right = right;
+			}
+			if (this.bottom < bottom) {
+				this.bottom = bottom;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * If the specified viewport intersects this viewport, return true and set this viewport to that intersection,
+	 * otherwise return false and do not change this viewport. No check is performed to see if either viewport is
+	 * empty. To just test for intersection, use intersects()
+	 * 
+	 * @param v
+	 *            The viewport being intersected with this viewport.
+	 * @return true if the specified viewport and this viewport intersect (and this viewport is then set to that
+	 *         intersection) else return false and do not change this viewport.
+	 */
+	public boolean intersect(Viewport v) {
+		return intersect(v.left, v.top, v.right, v.bottom);
 	}
 
 	@Override
@@ -288,10 +382,10 @@ public class Viewport implements Parcelable {
 	}
 
 	/**
-	 * Write this rectangle to the specified parcel. To restore a rectangle from a parcel, use readFromParcel()
+	 * Write this viewport to the specified parcel. To restore a viewport from a parcel, use readFromParcel()
 	 * 
 	 * @param out
-	 *            The parcel to write the rectangle's coordinates into
+	 *            The parcel to write the viewport's coordinates into
 	 */
 	public void writeToParcel(Parcel out, int flags) {
 		out.writeFloat(left);
@@ -302,7 +396,7 @@ public class Viewport implements Parcelable {
 
 	public static final Parcelable.Creator<Viewport> CREATOR = new Parcelable.Creator<Viewport>() {
 		/**
-		 * Return a new rectangle from the data in the specified parcel.
+		 * Return a new viewport from the data in the specified parcel.
 		 */
 		public Viewport createFromParcel(Parcel in) {
 			Viewport v = new Viewport();
@@ -311,7 +405,7 @@ public class Viewport implements Parcelable {
 		}
 
 		/**
-		 * Return an array of rectangles of the specified size.
+		 * Return an array of viewports of the specified size.
 		 */
 		public Viewport[] newArray(int size) {
 			return new Viewport[size];
@@ -319,11 +413,11 @@ public class Viewport implements Parcelable {
 	};
 
 	/**
-	 * Set the rectangle's coordinates from the data stored in the specified parcel. To write a rectangle to a parcel,
+	 * Set the viewport's coordinates from the data stored in the specified parcel. To write a viewport to a parcel,
 	 * call writeToParcel().
 	 * 
 	 * @param in
-	 *            The parcel to read the rectangle's coordinates from
+	 *            The parcel to read the viewport's coordinates from
 	 */
 	public void readFromParcel(Parcel in) {
 		left = in.readFloat();

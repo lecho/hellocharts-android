@@ -108,7 +108,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 
 			if (bubbleValue.getShape() == BubbleValue.SHAPE_SQUARE) {
 				if (bubbleRect.contains(touchX, touchY)) {
-					selectedValue.set(valueIndex, valueIndex);
+					selectedValue.set(valueIndex, valueIndex, 0);
 				}
 			} else {
 				final float diffX = touchX - bubbleCenter.x;
@@ -116,7 +116,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 				final float touchDistance = (float) Math.sqrt((diffX * diffX) + (diffY * diffY));
 
 				if (touchDistance <= rawRadius) {
-					selectedValue.set(valueIndex, valueIndex);
+					selectedValue.set(valueIndex, valueIndex, 0);
 				}
 			}
 			++valueIndex;

@@ -153,7 +153,8 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 		final ChartComputator computator = chart.getChartComputator();
 		final float columnWidth = calculateColumnWidth(computator, data.getFillRatio());
 		Column column = data.getColumns().get(selectedValue.getFirstIndex());
-		processColumnForSubcolumns(canvas, computator, column, columnWidth, selectedValue.getFirstIndex(), MODE_HIGHLIGHT);
+		processColumnForSubcolumns(canvas, computator, column, columnWidth, selectedValue.getFirstIndex(),
+				MODE_HIGHLIGHT);
 	}
 
 	private void checkTouchForSubcolumns(float touchX, float touchY) {
@@ -312,7 +313,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 
 	private void checkRectToDraw(int columnIndex, int valueIndex) {
 		if (drawRect.contains(touchedPoint.x, touchedPoint.y)) {
-			selectedValue.set(columnIndex, valueIndex);
+			selectedValue.set(columnIndex, valueIndex, 0);
 		}
 	}
 

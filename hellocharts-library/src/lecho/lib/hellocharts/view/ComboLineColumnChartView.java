@@ -70,18 +70,18 @@ public class ComboLineColumnChartView extends AbstractChartView implements Combo
 
 	@Override
 	public void callChartTouchListener(SelectedValue selectedValue) {
-		if (ComboLineColumnChartRenderer.TYPE_COLUMN == selectedValue.getDataType()) {
+		if (ComboLineColumnChartRenderer.TYPE_COLUMN == selectedValue.getThirdIndex()) {
 			ColumnValue value = data.getColumnChartData().getColumns().get(selectedValue.getFirstIndex()).getValues()
 					.get(selectedValue.getSecondIndex());
 			onValueTouchListener.onValueTouched(selectedValue.getFirstIndex(), selectedValue.getSecondIndex(), value,
 					null);
-		} else if (ComboLineColumnChartRenderer.TYPE_LINE == selectedValue.getDataType()) {
+		} else if (ComboLineColumnChartRenderer.TYPE_LINE == selectedValue.getThirdIndex()) {
 			PointValue value = data.getLineChartData().getLines().get(selectedValue.getFirstIndex()).getValues()
 					.get(selectedValue.getSecondIndex());
 			onValueTouchListener.onValueTouched(selectedValue.getFirstIndex(), selectedValue.getSecondIndex(), null,
 					value);
 		} else {
-			throw new IllegalArgumentException("Invalid selected value type + selectedValue.getDataType()");
+			throw new IllegalArgumentException("Invalid selected value type " + selectedValue.getThirdIndex());
 		}
 	}
 
