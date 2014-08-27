@@ -1,8 +1,5 @@
 package lecho.lib.hellocharts.view;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import lecho.lib.hellocharts.BuildConfig;
 import lecho.lib.hellocharts.ColumnChartDataProvider;
 import lecho.lib.hellocharts.model.Column;
@@ -31,7 +28,7 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 	public ColumnChartView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		chartRenderer = new ColumnChartRenderer(context, this, this);
-		setColumnChartData(generateDummyData());
+		setColumnChartData(ColumnChartData.generateDummyData());
 	}
 
 	@Override
@@ -46,7 +43,7 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 		}
 
 		if (null == data) {
-			this.data = generateDummyData();
+			this.data = ColumnChartData.generateDummyData();
 		} else {
 			this.data = data;
 		}
@@ -66,8 +63,9 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 
 	@Override
 	public void callChartTouchListener(SelectedValue selectedValue) {
-		ColumnValue value = data.getColumns().get(selectedValue.firstIndex).getValues().get(selectedValue.secondIndex);
-		onValueTouchListener.onValueTouched(selectedValue.firstIndex, selectedValue.secondIndex, value);
+		ColumnValue value = data.getColumns().get(selectedValue.getFirstIndex()).getValues()
+				.get(selectedValue.getSecondIndex());
+		onValueTouchListener.onValueTouched(selectedValue.getFirstIndex(), selectedValue.getSecondIndex(), value);
 
 	}
 
@@ -106,22 +104,6 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 		chartRenderer.initCurrentViewport();
 		ViewCompat.postInvalidateOnAnimation(this);
 
-	}
-
-	protected ColumnChartData generateDummyData() {
-		final int numValues = 4;
-		ColumnChartData data = new ColumnChartData();
-		List<ColumnValue> values = new ArrayList<ColumnValue>(numValues);
-		for (int i = 1; i <= numValues; ++i) {
-			values.add(new ColumnValue(i));
-		}
-		Column column = new Column(values);
-		List<Column> columns = new ArrayList<Column>(1);
-		columns.add(column);
-		data.setAxisX(null);
-		data.setAxisY(null);
-		data.setColumns(columns);
-		return data;
 	}
 
 	public interface ColumnChartOnValueTouchListener {

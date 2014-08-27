@@ -1,11 +1,7 @@
 package lecho.lib.hellocharts.view;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import lecho.lib.hellocharts.BuildConfig;
 import lecho.lib.hellocharts.LineChartDataProvider;
-import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
@@ -33,7 +29,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 	public LineChartView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		chartRenderer = new LineChartRenderer(context, this, this);
-		setLineChartData(generateDummyData());
+		setLineChartData(LineChartData.generateDummyData());
 	}
 
 	@Override
@@ -43,7 +39,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 		}
 
 		if (null == data) {
-			this.data = generateDummyData();
+			this.data = LineChartData.generateDummyData();
 		} else {
 			this.data = data;
 		}
@@ -67,8 +63,9 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 
 	@Override
 	public void callChartTouchListener(SelectedValue selectedValue) {
-		PointValue point = data.getLines().get(selectedValue.firstIndex).getValues().get(selectedValue.secondIndex);
-		onValueTouchListener.onValueTouched(selectedValue.firstIndex, selectedValue.secondIndex, point);
+		PointValue point = data.getLines().get(selectedValue.getFirstIndex()).getValues()
+				.get(selectedValue.getSecondIndex());
+		onValueTouchListener.onValueTouched(selectedValue.getFirstIndex(), selectedValue.getSecondIndex(), point);
 	}
 
 	public LineChartOnValueTouchListener getOnValueTouchListener() {
@@ -105,23 +102,6 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 		chartRenderer.initMaxViewport();
 		chartRenderer.initCurrentViewport();
 		ViewCompat.postInvalidateOnAnimation(this);
-	}
-
-	protected LineChartData generateDummyData() {
-		final int numValues = 4;
-		LineChartData data = new LineChartData();
-		List<PointValue> values = new ArrayList<PointValue>(numValues);
-		values.add(new PointValue(1, 8));
-		values.add(new PointValue(2, 6));
-		values.add(new PointValue(3, 10));
-		values.add(new PointValue(4, 4));
-		Line line = new Line(values);
-		List<Line> lines = new ArrayList<Line>(1);
-		lines.add(line);
-		data.setLines(lines);
-		data.setAxisX(null);
-		data.setAxisY(null);
-		return data;
 	}
 
 	public interface LineChartOnValueTouchListener {

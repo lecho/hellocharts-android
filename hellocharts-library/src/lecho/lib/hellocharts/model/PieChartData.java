@@ -230,4 +230,18 @@ public class PieChartData extends AbstractChartData {
 		}
 		return this;
 	}
+
+	public static PieChartData generateDummyData() {
+		final int numValues = 4;
+		PieChartData data = new PieChartData();
+		List<ArcValue> values = new ArrayList<ArcValue>(numValues);
+		values.add(new ArcValue(40f));
+		values.add(new ArcValue(20f));
+		values.add(new ArcValue(30f));
+		values.add(new ArcValue(50f));
+		data.setValues(values);
+		data.setAxisX(null);
+		data.setAxisY(null);
+		return data;
+	}
 }

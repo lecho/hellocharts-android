@@ -1,8 +1,5 @@
 package lecho.lib.hellocharts.view;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import lecho.lib.hellocharts.BuildConfig;
 import lecho.lib.hellocharts.PieChartDataProvider;
 import lecho.lib.hellocharts.animation.PieChartRotationAnimator;
@@ -57,7 +54,7 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 		} else {
 			this.rotationAnimator = new PieChartRotationAnimatorV14(this);
 		}
-		setPieChartData(generateDummyData());
+		setPieChartData(PieChartData.generateDummyData());
 	}
 
 	@Override
@@ -67,7 +64,7 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 		}
 
 		if (null == data) {
-			this.data = generateDummyData();
+			this.data = PieChartData.generateDummyData();
 		} else {
 			this.data = data;
 		}
@@ -91,8 +88,8 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 
 	@Override
 	public void callChartTouchListener(SelectedValue selectedValue) {
-		ArcValue arcValue = data.getValues().get(selectedValue.firstIndex);
-		onValueTouchListener.onValueTouched(selectedValue.firstIndex, arcValue);
+		ArcValue arcValue = data.getValues().get(selectedValue.getFirstIndex());
+		onValueTouchListener.onValueTouched(selectedValue.getFirstIndex(), arcValue);
 	}
 
 	public PieChartOnValueTouchListener getOnValueTouchListener() {
@@ -191,20 +188,6 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 		if (touchHandler instanceof PieChartTouchHandler) {
 			((PieChartTouchHandler) touchHandler).setRotationEnabled(isRotationEnabled);
 		}
-	}
-
-	protected PieChartData generateDummyData() {
-		final int numValues = 4;
-		PieChartData data = new PieChartData();
-		List<ArcValue> values = new ArrayList<ArcValue>(numValues);
-		values.add(new ArcValue(40f));
-		values.add(new ArcValue(20f));
-		values.add(new ArcValue(30f));
-		values.add(new ArcValue(50f));
-		data.setValues(values);
-		data.setAxisX(null);
-		data.setAxisY(null);
-		return data;
 	}
 
 	public interface PieChartOnValueTouchListener {

@@ -71,4 +71,23 @@ public class ColumnChartData extends AbstractChartData {
 		this.fillRatio = fillRatio;
 		return this;
 	}
+
+	public static ColumnChartData generateDummyData() {
+		final int numColumns = 4;
+		ColumnChartData data = new ColumnChartData();
+		List<Column> columns = new ArrayList<Column>(numColumns);
+		List<ColumnValue> values;
+		Column column;
+		for (int i = 1; i <= numColumns; ++i) {
+			values = new ArrayList<ColumnValue>(numColumns);
+			values.add(new ColumnValue(i));
+			column = new Column(values);
+			columns.add(column);
+		}
+
+		data.setColumns(columns);
+		data.setAxisX(null);
+		data.setAxisY(null);
+		return data;
+	}
 }
