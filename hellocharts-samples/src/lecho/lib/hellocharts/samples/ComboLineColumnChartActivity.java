@@ -46,11 +46,12 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 		private ComboLineColumnChartView chart;
 		private ComboLineColumnChartData data;
 		private boolean hasAxes = true;
-		private boolean hasAxesNames = false;
-		private boolean hasPoints = false;
-		private boolean hasBeziers = true;
-		private boolean hasLabels = true;
-		private boolean labelForSelected = true;
+		private boolean hasAxesNames = true;
+		private boolean hasPoints = true;
+		private boolean hasLines = true;
+		private boolean hasBeziers = false;
+		private boolean hasLabels = false;
+		private boolean labelForSelected = false;
 
 		public PlaceholderFragment() {
 		}
@@ -119,7 +120,7 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 				return true;
 			}
 			if (id == R.id.action_animate) {
-				// prepareDataAnimation();
+				prepareDataAnimation();
 				chart.startDataAnimation();
 				return true;
 			}
@@ -170,11 +171,11 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 
 			List<PointValue> values = new ArrayList<PointValue>();
 			for (int i = 0; i < numValues; ++i) {
-				values.add(new PointValue(i, (float) Math.random() * 40f + 5));
+				values.add(new PointValue(i, (float) Math.random() * 50 + 5));
 			}
 
 			Line line = new Line(values);
-			line.setColor(Utils.COLOR_GREEN);
+			line.setColor(Utils.COLOR_ORANGE);
 
 			List<Line> lines = new ArrayList<Line>();
 			lines.add(line);
@@ -195,7 +196,7 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 
 				values = new ArrayList<ColumnValue>();
 				for (int j = 0; j < numSubcolumns; ++j) {
-					values.add(new ColumnValue((float) Math.random() * 50f + 5, Utils.COLOR_VIOLET));
+					values.add(new ColumnValue((float) Math.random() * 50 + 5, Utils.COLOR_GREEN));
 				}
 
 				columns.add(new Column(values));
@@ -218,7 +219,7 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 			int numValues = 12;
 			List<PointValue> values = new ArrayList<PointValue>();
 			for (int i = 0; i < numValues; ++i) {
-				values.add(new PointValue(i, (float) Math.random() * 40f + 5));
+				values.add(new PointValue(i, (float) Math.random() * 50 + 5));
 			}
 
 			Line line = new Line();
@@ -229,11 +230,11 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 				line.setColor(Utils.COLOR_BLUE);
 				break;
 			case 2:
-				line.setColor(Utils.COLOR_ORANGE);
+				line.setColor(Utils.COLOR_RED);
 				break;
 			default:
 				// Line chart support lines with different X values and X values don't have to be monotonically.
-				line.setColor(Utils.COLOR_RED);
+				line.setColor(Utils.COLOR_VIOLET);
 				values = new ArrayList<PointValue>();
 				for (int i = 0; i < numValues; ++i) {
 					values.add(new PointValue((float) Math.random() * 12, (float) Math.random() * 50f));
@@ -247,28 +248,28 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 		}
 
 		private void toggleLines() {
+			hasLines = !hasLines;
 			for (Line line : data.getLineChartData().getLines()) {
-				line.setHasLines(!line.hasLines());
+				line.setHasLines(hasLines);
 			}
 		}
 
 		private void togglePoints() {
+			hasPoints = !hasPoints;
 			for (Line line : data.getLineChartData().getLines()) {
 				line.setHasPoints(hasPoints);
 			}
-
-			hasPoints = !hasPoints;
 		}
 
 		private void toggleBezier() {
+			hasBeziers = !hasBeziers;
 			for (Line line : data.getLineChartData().getLines()) {
 				line.setSmooth(hasBeziers);
 			}
-
-			hasBeziers = !hasBeziers;
 		}
 
 		private void toggleLabels() {
+			hasLabels = !hasLabels;
 			for (Line line : data.getLineChartData().getLines()) {
 				line.setHasLabels(hasLabels);
 			}
@@ -277,10 +278,10 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 				column.setHasLabels(hasLabels);
 			}
 
-			hasLabels = !hasLabels;
 		}
 
 		private void toggleLabelForSelected() {
+			labelForSelected = !labelForSelected;
 			for (Line line : data.getLineChartData().getLines()) {
 				line.setHasLabelsOnlyForSelected(labelForSelected);
 			}
@@ -289,7 +290,6 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 				column.setHasLabelsOnlyForSelected(!column.hasLabelsOnlyForSelected());
 			}
 
-			labelForSelected = !labelForSelected;
 		}
 
 		private void toggleAxes() {
@@ -308,6 +308,7 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 
 		private void toggleAxesNames() {
 			if (hasAxes) {
+				hasAxesNames = !hasAxesNames;
 				// by default axes are auto-generated;
 				Axis axisX = data.getAxisX();
 				if (hasAxesNames) {
@@ -323,8 +324,24 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 					axisY.setName(null);
 				}
 			}
+		}
 
-			hasAxesNames = !hasAxesNames;
+		private void prepareDataAnimation() {
+
+			// Line animations
+			for (Line line : data.getLineChartData().getLines()) {
+				for (PointValue value : line.getValues()) {
+					// Here I modify target only for Y values but it is OK to modify X targets as well.
+					value.setTarget(value.getX(), (float) Math.random() * 50 + 5);
+				}
+			}
+
+			// Columns animations
+			for (Column column : data.getColumnChartData().getColumns()) {
+				for (ColumnValue value : column.getValues()) {
+					value.setTarget((float) Math.random() * 50 + 5);
+				}
+			}
 		}
 
 		private class ValueTouchListener implements ComboLineColumnChartOnValueTouchListener {
