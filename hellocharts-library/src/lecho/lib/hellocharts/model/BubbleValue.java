@@ -48,8 +48,8 @@ public class BubbleValue {
 		z = orginZ + diffZ * scale;
 	}
 
-	public void finish(boolean isFinishedSuccess) {
-		if (isFinishedSuccess) {
+	public void finish(boolean isSuccess) {
+		if (isSuccess) {
 			set(orginX + diffX, orginY + diffY, orginZ + diffZ);
 		} else {
 			set(x, y, z);

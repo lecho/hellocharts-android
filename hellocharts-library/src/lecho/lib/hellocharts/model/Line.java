@@ -61,6 +61,18 @@ public class Line {
 		}
 	}
 
+	public void update(float scale) {
+		for (PointValue value : values) {
+			value.update(scale);
+		}
+	}
+
+	public void finish(boolean isSuccess) {
+		for (PointValue value : values) {
+			value.finish(isSuccess);
+		}
+	}
+
 	public void setValues(List<PointValue> values) {
 		if (null == values) {
 			this.values = Collections.emptyList();

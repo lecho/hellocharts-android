@@ -35,6 +35,19 @@ public class Column {
 		}
 	}
 
+	public void update(float scale) {
+		for (ColumnValue value : values) {
+			value.update(scale);
+		}
+
+	}
+
+	public void finish(boolean isSuccess) {
+		for (ColumnValue value : values) {
+			value.finish(isSuccess);
+		}
+	}
+
 	public List<ColumnValue> getValues() {
 		return values;
 	}

@@ -43,6 +43,20 @@ public class BubbleChartData extends AbstractChartData {
 		}
 	}
 
+	@Override
+	public void update(float scale) {
+		for (BubbleValue value : values) {
+			value.update(scale);
+		}
+	}
+
+	@Override
+	public void finish(boolean isSuccess) {
+		for (BubbleValue value : values) {
+			value.finish(isSuccess);
+		}
+	}
+
 	public List<BubbleValue> getValues() {
 		return values;
 	}

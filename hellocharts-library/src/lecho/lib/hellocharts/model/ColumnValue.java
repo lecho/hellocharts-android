@@ -41,8 +41,8 @@ public class ColumnValue {
 		value = orginValue + diff * scale;
 	}
 
-	public void finish(boolean isFinishedSuccess) {
-		if (isFinishedSuccess) {
+	public void finish(boolean isSuccess) {
+		if (isSuccess) {
 			setValue(orginValue + diff);
 		} else {
 			setValue(value);

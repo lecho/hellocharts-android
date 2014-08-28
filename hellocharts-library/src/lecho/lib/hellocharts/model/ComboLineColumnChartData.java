@@ -28,6 +28,18 @@ public class ComboLineColumnChartData extends AbstractChartData {
 		setLineChartData(new LineChartData(data.getLineChartData()));
 	}
 
+	@Override
+	public void update(float scale) {
+		columnChartData.update(scale);
+		lineChartData.update(scale);
+	}
+
+	@Override
+	public void finish(boolean isSuccess) {
+		columnChartData.finish(isSuccess);
+		lineChartData.finish(isSuccess);
+	}
+
 	public ColumnChartData getColumnChartData() {
 		return columnChartData;
 	}
@@ -60,4 +72,5 @@ public class ComboLineColumnChartData extends AbstractChartData {
 		data.setAxisY(null);
 		return data;
 	}
+
 }

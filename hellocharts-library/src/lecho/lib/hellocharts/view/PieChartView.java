@@ -104,26 +104,6 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 		}
 	}
 
-	@Override
-	public void animationDataUpdate(float scale) {
-		for (ArcValue arcValue : data.getValues()) {
-			arcValue.update(scale);
-		}
-		chartRenderer.initMaxViewport();
-		chartRenderer.initCurrentViewport();
-		ViewCompat.postInvalidateOnAnimation(this);
-	}
-
-	@Override
-	public void animationDataFinished(boolean isFinishedSuccess) {
-		for (ArcValue arcValue : data.getValues()) {
-			arcValue.finish(true);
-		}
-		chartRenderer.initMaxViewport();
-		chartRenderer.initCurrentViewport();
-		ViewCompat.postInvalidateOnAnimation(this);
-	}
-
 	/**
 	 * Returns rectangle that will constraint pie chart area.
 	 * 

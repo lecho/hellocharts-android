@@ -2,7 +2,6 @@ package lecho.lib.hellocharts.view;
 
 import lecho.lib.hellocharts.BuildConfig;
 import lecho.lib.hellocharts.ColumnChartDataProvider;
-import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.ColumnValue;
 import lecho.lib.hellocharts.model.SelectedValue;
@@ -79,31 +78,6 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 		} else {
 			this.onValueTouchListener = touchListener;
 		}
-	}
-
-	@Override
-	public void animationDataUpdate(float scale) {
-		for (Column column : data.getColumns()) {
-			for (ColumnValue value : column.getValues()) {
-				value.update(scale);
-			}
-		}
-		chartRenderer.initMaxViewport();
-		chartRenderer.initCurrentViewport();
-		ViewCompat.postInvalidateOnAnimation(this);
-	}
-
-	@Override
-	public void animationDataFinished(boolean isFinishedSuccess) {
-		for (Column column : data.getColumns()) {
-			for (ColumnValue value : column.getValues()) {
-				value.finish(isFinishedSuccess);
-			}
-		}
-		chartRenderer.initMaxViewport();
-		chartRenderer.initCurrentViewport();
-		ViewCompat.postInvalidateOnAnimation(this);
-
 	}
 
 	public interface ColumnChartOnValueTouchListener {

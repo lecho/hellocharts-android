@@ -107,6 +107,22 @@ public abstract class AbstractChartView extends View implements Chart {
 	}
 
 	@Override
+	public void animationDataUpdate(float scale) {
+		getChartData().update(scale);
+		chartRenderer.initMaxViewport();
+		chartRenderer.initCurrentViewport();
+		ViewCompat.postInvalidateOnAnimation(this);
+	}
+
+	@Override
+	public void animationDataFinished(boolean isSuccess) {
+		getChartData().finish(isSuccess);
+		chartRenderer.initMaxViewport();
+		chartRenderer.initCurrentViewport();
+		ViewCompat.postInvalidateOnAnimation(this);
+	}
+
+	@Override
 	public void setDataAnimationListener(ChartAnimationListener animationListener) {
 		dataAnimator.setChartAnimationListener(animationListener);
 	}

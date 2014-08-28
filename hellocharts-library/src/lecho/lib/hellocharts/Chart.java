@@ -36,7 +36,7 @@ public interface Chart {
 	/**
 	 * Called when data animation finished.
 	 */
-	public void animationDataFinished(boolean isFinishedSuccess);
+	public void animationDataFinished(boolean isSuccess);
 
 	/**
 	 * Starts chart data animation. Before you call this method you should change target values of chart data.

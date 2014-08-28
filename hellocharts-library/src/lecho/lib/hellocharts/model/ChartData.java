@@ -8,6 +8,16 @@ package lecho.lib.hellocharts.model;
  */
 public interface ChartData {
 
+	/**
+	 * Updates data by scale during animation
+	 */
+	public void update(float scale);
+
+	/**
+	 * Inform data that animation finished(if isSuccess is true data should be update with scale 1.0f)
+	 */
+	public void finish(boolean isSuccess);
+
 	public void setAxisX(Axis axisX);
 
 	public Axis getAxisX();

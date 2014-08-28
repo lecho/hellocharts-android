@@ -5,11 +5,9 @@ import lecho.lib.hellocharts.ColumnChartDataProvider;
 import lecho.lib.hellocharts.ComboLineColumnChartDataProvider;
 import lecho.lib.hellocharts.LineChartDataProvider;
 import lecho.lib.hellocharts.model.ChartData;
-import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.ColumnValue;
 import lecho.lib.hellocharts.model.ComboLineColumnChartData;
-import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.SelectedValue;
@@ -97,45 +95,6 @@ public class ComboLineColumnChartView extends AbstractChartView implements Combo
 		} else {
 			this.onValueTouchListener = touchListener;
 		}
-	}
-
-	@Override
-	public void animationDataUpdate(float scale) {
-		for (Column column : data.getColumnChartData().getColumns()) {
-			for (ColumnValue value : column.getValues()) {
-				value.update(scale);
-			}
-		}
-
-		for (Line line : data.getLineChartData().getLines()) {
-			for (PointValue point : line.getValues()) {
-				point.update(scale);
-			}
-		}
-
-		chartRenderer.initMaxViewport();
-		chartRenderer.initCurrentViewport();
-		ViewCompat.postInvalidateOnAnimation(this);
-	}
-
-	@Override
-	public void animationDataFinished(boolean isFinishedSuccess) {
-		for (Column column : data.getColumnChartData().getColumns()) {
-			for (ColumnValue value : column.getValues()) {
-				value.finish(isFinishedSuccess);
-			}
-		}
-
-		for (Line line : data.getLineChartData().getLines()) {
-			for (PointValue point : line.getValues()) {
-				point.finish(isFinishedSuccess);
-			}
-		}
-
-		chartRenderer.initMaxViewport();
-		chartRenderer.initCurrentViewport();
-		ViewCompat.postInvalidateOnAnimation(this);
-
 	}
 
 	public interface ComboLineColumnChartOnValueTouchListener {

@@ -74,6 +74,20 @@ public class PieChartData extends AbstractChartData {
 		}
 	}
 
+	@Override
+	public void update(float scale) {
+		for (ArcValue value : values) {
+			value.update(scale);
+		}
+	}
+
+	@Override
+	public void finish(boolean isSuccess) {
+		for (ArcValue value : values) {
+			value.finish(isSuccess);
+		}
+	}
+
 	/**
 	 * PieChart does not support axes so method call will be ignored
 	 */

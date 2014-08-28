@@ -35,6 +35,21 @@ public class ColumnChartData extends AbstractChartData {
 		}
 	}
 
+	@Override
+	public void update(float scale) {
+		for (Column column : columns) {
+			column.update(scale);
+		}
+
+	}
+
+	@Override
+	public void finish(boolean isSuccess) {
+		for (Column column : columns) {
+			column.finish(isSuccess);
+		}
+	}
+
 	public List<Column> getColumns() {
 		return columns;
 	}
@@ -90,4 +105,5 @@ public class ColumnChartData extends AbstractChartData {
 		data.setAxisY(null);
 		return data;
 	}
+
 }
