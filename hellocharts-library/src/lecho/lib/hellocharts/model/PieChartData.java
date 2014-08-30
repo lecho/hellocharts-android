@@ -3,6 +3,7 @@ package lecho.lib.hellocharts.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import lecho.lib.hellocharts.view.PieChartView;
 import android.graphics.Color;
 import android.graphics.Typeface;
 
@@ -17,9 +18,10 @@ public class PieChartData extends AbstractChartData {
 	public static final int DEFAULT_CENTER_TEXT2_SIZE_SP = 18;
 	public static final float DEFAULT_CENTER_CIRCLE_SCALE = 0.6f;
 
-	private ValueFormatter formatter = new NumberValueFormatter();
+	private ValueFormatter formatter = new NumberValueFormatter(2, new char[] { 'a', 'b' }, new char[] { 't', 's' });
 	private boolean hasLabels = false;
 	private boolean hasLabelsOnlyForSelected = false;
+	private boolean hasLabelsOutside = false;
 
 	private boolean hasCenterCircle = false;
 	private int centerCircleColor = Color.WHITE;
@@ -54,6 +56,7 @@ public class PieChartData extends AbstractChartData {
 		this.formatter = data.formatter;
 		this.hasLabels = data.hasLabels;
 		this.hasLabelsOnlyForSelected = data.hasLabelsOnlyForSelected;
+		this.hasLabelsOutside = data.hasLabelsOutside;
 
 		this.hasCenterCircle = data.hasCenterCircle;
 		this.centerCircleColor = data.centerCircleColor;
@@ -139,6 +142,18 @@ public class PieChartData extends AbstractChartData {
 			this.hasLabels = false;
 		}
 		return this;
+	}
+
+	public boolean hasLabelsOutside() {
+		return hasLabelsOutside;
+	}
+
+	/**
+	 * Set if labels should be drawn inside circle(false) or outside(true). By default false. If you set it to true you
+	 * should also change chart fill ration using {@link PieChartView#setCircleFillRatio(float)}.
+	 */
+	public void setHasLabelsOutside(boolean hasLabelsOutside) {
+		this.hasLabelsOutside = hasLabelsOutside;
 	}
 
 	public boolean hasCenterCircle() {

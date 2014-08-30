@@ -23,7 +23,8 @@ import android.text.TextUtils;
 public class PieChartRenderer extends AbstractChartRenderer {
 	private static final float MAX_WIDTH_HEIGHT = 100f;
 	private static final int DEFAULT_START_ROTATION = 45;
-	private static final float DEFAULT_ARC_VECTOR_RADIUS_FACTOR = 0.7f;
+	private static final float DEFAULT_LABEL_INSIDE_RADIUS_FACTOR = 0.7f;
+	private static final float DEFAULT_LABEL_OUTSIDE_RADIUS_FACTOR = 1.0f;
 	private static final int DEFAULT_TOUCH_ADDITIONAL_DP = 8;
 	private static final int MODE_DRAW = 0;
 	private static final int MODE_HIGHLIGHT = 1;
@@ -219,52 +220,30 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	 * and will have bigger radius.
 	 */
 	private void drawArc(Canvas canvas, PieChartData data, ArcValue arcValue, float lastAngle, float angle, int mode) {
-		// TODO: Move centerX/Y out of this method.
-		final float centerX = orginCircleOval.centerX();
-		final float centerY = orginCircleOval.centerY();
-		final float circleRadius = orginCircleOval.width() / 2f;
-		final float labelRadius;
-
-		if (hasCenterCircle) {
-			float x = (circleRadius - (circleRadius * data.getCenterCircleScale())) / 2;
-			labelRadius = circleRadius - x;
-
-		} else {
-			labelRadius = circleRadius * DEFAULT_ARC_VECTOR_RADIUS_FACTOR;
-		}
-
-		final float arcCenterX = (float) (labelRadius * Math.cos(Math.toRadians(lastAngle + angle / 2)) + centerX);
-		final float arcCenterY = (float) (labelRadius * Math.sin(Math.toRadians(lastAngle + angle / 2)) + centerY);
-
-		// Move arc along vector to add spacing between arcs.
-		arcVector.set(arcCenterX - centerX, arcCenterY - centerY);
+		arcVector.set((float) (Math.cos(Math.toRadians(lastAngle + angle / 2))),
+				(float) (Math.sin(Math.toRadians(lastAngle + angle / 2))));
 		normalizeVector(arcVector);
+
 		drawCircleOval.set(orginCircleOval);
-		final float arcSpacing = Utils.dp2px(density, arcValue.getArcSpacing());
+		final int arcSpacing = Utils.dp2px(density, arcValue.getArcSpacing());
 		drawCircleOval.inset(arcSpacing, arcSpacing);
-		drawCircleOval.offset(arcVector.x * arcSpacing, arcVector.y * arcSpacing);
+		drawCircleOval.offset((float) (arcVector.x * arcSpacing), (float) (arcVector.y * arcSpacing));
 		if (MODE_HIGHLIGHT == mode) {
 			// Add additional touch feedback by setting bigger radius for that arc and darken color.
 			drawCircleOval.inset(-touchAdditional, -touchAdditional);
 			arcPaint.setColor(arcValue.getDarkenColor());
 			canvas.drawArc(drawCircleOval, lastAngle, angle, true, arcPaint);
 			if (data.hasLabels() || data.hasLabelsOnlyForSelected()) {
-				drawLabel(canvas, data, arcValue, arcCenterX, arcCenterY);
+				drawLabel(canvas, data, arcValue);
 			}
 		} else {
 			arcPaint.setColor(arcValue.getColor());
 			canvas.drawArc(drawCircleOval, lastAngle, angle, true, arcPaint);
 			if (data.hasLabels()) {
-				drawLabel(canvas, data, arcValue, arcCenterX, arcCenterY);
+				drawLabel(canvas, data, arcValue);
 			}
 		}
 	}
-
-	// private void drawLabel(Canvas canvas, PieChartData data, ArcValue arcValue, final float arcCenterX,
-	// final float arcCenterY) {
-	// final int nummChars = data.getFormatter().formatValue(labelBuffer, arcValue.getValue());
-	// canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, arcCenterX, arcCenterY, labelPaint);
-	// }
 
 	private void highlightArc(Canvas canvas, PieChartData data, ArcValue arcValue, float lastAngle, float angle,
 			int arcIndex) {
@@ -275,14 +254,59 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		drawArc(canvas, data, arcValue, lastAngle, angle, MODE_HIGHLIGHT);
 	}
 
-	private void drawLabel(Canvas canvas, PieChartData data, ArcValue arcValue, float rawX, float rawY) {
+	private void drawLabel(Canvas canvas, PieChartData data, ArcValue arcValue) {
 		final int nummChars = data.getFormatter().formatValue(labelBuffer, arcValue.getValue());
 		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
-		float left = rawX - labelWidth / 2 - labelMargin;
-		float right = rawX + labelWidth / 2 + labelMargin;
-		float top = rawY - labelHeight / 2 - labelMargin;
-		float bottom = rawY + labelHeight / 2 + labelMargin;
+
+		final float centerX = orginCircleOval.centerX();
+		final float centerY = orginCircleOval.centerY();
+		final float circleRadius = orginCircleOval.width() / 2f;
+		final float labelRadius;
+
+		if (data.hasLabelsOutside()) {
+			labelRadius = circleRadius * DEFAULT_LABEL_OUTSIDE_RADIUS_FACTOR;
+		} else {
+			if (hasCenterCircle) {
+				labelRadius = circleRadius - (circleRadius - (circleRadius * data.getCenterCircleScale())) / 2;
+			} else {
+				labelRadius = circleRadius * DEFAULT_LABEL_INSIDE_RADIUS_FACTOR;
+			}
+		}
+
+		final float rawX = labelRadius * arcVector.x + centerX;
+		final float rawY = labelRadius * arcVector.y + centerY;
+
+		float left;
+		float right;
+		float top;
+		float bottom;
+
+		if (data.hasLabelsOutside()) {
+			if (rawX > centerX) {
+				// Right half.
+				left = rawX + labelMargin;
+				right = rawX + labelWidth + labelMargin * 3;
+			} else {
+				left = rawX - labelWidth - labelMargin * 3;
+				right = rawX - labelMargin;
+			}
+
+			if (rawY > centerY) {
+				// Lower half.
+				top = rawY + labelMargin;
+				bottom = rawY + labelHeight + labelMargin * 3;
+			} else {
+				top = rawY - labelHeight - labelMargin * 3;
+				bottom = rawY - labelMargin;
+			}
+		} else {
+			left = rawX - labelWidth / 2 - labelMargin;
+			right = rawX + labelWidth / 2 + labelMargin;
+			top = rawY - labelHeight / 2 - labelMargin;
+			bottom = rawY + labelHeight / 2 + labelMargin;
+		}
+
 		labelRect.set(left, top, right, bottom);
 		int orginColor = labelPaint.getColor();
 		labelPaint.setColor(arcValue.getDarkenColor());
