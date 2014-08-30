@@ -9,11 +9,11 @@
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_explode"
-        android:title="Explode chart"
+        android:title="Explode/Implode chart"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_single_arc_separation"
-        android:title="Separate single arc"
+        android:title="Toggle single arc separation"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_center_circle"
@@ -32,16 +32,16 @@
         android:title="Toggle labels"
         app:showAsAction="never"/>
     <item
+        android:id="@+id/action_toggle_labels_outside"
+        android:title="Toggle labels outside"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/action_animate"
         android:title="Animate chart"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_toggle_selection_mode"
         android:title="Toggle selection mode"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/action_toggle_label_for_selected"
-        android:title="Toggle label for selected"
         app:showAsAction="never"/>
 
 </menu>

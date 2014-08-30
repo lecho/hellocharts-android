@@ -1,0 +1,6 @@
+<resources>
+
+    <dimen name="pie_chart_text1_size">38sp</dimen>
+    <dimen name="pie_chart_text2_size">12dp</dimen>
+
+</resources>

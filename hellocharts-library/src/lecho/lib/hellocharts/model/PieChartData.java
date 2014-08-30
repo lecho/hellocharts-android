@@ -14,11 +14,11 @@ import android.graphics.Typeface;
  * 
  */
 public class PieChartData extends AbstractChartData {
-	public static final int DEFAULT_CENTER_TEXT1_SIZE_SP = 48;
-	public static final int DEFAULT_CENTER_TEXT2_SIZE_SP = 18;
+	public static final int DEFAULT_CENTER_TEXT1_SIZE_SP = 42;
+	public static final int DEFAULT_CENTER_TEXT2_SIZE_SP = 16;
 	public static final float DEFAULT_CENTER_CIRCLE_SCALE = 0.6f;
 
-	private ValueFormatter formatter = new NumberValueFormatter(2, new char[] { 'a', 'b' }, new char[] { 't', 's' });
+	private ValueFormatter formatter = new NumberValueFormatter();
 	private boolean hasLabels = false;
 	private boolean hasLabelsOnlyForSelected = false;
 	private boolean hasLabelsOutside = false;
@@ -150,7 +150,8 @@ public class PieChartData extends AbstractChartData {
 
 	/**
 	 * Set if labels should be drawn inside circle(false) or outside(true). By default false. If you set it to true you
-	 * should also change chart fill ration using {@link PieChartView#setCircleFillRatio(float)}.
+	 * should also change chart fill ration using {@link PieChartView#setCircleFillRatio(float)}. This flag is used only
+	 * if you also set hasLabels or hasLabelsOnlyForSelected flags.
 	 */
 	public void setHasLabelsOutside(boolean hasLabelsOutside) {
 		this.hasLabelsOutside = hasLabelsOutside;

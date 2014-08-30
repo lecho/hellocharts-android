@@ -2,7 +2,6 @@ package lecho.lib.hellocharts.util;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.PointF;
 import android.util.TypedValue;
 
 public abstract class Utils {
@@ -31,8 +30,16 @@ public abstract class Utils {
 
 	}
 
+	public static int px2dp(float density, int px) {
+		return (int) Math.ceil(px / density);
+	}
+
 	public static int sp2px(float scaledDensity, int sp) {
 		return (int) (sp * scaledDensity + 0.5f);
+	}
+
+	public static int px2sp(float scaledDensity, int px) {
+		return (int) Math.ceil(px / scaledDensity);
 	}
 
 	public static int mm2px(Context context, int mm) {
@@ -186,65 +193,4 @@ public abstract class Utils {
 		return charCount;
 	}
 
-	/**
-	 * Checks if lines intersects.
-	 * 
-	 * @param points
-	 *            8 values, two points on the first line and two point on the second line.
-	 * @param outPoint
-	 *            point of intersection if exits.
-	 * @return true if lines intersect.
-	 */
-	private boolean lineIntersection(float[] points, PointF outPoint) {
-		if (points.length != 8) {
-			throw new IllegalArgumentException("Points array must have 8 values!");
-		}
-		// line 1
-		float x1 = points[0];
-		float y1 = points[1];
-		float x2 = points[2];
-		float y2 = points[3];
-		// line 2
-		float x3 = points[4];
-		float y3 = points[5];
-		float x4 = points[6];
-		float y4 = points[7];
-
-		float dx = (x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4);
-		float dy = (x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4);
-		float det = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
-		if (det == 0) {
-			return false;
-		} else {
-			outPoint.set(dx / det, dy / det);
-			return true;
-		}
-	}
-
-	/**
-	 * Checks if point is on given line segment.
-	 * 
-	 * @param points
-	 *            two points of line segment.
-	 * @param point
-	 *            point to check
-	 * @return true if given point is on line segment.
-	 */
-	private boolean isPointOnLine(float[] points, PointF point) {
-		// TODO: AVOID FLOAT ROUNDING PROBLEM!!!
-		if (points.length != 4) {
-			throw new IllegalArgumentException("Points array must have 4 values!");
-		}
-		float x1 = points[0];
-		float y1 = points[1];
-		float x2 = points[2];
-		float y2 = points[3];
-
-		if (point.x >= Math.min(x1, x2) && point.x <= Math.max(x1, x2)) {
-			if (point.y >= Math.min(y1, y2) && point.y <= Math.max(y1, y2)) {
-				return true;
-			}
-		}
-		return false;
-	}
 }

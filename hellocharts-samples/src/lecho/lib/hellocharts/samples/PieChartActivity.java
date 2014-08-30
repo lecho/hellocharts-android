@@ -9,7 +9,6 @@ import lecho.lib.hellocharts.model.PieChartData;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.PieChartView;
 import lecho.lib.hellocharts.view.PieChartView.PieChartOnValueTouchListener;
-import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -41,6 +40,15 @@ public class PieChartActivity extends ActionBarActivity {
 		private PieChartView chart;
 		private PieChartData data;
 
+		private boolean hasLabels = false;
+		private boolean hasLabelsOutside = false;
+		private boolean hasCenterCircle = false;
+		private boolean hasCenterText1 = false;
+		private boolean hasCenterText2 = false;
+		private boolean isExploaded = false;
+		private boolean hasArcSeparated = false;
+		private boolean hasLabelForSelected = false;
+
 		public PlaceholderFragment() {
 		}
 
@@ -54,12 +62,6 @@ public class PieChartActivity extends ActionBarActivity {
 
 			generateDefaultData();
 			chart.setPieChartData(data);
-			// chart.setValueTouchEnabled(false);
-			// chart.setCircleFillRatio(0.7f);
-
-			// Typeface myTypeface = Typeface.createFromAsset(getActivity().getAssets(), "Roboto-Italic.ttf");
-			// data.setCenterText1Typeface(myTypeface);
-			// data.setCenterText1("Hello");
 
 			return rootView;
 		}
@@ -89,31 +91,74 @@ public class PieChartActivity extends ActionBarActivity {
 				return true;
 			}
 			if (id == R.id.action_center_circle) {
-				data.setHasCenterCircle(!data.hasCenterCircle());
+				hasCenterCircle = !hasCenterCircle;
+
+				data.setHasCenterCircle(hasCenterCircle);
 				chart.setPieChartData(data);
 				return true;
 			}
 			if (id == R.id.action_center_text1) {
-				data.setHasCenterCircle(true);
-				data.setCenterText1("Hello!");
+				hasCenterText1 = !hasCenterText1;
+
+				if (hasCenterText1) {
+					hasCenterCircle = true;
+				}
+				hasCenterText2 = false;
+
+				data.setHasCenterCircle(hasCenterCircle);
+				if (hasCenterText1) {
+					data.setCenterText1("Hello!");
+				} else {
+					data.setCenterText1(null);
+				}
 				data.setCenterText2(null);
+
+				// Get roboto-italic font.
 				Typeface tf = Typeface.createFromAsset(getActivity().getAssets(), "Roboto-Italic.ttf");
 				data.setCenterText1Typeface(tf);
+
+				// Get font size from dimens.xml and convert it to sp(library uses sp values).
+				data.setCenterText1FontSize(Utils.px2sp(getResources().getDisplayMetrics().scaledDensity,
+						(int) getResources().getDimension(R.dimen.pie_chart_text1_size)));
 				chart.setPieChartData(data);
 				return true;
 			}
 			if (id == R.id.action_center_text2) {
-				data.setHasCenterCircle(true);
-				data.setCenterText1("Hello!");
-				data.setCenterText2("Charts (Roboto Italic)");
+				hasCenterText2 = !hasCenterText2;
+
+				if (hasCenterText2) {
+					hasCenterText1 = true;// text 2 need text 1 to by also drawn.
+					hasCenterCircle = true;
+				}
+
+				data.setHasCenterCircle(hasCenterCircle);
+				if (hasCenterText2) {
+					data.setCenterText1("Hello!");
+					data.setCenterText2("Charts (Roboto Italic)");
+				} else {
+					data.setCenterText2(null);
+				}
+
 				Typeface tf = Typeface.createFromAsset(getActivity().getAssets(), "Roboto-Italic.ttf");
+
 				data.setCenterText1Typeface(tf);
+				data.setCenterText1FontSize(Utils.px2sp(getResources().getDisplayMetrics().scaledDensity,
+						(int) getResources().getDimension(R.dimen.pie_chart_text1_size)));
+
 				data.setCenterText2Typeface(tf);
+				data.setCenterText2FontSize(Utils.px2sp(getResources().getDisplayMetrics().scaledDensity,
+						(int) getResources().getDimension(R.dimen.pie_chart_text2_size)));
+
 				chart.setPieChartData(data);
 				return true;
 			}
 			if (id == R.id.action_toggle_labels) {
 				toggleLabels();
+				chart.setPieChartData(data);
+				return true;
+			}
+			if (id == R.id.action_toggle_labels_outside) {
+				toggleLabelsOutside();
 				chart.setPieChartData(data);
 				return true;
 			}
@@ -123,19 +168,11 @@ public class PieChartActivity extends ActionBarActivity {
 				return true;
 			}
 			if (id == R.id.action_toggle_selection_mode) {
-				chart.setValueSelectionEnabled(!chart.isValueSelectionEnabled());
+				toggleLabelForSelected();
+				chart.setPieChartData(data);
 				Toast.makeText(getActivity(),
 						"Selection mode set to " + chart.isValueSelectionEnabled() + " select any point.",
 						Toast.LENGTH_SHORT).show();
-				return true;
-			}
-			if (id == R.id.action_toggle_label_for_selected) {
-				toggleLabelForSelected();
-				chart.setPieChartData(data);
-				Toast.makeText(
-						getActivity(),
-						"Label for selected to " + data.hasLabelsOnlyForSelected()
-								+ ". Works best with value selection mode.", Toast.LENGTH_SHORT).show();
 				return true;
 			}
 			return super.onOptionsItemSelected(item);
@@ -153,22 +190,62 @@ public class PieChartActivity extends ActionBarActivity {
 		}
 
 		private void explodeChart() {
-			for (ArcValue value : data.getValues()) {
-				value.setArcSpacing(24);
+			isExploaded = !isExploaded;
+			if (isExploaded) {
+				for (ArcValue value : data.getValues()) {
+					value.setArcSpacing(24);
+				}
+			} else {
+				for (ArcValue value : data.getValues()) {
+					value.setArcSpacing(2);
+				}
 			}
+
 		}
 
 		private void separateSingleArc() {
-			generateDefaultData();
-			data.getValues().get(0).setArcSpacing(32);
+			hasArcSeparated = !hasArcSeparated;
+			if (hasArcSeparated) {
+				// generateDefaultData();
+				data.getValues().get(0).setArcSpacing(32);
+			} else {
+				data.getValues().get(0).setArcSpacing(2);
+			}
 		}
 
 		private void toggleLabels() {
-			data.setHasLabels(!data.hasLabels());
+			hasLabels = !hasLabels;
+
+			data.setHasLabels(hasLabels);
+
+			if (hasLabels && hasLabelsOutside) {
+				chart.setCircleFillRatio(0.7f);
+			} else {
+				chart.setCircleFillRatio(1.0f);
+			}
+		}
+
+		private void toggleLabelsOutside() {
+			// has labels have to be true:P
+			hasLabelsOutside = !hasLabelsOutside;
+			if (hasLabelsOutside) {
+				hasLabels = true;
+			}
+
+			data.setHasLabels(hasLabels);
+			data.setHasLabelsOutside(hasLabelsOutside);
+
+			if (hasLabels && hasLabelsOutside) {
+				chart.setCircleFillRatio(0.7f);
+			} else {
+				chart.setCircleFillRatio(1.0f);
+			}
 		}
 
 		private void toggleLabelForSelected() {
-			data.setHasLabelsOnlyForSelected(!data.hasLabelsOnlyForSelected());
+			hasLabelForSelected = !hasLabelForSelected;
+			data.setHasLabelsOnlyForSelected(hasLabelForSelected);
+			chart.setValueSelectionEnabled(hasLabelForSelected);
 		}
 
 		/**
