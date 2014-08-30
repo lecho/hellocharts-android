@@ -44,18 +44,18 @@ public class PieChartRotationAnimatorV14 implements PieChartRotationAnimator, An
 		float scale = animation.getAnimatedFraction();
 		float rotation = startRotation + (targetRotation - startRotation) * scale;
 		rotation = (rotation % 360 + 360) % 360;
-		chart.setChartRotation(rotation, false);
+		chart.setChartRotation((int) rotation, false);
 	}
 
 	@Override
 	public void onAnimationCancel(Animator animation) {
-		chart.setChartRotation(targetRotation, false);
+		chart.setChartRotation((int) targetRotation, false);
 		animationListener.onAnimationFinished();
 	}
 
 	@Override
 	public void onAnimationEnd(Animator animation) {
-		chart.setChartRotation(targetRotation, false);
+		chart.setChartRotation((int) targetRotation, false);
 		animationListener.onAnimationFinished();
 	}
 

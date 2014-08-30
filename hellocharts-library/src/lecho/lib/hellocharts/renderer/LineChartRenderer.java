@@ -257,14 +257,14 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		for (int valueIndex = 0; valueIndex < lineSize; ++valueIndex) {
 			if (Float.isNaN(currentPointX)) {
 				PointValue linePoint = line.getValues().get(valueIndex);
-				currentPointX = computator.computeRelativeRawX(linePoint.getX());
-				currentPointY = computator.computeRelativeRawY(linePoint.getY());
+				currentPointX = computator.computeRawX(linePoint.getX());
+				currentPointY = computator.computeRawY(linePoint.getY());
 			}
 			if (Float.isNaN(previousPointX)) {
 				if (valueIndex > 0) {
 					PointValue linePoint = line.getValues().get(valueIndex - 1);
-					previousPointX = computator.computeRelativeRawX(linePoint.getX());
-					previousPointY = computator.computeRelativeRawY(linePoint.getY());
+					previousPointX = computator.computeRawX(linePoint.getX());
+					previousPointY = computator.computeRawY(linePoint.getY());
 				} else {
 					previousPointX = currentPointX;
 					previousPointY = currentPointY;
@@ -274,8 +274,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			if (Float.isNaN(prepreviousPointX)) {
 				if (valueIndex > 1) {
 					PointValue linePoint = line.getValues().get(valueIndex - 2);
-					prepreviousPointX = computator.computeRelativeRawX(linePoint.getX());
-					prepreviousPointY = computator.computeRelativeRawY(linePoint.getY());
+					prepreviousPointX = computator.computeRawX(linePoint.getX());
+					prepreviousPointY = computator.computeRawY(linePoint.getY());
 				} else {
 					prepreviousPointX = previousPointX;
 					prepreviousPointY = previousPointY;
@@ -285,8 +285,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			// nextPoint is always new one or it is equal currentPoint.
 			if (valueIndex < lineSize - 1) {
 				PointValue linePoint = line.getValues().get(valueIndex + 1);
-				nextPointX = computator.computeRelativeRawX(linePoint.getX());
-				nextPointY = computator.computeRelativeRawY(linePoint.getY());
+				nextPointX = computator.computeRawX(linePoint.getX());
+				nextPointY = computator.computeRawY(linePoint.getY());
 			} else {
 				nextPointX = currentPointX;
 				nextPointY = currentPointY;

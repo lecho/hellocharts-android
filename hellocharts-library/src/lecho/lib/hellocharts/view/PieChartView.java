@@ -130,7 +130,7 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 	 * 
 	 * @return
 	 */
-	public float getChartRotation() {
+	public int getChartRotation() {
 		return pieChartRenderer.getChartRotation();
 	}
 
@@ -141,7 +141,7 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 	 * 
 	 * @see #getChartRotation()
 	 */
-	public void setChartRotation(float rotation, boolean isAnimated) {
+	public void setChartRotation(int rotation, boolean isAnimated) {
 		if (isAnimated) {
 			rotationAnimator.cancelAnimation();
 			rotationAnimator.startAnimation(pieChartRenderer.getChartRotation(), rotation);
@@ -168,6 +168,13 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 		if (touchHandler instanceof PieChartTouchHandler) {
 			((PieChartTouchHandler) touchHandler).setRotationEnabled(isRotationEnabled);
 		}
+	}
+
+	/**
+	 * Returns ArcValue that is under given angle, selectedValue (if not null) will be hold arc index.
+	 */
+	public ArcValue getValueForAngle(int angle, SelectedValue selectedValue) {
+		return pieChartRenderer.getValueForAngle(angle, selectedValue);
 	}
 
 	public interface PieChartOnValueTouchListener {

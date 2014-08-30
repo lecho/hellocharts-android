@@ -4,6 +4,7 @@ import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.PieChartDataProvider;
 import lecho.lib.hellocharts.model.ArcValue;
 import lecho.lib.hellocharts.model.PieChartData;
+import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.util.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -36,7 +37,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	private PointF arcVector = new PointF();
 	private RectF labelRect = new RectF();
 	private int touchAdditional;
-	private float rotation = DEFAULT_START_ROTATION;
+	private int rotation = DEFAULT_START_ROTATION;
 
 	// Center circle related attributes
 	private boolean hasCenterCircle = false;
@@ -141,12 +142,12 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		// and modulo 360 translates i.e -20 degrees to 340 degrees.
 		final float touchAngle = (pointToAngle(touchX, touchY, centerX, centerY) - rotation + 360f) % 360f;
 		final float arcScale = 360f / maxSum;
-		float lastAngle = 0f; // No start angle here, see abowe
+		float lastAngle = 0f; // No start angle here, see above
 		int arcIndex = 0;
 		for (ArcValue arcValue : data.getValues()) {
 			final float angle = Math.abs(arcValue.getValue()) * arcScale;
 			if (touchAngle >= lastAngle) {
-				selectedValue.set(arcIndex, arcIndex, 0);
+				selectedValue.set(arcIndex, arcIndex, arcIndex);
 			}
 			lastAngle += angle;
 			++arcIndex;
@@ -356,13 +357,36 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		this.orginCircleOval = orginCircleOval;
 	}
 
-	public float getChartRotation() {
+	public int getChartRotation() {
 		return rotation;
 	}
 
-	public void setChartRotation(float rotation) {
+	public void setChartRotation(int rotation) {
 		rotation = (rotation % 360 + 360) % 360;
 		this.rotation = rotation;
+	}
+
+	/**
+	 * Returns ArcValue that is under given angle, selectedValue (if not null) will be hold arc index.
+	 */
+	public ArcValue getValueForAngle(int angle, SelectedValue selectedValue) {
+		final PieChartData data = dataProvider.getPieChartData();
+		final float touchAngle = (angle - rotation + 360f) % 360f;
+		final float arcScale = 360f / maxSum;
+		float lastAngle = 0f;
+		int arcIndex = 0;
+		for (ArcValue arcValue : data.getValues()) {
+			final float tempAngle = Math.abs(arcValue.getValue()) * arcScale;
+			if (touchAngle >= lastAngle) {
+				if (null != selectedValue) {
+					selectedValue.set(arcIndex, arcIndex, arcIndex);
+				}
+				return arcValue;
+			}
+			lastAngle += tempAngle;
+			++arcIndex;
+		}
+		return null;
 	}
 
 }

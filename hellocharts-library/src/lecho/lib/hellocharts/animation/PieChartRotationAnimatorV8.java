@@ -25,14 +25,14 @@ public class PieChartRotationAnimatorV8 implements PieChartRotationAnimator {
 			if (elapsed > duration) {
 				isAnimationStarted = false;
 				handler.removeCallbacks(runnable);
-				chart.setChartRotation(targetRotation, false);
+				chart.setChartRotation((int) targetRotation, false);
 				animationListener.onAnimationFinished();
 				return;
 			}
 			float scale = Math.min(interpolator.getInterpolation((float) elapsed / duration), 1);
 			float rotation = startRotation + (targetRotation - startRotation) * scale;
 			rotation = (rotation % 360 + 360) % 360;
-			chart.setChartRotation(rotation, false);
+			chart.setChartRotation((int) rotation, false);
 			handler.postDelayed(this, 16);
 		}
 	};
@@ -61,7 +61,7 @@ public class PieChartRotationAnimatorV8 implements PieChartRotationAnimator {
 	public void cancelAnimation() {
 		isAnimationStarted = false;
 		handler.removeCallbacks(runnable);
-		chart.setChartRotation(targetRotation, false);
+		chart.setChartRotation((int) targetRotation, false);
 		animationListener.onAnimationFinished();
 	}
 
