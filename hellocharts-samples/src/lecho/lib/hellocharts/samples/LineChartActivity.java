@@ -9,6 +9,7 @@ import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.LineChartView;
 import android.os.Bundle;
@@ -92,6 +93,16 @@ public class LineChartActivity extends ActionBarActivity {
 			if (id == R.id.action_toggle_bezier) {
 				toggleBezier();
 				chart.setLineChartData(data);
+
+				// It is good idea to manually set a little higher max viewport for cubic lines because sometimes line
+				// go above or below max/min. To do that use Viewport.inest() method and pas negative value as dy
+				// parameter.
+				// Remember to set viewport after you call setLineChartData().
+				Viewport v = chart.getMaxViewport();
+				float dy = v.height() * 0.05f;// just 10%, 5% on the top and 5% on the bottom
+				v.inset(0, -dy);
+				chart.setMaxViewport(v);
+				chart.setViewport(v, true);
 				return true;
 			}
 			if (id == R.id.action_toggle_area) {
