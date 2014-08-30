@@ -15,7 +15,6 @@ public abstract class Utils {
 	public static final int COLOR_RED = Color.parseColor("#FF4444");
 	private static final float SATURATION_DARKEN = 1.1f;
 	private static final float INTENSITY_DARKEN = 0.9f;
-	private static float[] hsv = new float[3];
 
 	public static final int pickColor() {
 		final int[] colors = new int[] { COLOR_BLUE, COLOR_VIOLET, COLOR_GREEN, COLOR_ORANGE, COLOR_RED };
@@ -48,7 +47,7 @@ public abstract class Utils {
 	}
 
 	public static int darkenColor(int color) {
-		// TODO: that's not threat safe, should it be?
+		float[] hsv = new float[3];
 		int alpha = Color.alpha(color);
 		Color.colorToHSV(color, hsv);
 		hsv[1] = Math.min(hsv[1] * SATURATION_DARKEN, 1.0f);
@@ -118,11 +117,6 @@ public abstract class Utils {
 	/**
 	 * Checks how many "representable floats" exists between 'a' and 'b' and returns true if that number is less then
 	 * maxUlps. If maxUlps = 1 this will have the same results as nextDawnF(a) >= a <= nextUpF(a)
-	 * 
-	 * @param a
-	 * @param b
-	 * @param maxUlps
-	 *            maximum number of representable floats between "similar" floats
 	 */
 	public static boolean almostEqualF(float a, float b, int maxUlps) {
 		if (a == b) {
@@ -132,6 +126,23 @@ public abstract class Utils {
 		if (intDiff < maxUlps) {
 			return true;
 		}
+		return false;
+	}
+
+	public static boolean almostEqualRelativeAndAbs(float a, float b, float maxDiff, float maxRelDiff) {
+		float diff = Math.abs(a - b);
+		if (diff <= maxDiff) {
+			return true;
+		}
+
+		a = Math.abs(a);
+		b = Math.abs(b);
+		float largest = (a > b) ? a : b;
+
+		if (diff <= largest * maxRelDiff) {
+			return true;
+		}
+
 		return false;
 	}
 
