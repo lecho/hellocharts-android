@@ -38,6 +38,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	private RectF labelRect = new RectF();
 	private int touchAdditional;
 	private int rotation = DEFAULT_START_ROTATION;
+	private float circleFillRatio = 1.0f;
 
 	// Center circle related attributes
 	private boolean hasCenterCircle = false;
@@ -324,6 +325,8 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		final float right = centerX + circleRadius - touchAdditional;
 		final float bottom = centerY + circleRadius - touchAdditional;
 		orginCircleOval.set(left, top, right, bottom);
+		final float inest = 0.5f * orginCircleOval.width() * (1.0f - circleFillRatio);
+		orginCircleOval.inset(inest, inest);
 	}
 
 	/**
@@ -387,6 +390,28 @@ public class PieChartRenderer extends AbstractChartRenderer {
 			++arcIndex;
 		}
 		return null;
+	}
+
+	/**
+	 * @see #setCircleFillRatio(float)
+	 */
+	public float getCircleFillRatio() {
+		return this.circleFillRatio;
+	}
+
+	/**
+	 * Set how much of view area should be taken by chart circle. Value should be between 0 and 1. Default is 1 so
+	 * circle will have radius equals min(View.width, View.height).
+	 */
+	public void setCircleFillRatio(float fillRatio) {
+		if (fillRatio < 0) {
+			fillRatio = 0;
+		} else if (fillRatio > 1) {
+			fillRatio = 1;
+		}
+
+		this.circleFillRatio = fillRatio;
+		calculateCircleOval();
 	}
 
 }

@@ -106,8 +106,6 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 
 	/**
 	 * Returns rectangle that will constraint pie chart area.
-	 * 
-	 * @return
 	 */
 	public RectF getCircleOval() {
 		return pieChartRenderer.getCircleOval();
@@ -115,9 +113,8 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 
 	/**
 	 * Use this to change pie chart area. Because by default CircleOval is calculated onSizeChanged() you must call this
-	 * method after size of PieChartView is calculated to make it works.
-	 * 
-	 * @param orginCircleOval
+	 * method after size of PieChartView is calculated. In most cases it will probably be easier to use
+	 * {@link #setCircleFillRatio(float)} to change chart area or just use view padding.
 	 */
 	public void setCircleOval(RectF orginCircleOval) {
 		pieChartRenderer.setCircleOval(orginCircleOval);
@@ -175,6 +172,22 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 	 */
 	public ArcValue getValueForAngle(int angle, SelectedValue selectedValue) {
 		return pieChartRenderer.getValueForAngle(angle, selectedValue);
+	}
+
+	/**
+	 * @see #setCircleFillRatio(float)
+	 */
+	public float getCircleFillRatio() {
+		return pieChartRenderer.getCircleFillRatio();
+	}
+
+	/**
+	 * Set how much of view area should be taken by chart circle. Value should be between 0 and 1. Default is 1 so
+	 * circle will have radius equals min(View.width, View.height).
+	 */
+	public void setCircleFillRatio(float fillRatio) {
+		pieChartRenderer.setCircleFillRatio(fillRatio);
+		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
 	public interface PieChartOnValueTouchListener {

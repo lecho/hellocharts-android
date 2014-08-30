@@ -9,6 +9,7 @@ import lecho.lib.hellocharts.model.PieChartData;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.PieChartView;
 import lecho.lib.hellocharts.view.PieChartView.PieChartOnValueTouchListener;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -53,6 +54,8 @@ public class PieChartActivity extends ActionBarActivity {
 
 			generateDefaultData();
 			chart.setPieChartData(data);
+			// chart.setValueTouchEnabled(false);
+			// chart.setCircleFillRatio(0.7f);
 
 			// Typeface myTypeface = Typeface.createFromAsset(getActivity().getAssets(), "Roboto-Italic.ttf");
 			// data.setCenterText1Typeface(myTypeface);
