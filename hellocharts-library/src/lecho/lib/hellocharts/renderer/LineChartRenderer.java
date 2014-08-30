@@ -27,6 +27,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 	private LineChartDataProvider dataProvider;
 
+	private int contentRectCheckPrecission;
+
 	private int touchTolleranceMargin;
 	private Path path = new Path();
 	private Paint linePaint = new Paint();
@@ -66,6 +68,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 		pointPaint.setAntiAlias(true);
 		pointPaint.setStyle(Paint.Style.FILL);
+
+		contentRectCheckPrecission = Utils.dp2px(density, 4);
 
 	}
 
@@ -257,14 +261,14 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		for (int valueIndex = 0; valueIndex < lineSize; ++valueIndex) {
 			if (Float.isNaN(currentPointX)) {
 				PointValue linePoint = line.getValues().get(valueIndex);
-				currentPointX = computator.computeRawX(linePoint.getX());
-				currentPointY = computator.computeRawY(linePoint.getY());
+				currentPointX = computator.computeRelativeRawX(linePoint.getX());
+				currentPointY = computator.computeRelativeRawY(linePoint.getY());
 			}
 			if (Float.isNaN(previousPointX)) {
 				if (valueIndex > 0) {
 					PointValue linePoint = line.getValues().get(valueIndex - 1);
-					previousPointX = computator.computeRawX(linePoint.getX());
-					previousPointY = computator.computeRawY(linePoint.getY());
+					previousPointX = computator.computeRelativeRawX(linePoint.getX());
+					previousPointY = computator.computeRelativeRawY(linePoint.getY());
 				} else {
 					previousPointX = currentPointX;
 					previousPointY = currentPointY;
@@ -274,8 +278,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			if (Float.isNaN(prepreviousPointX)) {
 				if (valueIndex > 1) {
 					PointValue linePoint = line.getValues().get(valueIndex - 2);
-					prepreviousPointX = computator.computeRawX(linePoint.getX());
-					prepreviousPointY = computator.computeRawY(linePoint.getY());
+					prepreviousPointX = computator.computeRelativeRawX(linePoint.getX());
+					prepreviousPointY = computator.computeRelativeRawY(linePoint.getY());
 				} else {
 					prepreviousPointX = previousPointX;
 					prepreviousPointY = previousPointY;
@@ -285,8 +289,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			// nextPoint is always new one or it is equal currentPoint.
 			if (valueIndex < lineSize - 1) {
 				PointValue linePoint = line.getValues().get(valueIndex + 1);
-				nextPointX = computator.computeRawX(linePoint.getX());
-				nextPointY = computator.computeRawY(linePoint.getY());
+				nextPointX = computator.computeRelativeRawX(linePoint.getX());
+				nextPointY = computator.computeRelativeRawY(linePoint.getY());
 			} else {
 				nextPointX = currentPointX;
 				nextPointY = currentPointY;
@@ -338,8 +342,9 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
 			final float rawX = computator.computeRawX(pointValue.getX());
 			final float rawY = computator.computeRawY(pointValue.getY());
-			if (computator.isWithinContentRect((int) rawX, (int) rawY)) {
-				// Draw points only if they are within contentRect
+			if (computator.isWithinContentRect((int) rawX, (int) rawY, contentRectCheckPrecission)) {
+				// Draw points only if they are within contentRect, using contentRect instead of viewport to avoid some
+				// float rounding problems.
 				if (MODE_DRAW == mode) {
 					drawPoint(canvas, line, pointValue, rawX, rawY, pointRadius);
 					if (line.hasLabels()) {

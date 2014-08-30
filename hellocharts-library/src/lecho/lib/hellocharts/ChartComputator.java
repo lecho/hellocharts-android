@@ -223,9 +223,9 @@ public class ChartComputator {
 	/**
 	 * Check if given coordinates lies inside contentRect.
 	 */
-	public boolean isWithinContentRect(int x, int y) {
-		if (x >= contentRect.left && x <= contentRect.right) {
-			if (y <= contentRect.bottom && y >= contentRect.top) {
+	public boolean isWithinContentRect(int x, int y, int precision) {
+		if (x >= contentRect.left - precision && x <= contentRect.right + precision) {
+			if (y <= contentRect.bottom + precision && y >= contentRect.top - precision) {
 				return true;
 			}
 		}
