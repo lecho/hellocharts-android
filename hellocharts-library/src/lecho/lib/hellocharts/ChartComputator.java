@@ -6,7 +6,10 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 
 /**
- * Computes raw points coordinates(in pixels), holds content area dimensions and chart viewport.
+ * Computes raw points coordinates(in pixels), holds content area dimensions and chart viewport. Note: some chart
+ * implementations may initialize renderer before computator and therefore computator can be null during renderer
+ * creation. So if you are implementing some renderer or custom touch handler don't keep computator as private member,
+ * Instead use {@link Chart#getChartComputator()} when you need it to make suer it is properly initialized.
  * 
  */
 public class ChartComputator {
