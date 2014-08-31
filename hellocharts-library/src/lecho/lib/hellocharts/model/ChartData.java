@@ -18,13 +18,13 @@ public interface ChartData {
 	 */
 	public void finish(boolean isSuccess);
 
-	public void setAxisX(Axis axisX);
+	public void setAxisXBottom(Axis axisX);
 
-	public Axis getAxisX();
+	public Axis getAxisXBottom();
 
-	public void setAxisY(Axis axisY);
+	public void setAxisYLeft(Axis axisY);
 
-	public Axis getAxisY();
+	public Axis getAxisYLeft();
 
 	/**
 	 * Returns axes color. Both axes always have the same color.

@@ -150,8 +150,8 @@ public class BubbleChartData extends AbstractChartData {
 		values.add(new BubbleValue(7, 30, 30000));
 		values.add(new BubbleValue(11, 22, 10));
 		data.setValues(values);
-		data.setAxisX(null);
-		data.setAxisY(null);
+		data.setAxisXBottom(null);
+		data.setAxisYLeft(null);
 		return data;
 	}
 }

@@ -40,15 +40,15 @@ public class PieChartData extends AbstractChartData {
 	private List<ArcValue> values = new ArrayList<ArcValue>();
 
 	public PieChartData() {
-		setAxisX(null);
-		setAxisY(null);
+		setAxisXBottom(null);
+		setAxisYLeft(null);
 	};
 
 	public PieChartData(List<ArcValue> values) {
 		setValues(values);
 		// Empty axes. Pie chart don't need axes.
-		setAxisX(null);
-		setAxisY(null);
+		setAxisXBottom(null);
+		setAxisYLeft(null);
 	}
 
 	public PieChartData(PieChartData data) {
@@ -95,16 +95,16 @@ public class PieChartData extends AbstractChartData {
 	 * PieChart does not support axes so method call will be ignored
 	 */
 	@Override
-	public void setAxisX(Axis axisX) {
-		super.setAxisX(null);
+	public void setAxisXBottom(Axis axisX) {
+		super.setAxisXBottom(null);
 	}
 
 	/**
 	 * PieChart does not support axes so method call will be ignored
 	 */
 	@Override
-	public void setAxisY(Axis axisY) {
-		super.setAxisY(null);
+	public void setAxisYLeft(Axis axisY) {
+		super.setAxisYLeft(null);
 	}
 
 	public List<ArcValue> getValues() {
@@ -270,8 +270,8 @@ public class PieChartData extends AbstractChartData {
 		values.add(new ArcValue(30f));
 		values.add(new ArcValue(50f));
 		data.setValues(values);
-		data.setAxisX(null);
-		data.setAxisY(null);
+		data.setAxisXBottom(null);
+		data.setAxisYLeft(null);
 		return data;
 	}
 }

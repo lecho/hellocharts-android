@@ -192,8 +192,8 @@ public class LineChartActivity extends ActionBarActivity {
 
 			data = new LineChartData(lines);
 
-			data.getAxisX().setName("Axis X");
-			data.getAxisY().setName("Axis Y");
+			data.getAxisXBottom().setName("Axis X");
+			data.getAxisYLeft().setName("Axis Y");
 
 		}
 
@@ -289,12 +289,12 @@ public class LineChartActivity extends ActionBarActivity {
 		private void toggleAxes() {
 			if (!hasAxes) {
 				// by default axes are auto-generated;
-				data.setAxisX(new Axis().setName("Axis X"));
-				data.setAxisY(new Axis().setName("Axis Y"));
+				data.setAxisXBottom(new Axis().setName("Axis X"));
+				data.setAxisYLeft(new Axis().setName("Axis Y"));
 			} else {
 				// to disable axes set them to null;
-				data.setAxisX(null);
-				data.setAxisY(null);
+				data.setAxisXBottom(null);
+				data.setAxisYLeft(null);
 			}
 			hasAxes = !hasAxes;
 		}
@@ -302,14 +302,14 @@ public class LineChartActivity extends ActionBarActivity {
 		private void toggleAxesNames() {
 			if (hasAxes) {
 				// by default axes are auto-generated;
-				Axis axisX = data.getAxisX();
+				Axis axisX = data.getAxisXBottom();
 				if (TextUtils.isEmpty(axisX.getName())) {
 					axisX.setName("Axis X");
 				} else {
 					axisX.setName(null);
 				}
 
-				Axis axisY = data.getAxisY();
+				Axis axisY = data.getAxisYLeft();
 				if (TextUtils.isEmpty(axisY.getName())) {
 					axisY.setName("Axis Y");
 				} else {

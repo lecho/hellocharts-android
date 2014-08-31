@@ -162,8 +162,8 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 		private void generateDefaultData() {
 			// Chart looks the best when line data and column data have similar maximum viewports.
 			data = new ComboLineColumnChartData(generateDefaultColumnData(), generateDefaultLineData());
-			data.getAxisX().setName("Axis X");
-			data.getAxisY().setName("Axis Y");
+			data.getAxisXBottom().setName("Axis X");
+			data.getAxisYLeft().setName("Axis Y");
 		}
 
 		private LineChartData generateDefaultLineData() {
@@ -295,12 +295,12 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 		private void toggleAxes() {
 			if (!hasAxes) {
 				// by default axes are auto-generated;
-				data.setAxisX(new Axis().setName("Axis X"));
-				data.setAxisY(new Axis().setName("Axis Y"));
+				data.setAxisXBottom(new Axis().setName("Axis X"));
+				data.setAxisYLeft(new Axis().setName("Axis Y"));
 			} else {
 				// to disable axes set them to null;
-				data.setAxisX(null);
-				data.setAxisY(null);
+				data.setAxisXBottom(null);
+				data.setAxisYLeft(null);
 			}
 			hasAxes = !hasAxes;
 			hasAxesNames = false;
@@ -310,14 +310,14 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 			if (hasAxes) {
 				hasAxesNames = !hasAxesNames;
 				// by default axes are auto-generated;
-				Axis axisX = data.getAxisX();
+				Axis axisX = data.getAxisXBottom();
 				if (hasAxesNames) {
 					axisX.setName("Axis X");
 				} else {
 					axisX.setName(null);
 				}
 
-				Axis axisY = data.getAxisY();
+				Axis axisY = data.getAxisYLeft();
 				if (hasAxesNames) {
 					axisY.setName("Axis Y");
 				} else {

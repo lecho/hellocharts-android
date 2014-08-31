@@ -82,8 +82,8 @@ public class LineChartData extends AbstractChartData {
 		List<Line> lines = new ArrayList<Line>(1);
 		lines.add(line);
 		data.setLines(lines);
-		data.setAxisX(null);
-		data.setAxisY(null);
+		data.setAxisXBottom(null);
+		data.setAxisYLeft(null);
 		return data;
 	}
 }
