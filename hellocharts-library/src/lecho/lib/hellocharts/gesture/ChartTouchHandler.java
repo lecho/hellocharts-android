@@ -14,7 +14,7 @@ public class ChartTouchHandler {
 	protected ChartScroller chartScroller;
 	protected ChartZoomer chartZoomer;
 	protected Chart chart;
-	// TODO: consider using dummy zoomer and scroller instead of boolean flags
+
 	protected boolean isInteractive = true;
 	protected boolean isZoomEnabled = true;
 	private boolean isScrollEnabled = true;
@@ -40,7 +40,9 @@ public class ChartTouchHandler {
 		if (!isInteractive) {
 			return false;
 		}
+
 		final ChartComputator computator = chart.getChartComputator();
+
 		boolean needInvalidate = false;
 		if (isScrollEnabled && chartScroller.computeScrollOffset(computator)) {
 			needInvalidate = true;
@@ -69,21 +71,22 @@ public class ChartTouchHandler {
 	}
 
 	private boolean computeTouch(MotionEvent event) {
+		final ChartRenderer renderer = chart.getChartRenderer();
+
 		boolean needInvalidate = false;
-		final ChartRenderer chartRenderer = chart.getChartRenderer();
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
-			needInvalidate = chart.getChartRenderer().checkTouch(event.getX(), event.getY());
+			needInvalidate = renderer.checkTouch(event.getX(), event.getY());
 			break;
 		case MotionEvent.ACTION_UP:
-			if (chartRenderer.isTouched()) {
-				if (chartRenderer.checkTouch(event.getX(), event.getY())) {
-					chartRenderer.callChartTouchListener();
+			if (renderer.isTouched()) {
+				if (renderer.checkTouch(event.getX(), event.getY())) {
+					renderer.callChartTouchListener();
 					if (!isValueSelectionEnabled) {
-						chartRenderer.clearTouch();
+						renderer.clearTouch();
 					}
 				} else {
-					chartRenderer.clearTouch();
+					renderer.clearTouch();
 				}
 				needInvalidate = true;
 			}
@@ -91,16 +94,16 @@ public class ChartTouchHandler {
 		case MotionEvent.ACTION_MOVE:
 			// If value was touched and now touch point is outside of value area - clear touch and invalidate, user
 			// probably moved finger away from point without leaving finger of the screen surface
-			if (chartRenderer.isTouched()) {
-				if (!chartRenderer.checkTouch(event.getX(), event.getY())) {
-					chartRenderer.clearTouch();
+			if (renderer.isTouched()) {
+				if (!renderer.checkTouch(event.getX(), event.getY())) {
+					renderer.clearTouch();
 					needInvalidate = true;
 				}
 			}
 			break;
 		case MotionEvent.ACTION_CANCEL:
-			if (chartRenderer.isTouched()) {
-				chartRenderer.clearTouch();
+			if (renderer.isTouched()) {
+				renderer.clearTouch();
 				needInvalidate = true;
 			}
 			break;

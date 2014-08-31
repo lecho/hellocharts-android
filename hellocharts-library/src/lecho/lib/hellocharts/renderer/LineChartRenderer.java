@@ -348,10 +348,10 @@ public class LineChartRenderer extends AbstractChartRenderer {
 				if (MODE_DRAW == mode) {
 					drawPoint(canvas, line, pointValue, rawX, rawY, pointRadius);
 					if (line.hasLabels()) {
-						drawLabel(canvas, computator, line, pointValue, rawX, rawY, pointRadius + labelOffset);
+						drawLabel(canvas, line, pointValue, rawX, rawY, pointRadius + labelOffset);
 					}
 				} else if (MODE_HIGHLIGHT == mode) {
-					highlightPoint(canvas, computator, line, pointValue, rawX, rawY, lineIndex, valueIndex);
+					highlightPoint(canvas, line, pointValue, rawX, rawY, lineIndex, valueIndex);
 				} else {
 					throw new IllegalStateException("Cannot process points in mode: " + mode);
 				}
@@ -374,20 +374,20 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		drawPoints(canvas, line, lineIndex, MODE_HIGHLIGHT);
 	}
 
-	private void highlightPoint(Canvas canvas, ChartComputator computator, Line line, PointValue pointValue,
-			float rawX, float rawY, int lineIndex, int valueIndex) {
+	private void highlightPoint(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY, int lineIndex,
+			int valueIndex) {
 		if (selectedValue.getFirstIndex() == lineIndex && selectedValue.getSecondIndex() == valueIndex) {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
 			pointPaint.setColor(line.getDarkenColor());
 			drawPoint(canvas, line, pointValue, rawX, rawY, pointRadius + touchTolleranceMargin);
 			if (line.hasLabels() || line.hasLabelsOnlyForSelected()) {
-				drawLabel(canvas, computator, line, pointValue, rawX, rawY, pointRadius + labelOffset);
+				drawLabel(canvas, line, pointValue, rawX, rawY, pointRadius + labelOffset);
 			}
 		}
 	}
 
-	private void drawLabel(Canvas canvas, ChartComputator computator, Line line, PointValue pointValue, float rawX,
-			float rawY, float offset) {
+	private void drawLabel(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY, float offset) {
+		final ChartComputator computator = chart.getChartComputator();
 		final Rect contentRect = computator.getContentRect();
 		final int nummChars = line.getFormatter().formatValue(labelBuffer, pointValue.getY());
 		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);

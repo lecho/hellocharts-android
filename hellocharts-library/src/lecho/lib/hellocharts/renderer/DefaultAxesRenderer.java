@@ -24,7 +24,6 @@ public class DefaultAxesRenderer implements AxesRenderer {
 	private static final int BOTTOM = 3;
 
 	private Chart chart;
-	private ChartComputator computator;
 	private int axisMargin;
 
 	// 4 text paints for every axis, not all have to be used, indexed with TOP, LEFT, RIGHT, BOTTOM.
@@ -47,7 +46,7 @@ public class DefaultAxesRenderer implements AxesRenderer {
 
 	public DefaultAxesRenderer(Context context, Chart chart) {
 		this.chart = chart;
-		this.computator = chart.getChartComputator();
+
 		density = context.getResources().getDisplayMetrics().density;
 		scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
 		axisMargin = Utils.dp2px(density, DEFAULT_AXIS_MARGIN_DP);
@@ -71,7 +70,7 @@ public class DefaultAxesRenderer implements AxesRenderer {
 		int axisYLeftWidth = initAxisMeasurementVertical(chart.getChartData().getAxisYLeft(), LEFT);
 		int axisYRightWidth = initAxisMeasurementVertical(chart.getChartData().getAxisYRight(), RIGHT);
 
-		computator.setAxesMargin(axisYLeftWidth, axisXTopHeight, axisYRightWidth, axisXBottomHeight);
+		chart.getChartComputator().setAxesMargin(axisYLeftWidth, axisXTopHeight, axisYRightWidth, axisXBottomHeight);
 	}
 
 	@Override
@@ -161,6 +160,8 @@ public class DefaultAxesRenderer implements AxesRenderer {
 	// ********** HORIZONTAL X AXES ****************
 
 	private void drawAxisHorizontal(Canvas canvas, int position) {
+		final ChartComputator computator = chart.getChartComputator();
+
 		textPaintTab[position].setTextAlign(Align.CENTER);
 
 		final Axis axis;
@@ -198,6 +199,8 @@ public class DefaultAxesRenderer implements AxesRenderer {
 	}
 
 	private void drawAxisHorizontal(Canvas canvas, Axis axis, float rawY, int position) {
+		final ChartComputator computator = chart.getChartComputator();
+
 		if (axis.hasLines() && axisXDrawBuffer.length < axis.getValues().size() * 4) {
 			axisXDrawBuffer = new float[axis.getValues().size() * 4];
 		}
@@ -228,6 +231,8 @@ public class DefaultAxesRenderer implements AxesRenderer {
 	}
 
 	private void drawAxisHorizontalAuto(Canvas canvas, Axis axis, float rawY, int position) {
+		final ChartComputator computator = chart.getChartComputator();
+
 		computeAxisStops(computator.getVisibleViewport().left, computator.getVisibleViewport().right, computator
 				.getContentRect().width() / axisLabelMaxWidthTab[position] / 2, axisXStopsBuffer);
 
@@ -258,6 +263,8 @@ public class DefaultAxesRenderer implements AxesRenderer {
 	// ********** VERTICAL Y AXES ****************
 
 	private void drawAxisVertical(Canvas canvas, int position) {
+		final ChartComputator computator = chart.getChartComputator();
+
 		final Axis axis;
 		final float rawX;
 		final float nameBaseline;
@@ -296,6 +303,8 @@ public class DefaultAxesRenderer implements AxesRenderer {
 	}
 
 	private void drawAxisVertical(Canvas canvas, Axis axis, float rawX, int position) {
+		final ChartComputator computator = chart.getChartComputator();
+
 		if (axis.hasLines() && axisYDrawBuffer.length < axis.getValues().size() * 4) {
 			axisYDrawBuffer = new float[axis.getValues().size() * 4];
 		}
@@ -327,6 +336,8 @@ public class DefaultAxesRenderer implements AxesRenderer {
 	}
 
 	private void drawAxisVerticalAuto(Canvas canvas, Axis axis, float rawX, int position) {
+		final ChartComputator computator = chart.getChartComputator();
+
 		computeAxisStops(computator.getVisibleViewport().bottom, computator.getVisibleViewport().top, computator
 				.getContentRect().height() / axisTextHeightTab[position] / 2, axisYStopsBuffer);
 

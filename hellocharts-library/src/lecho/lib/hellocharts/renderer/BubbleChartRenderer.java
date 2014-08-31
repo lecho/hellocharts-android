@@ -101,10 +101,9 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		oldSelectedValue.set(selectedValue);
 		selectedValue.clear();
 		final BubbleChartData data = dataProvider.getBubbleChartData();
-		final ChartComputator computator = chart.getChartComputator();
 		int valueIndex = 0;
 		for (BubbleValue bubbleValue : data.getValues()) {
-			float rawRadius = processBubble(computator, data, bubbleValue, bubbleCenter);
+			float rawRadius = processBubble(data, bubbleValue, bubbleCenter);
 
 			if (bubbleValue.getShape() == BubbleValue.SHAPE_SQUARE) {
 				if (bubbleRect.contains(touchX, touchY)) {
@@ -171,8 +170,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void drawBubble(Canvas canvas, BubbleChartData data, BubbleValue bubbleValue) {
-		final ChartComputator computator = chart.getChartComputator();
-		float rawRadius = processBubble(computator, data, bubbleValue, bubbleCenter);
+		float rawRadius = processBubble(data, bubbleValue, bubbleCenter);
 		// Not touched bubbles are a little smaller than touched to give user touch feedback.
 		rawRadius -= touchAdditional;
 		bubbleRect.inset(touchAdditional, touchAdditional);
@@ -209,8 +207,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void highlightBubble(Canvas canvas, BubbleChartData data, BubbleValue bubbleValue) {
-		final ChartComputator computator = chart.getChartComputator();
-		float rawRadius = processBubble(computator, data, bubbleValue, bubbleCenter);
+		float rawRadius = processBubble(data, bubbleValue, bubbleCenter);
 		bubblePaint.setColor(bubbleValue.getDarkenColor());
 		drawBubbleShapeAndLabel(canvas, data, bubbleValue, rawRadius, MODE_HIGHLIGHT);
 	}
@@ -225,7 +222,9 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	 * @param point
 	 * @return
 	 */
-	private float processBubble(ChartComputator computator, BubbleChartData data, BubbleValue bubbleValue, PointF point) {
+	private float processBubble(BubbleChartData data, BubbleValue bubbleValue, PointF point) {
+		final ChartComputator computator = chart.getChartComputator();
+
 		final float rawX = computator.computeRawX(bubbleValue.getX());
 		final float rawY = computator.computeRawY(bubbleValue.getY());
 		float radius = (float) Math.sqrt(Math.abs(bubbleValue.getZ()) / Math.PI);
