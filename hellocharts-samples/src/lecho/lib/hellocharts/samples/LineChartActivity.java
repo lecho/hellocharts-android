@@ -191,7 +191,6 @@ public class LineChartActivity extends ActionBarActivity {
 			lines.add(line);
 
 			data = new LineChartData(lines);
-
 			data.getAxisXBottom().setName("Axis X");
 			data.getAxisYLeft().setName("Axis Y");
 

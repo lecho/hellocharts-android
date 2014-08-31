@@ -84,7 +84,7 @@ public class ChartComputator {
 	/**
 	 * Set additional margins that will be used to draw axes. That prevent axes from being overdrawn by chart data.
 	 */
-	public void setAxesMargin(int axisXMarginTop, int axisXMarginBottom, int axisYMarginLeft, int axisYMarginRight) {
+	public void setAxesMargin(int axisYMarginLeft, int axisXMarginTop, int axisYMarginRight, int axisXMarginBottom) {
 		contentRectWithMargins.left = maxContentRect.left + axisYMarginLeft;
 		contentRectWithMargins.top = maxContentRect.top + axisXMarginTop;
 		contentRectWithMargins.right = maxContentRect.right - axisYMarginRight;

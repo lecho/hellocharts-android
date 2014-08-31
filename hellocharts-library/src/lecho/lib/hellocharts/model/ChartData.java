@@ -26,6 +26,14 @@ public interface ChartData {
 
 	public Axis getAxisYLeft();
 
+	public void setAxisXTop(Axis axisX);
+
+	public Axis getAxisXTop();
+
+	public void setAxisYRight(Axis axisY);
+
+	public Axis getAxisYRight();
+
 	/**
 	 * Returns axes color. Both axes always have the same color.
 	 */
