@@ -5,6 +5,7 @@ import java.util.List;
 
 import lecho.lib.hellocharts.ViewportChangeListener;
 import lecho.lib.hellocharts.gesture.ChartZoomer;
+import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
@@ -130,10 +131,8 @@ public class PreviewLineChartActivity extends ActionBarActivity {
 			lines.add(line);
 
 			data = new LineChartData(lines);
-
-			// Disable axes, no needed for demo.
-			// data.getAxisX().setName("Axis X");
-			// data.getAxisY().setName("Axis Y");
+			data.setAxisXBottom(new Axis());
+			data.setAxisYLeft(new Axis().setHasLines(true));
 
 			// prepare preview data, is better to use separate deep copy for preview chart.
 			// Set color to grey to make preview area more visible.

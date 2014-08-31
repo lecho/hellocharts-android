@@ -270,8 +270,6 @@ public class PieChartData extends AbstractChartData {
 		values.add(new ArcValue(30f));
 		values.add(new ArcValue(50f));
 		data.setValues(values);
-		data.setAxisXBottom(null);
-		data.setAxisYLeft(null);
 		return data;
 	}
 }

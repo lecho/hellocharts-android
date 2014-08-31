@@ -35,26 +35,6 @@ public interface ChartData {
 	public Axis getAxisYRight();
 
 	/**
-	 * Returns axes color. Both axes always have the same color.
-	 */
-	public int getAxesColor();
-
-	/**
-	 * Set both axes color.
-	 */
-	public void setAxesColor(int axesColor);
-
-	/**
-	 * Return axes label text size in SP units.
-	 */
-	public int getAxesLabelTextSize();
-
-	/**
-	 * Set axes label text size in SP units. Both axes will have the same test size.
-	 */
-	public void setAxesLabelTextSize(int axesTextSize);
-
-	/**
 	 * Returns color used to draw value label text.
 	 */
 	public int getValueLabelTextColor();
@@ -73,16 +53,5 @@ public interface ChartData {
 	 * Set text size for value label in SP units.
 	 */
 	public void setValueLabelTextSize(int labelsTextSize);
-
-	/**
-	 * Returns maximum axis label charts number.
-	 */
-	public int getMaxAxisLabelChars();
-
-	/**
-	 * Set max label charts, used only for auto-generated axes to determine width of labels. By default 5. Min 0, max
-	 * 32.
-	 */
-	public void setMaxLabelChars(int numChars);
 
 }

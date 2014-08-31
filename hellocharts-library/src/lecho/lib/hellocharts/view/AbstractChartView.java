@@ -46,8 +46,9 @@ public abstract class AbstractChartView extends View implements Chart {
 	public AbstractChartView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 		chartComputator = new ChartComputator();
-		axesRenderer = new DefaultAxesRenderer(context, this);
 		touchHandler = new ChartTouchHandler(context, this);
+		axesRenderer = new DefaultAxesRenderer(context, this);
+
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
 			this.dataAnimator = new ChartDataAnimatorV8(this);
 			this.viewportAnimator = new ChartViewportAnimatorV8(this);

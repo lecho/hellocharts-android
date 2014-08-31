@@ -168,8 +168,8 @@ public class ColumnChartActivity extends ActionBarActivity {
 
 			data = new ColumnChartData(columns);
 
-			data.getAxisXBottom().setName("Axis X");
-			data.getAxisYLeft().setName("Axis Y");
+			data.setAxisXBottom(new Axis().setName("Axis X"));
+			data.setAxisYLeft(new Axis().setName("Axis Y").setHasLines(true));
 
 		}
 
@@ -194,8 +194,8 @@ public class ColumnChartActivity extends ActionBarActivity {
 
 			data = new ColumnChartData(columns);
 
-			data.getAxisXBottom().setName("Axis X");
-			data.getAxisYLeft().setName("Axis Y");
+			data.setAxisXBottom(new Axis().setName("Axis X"));
+			data.setAxisYLeft(new Axis().setName("Axis Y").setHasLines(true));
 
 		}
 
@@ -223,8 +223,8 @@ public class ColumnChartActivity extends ActionBarActivity {
 			// Set stacked flag.
 			data.setStacked(true);
 
-			data.getAxisXBottom().setName("Axis X");
-			data.getAxisYLeft().setName("Axis Y");
+			data.setAxisXBottom(new Axis().setName("Axis X"));
+			data.setAxisYLeft(new Axis().setName("Axis Y").setHasLines(true));
 		}
 
 		private void showNegativeSubcolumns() {
@@ -246,8 +246,8 @@ public class ColumnChartActivity extends ActionBarActivity {
 
 			data = new ColumnChartData(columns);
 
-			data.getAxisXBottom().setName("Axis X");
-			data.getAxisYLeft().setName("Axis Y");
+			data.setAxisXBottom(new Axis().setName("Axis X"));
+			data.setAxisYLeft(new Axis().setName("Axis Y").setHasLines(true));
 		}
 
 		private void showNegativeStacked() {
@@ -273,8 +273,8 @@ public class ColumnChartActivity extends ActionBarActivity {
 			// Set stacked flag.
 			data.setStacked(true);
 
-			data.getAxisXBottom().setName("Axis X");
-			data.getAxisYLeft().setName("Axis Y");
+			data.setAxisXBottom(new Axis().setName("Axis X"));
+			data.setAxisYLeft(new Axis().setName("Axis Y").setHasLines(true));
 		}
 
 		private int getSign() {

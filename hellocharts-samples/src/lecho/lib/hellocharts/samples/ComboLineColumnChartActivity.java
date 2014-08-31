@@ -162,8 +162,8 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 		private void generateDefaultData() {
 			// Chart looks the best when line data and column data have similar maximum viewports.
 			data = new ComboLineColumnChartData(generateDefaultColumnData(), generateDefaultLineData());
-			data.getAxisXBottom().setName("Axis X");
-			data.getAxisYLeft().setName("Axis Y");
+			data.setAxisXBottom(new Axis().setName("Axis X"));
+			data.setAxisYLeft(new Axis().setName("Axis Y"));
 		}
 
 		private LineChartData generateDefaultLineData() {

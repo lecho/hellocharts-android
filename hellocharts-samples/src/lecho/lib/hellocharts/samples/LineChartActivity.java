@@ -191,8 +191,8 @@ public class LineChartActivity extends ActionBarActivity {
 			lines.add(line);
 
 			data = new LineChartData(lines);
-			data.getAxisXBottom().setName("Axis X");
-			data.getAxisYLeft().setName("Axis Y");
+			data.setAxisXBottom(new Axis().setName("Axis X"));
+			data.setAxisYLeft(new Axis().setName("Axis Y").setHasLines(true));
 
 		}
 
@@ -289,7 +289,7 @@ public class LineChartActivity extends ActionBarActivity {
 			if (!hasAxes) {
 				// by default axes are auto-generated;
 				data.setAxisXBottom(new Axis().setName("Axis X"));
-				data.setAxisYLeft(new Axis().setName("Axis Y"));
+				data.setAxisYLeft(new Axis().setName("Axis Y").setHasLines(true));
 			} else {
 				// to disable axes set them to null;
 				data.setAxisXBottom(null);

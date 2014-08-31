@@ -5,6 +5,7 @@ import java.util.List;
 
 import lecho.lib.hellocharts.ViewportChangeListener;
 import lecho.lib.hellocharts.gesture.ChartZoomer;
+import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.ColumnValue;
@@ -130,10 +131,8 @@ public class PreviewColumnChartActivity extends ActionBarActivity {
 			}
 
 			data = new ColumnChartData(columns);
-
-			// Auto-generated axes with empty names.
-			// data.getAxisX().setName("Axis X");
-			// data.getAxisY().setName("Axis Y");
+			data.setAxisXBottom(new Axis());
+			data.setAxisYLeft(new Axis().setHasLines(true));
 
 			// prepare preview data, is better to use separate deep copy for preview chart.
 			// set color to grey to make preview area more visible.

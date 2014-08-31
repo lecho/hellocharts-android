@@ -68,8 +68,6 @@ public class ComboLineColumnChartData extends AbstractChartData {
 		ComboLineColumnChartData data = new ComboLineColumnChartData();
 		data.setColumnChartData(ColumnChartData.generateDummyData());
 		data.setLineChartData(LineChartData.generateDummyData());
-		data.setAxisXBottom(null);
-		data.setAxisYLeft(null);
 		return data;
 	}
 

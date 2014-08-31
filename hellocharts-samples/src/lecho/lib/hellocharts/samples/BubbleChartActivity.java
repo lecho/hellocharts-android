@@ -151,8 +151,8 @@ public class BubbleChartActivity extends ActionBarActivity {
 
 			data = new BubbleChartData(values);
 
-			data.getAxisXBottom().setName("Axis X");
-			data.getAxisYLeft().setName("Axis Y");
+			data.setAxisXBottom(new Axis().setName("Axis X"));
+			data.setAxisYLeft(new Axis().setName("Axis Y").setHasLines(true));
 
 		}
 
@@ -178,7 +178,6 @@ public class BubbleChartActivity extends ActionBarActivity {
 
 		private void toggleAxes() {
 			if (!hasAxes) {
-				// by default axes are auto-generated;
 				data.setAxisXBottom(new Axis().setName("Axis X"));
 				data.setAxisYLeft(new Axis().setName("Axis Y"));
 			} else {
@@ -191,7 +190,6 @@ public class BubbleChartActivity extends ActionBarActivity {
 
 		private void toggleAxesNames() {
 			if (hasAxes) {
-				// by default axes are auto-generated;
 				Axis axisX = data.getAxisXBottom();
 				if (TextUtils.isEmpty(axisX.getName())) {
 					axisX.setName("Axis X");

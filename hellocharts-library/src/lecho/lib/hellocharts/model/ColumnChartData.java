@@ -101,8 +101,6 @@ public class ColumnChartData extends AbstractChartData {
 		}
 
 		data.setColumns(columns);
-		data.setAxisXBottom(null);
-		data.setAxisYLeft(null);
 		return data;
 	}
 

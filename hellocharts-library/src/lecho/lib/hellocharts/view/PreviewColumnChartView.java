@@ -4,6 +4,7 @@ import lecho.lib.hellocharts.BuildConfig;
 import lecho.lib.hellocharts.PreviewChartComputator;
 import lecho.lib.hellocharts.gesture.PreviewChartTouchHandler;
 import lecho.lib.hellocharts.model.ColumnChartData;
+import lecho.lib.hellocharts.renderer.DefaultAxesRenderer;
 import lecho.lib.hellocharts.renderer.PreviewColumnChartRenderer;
 import android.content.Context;
 import android.support.v4.view.ViewCompat;
@@ -26,6 +27,7 @@ public class PreviewColumnChartView extends ColumnChartView {
 	public PreviewColumnChartView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		chartComputator = new PreviewChartComputator();
+		axesRenderer = new DefaultAxesRenderer(context, this);
 		previewChartRenderer = new PreviewColumnChartRenderer(context, this, this);
 		chartRenderer = previewChartRenderer;
 		touchHandler = new PreviewChartTouchHandler(context, this);
