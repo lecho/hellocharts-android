@@ -106,14 +106,14 @@ public class DefaultAxesRenderer implements AxesRenderer {
 			return 0;
 		}
 
-		textPaintTab[position].setColor(axis.getTextColor());
-		textPaintTab[position].setTextSize(Utils.sp2px(scaledDensity, axis.getTextSize()));
-		textPaintTab[position].getFontMetricsInt(fontMetricsTab[position]);
-
 		Typeface typeface = axis.getTypeface();
 		if (null != typeface) {
 			textPaintTab[position].setTypeface(typeface);
 		}
+
+		textPaintTab[position].setColor(axis.getTextColor());
+		textPaintTab[position].setTextSize(Utils.sp2px(scaledDensity, axis.getTextSize()));
+		textPaintTab[position].getFontMetricsInt(fontMetricsTab[position]);
 
 		axisTextHeightTab[position] = Math.abs(fontMetricsTab[position].ascent);
 		axisLabelMaxWidthTab[position] = (int) textPaintTab[position].measureText(labelWidthChars, 0,

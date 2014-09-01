@@ -1,5 +1,7 @@
 package lecho.lib.hellocharts.model;
 
+import android.graphics.Typeface;
+
 /**
  * Base interface for all chart data models.
  * 
@@ -53,5 +55,9 @@ public interface ChartData {
 	 * Set text size for value label in SP units.
 	 */
 	public void setValueLabelTextSize(int labelsTextSize);
+
+	public Typeface getValueLabelTypeface();
+
+	public void setValueLabelTypeface(Typeface typeface);
 
 }

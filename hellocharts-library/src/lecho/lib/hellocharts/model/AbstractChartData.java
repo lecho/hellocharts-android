@@ -1,6 +1,7 @@
 package lecho.lib.hellocharts.model;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
 
 /**
  * Base class for most chart data models.
@@ -16,6 +17,7 @@ public abstract class AbstractChartData implements ChartData {
 	protected Axis axisYRight;
 	protected int valueLabelTextColor = Color.WHITE;
 	protected int valueLabelTextSize = DEFAULT_TEXT_SIZE_SP;
+	private Typeface valueLabelTypeface;
 
 	public AbstractChartData() {
 
@@ -36,6 +38,7 @@ public abstract class AbstractChartData implements ChartData {
 		}
 		this.valueLabelTextColor = data.valueLabelTextColor;
 		this.valueLabelTextSize = data.valueLabelTextSize;
+		this.valueLabelTypeface = data.valueLabelTypeface;
 	}
 
 	@Override
@@ -78,20 +81,34 @@ public abstract class AbstractChartData implements ChartData {
 		return axisYRight;
 	}
 
+	@Override
 	public int getValueLabelTextColor() {
 		return valueLabelTextColor;
 	}
 
+	@Override
 	public void setValueLabelsTextColor(int valueLabelTextColor) {
 		this.valueLabelTextColor = valueLabelTextColor;
 	}
 
+	@Override
 	public int getValueLabelTextSize() {
 		return valueLabelTextSize;
 	}
 
+	@Override
 	public void setValueLabelTextSize(int valueLabelTextSize) {
 		this.valueLabelTextSize = valueLabelTextSize;
+	}
+
+	@Override
+	public Typeface getValueLabelTypeface() {
+		return valueLabelTypeface;
+	}
+
+	@Override
+	public void setValueLabelTypeface(Typeface typeface) {
+		this.valueLabelTypeface = typeface;
 	}
 
 }

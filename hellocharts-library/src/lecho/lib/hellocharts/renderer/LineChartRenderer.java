@@ -13,6 +13,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Typeface;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -82,6 +83,11 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	@Override
 	public void initDataMeasuremetns() {
 		chart.getChartComputator().setInternalMargin(calculateContentAreaMargin());
+
+		Typeface typeface = chart.getChartData().getValueLabelTypeface();
+		if (null != typeface) {
+			labelPaint.setTypeface(typeface);
+		}
 		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));
 		labelPaint.getFontMetricsInt(fontMetrics);
 

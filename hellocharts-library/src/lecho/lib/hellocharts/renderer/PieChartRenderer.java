@@ -14,6 +14,7 @@ import android.graphics.Paint.FontMetricsInt;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.text.TextUtils;
 
 /**
@@ -86,6 +87,10 @@ public class PieChartRenderer extends AbstractChartRenderer {
 
 		final PieChartData data = dataProvider.getPieChartData();
 
+		Typeface typeface = chart.getChartData().getValueLabelTypeface();
+		if (null != typeface) {
+			labelPaint.setTypeface(typeface);
+		}
 		labelPaint.setTextSize(Utils.sp2px(scaledDensity, data.getValueLabelTextSize()));
 		labelPaint.getFontMetricsInt(fontMetrics);
 
@@ -93,19 +98,19 @@ public class PieChartRenderer extends AbstractChartRenderer {
 
 		centerCirclePaint.setColor(data.getCenterCircleColor());
 
-		centerCircleText1Paint.setTextSize(Utils.sp2px(scaledDensity, data.getCenterText1FontSize()));
-		centerCircleText1Paint.setColor(data.getCenterText1Color());
-		centerCircleText1Paint.getFontMetricsInt(centerCircleText1FontMetrics);
 		if (null != data.getCenterText1Typeface()) {
 			centerCircleText1Paint.setTypeface(data.getCenterText1Typeface());
 		}
+		centerCircleText1Paint.setTextSize(Utils.sp2px(scaledDensity, data.getCenterText1FontSize()));
+		centerCircleText1Paint.setColor(data.getCenterText1Color());
+		centerCircleText1Paint.getFontMetricsInt(centerCircleText1FontMetrics);
 
-		centerCircleText2Paint.setTextSize(Utils.sp2px(scaledDensity, data.getCenterText2FontSize()));
-		centerCircleText2Paint.setColor(data.getCenterText2Color());
-		centerCircleText2Paint.getFontMetricsInt(centerCircleText2FontMetrics);
 		if (null != data.getCenterText2Typeface()) {
 			centerCircleText2Paint.setTypeface(data.getCenterText2Typeface());
 		}
+		centerCircleText2Paint.setTextSize(Utils.sp2px(scaledDensity, data.getCenterText2FontSize()));
+		centerCircleText2Paint.setColor(data.getCenterText2Color());
+		centerCircleText2Paint.getFontMetricsInt(centerCircleText2FontMetrics);
 
 	}
 
