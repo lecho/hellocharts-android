@@ -12,7 +12,7 @@ import java.util.List;
 public class BubbleChartData extends AbstractChartData {
 	public static final int DEFAULT_MIN_BUBBLE_RADIUS_DP = 6;
 	public static final float DEFAULT_BUBBLE_SCALE = 1f;
-	private ValueFormatter formatter = new NumberValueFormatter();
+	private ValueFormatter formatter = new SimpleValueFormatter();
 	private boolean hasLabels = false;
 	private boolean hasLabelsOnlyForSelected = false;
 	private int minBubbleRadius = DEFAULT_MIN_BUBBLE_RADIUS_DP;
@@ -133,7 +133,7 @@ public class BubbleChartData extends AbstractChartData {
 
 	public BubbleChartData setFormatter(ValueFormatter formatter) {
 		if (null == formatter) {
-			this.formatter = new NumberValueFormatter();
+			this.formatter = new SimpleValueFormatter();
 		} else {
 			this.formatter = formatter;
 		}

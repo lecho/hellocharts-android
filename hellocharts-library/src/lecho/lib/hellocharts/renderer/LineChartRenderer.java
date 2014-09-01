@@ -395,7 +395,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private void drawLabel(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY, float offset) {
 		final ChartComputator computator = chart.getChartComputator();
 		final Rect contentRect = computator.getContentRect();
-		final int nummChars = line.getFormatter().formatValue(labelBuffer, pointValue.getY());
+		final int nummChars = line.getFormatter().formatValue(labelBuffer, pointValue.getY(), pointValue.getLabel());
 		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
 		float left = rawX - labelWidth / 2 - labelMargin;

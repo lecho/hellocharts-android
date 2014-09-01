@@ -29,12 +29,12 @@ public class Axis {
 	private int textSize = DEFAULT_TEXT_SIZE_SP;
 	private int maxLabelChars = DEFAULT_MAX_AXIS_LABEL_CHARS;
 	private Typeface typeface;
-	private ValueFormatter formatter = new NumberValueFormatter();
+	private ValueFormatter formatter = new SimpleValueFormatter();
 
 	/**
 	 * Creates auto-generated axis without name and with default formatter.
 	 * 
-	 * @see NumberValueFormatter
+	 * @see SimpleValueFormatter
 	 */
 	public Axis() {
 	}
@@ -130,7 +130,15 @@ public class Axis {
 		return maxLabelChars;
 	}
 
+	/**
+	 * Set maximum number of characters for axis labels, min 0, max 32.
+	 */
 	public Axis setMaxLabelChars(int maxLabelChars) {
+		if (maxLabelChars < 0) {
+			maxLabelChars = 0;
+		} else if (maxLabelChars > 32) {
+			maxLabelChars = 32;
+		}
 		this.maxLabelChars = maxLabelChars;
 		return this;
 	}
@@ -150,7 +158,7 @@ public class Axis {
 
 	public Axis setFormatter(ValueFormatter formatter) {
 		if (null == formatter) {
-			this.formatter = new NumberValueFormatter();
+			this.formatter = new SimpleValueFormatter();
 		} else {
 			this.formatter = formatter;
 		}

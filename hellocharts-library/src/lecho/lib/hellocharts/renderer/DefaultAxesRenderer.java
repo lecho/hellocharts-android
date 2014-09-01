@@ -216,7 +216,8 @@ public class DefaultAxesRenderer implements AxesRenderer {
 			final float value = axisValue.getValue();
 			if (value >= computator.getVisibleViewport().left && value <= computator.getVisibleViewport().right) {
 				final float rawX = computator.computeRawX(axisValue.getValue());
-				final int nummChars = axis.getFormatter().formatValue(labelBuffer, axisValue.getValue());
+				final int nummChars = axis.getFormatter().formatValue(labelBuffer, axisValue.getValue(),
+						axisValue.getLabel());
 				canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY,
 						textPaintTab[position]);
 
@@ -249,7 +250,7 @@ public class DefaultAxesRenderer implements AxesRenderer {
 		for (int i = 0; i < axisHorizontalStopsBuffer.numStops; ++i) {
 			float rawX = computator.computeRawX(axisHorizontalStopsBuffer.stops[i]);
 			final int nummChars = axis.getFormatter().formatValue(labelBuffer, axisHorizontalStopsBuffer.stops[i],
-					axisHorizontalStopsBuffer.decimals);
+					null, axisHorizontalStopsBuffer.decimals);
 			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY, textPaintTab[position]);
 
 			if (axis.hasLines()) {
@@ -320,7 +321,8 @@ public class DefaultAxesRenderer implements AxesRenderer {
 			final float value = axisValue.getValue();
 			if (value >= computator.getVisibleViewport().bottom && value <= computator.getVisibleViewport().top) {
 				final float rawY = computator.computeRawY(value);
-				final int nummChars = axis.getFormatter().formatValue(labelBuffer, axisValue.getValue());
+				final int nummChars = axis.getFormatter().formatValue(labelBuffer, axisValue.getValue(),
+						axisValue.getLabel());
 				canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY,
 						textPaintTab[position]);
 
@@ -353,7 +355,7 @@ public class DefaultAxesRenderer implements AxesRenderer {
 
 		for (int i = 0; i < axisVerticalStopsBuffer.numStops; i++) {
 			final float rawY = computator.computeRawY(axisVerticalStopsBuffer.stops[i]);
-			final int nummChars = axis.getFormatter().formatValue(labelBuffer, axisVerticalStopsBuffer.stops[i],
+			final int nummChars = axis.getFormatter().formatValue(labelBuffer, axisVerticalStopsBuffer.stops[i], null,
 					axisVerticalStopsBuffer.decimals);
 			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY, textPaintTab[position]);
 

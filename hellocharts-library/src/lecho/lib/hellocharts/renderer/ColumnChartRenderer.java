@@ -342,7 +342,8 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 
 	private void drawLabel(Canvas canvas, Column column, ColumnValue columnValue, boolean isStacked, float offset) {
 		final ChartComputator computator = chart.getChartComputator();
-		final int nummChars = column.getFormatter().formatValue(labelBuffer, columnValue.getValue());
+		final int nummChars = column.getFormatter().formatValue(labelBuffer, columnValue.getValue(),
+				columnValue.getLabel());
 		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
 		float left = drawRect.centerX() - labelWidth / 2 - labelMargin;

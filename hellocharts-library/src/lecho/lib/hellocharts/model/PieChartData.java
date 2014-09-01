@@ -18,7 +18,7 @@ public class PieChartData extends AbstractChartData {
 	public static final int DEFAULT_CENTER_TEXT2_SIZE_SP = 16;
 	public static final float DEFAULT_CENTER_CIRCLE_SCALE = 0.6f;
 
-	private ValueFormatter formatter = new NumberValueFormatter();
+	private ValueFormatter formatter = new SimpleValueFormatter();
 	private boolean hasLabels = false;
 	private boolean hasLabelsOnlyForSelected = false;
 	private boolean hasLabelsOutside = false;
@@ -254,7 +254,7 @@ public class PieChartData extends AbstractChartData {
 
 	public PieChartData setFormatter(ValueFormatter formatter) {
 		if (null == formatter) {
-			this.formatter = new NumberValueFormatter();
+			this.formatter = new SimpleValueFormatter();
 		} else {
 			this.formatter = formatter;
 		}

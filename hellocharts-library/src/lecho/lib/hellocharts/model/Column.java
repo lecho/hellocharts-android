@@ -13,7 +13,7 @@ import java.util.List;
 public class Column {
 	private boolean hasLabels = false;
 	private boolean hasLabelsOnlyForSelected = false;
-	private ValueFormatter formatter = new NumberValueFormatter();
+	private ValueFormatter formatter = new SimpleValueFormatter();
 	// TODO: consider Collections.emptyList()
 	private List<ColumnValue> values = new ArrayList<ColumnValue>();
 
@@ -91,7 +91,7 @@ public class Column {
 
 	public Column setFormatter(ValueFormatter formatter) {
 		if (null == formatter) {
-			this.formatter = new NumberValueFormatter();
+			this.formatter = new SimpleValueFormatter();
 		} else {
 			this.formatter = formatter;
 		}

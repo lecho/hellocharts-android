@@ -1,27 +1,28 @@
 package lecho.lib.hellocharts.model;
 
 /**
- * Single axis value, Use it to manually set axis labels position. Warning! valueName is not used for now.
+ * Single axis value, Use it to manually set axis labels position. You can use label attribute to display text instead
+ * of number but value formatter implementation have to handle it.
  * 
  * @author Leszek Wach
  * 
  */
 public class AxisValue {
 	private float value;
-	private String valueName;
+	private char[] label;
 
 	public AxisValue(float value) {
 		this.value = value;
 	}
 
-	public AxisValue(float value, String valueName) {
+	public AxisValue(float value, char[] label) {
 		this.value = value;
-		this.valueName = valueName;
+		this.label = label;
 	}
 
 	public AxisValue(AxisValue axisValue) {
 		this.value = axisValue.value;
-		this.valueName = axisValue.valueName;
+		this.label = axisValue.label;
 	}
 
 	public float getValue() {
@@ -33,12 +34,12 @@ public class AxisValue {
 		return this;
 	}
 
-	public String getValueName() {
-		return valueName;
+	public char[] getLabel() {
+		return label;
 	}
 
-	public AxisValue setValueName(String valueName) {
-		this.valueName = valueName;
+	public AxisValue setLabel(char[] label) {
+		this.label = label;
 		return this;
 	}
 }

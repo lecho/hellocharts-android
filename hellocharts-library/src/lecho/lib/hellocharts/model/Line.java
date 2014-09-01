@@ -30,7 +30,7 @@ public class Line {
 	private boolean isSmooth = false;
 	private boolean isFilled = false;
 	private int pointShape = SHAPE_CIRCLE;
-	private ValueFormatter formatter = new NumberValueFormatter();
+	private ValueFormatter formatter = new SimpleValueFormatter();
 	private List<PointValue> values = new ArrayList<PointValue>();
 
 	public Line() {
@@ -205,7 +205,7 @@ public class Line {
 
 	public Line setFormatter(ValueFormatter formatter) {
 		if (null == formatter) {
-			this.formatter = new NumberValueFormatter();
+			this.formatter = new SimpleValueFormatter();
 		} else {
 			this.formatter = formatter;
 		}

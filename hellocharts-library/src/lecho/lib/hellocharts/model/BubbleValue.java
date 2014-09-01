@@ -23,6 +23,7 @@ public class BubbleValue {
 	private int color = Utils.DEFAULT_COLOR;
 	private int darkenColor = Utils.DEFAULT_DARKEN_COLOR;
 	private int shape = SHAPE_CIRCLE;
+	private char[] label;
 
 	public BubbleValue() {
 		set(0, 0, 0);
@@ -40,6 +41,7 @@ public class BubbleValue {
 	public BubbleValue(BubbleValue bubbleValue) {
 		set(bubbleValue.x, bubbleValue.y, bubbleValue.z);
 		setColor(bubbleValue.color);
+		this.label = bubbleValue.label;
 	}
 
 	public void update(float scale) {
@@ -116,32 +118,13 @@ public class BubbleValue {
 		return this;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + Float.floatToIntBits(x);
-		result = prime * result + Float.floatToIntBits(y);
-		result = prime * result + Float.floatToIntBits(z);
-		return result;
+	public char[] getLabel() {
+		return label;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		BubbleValue other = (BubbleValue) obj;
-		if (Float.floatToIntBits(x) != Float.floatToIntBits(other.x))
-			return false;
-		if (Float.floatToIntBits(y) != Float.floatToIntBits(other.y))
-			return false;
-		if (Float.floatToIntBits(z) != Float.floatToIntBits(other.z))
-			return false;
-		return true;
+	public BubbleValue setLabel(char[] label) {
+		this.label = label;
+		return this;
 	}
 
 	@Override
