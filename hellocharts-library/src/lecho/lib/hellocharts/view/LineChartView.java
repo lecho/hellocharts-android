@@ -81,6 +81,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 
 	public interface LineChartOnValueTouchListener {
 		public void onValueTouched(int selectedLine, int selectedValue, PointValue value);
+
 	}
 
 	private static class DummyOnValueTouchListener implements LineChartOnValueTouchListener {
@@ -89,5 +90,6 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 		public void onValueTouched(int selectedLine, int selectedValue, PointValue value) {
 			// do nothing
 		}
+
 	}
 }

@@ -93,6 +93,7 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
 
 	public interface BubbleChartOnValueTouchListener {
 		public void onValueTouched(int selectedBubble, BubbleValue value);
+
 	}
 
 	private static class DummyOnValueTouchListener implements BubbleChartOnValueTouchListener {
@@ -101,5 +102,6 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
 		public void onValueTouched(int selectedBubble, BubbleValue value) {
 			// do nothing
 		}
+
 	}
 }

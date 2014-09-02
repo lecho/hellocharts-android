@@ -192,6 +192,7 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 
 	public interface PieChartOnValueTouchListener {
 		public void onValueTouched(int selectedArc, ArcValue value);
+
 	}
 
 	private static class DummyOnValueTouchListener implements PieChartOnValueTouchListener {

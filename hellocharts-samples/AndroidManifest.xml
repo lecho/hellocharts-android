@@ -51,7 +51,7 @@
             android:label="@string/title_activity_combo_line_column_chart" >
         </activity>
         <activity
-            android:name=".LineColumnDependency"
+            android:name=".LineColumnDependencyActivity"
             android:label="@string/title_activity_line_column_dependency" >
         </activity>
     </application>

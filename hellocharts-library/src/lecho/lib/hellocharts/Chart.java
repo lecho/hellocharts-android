@@ -44,7 +44,18 @@ public interface Chart {
 	public void startDataAnimation();
 
 	/**
-	 * Set listener for data animation to be notified when data animation started and finished.
+	 * Return true if viewport calculation on animation is enabled, otherwise false.
+	 */
+	public boolean isViewportCalculationOnAnimationEnabled();
+
+	/**
+	 * Enable or disable viewport recalculations on data animation.
+	 */
+	public void setViewportCalculationOnAnimationEnabled(boolean isEnabled);
+
+	/**
+	 * Set listener for data animation to be notified when data animation started and finished. By default that flag is
+	 * set to true so be careful with animation and custom viewports.
 	 */
 	public void setDataAnimationListener(ChartAnimationListener animationListener);
 
@@ -137,8 +148,10 @@ public interface Chart {
 	public Viewport getMaxViewport();
 
 	/**
-	 * Set maximum viewport. That lets you change how much of the chart area is really used by data. If you set bigger
-	 * maximum viewport data will be more concentrate and there will be more empty spaces on sides.
+	 * Set maximum viewport. If you set bigger maximum viewport data will be more concentrate and there will be more
+	 * empty spaces on sides.
+	 * 
+	 * Note. MaxViewport have to be set after chartData has been set.
 	 */
 	public void setMaxViewport(Viewport maxViewport);
 
@@ -151,6 +164,8 @@ public interface Chart {
 
 	/**
 	 * Sets current viewport. If isAnimated is true chart will be animated during viewport changes.
+	 * 
+	 * * Note. viewport have to be set after chartData has been set.
 	 */
 	public void setViewport(Viewport targetViewport, boolean isAnimated);
 

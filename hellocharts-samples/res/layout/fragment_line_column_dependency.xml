@@ -10,7 +10,7 @@
     tools:context="lecho.lib.hellocharts.samples.PreviewLineChartActivity$PlaceholderFragment" >
 
     <lecho.lib.hellocharts.view.LineChartView
-        android:id="@+id/chart"
+        android:id="@+id/chart_top"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" >
@@ -24,7 +24,7 @@
         android:background="@android:color/darker_gray" />
 
     <lecho.lib.hellocharts.view.ColumnChartView
-        android:id="@+id/chart_preview"
+        android:id="@+id/chart_bottom"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" >

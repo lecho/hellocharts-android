@@ -110,6 +110,11 @@ public class MainActivity extends ActionBarActivity {
 				intent = new Intent(getActivity(), ComboLineColumnChartActivity.class);
 				startActivity(intent);
 				break;
+			case 7:
+				// Preview Line Chart;
+				intent = new Intent(getActivity(), LineColumnDependencyActivity.class);
+				startActivity(intent);
+				break;
 			default:
 				break;
 			}
@@ -125,6 +130,7 @@ public class MainActivity extends ActionBarActivity {
 			list.add(new ChartSampleDescription("Preview Line Chart", ""));
 			list.add(new ChartSampleDescription("Preview Column Chart", ""));
 			list.add(new ChartSampleDescription("Combo Line/Column Chart", ""));
+			list.add(new ChartSampleDescription("Line/Column Chart Dependency", ""));
 
 			return list;
 		}

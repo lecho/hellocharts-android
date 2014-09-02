@@ -34,6 +34,7 @@ public abstract class AbstractChartView extends View implements Chart {
 	protected ChartRenderer chartRenderer;
 	protected ChartDataAnimator dataAnimator;
 	protected ChartViewportAnimator viewportAnimator;
+	protected boolean isViewportCalculationOnAnimationEnabled = true;
 
 	public AbstractChartView(Context context) {
 		this(context, null, 0);
@@ -108,18 +109,32 @@ public abstract class AbstractChartView extends View implements Chart {
 	}
 
 	@Override
+	public boolean isViewportCalculationOnAnimationEnabled() {
+		return isViewportCalculationOnAnimationEnabled;
+	}
+
+	@Override
+	public void setViewportCalculationOnAnimationEnabled(boolean isEnabled) {
+		this.isViewportCalculationOnAnimationEnabled = isEnabled;
+	}
+
+	@Override
 	public void animationDataUpdate(float scale) {
 		getChartData().update(scale);
-		chartRenderer.initMaxViewport();
-		chartRenderer.initCurrentViewport();
+		if (isViewportCalculationOnAnimationEnabled) {
+			chartRenderer.initMaxViewport();
+			chartRenderer.initCurrentViewport();
+		}
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
 	@Override
 	public void animationDataFinished(boolean isSuccess) {
 		getChartData().finish(isSuccess);
-		chartRenderer.initMaxViewport();
-		chartRenderer.initCurrentViewport();
+		if (isViewportCalculationOnAnimationEnabled) {
+			chartRenderer.initMaxViewport();
+			chartRenderer.initCurrentViewport();
+		}
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 

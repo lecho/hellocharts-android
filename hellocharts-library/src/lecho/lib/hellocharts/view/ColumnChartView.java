@@ -65,7 +65,6 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 		ColumnValue value = data.getColumns().get(selectedValue.getFirstIndex()).getValues()
 				.get(selectedValue.getSecondIndex());
 		onValueTouchListener.onValueTouched(selectedValue.getFirstIndex(), selectedValue.getSecondIndex(), value);
-
 	}
 
 	public ColumnChartOnValueTouchListener getOnValueTouchListener() {
@@ -81,7 +80,9 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 	}
 
 	public interface ColumnChartOnValueTouchListener {
+
 		public void onValueTouched(int selectedLine, int selectedValue, ColumnValue point);
+
 	}
 
 	private static class DummyOnValueTouchListener implements ColumnChartOnValueTouchListener {
@@ -90,6 +91,7 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 		public void onValueTouched(int selectedLine, int selectedValue, ColumnValue value) {
 			// do nothing
 		}
+
 	}
 
 }
