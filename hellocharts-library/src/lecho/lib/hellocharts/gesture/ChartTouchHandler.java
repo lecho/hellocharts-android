@@ -76,7 +76,11 @@ public class ChartTouchHandler {
 		boolean needInvalidate = false;
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
-			needInvalidate = renderer.checkTouch(event.getX(), event.getY());
+			boolean wasTouched = renderer.isTouched();
+			boolean isTouched = renderer.checkTouch(event.getX(), event.getY());
+			if (wasTouched != isTouched) {
+				needInvalidate = true;
+			}
 			break;
 		case MotionEvent.ACTION_UP:
 			if (renderer.isTouched()) {
