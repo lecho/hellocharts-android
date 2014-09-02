@@ -49,6 +49,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	private PointF bubbleCenter = new PointF();
 	private Paint bubblePaint = new Paint();
 	private RectF labelRect = new RectF();
+	private float[] valuesBuff = new float[3];
 
 	/**
 	 * Rect used for drawing bubbles with SHAPE_SQUARE.
@@ -258,7 +259,10 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	private void drawLabel(Canvas canvas, BubbleChartData data, BubbleValue bubbleValue, float rawX, float rawY) {
 		final ChartComputator computator = chart.getChartComputator();
 		final Rect contentRect = computator.getContentRect();
-		final int nummChars = data.getFormatter().formatValue(labelBuffer, bubbleValue.getZ(), bubbleValue.getLabel());
+		valuesBuff[0] = bubbleValue.getX();
+		valuesBuff[1] = bubbleValue.getY();
+		valuesBuff[2] = bubbleValue.getZ();
+		final int nummChars = data.getFormatter().formatValue(labelBuffer, valuesBuff, bubbleValue.getLabel());
 		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
 		float left = rawX - labelWidth / 2 - labelMargin;

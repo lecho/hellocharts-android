@@ -31,6 +31,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	private Paint columnPaint = new Paint();
 	private RectF drawRect = new RectF();
 	private PointF touchedPoint = new PointF();
+	private float[] valuesBuff = new float[1];
 
 	public ColumnChartRenderer(Context context, Chart chart, ColumnChartDataProvider dataProvider) {
 		super(context, chart);
@@ -342,8 +343,8 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 
 	private void drawLabel(Canvas canvas, Column column, ColumnValue columnValue, boolean isStacked, float offset) {
 		final ChartComputator computator = chart.getChartComputator();
-		final int nummChars = column.getFormatter().formatValue(labelBuffer, columnValue.getValue(),
-				columnValue.getLabel());
+		valuesBuff[0] = columnValue.getValue();
+		final int nummChars = column.getFormatter().formatValue(labelBuffer, valuesBuff, columnValue.getLabel());
 		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
 		float left = drawRect.centerX() - labelWidth / 2 - labelMargin;

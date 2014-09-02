@@ -10,16 +10,16 @@ package lecho.lib.hellocharts.model;
 public interface ValueFormatter {
 
 	/**
-	 * Formats float with given number of digits after decimal separator. Result is stored in given array. Method
+	 * Formats values with given number of digits after decimal separator. Result is stored in given array. Method
 	 * returns number of chars for formatted value. The formated value starts at index [formattedValue.length -
 	 * nummChars] and ends at index [formatteValue.length-1].
 	 */
-	public int formatValue(char[] formattedValue, float value, char[] label);
+	public int formatValue(char[] formattedValue, float[] values, char[] label);
 
 	/**
-	 * Used mostly for auto-generated axes. Formats float with given number of digits after decimal separator. Result is
-	 * stored in given array. Method returns number of chars for formatted value. The formated value starts at index
+	 * Used mostly for auto-generated axes. Formats values with given number of digits after decimal separator. Result
+	 * is stored in given array. Method returns number of chars for formatted value. The formated value starts at index
 	 * [formattedValue.length - nummChars] and ends at index [formatteValue.length-1].
 	 */
-	public int formatValue(char[] formattedValue, float value, char[] label, int digits);
+	public int formatValue(char[] formattedValue, float[] values, char[] label, int digits);
 }

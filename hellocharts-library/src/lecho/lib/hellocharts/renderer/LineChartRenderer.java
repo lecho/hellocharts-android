@@ -35,6 +35,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private Paint linePaint = new Paint();
 	private Paint pointPaint = new Paint();
 	private RectF labelRect = new RectF();
+	private float[] valuesBuff = new float[2];
+
 	/**
 	 * Not hardware accelerated bitmap used to draw Path(smooth lines and filled area). Bitmap has size of contentRect
 	 * so it is usually smaller than the view so you should used relative coordinates to draw on it.
@@ -395,7 +397,9 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private void drawLabel(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY, float offset) {
 		final ChartComputator computator = chart.getChartComputator();
 		final Rect contentRect = computator.getContentRect();
-		final int nummChars = line.getFormatter().formatValue(labelBuffer, pointValue.getY(), pointValue.getLabel());
+		valuesBuff[0] = pointValue.getX();
+		valuesBuff[1] = pointValue.getY();
+		final int nummChars = line.getFormatter().formatValue(labelBuffer, valuesBuff, pointValue.getLabel());
 		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
 		float left = rawX - labelWidth / 2 - labelMargin;

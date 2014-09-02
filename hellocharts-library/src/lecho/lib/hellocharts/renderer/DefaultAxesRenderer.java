@@ -42,6 +42,7 @@ public class DefaultAxesRenderer implements AxesRenderer {
 	private FontMetricsInt[] fontMetricsTab = new FontMetricsInt[] { new FontMetricsInt(), new FontMetricsInt(),
 			new FontMetricsInt(), new FontMetricsInt() };
 
+	private float[] valuesBuff = new float[1];
 	private char[] labelBuffer = new char[32];
 	private static final char[] labelWidthChars = new char[] { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
 			'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0' };
@@ -216,8 +217,8 @@ public class DefaultAxesRenderer implements AxesRenderer {
 			final float value = axisValue.getValue();
 			if (value >= computator.getVisibleViewport().left && value <= computator.getVisibleViewport().right) {
 				final float rawX = computator.computeRawX(axisValue.getValue());
-				final int nummChars = axis.getFormatter().formatValue(labelBuffer, axisValue.getValue(),
-						axisValue.getLabel());
+				valuesBuff[0] = axisValue.getValue();
+				final int nummChars = axis.getFormatter().formatValue(labelBuffer, valuesBuff, axisValue.getLabel());
 				canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY,
 						textPaintTab[position]);
 
@@ -249,8 +250,9 @@ public class DefaultAxesRenderer implements AxesRenderer {
 
 		for (int i = 0; i < axisHorizontalStopsBuffer.numStops; ++i) {
 			float rawX = computator.computeRawX(axisHorizontalStopsBuffer.stops[i]);
-			final int nummChars = axis.getFormatter().formatValue(labelBuffer, axisHorizontalStopsBuffer.stops[i],
-					null, axisHorizontalStopsBuffer.decimals);
+			valuesBuff[0] = axisHorizontalStopsBuffer.stops[i];
+			final int nummChars = axis.getFormatter().formatValue(labelBuffer, valuesBuff, null,
+					axisHorizontalStopsBuffer.decimals);
 			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY, textPaintTab[position]);
 
 			if (axis.hasLines()) {
@@ -321,8 +323,8 @@ public class DefaultAxesRenderer implements AxesRenderer {
 			final float value = axisValue.getValue();
 			if (value >= computator.getVisibleViewport().bottom && value <= computator.getVisibleViewport().top) {
 				final float rawY = computator.computeRawY(value);
-				final int nummChars = axis.getFormatter().formatValue(labelBuffer, axisValue.getValue(),
-						axisValue.getLabel());
+				valuesBuff[0] = axisValue.getValue();
+				final int nummChars = axis.getFormatter().formatValue(labelBuffer, valuesBuff, axisValue.getLabel());
 				canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY,
 						textPaintTab[position]);
 
@@ -355,7 +357,8 @@ public class DefaultAxesRenderer implements AxesRenderer {
 
 		for (int i = 0; i < axisVerticalStopsBuffer.numStops; i++) {
 			final float rawY = computator.computeRawY(axisVerticalStopsBuffer.stops[i]);
-			final int nummChars = axis.getFormatter().formatValue(labelBuffer, axisVerticalStopsBuffer.stops[i], null,
+			valuesBuff[0] = axisVerticalStopsBuffer.stops[i];
+			final int nummChars = axis.getFormatter().formatValue(labelBuffer, valuesBuff, null,
 					axisVerticalStopsBuffer.decimals);
 			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY, textPaintTab[position]);
 

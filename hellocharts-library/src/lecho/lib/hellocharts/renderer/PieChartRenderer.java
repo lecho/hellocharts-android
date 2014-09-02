@@ -38,6 +38,8 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	private RectF drawCircleOval = new RectF();
 	private PointF arcVector = new PointF();
 	private RectF labelRect = new RectF();
+	private float[] valuesBuff = new float[1];
+
 	private int touchAdditional;
 	private int rotation = DEFAULT_START_ROTATION;
 	private float circleFillRatio = 1.0f;
@@ -260,7 +262,8 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void drawLabel(Canvas canvas, PieChartData data, ArcValue arcValue) {
-		final int nummChars = data.getFormatter().formatValue(labelBuffer, arcValue.getValue(), arcValue.getLabel());
+		valuesBuff[0] = arcValue.getValue();
+		final int nummChars = data.getFormatter().formatValue(labelBuffer, valuesBuff, arcValue.getLabel());
 		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
 
