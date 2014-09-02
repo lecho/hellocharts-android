@@ -92,8 +92,8 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 
 			columnData = new ColumnChartData(columns);
 
-			columnData.setAxisXBottom(new Axis(axisValues).setName("Months").setHasLines(true));
-			columnData.setAxisYLeft(new Axis().setName("Some Numbers").setHasLines(true));
+			columnData.setAxisXBottom(new Axis(axisValues).setName("MONTHS").setHasLines(true));
+			columnData.setAxisYLeft(new Axis().setName("SOME NUMBERS").setHasLines(true));
 
 			chartBottom.setColumnChartData(columnData);
 
@@ -140,8 +140,8 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 			lines.add(line);
 
 			lineData = new LineChartData(lines);
-			lineData.setAxisXBottom(new Axis(axisValues).setName("Days of Week").setHasLines(true));
-			lineData.setAxisYLeft(new Axis().setName("Number of Something").setHasLines(true));
+			lineData.setAxisXBottom(new Axis(axisValues).setName("DAYS OF WEEK").setHasLines(true));
+			lineData.setAxisYLeft(new Axis().setName("NUMBER OF SOMETHING").setHasLines(true));
 
 			chartTop.setLineChartData(lineData);
 
@@ -157,6 +157,10 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 		}
 
 		private void generateLineData(int color) {
+			// Cancel last animation if not finished.
+			chartTop.cancelDataAnimation();
+
+			// Modify data targets
 			Line line = lineData.getLines().get(0);// For this example there is always only one line.
 			line.setColor(color);
 			for (PointValue value : line.getValues()) {
@@ -164,6 +168,7 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 				value.setTarget(value.getX(), (float) Math.random() * 100);
 			}
 
+			// Start new data animation;
 			chartTop.startDataAnimation();
 		}
 

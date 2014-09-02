@@ -42,9 +42,9 @@ public class LineChartData extends AbstractChartData {
 	}
 
 	@Override
-	public void finish(boolean isSuccess) {
+	public void finish() {
 		for (Line line : lines) {
-			line.finish(isSuccess);
+			line.finish();
 		}
 	}
 

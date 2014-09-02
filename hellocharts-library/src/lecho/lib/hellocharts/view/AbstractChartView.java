@@ -104,8 +104,12 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	@Override
 	public void startDataAnimation() {
-		dataAnimator.cancelAnimation();
 		dataAnimator.startAnimation();
+	}
+
+	@Override
+	public void cancelDataAnimation() {
+		dataAnimator.cancelAnimation();
 	}
 
 	@Override
@@ -129,8 +133,8 @@ public abstract class AbstractChartView extends View implements Chart {
 	}
 
 	@Override
-	public void animationDataFinished(boolean isSuccess) {
-		getChartData().finish(isSuccess);
+	public void animationDataFinished() {
+		getChartData().finish();
 		if (isViewportCalculationOnAnimationEnabled) {
 			chartRenderer.initMaxViewport();
 			chartRenderer.initCurrentViewport();

@@ -55,8 +55,6 @@ public class ChartViewportAnimatorV14 implements ChartViewportAnimator, Animator
 
 	@Override
 	public void onAnimationCancel(Animator animation) {
-		chart.setViewport(targetViewport, false);
-		animationListener.onAnimationFinished();
 	}
 
 	@Override

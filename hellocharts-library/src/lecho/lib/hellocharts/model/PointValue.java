@@ -34,12 +34,8 @@ public class PointValue {
 		y = orginY + diffY * scale;
 	}
 
-	public void finish(boolean isSuccess) {
-		if (isSuccess) {
-			set(orginX + diffX, orginY + diffY);
-		} else {
-			set(x, y);
-		}
+	public void finish() {
+		set(orginX + diffX, orginY + diffY);
 	}
 
 	public PointValue set(float x, float y) {

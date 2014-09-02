@@ -85,9 +85,9 @@ public class PieChartData extends AbstractChartData {
 	}
 
 	@Override
-	public void finish(boolean isSuccess) {
+	public void finish() {
 		for (ArcValue value : values) {
-			value.finish(isSuccess);
+			value.finish();
 		}
 	}
 

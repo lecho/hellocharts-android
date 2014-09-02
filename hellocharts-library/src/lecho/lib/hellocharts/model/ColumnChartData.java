@@ -44,9 +44,9 @@ public class ColumnChartData extends AbstractChartData {
 	}
 
 	@Override
-	public void finish(boolean isSuccess) {
+	public void finish() {
 		for (Column column : columns) {
-			column.finish(isSuccess);
+			column.finish();
 		}
 	}
 

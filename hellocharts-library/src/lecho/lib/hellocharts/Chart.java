@@ -36,12 +36,17 @@ public interface Chart {
 	/**
 	 * Called when data animation finished.
 	 */
-	public void animationDataFinished(boolean isSuccess);
+	public void animationDataFinished();
 
 	/**
 	 * Starts chart data animation. Before you call this method you should change target values of chart data.
 	 */
 	public void startDataAnimation();
+
+	/**
+	 * Stops chart data animation. All chart data values are set to their target values.
+	 */
+	public void cancelDataAnimation();
 
 	/**
 	 * Return true if viewport calculation on animation is enabled, otherwise false.

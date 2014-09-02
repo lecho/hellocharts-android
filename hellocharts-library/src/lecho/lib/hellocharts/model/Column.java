@@ -42,9 +42,9 @@ public class Column {
 
 	}
 
-	public void finish(boolean isSuccess) {
+	public void finish() {
 		for (ColumnValue value : values) {
-			value.finish(isSuccess);
+			value.finish();
 		}
 	}
 

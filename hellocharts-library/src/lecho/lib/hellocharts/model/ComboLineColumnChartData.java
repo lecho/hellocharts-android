@@ -35,9 +35,9 @@ public class ComboLineColumnChartData extends AbstractChartData {
 	}
 
 	@Override
-	public void finish(boolean isSuccess) {
-		columnChartData.finish(isSuccess);
-		lineChartData.finish(isSuccess);
+	public void finish() {
+		columnChartData.finish();
+		lineChartData.finish();
 	}
 
 	public ColumnChartData getColumnChartData() {

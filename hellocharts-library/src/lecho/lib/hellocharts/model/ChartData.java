@@ -16,9 +16,9 @@ public interface ChartData {
 	public void update(float scale);
 
 	/**
-	 * Inform data that animation finished(if isSuccess is true data should be update with scale 1.0f)
+	 * Inform data that animation finished(data should be update with scale 1.0f)
 	 */
-	public void finish(boolean isSuccess);
+	public void finish();
 
 	public void setAxisXBottom(Axis axisX);
 

@@ -23,7 +23,7 @@ public class ChartDataAnimatorV8 implements ChartDataAnimator {
 			if (elapsed > duration) {
 				isAnimationStarted = false;
 				handler.removeCallbacks(runnable);
-				chart.animationDataFinished(true);
+				chart.animationDataFinished();
 				return;
 			}
 			float scale = Math.min(interpolator.getInterpolation((float) elapsed / duration), 1);
@@ -55,7 +55,7 @@ public class ChartDataAnimatorV8 implements ChartDataAnimator {
 	public void cancelAnimation() {
 		isAnimationStarted = false;
 		handler.removeCallbacks(runnable);
-		chart.animationDataFinished(false);
+		chart.animationDataFinished();
 		animationListener.onAnimationFinished();
 	}
 

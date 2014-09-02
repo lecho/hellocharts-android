@@ -43,12 +43,8 @@ public class ColumnValue {
 		value = orginValue + diff * scale;
 	}
 
-	public void finish(boolean isSuccess) {
-		if (isSuccess) {
-			setValue(orginValue + diff);
-		} else {
-			setValue(value);
-		}
+	public void finish() {
+		setValue(orginValue + diff);
 	}
 
 	public float getValue() {

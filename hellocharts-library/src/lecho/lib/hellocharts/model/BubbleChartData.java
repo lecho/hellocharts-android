@@ -51,9 +51,9 @@ public class BubbleChartData extends AbstractChartData {
 	}
 
 	@Override
-	public void finish(boolean isSuccess) {
+	public void finish() {
 		for (BubbleValue value : values) {
-			value.finish(isSuccess);
+			value.finish();
 		}
 	}
 

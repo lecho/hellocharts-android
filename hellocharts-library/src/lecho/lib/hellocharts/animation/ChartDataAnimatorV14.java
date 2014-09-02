@@ -42,13 +42,11 @@ public class ChartDataAnimatorV14 implements ChartDataAnimator, AnimatorListener
 
 	@Override
 	public void onAnimationCancel(Animator animation) {
-		chart.animationDataFinished(false);
-		animationListener.onAnimationFinished();
 	}
 
 	@Override
 	public void onAnimationEnd(Animator animation) {
-		chart.animationDataFinished(true);
+		chart.animationDataFinished();
 		animationListener.onAnimationFinished();
 	}
 

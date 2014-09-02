@@ -67,9 +67,9 @@ public class Line {
 		}
 	}
 
-	public void finish(boolean isSuccess) {
+	public void finish() {
 		for (PointValue value : values) {
-			value.finish(isSuccess);
+			value.finish();
 		}
 	}
 

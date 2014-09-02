@@ -49,8 +49,6 @@ public class PieChartRotationAnimatorV14 implements PieChartRotationAnimator, An
 
 	@Override
 	public void onAnimationCancel(Animator animation) {
-		chart.setChartRotation((int) targetRotation, false);
-		animationListener.onAnimationFinished();
 	}
 
 	@Override
