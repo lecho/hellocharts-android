@@ -156,7 +156,7 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 			chartTop.setZoomType(ChartZoomer.ZOOM_HORIZONTAL);
 		}
 
-		private void generateLineData(int color) {
+		private void generateLineData(int color, float range) {
 			// Cancel last animation if not finished.
 			chartTop.cancelDataAnimation();
 
@@ -165,7 +165,7 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 			line.setColor(color);
 			for (PointValue value : line.getValues()) {
 				// Change target only for Y value.
-				value.setTarget(value.getX(), (float) Math.random() * 100);
+				value.setTarget(value.getX(), (float) Math.random() * range);
 			}
 
 			// Start new data animation;
@@ -176,14 +176,14 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 
 			@Override
 			public void onValueTouched(int selectedLine, int selectedValue, ColumnValue value) {
-				generateLineData(value.getColor());
+				generateLineData(value.getColor(), 100);
 
 			}
 
 			@Override
 			public void onNothingTouched() {
 
-				generateInitialLineData();
+				generateLineData(Utils.COLOR_GREEN, 0);
 
 			}
 		}
