@@ -259,6 +259,12 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	private void drawLabel(Canvas canvas, PieChartData data, ArcValue arcValue) {
 		valuesBuff[0] = arcValue.getValue();
 		final int nummChars = data.getFormatter().formatValue(labelBuffer, valuesBuff, arcValue.getLabel());
+
+		if (nummChars == 0) {
+			// No need to draw empty label
+			return;
+		}
+
 		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
 

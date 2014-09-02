@@ -10,9 +10,10 @@ import java.util.List;
  * 
  */
 public class LineChartData extends AbstractChartData {
+	public static final float DEFAULT_BASE_VALUE = 0.0f;
 
 	private List<Line> lines = new ArrayList<Line>();
-	private float baseValue = Float.NaN;
+	private float baseValue = DEFAULT_BASE_VALUE;
 
 	public LineChartData() {
 
@@ -65,6 +66,10 @@ public class LineChartData extends AbstractChartData {
 		return baseValue;
 	}
 
+	/**
+	 * Set value below which values will be drawn as negative, important attribute for drawing filled area charts, by
+	 * default 0.
+	 */
 	public LineChartData setBaseValue(float baseValue) {
 		this.baseValue = baseValue;
 		return this;

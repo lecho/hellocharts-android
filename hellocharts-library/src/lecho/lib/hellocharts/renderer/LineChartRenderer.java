@@ -30,6 +30,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 	private int contentRectCheckPrecission;
 
+	private float baseValue = 0;
+
 	private int touchTolleranceMargin;
 	private Path path = new Path();
 	private Paint linePaint = new Paint();
@@ -168,6 +170,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private void calculateMaxViewport() {
 		tempMaxViewport.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
 		LineChartData data = dataProvider.getLineChartData();
+		// Set base value for this chart - default is 0.
+		baseValue = data.getBaseValue();
 
 		needSecondBitmap = false;
 		for (Line line : data.getLines()) {
@@ -394,16 +398,37 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		final Rect contentRect = computator.getContentRect();
 		valuesBuff[0] = pointValue.getX();
 		valuesBuff[1] = pointValue.getY();
+
 		final int nummChars = line.getFormatter().formatValue(labelBuffer, valuesBuff, pointValue.getLabel());
+
+		if (nummChars == 0) {
+			// No need to draw empty label
+			return;
+		}
+
 		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
 		float left = rawX - labelWidth / 2 - labelMargin;
 		float right = rawX + labelWidth / 2 + labelMargin;
-		float top = rawY - offset - labelHeight - labelMargin * 2;
-		float bottom = rawY - offset;
+
+		float top;
+		float bottom;
+
+		if (pointValue.getY() >= baseValue) {
+			top = rawY - offset - labelHeight - labelMargin * 2;
+			bottom = rawY - offset;
+		} else {
+			top = rawY + offset;
+			bottom = rawY + offset + labelHeight + labelMargin * 2;
+		}
+
 		if (top < contentRect.top) {
 			top = rawY + offset;
 			bottom = rawY + offset + labelHeight + labelMargin * 2;
+		}
+		if (bottom > contentRect.bottom) {
+			top = rawY - offset - labelHeight - labelMargin * 2;
+			bottom = rawY - offset;
 		}
 		if (left < contentRect.left) {
 			left = rawX;
@@ -425,14 +450,10 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private void drawArea(Canvas canvas, int transparency) {
 		final ChartComputator computator = chart.getChartComputator();
 		final Rect contentRect = computator.getContentRect();
-		float baseRelativeRawValue;
-		final float baseValue = dataProvider.getLineChartData().getBaseValue();
-		if (Float.isNaN(baseValue)) {
-			baseRelativeRawValue = contentRect.height();
-		} else {
-			baseRelativeRawValue = computator.computeRelativeRawY(baseValue);
-			baseRelativeRawValue = Math.min(contentRect.height(), Math.max(baseRelativeRawValue, 0));
-		}
+
+		float baseRelativeRawValue = computator.computeRelativeRawY(baseValue);
+		baseRelativeRawValue = Math.min(contentRect.height(), Math.max(baseRelativeRawValue, 0));
+
 		path.lineTo(contentRect.width(), baseRelativeRawValue);
 		path.lineTo(0, baseRelativeRawValue);
 		path.close();

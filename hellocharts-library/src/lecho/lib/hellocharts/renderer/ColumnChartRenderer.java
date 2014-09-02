@@ -340,6 +340,12 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 		final ChartComputator computator = chart.getChartComputator();
 		valuesBuff[0] = columnValue.getValue();
 		final int nummChars = column.getFormatter().formatValue(labelBuffer, valuesBuff, columnValue.getLabel());
+
+		if (nummChars == 0) {
+			// No need to draw empty label
+			return;
+		}
+
 		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
 		float left = drawRect.centerX() - labelWidth / 2 - labelMargin;

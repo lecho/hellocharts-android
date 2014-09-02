@@ -259,6 +259,12 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		valuesBuff[1] = bubbleValue.getY();
 		valuesBuff[2] = bubbleValue.getZ();
 		final int nummChars = data.getFormatter().formatValue(labelBuffer, valuesBuff, bubbleValue.getLabel());
+
+		if (nummChars == 0) {
+			// No need to draw empty label
+			return;
+		}
+
 		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
 		float left = rawX - labelWidth / 2 - labelMargin;
