@@ -12,5 +12,6 @@
     <string name="title_activity_preview_column_chart">PreviewColumnChartActivity</string>
     <string name="title_activity_combo_line_column_chart">ComboLineColumnChartActivity</string>
     <string name="title_activity_line_column_dependency">LineColumnDependency</string>
+    <string name="title_activity_good_bad">GoodBadActivity</string>
 
 </resources>

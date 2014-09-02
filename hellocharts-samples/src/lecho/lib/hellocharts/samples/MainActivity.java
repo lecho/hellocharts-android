@@ -101,18 +101,23 @@ public class MainActivity extends ActionBarActivity {
 				startActivity(intent);
 				break;
 			case 5:
-				// Preview Line Chart;
+				// Preview Column Chart;
 				intent = new Intent(getActivity(), PreviewColumnChartActivity.class);
 				startActivity(intent);
 				break;
 			case 6:
-				// Preview Line Chart;
+				// Combo Chart;
 				intent = new Intent(getActivity(), ComboLineColumnChartActivity.class);
 				startActivity(intent);
 				break;
 			case 7:
-				// Preview Line Chart;
+				// Line Column Dependency;
 				intent = new Intent(getActivity(), LineColumnDependencyActivity.class);
+				startActivity(intent);
+				break;
+			case 8:
+				// Good Bad filled line chart;
+				intent = new Intent(getActivity(), GoodBadActivity.class);
 				startActivity(intent);
 				break;
 			default:
@@ -131,6 +136,7 @@ public class MainActivity extends ActionBarActivity {
 			list.add(new ChartSampleDescription("Preview Column Chart", ""));
 			list.add(new ChartSampleDescription("Combo Line/Column Chart", ""));
 			list.add(new ChartSampleDescription("Line/Column Chart Dependency", ""));
+			list.add(new ChartSampleDescription("Good/Bad Chart Sample", ""));
 
 			return list;
 		}

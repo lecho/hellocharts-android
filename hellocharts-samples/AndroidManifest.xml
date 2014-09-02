@@ -54,6 +54,10 @@
             android:name=".LineColumnDependencyActivity"
             android:label="@string/title_activity_line_column_dependency" >
         </activity>
+        <activity
+            android:name=".GoodBadActivity"
+            android:label="@string/title_activity_good_bad" >
+        </activity>
     </application>
 
 </manifest>
