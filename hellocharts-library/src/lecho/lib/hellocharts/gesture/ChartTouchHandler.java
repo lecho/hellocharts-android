@@ -2,6 +2,7 @@ package lecho.lib.hellocharts.gesture;
 
 import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartComputator;
+import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
 import android.content.Context;
 import android.view.GestureDetector;
@@ -20,6 +21,12 @@ public class ChartTouchHandler {
 	private boolean isScrollEnabled = true;
 	protected boolean isValueTouchEnabled = true;
 	protected boolean isValueSelectionEnabled = false;
+
+	/**
+	 * Used only for selection mode to avoid calling listener multiple times for the same selection. Small thing but it
+	 * is more intuitive this way.
+	 */
+	protected SelectedValue oldSelectedValue = new SelectedValue();
 
 	public ChartTouchHandler(Context context, Chart chart) {
 		this.chart = chart;
@@ -80,13 +87,25 @@ public class ChartTouchHandler {
 			boolean isTouched = renderer.checkTouch(event.getX(), event.getY());
 			if (wasTouched != isTouched) {
 				needInvalidate = true;
+
+				if (isValueSelectionEnabled) {
+					oldSelectedValue.clear();
+				}
 			}
 			break;
 		case MotionEvent.ACTION_UP:
 			if (renderer.isTouched()) {
 				if (renderer.checkTouch(event.getX(), event.getY())) {
-					renderer.callChartTouchListener();
-					if (!isValueSelectionEnabled) {
+					if (isValueSelectionEnabled) {
+						// For selection mode call listener only if selected value changed, that means that should be
+						// first(selection) click on given value.
+						SelectedValue selectedValue = renderer.getSelectedValue();
+						if (!oldSelectedValue.equals(selectedValue)) {
+							oldSelectedValue.set(selectedValue);
+							renderer.callChartTouchListener();
+						}
+					} else {
+						renderer.callChartTouchListener();
 						renderer.clearTouch();
 					}
 				} else {
