@@ -347,13 +347,20 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 		private class ValueTouchListener implements ComboLineColumnChartOnValueTouchListener {
 
 			@Override
-			public void onValueTouched(int selectedLine, int selectedValue, ColumnValue columnValue,
-					PointValue pointValue) {
-				if (null != columnValue) {
-					Toast.makeText(getActivity(), "Selected column: " + columnValue, Toast.LENGTH_SHORT).show();
-				} else {
-					Toast.makeText(getActivity(), "Selected line point: " + pointValue, Toast.LENGTH_SHORT).show();
-				}
+			public void onNothingTouched() {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onColumnValueTouched(int selectedLine, int selectedValue, ColumnValue value) {
+				Toast.makeText(getActivity(), "Selected column: " + value, Toast.LENGTH_SHORT).show();
+
+			}
+
+			@Override
+			public void onPointValueTouched(int selectedLine, int selectedValue, PointValue value) {
+				Toast.makeText(getActivity(), "Selected line point: " + value, Toast.LENGTH_SHORT).show();
 
 			}
 

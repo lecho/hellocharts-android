@@ -36,7 +36,8 @@ public interface ChartRenderer {
 	public void drawUnclipped(Canvas canvas);
 
 	/**
-	 * Checks if given pixel coordinates corresponds to any chart value. If yes return true and set selectedValue.
+	 * Checks if given pixel coordinates corresponds to any chart value. If yes return true and set selectedValue, if
+	 * not selectedValue should be *cleared* and method should return false.
 	 */
 	public boolean checkTouch(float touchX, float touchY);
 
@@ -49,11 +50,6 @@ public interface ChartRenderer {
 	 * Clear value selection.
 	 */
 	public void clearTouch();
-
-	/**
-	 * Calls value touch listener with currently selected value.
-	 */
-	public void callChartTouchListener();
 
 	public void setMaxViewport(Viewport maxViewport);
 

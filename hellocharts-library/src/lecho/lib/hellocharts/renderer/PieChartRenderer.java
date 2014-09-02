@@ -136,7 +136,6 @@ public class PieChartRenderer extends AbstractChartRenderer {
 
 	@Override
 	public boolean checkTouch(float touchX, float touchY) {
-		oldSelectedValue.set(selectedValue);
 		selectedValue.clear();
 		final PieChartData data = dataProvider.getPieChartData();
 		final float centerX = orginCircleOval.centerX();
@@ -160,10 +159,6 @@ public class PieChartRenderer extends AbstractChartRenderer {
 			}
 			lastAngle += angle;
 			++arcIndex;
-		}
-		// Check if touch is still on the same value, if not return false.
-		if (oldSelectedValue.isSet() && selectedValue.isSet() && !oldSelectedValue.equals(selectedValue)) {
-			return false;
 		}
 		return isTouched();
 	}

@@ -23,7 +23,6 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 	protected float scaledDensity;
 
 	protected SelectedValue selectedValue = new SelectedValue();
-	protected SelectedValue oldSelectedValue = new SelectedValue();
 
 	protected char[] labelBuffer = new char[32];
 	protected int labelOffset;
@@ -57,13 +56,6 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 	@Override
 	public void clearTouch() {
 		selectedValue.clear();
-		oldSelectedValue.clear();
-
-	}
-
-	@Override
-	public void callChartTouchListener() {
-		chart.callChartTouchListener(selectedValue);
 	}
 
 	@Override

@@ -145,7 +145,6 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 	@Override
 	public boolean checkTouch(float touchX, float touchY) {
-		oldSelectedValue.set(selectedValue);
 		selectedValue.clear();
 		final LineChartData data = dataProvider.getLineChartData();
 		final ChartComputator computator = chart.getChartComputator();
@@ -162,10 +161,6 @@ public class LineChartRenderer extends AbstractChartRenderer {
 				++valueIndex;
 			}
 			++lineIndex;
-		}
-		// Check if touch is still on the same value, if not return false.
-		if (oldSelectedValue.isSet() && selectedValue.isSet() && !oldSelectedValue.equals(selectedValue)) {
-			return false;
 		}
 		return isTouched();
 	}

@@ -228,6 +228,12 @@ public class BubbleChartActivity extends ActionBarActivity {
 			public void onValueTouched(int selectedBubble, BubbleValue value) {
 				Toast.makeText(getActivity(), "Selected: " + value, Toast.LENGTH_SHORT).show();
 			}
+
+			@Override
+			public void onNothingTouched() {
+				// TODO Auto-generated method stub
+
+			}
 		}
 	}
 }

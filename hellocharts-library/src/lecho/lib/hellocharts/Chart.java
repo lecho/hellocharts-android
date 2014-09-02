@@ -77,11 +77,7 @@ public interface Chart {
 	 */
 	public void setViewportChangeListener(ViewportChangeListener viewportChangeListener);
 
-	/**
-	 * Programmatically call touch listener for selected value. Indexes of selected value must be valid or
-	 * IndexOutOfBoundsException will be thrown.
-	 */
-	public void callChartTouchListener(SelectedValue selectedValue);
+	public void callTouchListener();
 
 	/**
 	 * Returns true if chart is interactive.

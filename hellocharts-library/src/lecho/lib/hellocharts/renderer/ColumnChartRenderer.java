@@ -83,17 +83,12 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	}
 
 	public boolean checkTouch(float touchX, float touchY) {
-		oldSelectedValue.set(selectedValue);
 		selectedValue.clear();
 		final ColumnChartData data = dataProvider.getColumnChartData();
 		if (data.isStacked()) {
 			checkTouchForStacked(touchX, touchY);
 		} else {
 			checkTouchForSubcolumns(touchX, touchY);
-		}
-		// Check if touch is still on the same value, if not return false.
-		if (oldSelectedValue.isSet() && selectedValue.isSet() && !oldSelectedValue.equals(selectedValue)) {
-			return false;
 		}
 		return isTouched();
 	}

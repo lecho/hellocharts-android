@@ -51,7 +51,6 @@ public class ComboLineColumnChartRenderer extends AbstractChartRenderer {
 	}
 
 	public boolean checkTouch(float touchX, float touchY) {
-		oldSelectedValue.set(selectedValue);
 		selectedValue.clear();
 
 		// Start with LineChartRenderer because lines are drawn on top, if no line point is selected and only then
@@ -64,11 +63,6 @@ public class ComboLineColumnChartRenderer extends AbstractChartRenderer {
 			selectedValue.setThirdIndex(TYPE_COLUMN);
 		}
 
-		// Check if touch is still on the same value, if not return false.
-		if (oldSelectedValue.isSet() && selectedValue.isSet() && !oldSelectedValue.equals(selectedValue)) {
-			return false;
-		}
-
 		return isTouched();
 	}
 
@@ -79,7 +73,6 @@ public class ComboLineColumnChartRenderer extends AbstractChartRenderer {
 		this.columnChartRenderer.clearTouch();
 
 		selectedValue.clear();
-		oldSelectedValue.clear();
 
 	}
 }

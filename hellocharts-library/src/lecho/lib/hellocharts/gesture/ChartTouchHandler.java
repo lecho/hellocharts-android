@@ -18,7 +18,7 @@ public class ChartTouchHandler {
 
 	protected boolean isInteractive = true;
 	protected boolean isZoomEnabled = true;
-	private boolean isScrollEnabled = true;
+	protected boolean isScrollEnabled = true;
 	protected boolean isValueTouchEnabled = true;
 	protected boolean isValueSelectionEnabled = false;
 
@@ -26,6 +26,9 @@ public class ChartTouchHandler {
 	 * Used only for selection mode to avoid calling listener multiple times for the same selection. Small thing but it
 	 * is more intuitive this way.
 	 */
+	protected SelectedValue selectionModeOldValue = new SelectedValue();
+
+	protected SelectedValue selectedValue = new SelectedValue();
 	protected SelectedValue oldSelectedValue = new SelectedValue();
 
 	public ChartTouchHandler(Context context, Chart chart) {
@@ -84,28 +87,30 @@ public class ChartTouchHandler {
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			boolean wasTouched = renderer.isTouched();
-			boolean isTouched = renderer.checkTouch(event.getX(), event.getY());
+			boolean isTouched = checkTouch(renderer, event.getX(), event.getY());
 			if (wasTouched != isTouched) {
 				needInvalidate = true;
 
 				if (isValueSelectionEnabled) {
-					oldSelectedValue.clear();
+					selectionModeOldValue.clear();
+					if (wasTouched && !renderer.isTouched()) {
+						chart.callTouchListener();
+					}
 				}
 			}
 			break;
 		case MotionEvent.ACTION_UP:
 			if (renderer.isTouched()) {
-				if (renderer.checkTouch(event.getX(), event.getY())) {
+				if (checkTouch(renderer, event.getX(), event.getY())) {
 					if (isValueSelectionEnabled) {
 						// For selection mode call listener only if selected value changed, that means that should be
 						// first(selection) click on given value.
-						SelectedValue selectedValue = renderer.getSelectedValue();
-						if (!oldSelectedValue.equals(selectedValue)) {
-							oldSelectedValue.set(selectedValue);
-							renderer.callChartTouchListener();
+						if (!selectionModeOldValue.equals(selectedValue)) {
+							selectionModeOldValue.set(selectedValue);
+							chart.callTouchListener();
 						}
 					} else {
-						renderer.callChartTouchListener();
+						chart.callTouchListener();
 						renderer.clearTouch();
 					}
 				} else {
@@ -118,7 +123,7 @@ public class ChartTouchHandler {
 			// If value was touched and now touch point is outside of value area - clear touch and invalidate, user
 			// probably moved finger away from point without leaving finger of the screen surface
 			if (renderer.isTouched()) {
-				if (!renderer.checkTouch(event.getX(), event.getY())) {
+				if (!checkTouch(renderer, event.getX(), event.getY())) {
 					renderer.clearTouch();
 					needInvalidate = true;
 				}
@@ -132,6 +137,22 @@ public class ChartTouchHandler {
 			break;
 		}
 		return needInvalidate;
+	}
+
+	private boolean checkTouch(ChartRenderer renderer, float touchX, float touchY) {
+		oldSelectedValue.set(selectedValue);
+		selectedValue.clear();
+
+		if (renderer.checkTouch(touchX, touchY)) {
+			selectedValue.set(renderer.getSelectedValue());
+		}
+
+		// Check if selection is still on the same value, if not return false.
+		if (oldSelectedValue.isSet() && selectedValue.isSet() && !oldSelectedValue.equals(selectedValue)) {
+			return false;
+		} else {
+			return renderer.isTouched();
+		}
 	}
 
 	public boolean isInteractive() {

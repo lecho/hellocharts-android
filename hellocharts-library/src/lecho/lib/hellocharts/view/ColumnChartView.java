@@ -61,10 +61,16 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 	}
 
 	@Override
-	public void callChartTouchListener(SelectedValue selectedValue) {
-		ColumnValue value = data.getColumns().get(selectedValue.getFirstIndex()).getValues()
-				.get(selectedValue.getSecondIndex());
-		onValueTouchListener.onValueTouched(selectedValue.getFirstIndex(), selectedValue.getSecondIndex(), value);
+	public void callTouchListener() {
+		SelectedValue selectedValue = chartRenderer.getSelectedValue();
+
+		if (selectedValue.isSet()) {
+			ColumnValue value = data.getColumns().get(selectedValue.getFirstIndex()).getValues()
+					.get(selectedValue.getSecondIndex());
+			onValueTouchListener.onValueTouched(selectedValue.getFirstIndex(), selectedValue.getSecondIndex(), value);
+		} else {
+			onValueTouchListener.onNothingTouched();
+		}
 	}
 
 	public ColumnChartOnValueTouchListener getOnValueTouchListener() {
@@ -83,13 +89,18 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 
 		public void onValueTouched(int selectedLine, int selectedValue, ColumnValue point);
 
+		public void onNothingTouched();
+
 	}
 
 	private static class DummyOnValueTouchListener implements ColumnChartOnValueTouchListener {
 
 		@Override
 		public void onValueTouched(int selectedLine, int selectedValue, ColumnValue value) {
-			// do nothing
+		}
+
+		@Override
+		public void onNothingTouched() {
 		}
 
 	}

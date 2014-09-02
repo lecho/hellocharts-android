@@ -69,19 +69,30 @@ public class ComboLineColumnChartView extends AbstractChartView implements Combo
 	}
 
 	@Override
-	public void callChartTouchListener(SelectedValue selectedValue) {
-		if (ComboLineColumnChartRenderer.TYPE_COLUMN == selectedValue.getThirdIndex()) {
-			ColumnValue value = data.getColumnChartData().getColumns().get(selectedValue.getFirstIndex()).getValues()
-					.get(selectedValue.getSecondIndex());
-			onValueTouchListener.onValueTouched(selectedValue.getFirstIndex(), selectedValue.getSecondIndex(), value,
-					null);
-		} else if (ComboLineColumnChartRenderer.TYPE_LINE == selectedValue.getThirdIndex()) {
-			PointValue value = data.getLineChartData().getLines().get(selectedValue.getFirstIndex()).getValues()
-					.get(selectedValue.getSecondIndex());
-			onValueTouchListener.onValueTouched(selectedValue.getFirstIndex(), selectedValue.getSecondIndex(), null,
-					value);
+	public void callTouchListener() {
+		SelectedValue selectedValue = chartRenderer.getSelectedValue();
+
+		if (selectedValue.isSet()) {
+
+			if (ComboLineColumnChartRenderer.TYPE_COLUMN == selectedValue.getThirdIndex()) {
+
+				ColumnValue value = data.getColumnChartData().getColumns().get(selectedValue.getFirstIndex())
+						.getValues().get(selectedValue.getSecondIndex());
+				onValueTouchListener.onColumnValueTouched(selectedValue.getFirstIndex(),
+						selectedValue.getSecondIndex(), value);
+
+			} else if (ComboLineColumnChartRenderer.TYPE_LINE == selectedValue.getThirdIndex()) {
+
+				PointValue value = data.getLineChartData().getLines().get(selectedValue.getFirstIndex()).getValues()
+						.get(selectedValue.getSecondIndex());
+				onValueTouchListener.onPointValueTouched(selectedValue.getFirstIndex(), selectedValue.getSecondIndex(),
+						value);
+
+			} else {
+				throw new IllegalArgumentException("Invalid selected value type " + selectedValue.getThirdIndex());
+			}
 		} else {
-			throw new IllegalArgumentException("Invalid selected value type " + selectedValue.getThirdIndex());
+			onValueTouchListener.onNothingTouched();
 		}
 	}
 
@@ -98,14 +109,26 @@ public class ComboLineColumnChartView extends AbstractChartView implements Combo
 	}
 
 	public interface ComboLineColumnChartOnValueTouchListener {
-		public void onValueTouched(int selectedLine, int selectedValue, ColumnValue columnValue, PointValue pointValue);
+		public void onColumnValueTouched(int selectedLine, int selectedValue, ColumnValue value);
+
+		public void onPointValueTouched(int selectedLine, int selectedValue, PointValue value);
+
+		public void onNothingTouched();
 	}
 
 	private static class DummyOnValueTouchListener implements ComboLineColumnChartOnValueTouchListener {
 
 		@Override
-		public void onValueTouched(int selectedLine, int selectedValue, ColumnValue columnValue, PointValue pointValue) {
-			// TODO Auto-generated method stub
+		public void onNothingTouched() {
+		}
+
+		@Override
+		public void onColumnValueTouched(int selectedLine, int selectedValue, ColumnValue value) {
+
+		}
+
+		@Override
+		public void onPointValueTouched(int selectedLine, int selectedValue, PointValue value) {
 
 		}
 	}

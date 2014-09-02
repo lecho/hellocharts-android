@@ -179,6 +179,13 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 				generateLineData(value.getColor());
 
 			}
+
+			@Override
+			public void onNothingTouched() {
+
+				generateInitialLineData();
+
+			}
 		}
 	}
 }

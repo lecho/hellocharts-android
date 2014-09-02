@@ -61,10 +61,16 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 	}
 
 	@Override
-	public void callChartTouchListener(SelectedValue selectedValue) {
-		PointValue point = data.getLines().get(selectedValue.getFirstIndex()).getValues()
-				.get(selectedValue.getSecondIndex());
-		onValueTouchListener.onValueTouched(selectedValue.getFirstIndex(), selectedValue.getSecondIndex(), point);
+	public void callTouchListener() {
+		SelectedValue selectedValue = chartRenderer.getSelectedValue();
+
+		if (selectedValue.isSet()) {
+			PointValue point = data.getLines().get(selectedValue.getFirstIndex()).getValues()
+					.get(selectedValue.getSecondIndex());
+			onValueTouchListener.onValueTouched(selectedValue.getFirstIndex(), selectedValue.getSecondIndex(), point);
+		} else {
+			onValueTouchListener.onNothingTouched();
+		}
 	}
 
 	public LineChartOnValueTouchListener getOnValueTouchListener() {
@@ -82,13 +88,18 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 	public interface LineChartOnValueTouchListener {
 		public void onValueTouched(int selectedLine, int selectedValue, PointValue value);
 
+		public void onNothingTouched();
+
 	}
 
 	private static class DummyOnValueTouchListener implements LineChartOnValueTouchListener {
 
 		@Override
 		public void onValueTouched(int selectedLine, int selectedValue, PointValue value) {
-			// do nothing
+		}
+
+		@Override
+		public void onNothingTouched() {
 		}
 
 	}

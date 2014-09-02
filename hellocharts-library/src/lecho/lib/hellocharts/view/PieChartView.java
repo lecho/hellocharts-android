@@ -87,9 +87,15 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 	}
 
 	@Override
-	public void callChartTouchListener(SelectedValue selectedValue) {
-		ArcValue arcValue = data.getValues().get(selectedValue.getFirstIndex());
-		onValueTouchListener.onValueTouched(selectedValue.getFirstIndex(), arcValue);
+	public void callTouchListener() {
+		SelectedValue selectedValue = chartRenderer.getSelectedValue();
+
+		if (selectedValue.isSet()) {
+			ArcValue arcValue = data.getValues().get(selectedValue.getFirstIndex());
+			onValueTouchListener.onValueTouched(selectedValue.getFirstIndex(), arcValue);
+		} else {
+			onValueTouchListener.onNothingTouched();
+		}
 	}
 
 	public PieChartOnValueTouchListener getOnValueTouchListener() {
@@ -193,13 +199,18 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 	public interface PieChartOnValueTouchListener {
 		public void onValueTouched(int selectedArc, ArcValue value);
 
+		public void onNothingTouched();
+
 	}
 
 	private static class DummyOnValueTouchListener implements PieChartOnValueTouchListener {
 
 		@Override
 		public void onValueTouched(int selectedArc, ArcValue value) {
-			// do nothing
+		}
+
+		@Override
+		public void onNothingTouched() {
 		}
 	}
 }
