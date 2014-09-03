@@ -345,7 +345,7 @@ public class DefaultAxesRenderer implements AxesRenderer {
 		final Rect contentRectMargins = computator.getContentRectWithMargins();
 		float scale = maxViewport.height() / visibleViewport.height();
 
-		final int module = (int) Math.ceil(axis.getValues().size() * axisLabelTextHeightTab[position]
+		final int module = (int) Math.ceil(axis.getValues().size() * axisLabelTextHeightTab[position] * 2
 				/ (contentRect.height() * scale));
 
 		if (axis.hasLines() && axisVerticalDrawBuffer.length < axis.getValues().size() * 4) {
@@ -380,8 +380,10 @@ public class DefaultAxesRenderer implements AxesRenderer {
 						++lineIndex;
 					}
 
-					++valueIndex;
 				}
+
+				++valueIndex;
+
 			}
 		}
 
