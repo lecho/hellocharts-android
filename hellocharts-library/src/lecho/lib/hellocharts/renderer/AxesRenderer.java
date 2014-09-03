@@ -258,26 +258,28 @@ public class AxesRenderer {
 				// Draw axis values that have 0 module value, this will hide some labels if there is no place for them.
 				if (0 == valueIndex % module) {
 
-					valuesBuff[0] = axisValue.getValue();
-					final int nummChars = axis.getFormatter()
-							.formatValue(labelBuffer, valuesBuff, axisValue.getLabel());
-
 					final float rawX = computator.computeRawX(axisValue.getValue());
 
-					canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY,
-							textPaintTab[position]);
+					if (checkRawX(contentRectMargins, rawX, axis.isInside(), position)) {
 
-					if (axis.hasLines()) {
-						axisHorizontalDrawBuffer[lineIndex * 4 + 0] = rawX;
-						axisHorizontalDrawBuffer[lineIndex * 4 + 1] = contentRectMargins.top;
-						axisHorizontalDrawBuffer[lineIndex * 4 + 2] = rawX;
-						axisHorizontalDrawBuffer[lineIndex * 4 + 3] = contentRectMargins.bottom;
-						++lineIndex;
+						valuesBuff[0] = axisValue.getValue();
+						final int nummChars = axis.getFormatter().formatValue(labelBuffer, valuesBuff,
+								axisValue.getLabel());
+
+						canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY,
+								textPaintTab[position]);
+
+						if (axis.hasLines()) {
+							axisHorizontalDrawBuffer[lineIndex * 4 + 0] = rawX;
+							axisHorizontalDrawBuffer[lineIndex * 4 + 1] = contentRectMargins.top;
+							axisHorizontalDrawBuffer[lineIndex * 4 + 2] = rawX;
+							axisHorizontalDrawBuffer[lineIndex * 4 + 3] = contentRectMargins.bottom;
+							++lineIndex;
+						}
 					}
 				}
-
+				// If within viewport - increment valueIndex;
 				++valueIndex;
-
 			}
 		}
 
@@ -289,9 +291,12 @@ public class AxesRenderer {
 
 	private void drawAxisHorizontalAuto(Canvas canvas, Axis axis, float rawY, int position) {
 		final ChartComputator computator = chart.getChartComputator();
+		final Viewport visibleViewport = computator.getVisibleViewport();
+		final Rect contentRect = computator.getContentRect();
+		final Rect contentRectMargins = computator.getContentRectWithMargins();
 
-		computeAxisStops(computator.getVisibleViewport().left, computator.getVisibleViewport().right, computator
-				.getContentRect().width() / axisLabelWidthTab[position] / 2, axisHorizontalStopsBuffer);
+		computeAxisStops(visibleViewport.left, visibleViewport.right, contentRect.width() / axisLabelWidthTab[position]
+				/ 2, axisHorizontalStopsBuffer);
 
 		if (axis.hasLines() && axisHorizontalDrawBuffer.length < axisHorizontalStopsBuffer.numStops * 4) {
 			axisHorizontalDrawBuffer = new float[axisHorizontalStopsBuffer.numStops * 4];
@@ -299,16 +304,22 @@ public class AxesRenderer {
 
 		for (int i = 0; i < axisHorizontalStopsBuffer.numStops; ++i) {
 			float rawX = computator.computeRawX(axisHorizontalStopsBuffer.stops[i]);
-			valuesBuff[0] = axisHorizontalStopsBuffer.stops[i];
-			final int nummChars = axis.getFormatter().formatValue(labelBuffer, valuesBuff, null,
-					axisHorizontalStopsBuffer.decimals);
-			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY, textPaintTab[position]);
 
-			if (axis.hasLines()) {
-				axisHorizontalDrawBuffer[i * 4 + 0] = rawX;
-				axisHorizontalDrawBuffer[i * 4 + 1] = computator.getContentRectWithMargins().top;
-				axisHorizontalDrawBuffer[i * 4 + 2] = rawX;
-				axisHorizontalDrawBuffer[i * 4 + 3] = computator.getContentRectWithMargins().bottom;
+			if (checkRawX(contentRectMargins, rawX, axis.isInside(), position)) {
+
+				valuesBuff[0] = axisHorizontalStopsBuffer.stops[i];
+				final int nummChars = axis.getFormatter().formatValue(labelBuffer, valuesBuff, null,
+						axisHorizontalStopsBuffer.decimals);
+				canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY,
+						textPaintTab[position]);
+
+				if (axis.hasLines()) {
+					axisHorizontalDrawBuffer[i * 4 + 0] = rawX;
+					axisHorizontalDrawBuffer[i * 4 + 1] = contentRectMargins.top;
+					axisHorizontalDrawBuffer[i * 4 + 2] = rawX;
+					axisHorizontalDrawBuffer[i * 4 + 3] = contentRectMargins.bottom;
+				}
+
 			}
 		}
 
@@ -316,6 +327,21 @@ public class AxesRenderer {
 			linePaint.setColor(axis.getLineColor());
 			canvas.drawLines(axisHorizontalDrawBuffer, 0, axisHorizontalStopsBuffer.numStops * 4, linePaint);
 		}
+	}
+
+	private boolean checkRawX(Rect rect, float rawX, boolean axisInside, int position) {
+		if (!axisInside) {
+			return true;
+		}
+
+		int halfLabel = axisLabelWidthTab[position] / 2;
+
+		if (rawX > rect.left + halfLabel && rawX < rect.right - halfLabel) {
+			return true;
+		}
+
+		return false;
+
 	}
 
 	// ********** VERTICAL Y AXES ****************
@@ -400,26 +426,28 @@ public class AxesRenderer {
 				// Draw axis values that have 0 module value, this will hide some labels if there is no place for them.
 				if (0 == valueIndex % module) {
 
-					valuesBuff[0] = axisValue.getValue();
-					final int nummChars = axis.getFormatter()
-							.formatValue(labelBuffer, valuesBuff, axisValue.getLabel());
-
 					final float rawY = computator.computeRawY(value);
-					canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY,
-							textPaintTab[position]);
 
-					if (axis.hasLines()) {
-						axisVerticalDrawBuffer[lineIndex * 4 + 0] = contentRectMargins.left;
-						axisVerticalDrawBuffer[lineIndex * 4 + 1] = rawY;
-						axisVerticalDrawBuffer[lineIndex * 4 + 2] = contentRectMargins.right;
-						axisVerticalDrawBuffer[lineIndex * 4 + 3] = rawY;
-						++lineIndex;
+					if (checkRawY(contentRectMargins, rawY, axis.isInside(), position)) {
+
+						valuesBuff[0] = axisValue.getValue();
+						final int nummChars = axis.getFormatter().formatValue(labelBuffer, valuesBuff,
+								axisValue.getLabel());
+
+						canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY,
+								textPaintTab[position]);
+
+						if (axis.hasLines()) {
+							axisVerticalDrawBuffer[lineIndex * 4 + 0] = contentRectMargins.left;
+							axisVerticalDrawBuffer[lineIndex * 4 + 1] = rawY;
+							axisVerticalDrawBuffer[lineIndex * 4 + 2] = contentRectMargins.right;
+							axisVerticalDrawBuffer[lineIndex * 4 + 3] = rawY;
+							++lineIndex;
+						}
 					}
-
 				}
-
+				// If within viewport - increment valueIndex;
 				++valueIndex;
-
 			}
 		}
 
@@ -431,9 +459,12 @@ public class AxesRenderer {
 
 	private void drawAxisVerticalAuto(Canvas canvas, Axis axis, float rawX, int position) {
 		final ChartComputator computator = chart.getChartComputator();
+		final Viewport visibleViewport = computator.getVisibleViewport();
+		final Rect contentRect = computator.getContentRect();
+		final Rect contentRectMargins = computator.getContentRectWithMargins();
 
-		computeAxisStops(computator.getVisibleViewport().bottom, computator.getVisibleViewport().top, computator
-				.getContentRect().height() / axisLabelTextAscentTab[position] / 2, axisVerticalStopsBuffer);
+		computeAxisStops(visibleViewport.bottom, visibleViewport.top, contentRect.height()
+				/ axisLabelTextAscentTab[position] / 2, axisVerticalStopsBuffer);
 
 		if (axis.hasLines() && axisVerticalDrawBuffer.length < axisVerticalStopsBuffer.numStops * 4) {
 			axisVerticalDrawBuffer = new float[axisVerticalStopsBuffer.numStops * 4];
@@ -441,16 +472,21 @@ public class AxesRenderer {
 
 		for (int i = 0; i < axisVerticalStopsBuffer.numStops; i++) {
 			final float rawY = computator.computeRawY(axisVerticalStopsBuffer.stops[i]);
-			valuesBuff[0] = axisVerticalStopsBuffer.stops[i];
-			final int nummChars = axis.getFormatter().formatValue(labelBuffer, valuesBuff, null,
-					axisVerticalStopsBuffer.decimals);
-			canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY, textPaintTab[position]);
 
-			if (axis.hasLines()) {
-				axisVerticalDrawBuffer[i * 4 + 0] = computator.getContentRectWithMargins().left;
-				axisVerticalDrawBuffer[i * 4 + 1] = rawY;
-				axisVerticalDrawBuffer[i * 4 + 2] = computator.getContentRectWithMargins().right;
-				axisVerticalDrawBuffer[i * 4 + 3] = rawY;
+			if (checkRawY(contentRectMargins, rawY, axis.isInside(), position)) {
+
+				valuesBuff[0] = axisVerticalStopsBuffer.stops[i];
+				final int nummChars = axis.getFormatter().formatValue(labelBuffer, valuesBuff, null,
+						axisVerticalStopsBuffer.decimals);
+				canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY,
+						textPaintTab[position]);
+
+				if (axis.hasLines()) {
+					axisVerticalDrawBuffer[i * 4 + 0] = contentRectMargins.left;
+					axisVerticalDrawBuffer[i * 4 + 1] = rawY;
+					axisVerticalDrawBuffer[i * 4 + 2] = contentRectMargins.right;
+					axisVerticalDrawBuffer[i * 4 + 3] = rawY;
+				}
 			}
 		}
 
@@ -458,6 +494,25 @@ public class AxesRenderer {
 			linePaint.setColor(axis.getLineColor());
 			canvas.drawLines(axisVerticalDrawBuffer, 0, axisVerticalStopsBuffer.numStops * 4, linePaint);
 		}
+	}
+
+	/**
+	 * For axis inside chart area this method checks if there is place to draw axis label. If yes returns true,
+	 * otherwise false.
+	 */
+	private boolean checkRawY(Rect rect, float rawY, boolean axisInside, int position) {
+		if (!axisInside) {
+			return true;
+		}
+
+		int doubleHight = axisLabelTextAscentTab[position] * 2;
+
+		if (rawY > rect.top + doubleHight && rawY < rect.bottom - doubleHight) {
+			return true;
+		}
+
+		return false;
+
 	}
 
 	/**
