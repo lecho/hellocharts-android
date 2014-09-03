@@ -14,7 +14,6 @@ import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
-import lecho.lib.hellocharts.renderer.DefaultAxesRenderer;
 import lecho.lib.hellocharts.util.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -47,7 +46,7 @@ public abstract class AbstractChartView extends View implements Chart {
 		super(context, attrs, defStyleAttr);
 		chartComputator = new ChartComputator();
 		touchHandler = new ChartTouchHandler(context, this);
-		axesRenderer = new DefaultAxesRenderer(context, this);
+		axesRenderer = new AxesRenderer(context, this);
 
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
 			this.dataAnimator = new ChartDataAnimatorV8(this);
