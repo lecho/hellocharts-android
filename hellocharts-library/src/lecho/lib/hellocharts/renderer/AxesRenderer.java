@@ -4,6 +4,7 @@ import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.AxisValue;
 import lecho.lib.hellocharts.model.Viewport;
+import lecho.lib.hellocharts.util.AxisStops;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;
@@ -295,8 +296,8 @@ public class AxesRenderer {
 		final Rect contentRect = computator.getContentRect();
 		final Rect contentRectMargins = computator.getContentRectWithMargins();
 
-		computeAxisStops(visibleViewport.left, visibleViewport.right, contentRect.width() / axisLabelWidthTab[position]
-				/ 2, axisHorizontalStopsBuffer);
+		Utils.computeAxisStops(visibleViewport.left, visibleViewport.right, contentRect.width()
+				/ axisLabelWidthTab[position] / 2, axisHorizontalStopsBuffer);
 
 		if (axis.hasLines() && axisHorizontalDrawBuffer.length < axisHorizontalStopsBuffer.numStops * 4) {
 			axisHorizontalDrawBuffer = new float[axisHorizontalStopsBuffer.numStops * 4];
@@ -463,7 +464,7 @@ public class AxesRenderer {
 		final Rect contentRect = computator.getContentRect();
 		final Rect contentRectMargins = computator.getContentRectWithMargins();
 
-		computeAxisStops(visibleViewport.bottom, visibleViewport.top, contentRect.height()
+		Utils.computeAxisStops(visibleViewport.bottom, visibleViewport.top, contentRect.height()
 				/ axisLabelTextAscentTab[position] / 2, axisVerticalStopsBuffer);
 
 		if (axis.hasLines() && axisVerticalDrawBuffer.length < axisVerticalStopsBuffer.numStops * 4) {
@@ -515,72 +516,4 @@ public class AxesRenderer {
 
 	}
 
-	/**
-	 * Computes the set of axis labels to show given start and stop boundaries and an ideal number of stops between
-	 * these boundaries.
-	 * 
-	 * @param start
-	 *            The minimum extreme (e.g. the left edge) for the axis.
-	 * @param stop
-	 *            The maximum extreme (e.g. the right edge) for the axis.
-	 * @param steps
-	 *            The ideal number of stops to create. This should be based on available screen space; the more space
-	 *            there is, the more stops should be shown.
-	 * @param outStops
-	 *            The destination {@link AxisStops} object to populate.
-	 */
-	private static void computeAxisStops(float start, float stop, int steps, AxisStops outStops) {
-		double range = stop - start;
-		if (steps == 0 || range <= 0) {
-			outStops.stops = new float[] {};
-			outStops.numStops = 0;
-			return;
-		}
-
-		double rawInterval = range / steps;
-		double interval = Utils.roundToOneSignificantFigure(rawInterval);
-		double intervalMagnitude = Math.pow(10, (int) Math.log10(interval));
-		int intervalSigDigit = (int) (interval / intervalMagnitude);
-		if (intervalSigDigit > 5) {
-			// Use one order of magnitude higher, to avoid intervals like 0.9 or 90
-			interval = Math.floor(10 * intervalMagnitude);
-		}
-
-		double first = Math.ceil(start / interval) * interval;
-		double last = Utils.nextUp(Math.floor(stop / interval) * interval);
-
-		double intervalValue;
-		int stopIndex;
-		int numStops = 0;
-		for (intervalValue = first; intervalValue <= last; intervalValue += interval) {
-			++numStops;
-		}
-
-		outStops.numStops = numStops;
-
-		if (outStops.stops.length < numStops) {
-			// Ensure stops contains at least numStops elements.
-			outStops.stops = new float[numStops];
-		}
-
-		for (intervalValue = first, stopIndex = 0; stopIndex < numStops; intervalValue += interval, ++stopIndex) {
-			outStops.stops[stopIndex] = (float) intervalValue;
-		}
-
-		if (interval < 1) {
-			outStops.decimals = (int) Math.ceil(-Math.log10(interval));
-		} else {
-			outStops.decimals = 0;
-		}
-	}
-
-	/**
-	 * A simple class representing axis label values used only for auto generated axes.
-	 * 
-	 */
-	private static class AxisStops {
-		float[] stops = new float[] {};
-		int numStops;
-		int decimals;
-	}
 }

@@ -204,4 +204,63 @@ public abstract class Utils {
 		return charCount;
 	}
 
+	/**
+	 * Computes the set of axis labels to show given start and stop boundaries and an ideal number of stops between
+	 * these boundaries.
+	 * 
+	 * @param start
+	 *            The minimum extreme (e.g. the left edge) for the axis.
+	 * @param stop
+	 *            The maximum extreme (e.g. the right edge) for the axis.
+	 * @param steps
+	 *            The ideal number of stops to create. This should be based on available screen space; the more space
+	 *            there is, the more stops should be shown.
+	 * @param outStops
+	 *            The destination {@link AxisStops} object to populate.
+	 */
+	public static void computeAxisStops(float start, float stop, int steps, AxisStops outStops) {
+		double range = stop - start;
+		if (steps == 0 || range <= 0) {
+			outStops.stops = new float[] {};
+			outStops.numStops = 0;
+			return;
+		}
+
+		double rawInterval = range / steps;
+		double interval = Utils.roundToOneSignificantFigure(rawInterval);
+		double intervalMagnitude = Math.pow(10, (int) Math.log10(interval));
+		int intervalSigDigit = (int) (interval / intervalMagnitude);
+		if (intervalSigDigit > 5) {
+			// Use one order of magnitude higher, to avoid intervals like 0.9 or 90
+			interval = Math.floor(10 * intervalMagnitude);
+		}
+
+		double first = Math.ceil(start / interval) * interval;
+		double last = Utils.nextUp(Math.floor(stop / interval) * interval);
+
+		double intervalValue;
+		int stopIndex;
+		int numStops = 0;
+		for (intervalValue = first; intervalValue <= last; intervalValue += interval) {
+			++numStops;
+		}
+
+		outStops.numStops = numStops;
+
+		if (outStops.stops.length < numStops) {
+			// Ensure stops contains at least numStops elements.
+			outStops.stops = new float[numStops];
+		}
+
+		for (intervalValue = first, stopIndex = 0; stopIndex < numStops; intervalValue += interval, ++stopIndex) {
+			outStops.stops[stopIndex] = (float) intervalValue;
+		}
+
+		if (interval < 1) {
+			outStops.decimals = (int) Math.ceil(-Math.log10(interval));
+		} else {
+			outStops.decimals = 0;
+		}
+	}
+
 }
