@@ -460,7 +460,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		final Rect contentRect = computator.getContentRect();
 
 		float baseRawValue = computator.computeRawY(baseValue);
-		baseRawValue = Math.min(contentRect.height(), Math.max(baseRawValue, 0));
+		baseRawValue = Math.min(contentRect.bottom, Math.max(baseRawValue, contentRect.top));
 
 		path.lineTo(contentRect.right, baseRawValue);
 		path.lineTo(contentRect.left, baseRawValue);
