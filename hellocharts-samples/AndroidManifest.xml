@@ -55,8 +55,12 @@
             android:label="@string/title_activity_line_column_dependency" >
         </activity>
         <activity
-            android:name=".GoodBadActivity"
+            android:name=".GoodBadChartActivity"
             android:label="@string/title_activity_good_bad" >
+        </activity>
+        <activity
+            android:name=".TempoChartActivity"
+            android:label="@string/title_activity_tempo_chart" >
         </activity>
     </application>
 

@@ -349,7 +349,7 @@ public class ColumnChartActivity extends ActionBarActivity {
 			@Override
 			public void onNothingTouched() {
 				// TODO Auto-generated method stub
-				
+
 			}
 
 		}
