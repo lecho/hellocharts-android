@@ -22,27 +22,30 @@ public class SimpleValueFormatter implements ValueFormatter {
 	protected final char[] appendedText;
 	protected final char[] prependedText;
 	protected final char separator;
+	protected boolean manualDigitsForAutoAxes = false;
 
 	/**
 	 * Creates formatter with default configuration, 0 number of digits after separator and no text appended to value.
 	 */
 	public SimpleValueFormatter() {
-		this(DEFAULT_DIGITS_NUMBER, null, null);
+		this(DEFAULT_DIGITS_NUMBER, false, null, null);
 	}
 
 	/**
 	 * Creates formatter with given number of digits after decimal separator.
 	 */
 	public SimpleValueFormatter(int digitsNumber) {
-		this(digitsNumber, null, null);
+		this(digitsNumber, false, null, null);
 	}
 
 	/**
 	 * Creates formatter with given number of digits after decimal separator and with text prepended and appended to
 	 * formated value.
 	 */
-	public SimpleValueFormatter(int digitsNumber, char[] prependedText, char[] appendedText) {
+	public SimpleValueFormatter(int digitsNumber, boolean manualDigitsForAutoAxes, char[] prependedText,
+			char[] appendedText) {
 		this.digitsNumber = digitsNumber;
+		this.manualDigitsForAutoAxes = manualDigitsForAutoAxes;
 
 		if (null == prependedText) {
 			this.prependedText = new char[0];
@@ -72,6 +75,10 @@ public class SimpleValueFormatter implements ValueFormatter {
 
 	@Override
 	public int formatValue(char[] formattedValue, float[] values, char[] label, int digits) {
+
+		if (manualDigitsForAutoAxes) {
+			digits = digitsNumber;
+		}
 
 		if (null != label) {
 			// If custom label is not null use only name characters as formatted value.

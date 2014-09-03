@@ -61,21 +61,21 @@ public class TempoChartActivity extends ActionBarActivity {
 			float maxTempo = 2;// 2 minutes per kilometer
 			float minTempo = 6; // 6 minutes per kilometer
 
-			float heightToSpeedScale = maxSpeed / maxHeight;
-			float sub = (minHeight * heightToSpeedScale) / 2;
+			float scale = maxSpeed / maxHeight;
+			float sub = (minHeight * scale) / 2;
 
-			int numValues = 50;
+			int numValues = 52;
 
 			Line line;
 			List<PointValue> values;
 			List<Line> lines = new ArrayList<Line>();
 
-			// Height line
+			// Height line, add it as first line to be drawn in the background.
 			values = new ArrayList<PointValue>();
 			for (int i = 0; i < numValues; ++i) {
 				// Some random height values, add +200 to make line a little more natural
 				float rawHeight = (float) (Math.random() * 100 + 200);
-				float normalizedHeight = rawHeight * heightToSpeedScale - sub;
+				float normalizedHeight = rawHeight * scale - sub;
 				values.add(new PointValue(i, normalizedHeight));
 			}
 
@@ -99,14 +99,17 @@ public class TempoChartActivity extends ActionBarActivity {
 			line.setStrokeWidth(3);
 			lines.add(line);
 
+			// Data and axes
 			data = new LineChartData(lines);
+
 			// Distance axis(bottom X) with formatter that will ad [km] to values, remember to modify max label charts
 			// value.
 			Axis distanceAxis = new Axis();
 			distanceAxis.setName("Distance");
 			distanceAxis.setTextColor(Utils.COLOR_ORANGE);
 			distanceAxis.setMaxLabelChars(4);
-			distanceAxis.setFormatter(new SimpleValueFormatter(0, null, "km".toCharArray()));
+			distanceAxis.setFormatter(new SimpleValueFormatter(0, false, null, "km".toCharArray()));
+			distanceAxis.setHasLines(true);
 			data.setAxisXBottom(distanceAxis);
 
 			// Speed axis
@@ -115,7 +118,7 @@ public class TempoChartActivity extends ActionBarActivity {
 
 			// Height axis, this axis need custom formatter that will translate values back to real height values.
 			data.setAxisYRight(new Axis().setName("Height [m]").setMaxLabelChars(3)
-					.setFormatter(new HeightValueFormater(heightToSpeedScale, sub, 0, null, null)));
+					.setFormatter(new HeightValueFormater(scale, sub, 0, null, null)));
 
 			// Set data
 			chart.setLineChartData(data);
@@ -136,7 +139,8 @@ public class TempoChartActivity extends ActionBarActivity {
 			private float sub;
 
 			public HeightValueFormater(float scale, float sub, int digits, char[] prependedText, char[] apendedText) {
-				super(digits, prependedText, apendedText);
+				// Don't use auto digits for auto-generated axes, instead use digits number passed in parameter.
+				super(digits, true, prependedText, apendedText);
 				this.scale = scale;
 				this.sub = sub;
 			}

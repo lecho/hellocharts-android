@@ -13,6 +13,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Paint.Cap;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -74,6 +75,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 		linePaint.setAntiAlias(true);
 		linePaint.setStyle(Paint.Style.STROKE);
+		linePaint.setStrokeCap(Cap.ROUND);
 		linePaint.setStrokeWidth(Utils.dp2px(density, DEFAULT_LINE_STROKE_WIDTH_DP));
 
 		pointPaint.setAntiAlias(true);
