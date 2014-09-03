@@ -4,6 +4,7 @@ import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.model.Viewport;
 import android.content.Context;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.support.v4.widget.ScrollerCompat;
 
 public class ChartScroller {
@@ -28,13 +29,16 @@ public class ChartScroller {
 		// screen pixels, while viewport offset is the offset within the current viewport. For additional information on
 		// surface sizes and pixel offsets, see the docs for {@link computeScrollSurfaceSize()}. For additional
 		// information about the viewport, see the comments for {@link mCurrentViewport}.
-		float viewportOffsetX = distanceX * computator.getVisibleViewport().width()
-				/ computator.getContentRect().width();
-		float viewportOffsetY = -distanceY * computator.getVisibleViewport().height()
-				/ computator.getContentRect().height();
+
+		final Viewport visibleViewport = computator.getVisibleViewport();
+		final Viewport currentViewport = computator.getCurrentViewport();
+		final Rect contentRect = computator.getContentRect();
+
+		float viewportOffsetX = distanceX * visibleViewport.width() / contentRect.width();
+		float viewportOffsetY = -distanceY * visibleViewport.height() / contentRect.height();
+
 		computator.computeScrollSurfaceSize(surfaceSizeBuffer);
-		computator.setViewportTopLeft(computator.getCurrentViewport().left + viewportOffsetX,
-				computator.getCurrentViewport().top + viewportOffsetY);
+		computator.setViewportTopLeft(currentViewport.left + viewportOffsetX, currentViewport.top + viewportOffsetY);
 		return true;
 	}
 
@@ -44,14 +48,16 @@ public class ChartScroller {
 			// currently active.
 			computator.computeScrollSurfaceSize(surfaceSizeBuffer);
 
-			final float currXRange = computator.getMaximumViewport().left + computator.getMaximumViewport().width()
-					* scroller.getCurrX() / surfaceSizeBuffer.x;
-			final float currYRange = computator.getMaximumViewport().top - computator.getMaximumViewport().height()
-					* scroller.getCurrY() / surfaceSizeBuffer.y;
+			final Viewport maxViewport = computator.getMaximumViewport();
+
+			final float currXRange = maxViewport.left + maxViewport.width() * scroller.getCurrX() / surfaceSizeBuffer.x;
+			final float currYRange = maxViewport.top - maxViewport.height() * scroller.getCurrY() / surfaceSizeBuffer.y;
 
 			computator.setViewportTopLeft(currXRange, currYRange);
+
 			return true;
 		}
+
 		return false;
 	}
 
