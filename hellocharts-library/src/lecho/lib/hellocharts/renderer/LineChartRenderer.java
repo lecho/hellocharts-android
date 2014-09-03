@@ -13,10 +13,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.Typeface;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 
 /**
  * 
@@ -91,7 +91,9 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 	@Override
 	public void initDataMeasuremetns() {
-		chart.getChartComputator().setInternalMargin(calculateContentAreaMargin());
+		final ChartComputator computator = chart.getChartComputator();
+
+		computator.setInternalMargin(calculateContentAreaMargin());
 
 		Typeface typeface = chart.getChartData().getValueLabelTypeface();
 		if (null != typeface) {
@@ -100,11 +102,9 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));
 		labelPaint.getFontMetricsInt(fontMetrics);
 
-		Rect contentRect = chart.getChartComputator().getContentRect();
-		final int width = contentRect.width();
-		final int height = contentRect.height();
-		if (width > 0 && height > 0 && needSecondBitmap) {
-			secondBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+		if (needSecondBitmap && computator.getChartWidth() > 0 && computator.getChartHeight() > 0) {
+			secondBitmap = Bitmap.createBitmap(computator.getChartWidth(), computator.getChartHeight(),
+					Bitmap.Config.ARGB_8888);
 			secondCanvas.setBitmap(secondBitmap);
 		}
 	}
@@ -132,9 +132,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		}
 
 		if (needSecondBitmap) {
-			final ChartComputator computator = chart.getChartComputator();
-			final Rect contentRect = computator.getContentRect();
-			canvas.drawBitmap(secondBitmap, contentRect.left, contentRect.top, null);
+			canvas.drawBitmap(secondBitmap, 0, 0, null);
 		}
 	}
 
@@ -229,16 +227,9 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		linePaint.setColor(line.getColor());
 		int valueIndex = 0;
 		for (PointValue pointValue : line.getValues()) {
-			final float rawX;
-			final float rawY;
 
-			if (needSecondBitmap) {
-				rawX = computator.computeRelativeRawX(pointValue.getX());
-				rawY = computator.computeRelativeRawY(pointValue.getY());
-			} else {
-				rawX = computator.computeRawX(pointValue.getX());
-				rawY = computator.computeRawY(pointValue.getY());
-			}
+			final float rawX = computator.computeRawX(pointValue.getX());
+			final float rawY = computator.computeRawY(pointValue.getY());
 
 			if (valueIndex == 0) {
 				pathCompat.moveTo(rawX, rawY);
@@ -283,14 +274,14 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		for (int valueIndex = 0; valueIndex < lineSize; ++valueIndex) {
 			if (Float.isNaN(currentPointX)) {
 				PointValue linePoint = line.getValues().get(valueIndex);
-				currentPointX = computator.computeRelativeRawX(linePoint.getX());
-				currentPointY = computator.computeRelativeRawY(linePoint.getY());
+				currentPointX = computator.computeRawX(linePoint.getX());
+				currentPointY = computator.computeRawY(linePoint.getY());
 			}
 			if (Float.isNaN(previousPointX)) {
 				if (valueIndex > 0) {
 					PointValue linePoint = line.getValues().get(valueIndex - 1);
-					previousPointX = computator.computeRelativeRawX(linePoint.getX());
-					previousPointY = computator.computeRelativeRawY(linePoint.getY());
+					previousPointX = computator.computeRawX(linePoint.getX());
+					previousPointY = computator.computeRawY(linePoint.getY());
 				} else {
 					previousPointX = currentPointX;
 					previousPointY = currentPointY;
@@ -300,8 +291,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			if (Float.isNaN(prepreviousPointX)) {
 				if (valueIndex > 1) {
 					PointValue linePoint = line.getValues().get(valueIndex - 2);
-					prepreviousPointX = computator.computeRelativeRawX(linePoint.getX());
-					prepreviousPointY = computator.computeRelativeRawY(linePoint.getY());
+					prepreviousPointX = computator.computeRawX(linePoint.getX());
+					prepreviousPointY = computator.computeRawY(linePoint.getY());
 				} else {
 					prepreviousPointX = previousPointX;
 					prepreviousPointY = previousPointY;
@@ -311,8 +302,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			// nextPoint is always new one or it is equal currentPoint.
 			if (valueIndex < lineSize - 1) {
 				PointValue linePoint = line.getValues().get(valueIndex + 1);
-				nextPointX = computator.computeRelativeRawX(linePoint.getX());
-				nextPointY = computator.computeRelativeRawY(linePoint.getY());
+				nextPointX = computator.computeRawX(linePoint.getX());
+				nextPointY = computator.computeRawY(linePoint.getY());
 			} else {
 				nextPointX = currentPointX;
 				nextPointY = currentPointY;
@@ -466,11 +457,11 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		final ChartComputator computator = chart.getChartComputator();
 		final Rect contentRect = computator.getContentRect();
 
-		float baseRelativeRawValue = computator.computeRelativeRawY(baseValue);
-		baseRelativeRawValue = Math.min(contentRect.height(), Math.max(baseRelativeRawValue, 0));
+		float baseRawValue = computator.computeRawY(baseValue);
+		baseRawValue = Math.min(contentRect.height(), Math.max(baseRawValue, 0));
 
-		path.lineTo(contentRect.width(), baseRelativeRawValue);
-		path.lineTo(0, baseRelativeRawValue);
+		path.lineTo(contentRect.right, baseRawValue);
+		path.lineTo(contentRect.left, baseRawValue);
 		path.close();
 		linePaint.setStyle(Paint.Style.FILL);
 		linePaint.setAlpha(transparency);
