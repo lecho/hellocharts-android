@@ -68,13 +68,18 @@ public class ChartTouchHandler {
 			return false;
 		}
 		boolean needInvalidate = false;
-		// TODO: What the heck, why onTouchEvent() always return true?
-
-		needInvalidate = scaleGestureDetector.onTouchEvent(event);
-		needInvalidate = gestureDetector.onTouchEvent(event) || needInvalidate;
 
 		if (isValueTouchEnabled) {
 			needInvalidate = computeTouch(event) || needInvalidate;
+		}
+
+		// Check gestures only if value touch was not handled, that prevents for example zooming while user taping chart
+		// value.
+		if (!needInvalidate) {
+
+			needInvalidate = scaleGestureDetector.onTouchEvent(event);
+
+			needInvalidate = gestureDetector.onTouchEvent(event) || needInvalidate;
 		}
 
 		return needInvalidate;
@@ -128,6 +133,7 @@ public class ChartTouchHandler {
 					needInvalidate = true;
 				}
 			}
+
 			break;
 		case MotionEvent.ACTION_CANCEL:
 			if (renderer.isTouched()) {
