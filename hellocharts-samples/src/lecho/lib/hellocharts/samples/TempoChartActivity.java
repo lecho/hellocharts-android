@@ -3,6 +3,7 @@ package lecho.lib.hellocharts.samples;
 import java.util.ArrayList;
 import java.util.List;
 
+import lecho.lib.hellocharts.gesture.ChartZoomer;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.AxisValue;
 import lecho.lib.hellocharts.model.Line;
@@ -17,8 +18,12 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 public class TempoChartActivity extends ActionBarActivity {
 
@@ -41,18 +46,38 @@ public class TempoChartActivity extends ActionBarActivity {
 
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+			setHasOptionsMenu(true);
 			View rootView = inflater.inflate(R.layout.fragment_tempo_chart, container, false);
 
 			chart = (LineChartView) rootView.findViewById(R.id.chart);
 
-			// generateSpeedData();
 			generateTempoData();
 
 			return rootView;
 		}
 
+		// MENU
+		@Override
+		public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+			inflater.inflate(R.menu.tempo_chart, menu);
+		}
+
+		@Override
+		public boolean onOptionsItemSelected(MenuItem item) {
+			int id = item.getItemId();
+			if (id == R.id.action_tempo) {
+				generateTempoData();
+				return true;
+			}
+			if (id == R.id.action_speed) {
+				generateSpeedData();
+				return true;
+			}
+			return super.onOptionsItemSelected(item);
+		}
+
 		private void generateSpeedData() {
-			// I got speed in range (0-50) and height in meters in range(200 - 300). I want this chart to display both
+			// I got speed in range (0-55) and height in meters in range(200 - 300). I want this chart to display both
 			// information. Differences between speed and height values are large and chart doesn't look good so I need
 			// to modify height values to be in range of speed values.
 
@@ -200,7 +225,7 @@ public class TempoChartActivity extends ActionBarActivity {
 			data.setAxisXBottom(distanceAxis);
 
 			// Tempo uses minutes so I can't use auto-generated axis because auto-generation works only for decimal
-			// system. So generate custom axis values every 15 seconds and set custom labels in format
+			// system. So generate custom axis values for example every 15 seconds and set custom labels in format
 			// minutes:seconds(00:00), you could do it in formatter but here will be faster.
 			List<AxisValue> axisValues = new ArrayList<AxisValue>();
 			for (float i = 0; i < tempoRange; i += 0.25f) {

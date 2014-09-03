@@ -4,9 +4,14 @@
     tools:context="lecho.lib.hellocharts.samples.TempoChartActivity" >
 
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_tempo"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:title="Tempo/Height"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_speed"
+        android:orderInCategory="100"
+        android:title="Speed/Height"
         app:showAsAction="never"/>
 
 </menu>
