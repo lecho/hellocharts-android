@@ -168,7 +168,7 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 				value.setTarget(value.getX(), (float) Math.random() * range);
 			}
 
-			// Start new data animation;
+			// Start new data animation with 300ms duration;
 			chartTop.startDataAnimation(300);
 		}
 

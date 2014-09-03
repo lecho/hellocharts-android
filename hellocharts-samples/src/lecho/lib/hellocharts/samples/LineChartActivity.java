@@ -137,7 +137,7 @@ public class LineChartActivity extends ActionBarActivity {
 			}
 			if (id == R.id.action_animate) {
 				prepareDataAnimation();
-				chart.startDataAnimation(-1);
+				chart.startDataAnimation();
 				return true;
 			}
 			if (id == R.id.action_toggle_selection_mode) {
