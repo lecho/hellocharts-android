@@ -18,6 +18,9 @@ public class ChartComputator {
 	 */
 	protected static final float MAXIMUM_SCALE = 10f;
 
+	protected int chartWidth;
+	protected int chartHeight;
+
 	/**
 	 * The current area (in pixels) for chart data, including mCoomonMargin. Labels are drawn outside this area.
 	 */
@@ -57,6 +60,8 @@ public class ChartComputator {
 	 */
 	public void setContentArea(int width, int height, int paddingLeft, int paddingTop, int paddingRight,
 			int paddingBottom) {
+		chartWidth = width;
+		chartHeight = height;
 		maxContentRect.set(paddingLeft, paddingTop, width - paddingRight, height - paddingBottom);
 		contentRectWithMargins.set(maxContentRect);
 		contentRect.set(maxContentRect);
@@ -166,25 +171,6 @@ public class ChartComputator {
 	}
 
 	/**
-	 * Translates chart value into relative pixel value. Returned value is relative pixel X coordinate. If this method
-	 * return 0 that means left most pixel of chart(not the screen).
-	 */
-	public float computeRelativeRawX(float valueX) {
-		// TODO: (contentRect.width() / currentViewport.width()) can be recalculated only when viewport change.
-		final float pixelOffset = (valueX - currentViewport.left) * (contentRect.width() / currentViewport.width());
-		return pixelOffset;
-	}
-
-	/**
-	 * Translates chart value into relative pixel value. Returned value is relative pixel Y coordinate.If this method
-	 * return 0 that means top most pixel of chart(not the screen).
-	 */
-	public float computeRelativeRawY(float valueY) {
-		final float pixelOffset = (valueY - currentViewport.bottom) * (contentRect.height() / currentViewport.height());
-		return contentRect.height() - pixelOffset;
-	}
-
-	/**
 	 * Translates viewport distance int pixel distance for X coordinates.
 	 */
 	public float computeRawDistanceX(float distance) {
@@ -291,6 +277,14 @@ public class ChartComputator {
 		} else {
 			this.viewportChangeListener = viewportChangeListener;
 		}
+	}
+
+	public int getChartWidth() {
+		return chartWidth;
+	}
+
+	public int getChartHeight() {
+		return chartHeight;
 	}
 
 }
