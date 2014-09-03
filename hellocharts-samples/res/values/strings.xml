@@ -14,5 +14,9 @@
     <string name="title_activity_line_column_dependency">LineColumnDependency</string>
     <string name="title_activity_good_bad">GoodBadActivity</string>
     <string name="title_activity_tempo_chart">TempoChartActivity</string>
+    <string name="title_activity_view_pager_charts">ViewPagerChartsActivity</string>
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
 
 </resources>

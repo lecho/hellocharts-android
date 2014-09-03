@@ -117,12 +117,17 @@ public class MainActivity extends ActionBarActivity {
 				break;
 			case 8:
 				// Good Bad filled line chart;
-				intent = new Intent(getActivity(), GoodBadChartActivity.class);
+				intent = new Intent(getActivity(), TempoChartActivity.class);
 				startActivity(intent);
 				break;
 			case 9:
 				// Good Bad filled line chart;
-				intent = new Intent(getActivity(), TempoChartActivity.class);
+				intent = new Intent(getActivity(), GoodBadChartActivity.class);
+				startActivity(intent);
+				break;
+			case 10:
+				// Good Bad filled line chart;
+				intent = new Intent(getActivity(), ViewPagerChartsActivity.class);
 				startActivity(intent);
 				break;
 			default:
@@ -141,8 +146,9 @@ public class MainActivity extends ActionBarActivity {
 			list.add(new ChartSampleDescription("Preview Column Chart", ""));
 			list.add(new ChartSampleDescription("Combo Line/Column Chart", ""));
 			list.add(new ChartSampleDescription("Line/Column Chart Dependency", ""));
-			list.add(new ChartSampleDescription("Good/Bad Chart Sample", ""));
 			list.add(new ChartSampleDescription("Tempo/Speed Chart Sample", ""));
+			list.add(new ChartSampleDescription("Good/Bad Chart Sample", ""));
+			list.add(new ChartSampleDescription("ViewPager with Chart Sample", ""));
 
 			return list;
 		}
