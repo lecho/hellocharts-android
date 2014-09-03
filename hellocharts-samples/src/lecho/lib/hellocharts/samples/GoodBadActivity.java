@@ -49,7 +49,7 @@ public class GoodBadActivity extends ActionBarActivity {
 
 			// Increase viewport height for better look
 			Viewport v = chart.getMaxViewport();
-			float dy = v.height() * 0.1f;
+			float dy = v.height() * 0.2f;
 			v.inset(0, -dy);
 			chart.setMaxViewport(v);
 			chart.setViewport(v, false);
@@ -87,9 +87,9 @@ public class GoodBadActivity extends ActionBarActivity {
 
 			// Second good triangle
 			values = new ArrayList<PointValue>();
-			values.add(new PointValue(4, 0).setLabel("".toCharArray()));
-			values.add(new PointValue(5, 0.5f).setLabel("Good Enough".toCharArray()));
-			values.add(new PointValue(6, 0).setLabel("".toCharArray()));
+			values.add(new PointValue(3, 0).setLabel("".toCharArray()));
+			values.add(new PointValue(4, 0.5f).setLabel("Good Enough".toCharArray()));
+			values.add(new PointValue(5, 0).setLabel("".toCharArray()));
 
 			line = new Line(values);
 			line.setColor(Utils.COLOR_GREEN);
@@ -101,9 +101,9 @@ public class GoodBadActivity extends ActionBarActivity {
 
 			// Bad triangle
 			values = new ArrayList<PointValue>();
-			values.add(new PointValue(2, 0).setLabel("".toCharArray()));
-			values.add(new PointValue(3, -1).setLabel("Very Bad".toCharArray()));
-			values.add(new PointValue(4, 0).setLabel("".toCharArray()));
+			values.add(new PointValue(1, 0).setLabel("".toCharArray()));
+			values.add(new PointValue(2, -1).setLabel("Very Bad".toCharArray()));
+			values.add(new PointValue(3, 0).setLabel("".toCharArray()));
 
 			line = new Line(values);
 			line.setColor(Utils.COLOR_RED);
