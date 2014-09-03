@@ -14,19 +14,19 @@ public class ChartDataAnimatorV14 implements ChartDataAnimator, AnimatorListener
 	private ChartAnimationListener animationListener = new DummyChartAnimationListener();
 
 	public ChartDataAnimatorV14(Chart chart) {
-		this(chart, DEFAULT_ANIMATION_DURATION);
-	}
-
-	public ChartDataAnimatorV14(Chart chart, long duration) {
 		this.chart = chart;
 		animator = ValueAnimator.ofFloat(0.0f, 1.0f);
-		animator.setDuration(duration);
 		animator.addListener(this);
 		animator.addUpdateListener(this);
 	}
 
 	@Override
-	public void startAnimation() {
+	public void startAnimation(long duration) {
+		if (duration >= 0) {
+			animator.setDuration(duration);
+		} else {
+			animator.setDuration(DEFAULT_ANIMATION_DURATION);
+		}
 		animator.start();
 	}
 

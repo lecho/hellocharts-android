@@ -121,7 +121,7 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 			}
 			if (id == R.id.action_animate) {
 				prepareDataAnimation();
-				chart.startDataAnimation();
+				chart.startDataAnimation(-1);
 				return true;
 			}
 			if (id == R.id.action_toggle_selection_mode) {

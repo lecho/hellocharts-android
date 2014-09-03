@@ -101,8 +101,8 @@ public abstract class AbstractChartView extends View implements Chart {
 	}
 
 	@Override
-	public void startDataAnimation() {
-		dataAnimator.startAnimation();
+	public void startDataAnimation(long duration) {
+		dataAnimator.startAnimation(duration);
 	}
 
 	@Override

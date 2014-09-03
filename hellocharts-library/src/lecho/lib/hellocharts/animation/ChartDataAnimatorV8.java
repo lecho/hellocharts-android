@@ -10,8 +10,8 @@ public class ChartDataAnimatorV8 implements ChartDataAnimator {
 
 	long start;
 	boolean isAnimationStarted = false;
+	long duration;
 	final Chart chart;
-	final long duration;
 	final Handler handler;
 	final Interpolator interpolator = new AccelerateDecelerateInterpolator();
 	private ChartAnimationListener animationListener = new DummyChartAnimationListener();
@@ -34,17 +34,18 @@ public class ChartDataAnimatorV8 implements ChartDataAnimator {
 	};
 
 	public ChartDataAnimatorV8(Chart chart) {
-		this(chart, DEFAULT_ANIMATION_DURATION);
-	}
-
-	public ChartDataAnimatorV8(Chart chart, long duration) {
 		this.chart = chart;
-		this.duration = duration;
 		this.handler = new Handler();
 	}
 
 	@Override
-	public void startAnimation() {
+	public void startAnimation(long duration) {
+		if (duration >= 0) {
+			this.duration = duration;
+		} else {
+			this.duration = DEFAULT_ANIMATION_DURATION;
+		}
+
 		isAnimationStarted = true;
 		animationListener.onAnimationStarted();
 		start = SystemClock.uptimeMillis();

@@ -41,9 +41,10 @@ public interface Chart {
 	public void animationDataFinished();
 
 	/**
-	 * Starts chart data animation. Before you call this method you should change target values of chart data.
+	 * Starts chart data animation for given duration. If duration is negative the default value of 500ms will be used.
+	 * Before you call this method you should change target values of chart data.
 	 */
-	public void startDataAnimation();
+	public void startDataAnimation(long duration);
 
 	/**
 	 * Stops chart data animation. All chart data values are set to their target values.

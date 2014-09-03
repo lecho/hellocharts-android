@@ -169,7 +169,7 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 			}
 
 			// Start new data animation;
-			chartTop.startDataAnimation();
+			chartTop.startDataAnimation(300);
 		}
 
 		private class ValueTouchListener implements ColumnChartView.ColumnChartOnValueTouchListener {
