@@ -18,6 +18,11 @@ import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
+/**
+ * 
+ * @author Leszek Wach
+ * 
+ */
 public class LineChartRenderer extends AbstractChartRenderer {
 	private static final float LINE_SMOOTHNES = 0.16f;
 	private static final int DEFAULT_LINE_STROKE_WIDTH_DP = 3;
@@ -115,9 +120,13 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		for (Line line : data.getLines()) {
 			if (line.hasLines()) {
 				if (line.isSmooth()) {
-					drawSmoothPath(canvas, line);
+					drawSmoothPath(secondCanvas, line);
 				} else {
-					drawPath(canvas, line);
+					if (needSecondBitmap) {
+						drawPath(secondCanvas, line);
+					} else {
+						drawPath(canvas, line);
+					}
 				}
 			}
 		}
@@ -220,8 +229,17 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		linePaint.setColor(line.getColor());
 		int valueIndex = 0;
 		for (PointValue pointValue : line.getValues()) {
-			float rawX = computator.computeRawX(pointValue.getX());
-			float rawY = computator.computeRawY(pointValue.getY());
+			final float rawX;
+			final float rawY;
+
+			if (needSecondBitmap) {
+				rawX = computator.computeRelativeRawX(pointValue.getX());
+				rawY = computator.computeRelativeRawY(pointValue.getY());
+			} else {
+				rawX = computator.computeRawX(pointValue.getX());
+				rawY = computator.computeRawY(pointValue.getY());
+			}
+
 			if (valueIndex == 0) {
 				pathCompat.moveTo(rawX, rawY);
 			} else {
@@ -229,9 +247,6 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			}
 
 			if (line.isFilled()) {
-				// For filled line use path.
-				rawX = computator.computeRelativeRawX(pointValue.getX());
-				rawY = computator.computeRelativeRawY(pointValue.getY());
 				if (valueIndex == 0) {
 					path.moveTo(rawX, rawY);
 				} else {
@@ -331,7 +346,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			currentPointY = nextPointY;
 		}
 
-		secondCanvas.drawPath(path, linePaint);
+		canvas.drawPath(path, linePaint);
 		if (line.isFilled()) {
 			drawArea(canvas, line.getAreaTransparency());
 		}
@@ -459,7 +474,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		path.close();
 		linePaint.setStyle(Paint.Style.FILL);
 		linePaint.setAlpha(transparency);
-		secondCanvas.drawPath(path, linePaint);
+		canvas.drawPath(path, linePaint);
 		linePaint.setStyle(Paint.Style.STROKE);
 	}
 
@@ -470,9 +485,10 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	}
 
 	/**
-	 * PathCompat uses Canvas.drawLines instead Canvas.drawPath. Supports only normal lines. Warning!:line has to be
-	 * continuous and doesn't support filled area, dashed lines etc. For complete implementation with Bezier's curves
-	 * see gist {@link https://gist.github.com/lecho/a903e68fe7cccac131d0}
+	 * Note: PathCompat is written more for fun and clipping cubic lines experiments but it works quite well so I left
+	 * it here. PathCompat uses Canvas.drawLines instead Canvas.drawPath. Supports only normal lines. Warning!:line has
+	 * to be continuous and doesn't support filled area, dashed lines etc. For complete implementation with Bezier's
+	 * curves see that gist {@link https://gist.github.com/lecho/a903e68fe7cccac131d0}
 	 */
 	private static class PathCompat {
 		/**
