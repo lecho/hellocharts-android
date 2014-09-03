@@ -3,7 +3,6 @@ package lecho.lib.hellocharts.samples;
 import java.util.ArrayList;
 import java.util.List;
 
-import lecho.lib.hellocharts.gesture.ChartZoomer;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.AxisValue;
 import lecho.lib.hellocharts.model.Line;
@@ -23,7 +22,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 public class TempoChartActivity extends ActionBarActivity {
 

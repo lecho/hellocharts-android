@@ -92,8 +92,8 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 
 			columnData = new ColumnChartData(columns);
 
-			columnData.setAxisXBottom(new Axis(axisValues).setName("MONTHS").setHasLines(true));
-			columnData.setAxisYLeft(new Axis().setName("SOME NUMBERS").setHasLines(true));
+			columnData.setAxisXBottom(new Axis(axisValues).setHasLines(true));
+			columnData.setAxisYLeft(new Axis().setHasLines(true).setMaxLabelChars(2));
 
 			chartBottom.setColumnChartData(columnData);
 
@@ -140,8 +140,8 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 			lines.add(line);
 
 			lineData = new LineChartData(lines);
-			lineData.setAxisXBottom(new Axis(axisValues).setName("DAYS OF WEEK").setHasLines(true));
-			lineData.setAxisYLeft(new Axis().setName("NUMBER OF SOMETHING").setHasLines(true));
+			lineData.setAxisXBottom(new Axis(axisValues).setHasLines(true));
+			lineData.setAxisYLeft(new Axis().setHasLines(true).setMaxLabelChars(3));
 
 			chartTop.setLineChartData(lineData);
 
