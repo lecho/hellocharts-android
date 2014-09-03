@@ -1,11 +1,11 @@
 package lecho.lib.hellocharts.view;
 
-import lecho.lib.hellocharts.BubbleChartDataProvider;
 import lecho.lib.hellocharts.BuildConfig;
 import lecho.lib.hellocharts.model.BubbleChartData;
 import lecho.lib.hellocharts.model.BubbleValue;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
+import lecho.lib.hellocharts.model.provider.BubbleChartDataProvider;
 import lecho.lib.hellocharts.renderer.BubbleChartRenderer;
 import android.content.Context;
 import android.support.v4.view.ViewCompat;

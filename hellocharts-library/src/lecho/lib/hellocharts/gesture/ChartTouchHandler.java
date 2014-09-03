@@ -1,9 +1,9 @@
 package lecho.lib.hellocharts.gesture;
 
-import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
+import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;
 import android.view.GestureDetector;
 import android.view.MotionEvent;

@@ -1,9 +1,6 @@
 package lecho.lib.hellocharts.view;
 
 import lecho.lib.hellocharts.BuildConfig;
-import lecho.lib.hellocharts.ColumnChartDataProvider;
-import lecho.lib.hellocharts.ComboLineColumnChartDataProvider;
-import lecho.lib.hellocharts.LineChartDataProvider;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.ColumnValue;
@@ -11,6 +8,9 @@ import lecho.lib.hellocharts.model.ComboLineColumnChartData;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.SelectedValue;
+import lecho.lib.hellocharts.model.provider.ColumnChartDataProvider;
+import lecho.lib.hellocharts.model.provider.ComboLineColumnChartDataProvider;
+import lecho.lib.hellocharts.model.provider.LineChartDataProvider;
 import lecho.lib.hellocharts.renderer.ComboLineColumnChartRenderer;
 import android.content.Context;
 import android.support.v4.view.ViewCompat;

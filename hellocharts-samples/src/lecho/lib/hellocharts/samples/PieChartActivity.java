@@ -3,10 +3,10 @@ package lecho.lib.hellocharts.samples;
 import java.util.ArrayList;
 import java.util.List;
 
-import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.model.ArcValue;
 import lecho.lib.hellocharts.model.PieChartData;
 import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.view.Chart;
 import lecho.lib.hellocharts.view.PieChartView;
 import lecho.lib.hellocharts.view.PieChartView.PieChartOnValueTouchListener;
 import android.graphics.Typeface;

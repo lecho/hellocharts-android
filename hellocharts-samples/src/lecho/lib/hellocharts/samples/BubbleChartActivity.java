@@ -3,13 +3,13 @@ package lecho.lib.hellocharts.samples;
 import java.util.ArrayList;
 import java.util.List;
 
-import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.gesture.ChartZoomer;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.BubbleChartData;
 import lecho.lib.hellocharts.model.BubbleValue;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.BubbleChartView;
+import lecho.lib.hellocharts.view.Chart;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;

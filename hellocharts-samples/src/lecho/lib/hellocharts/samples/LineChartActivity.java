@@ -3,7 +3,6 @@ package lecho.lib.hellocharts.samples;
 import java.util.ArrayList;
 import java.util.List;
 
-import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.gesture.ChartZoomer;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Line;
@@ -11,6 +10,7 @@ import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.view.Chart;
 import lecho.lib.hellocharts.view.LineChartView;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

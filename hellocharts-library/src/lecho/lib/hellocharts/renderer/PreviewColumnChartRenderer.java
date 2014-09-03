@@ -1,10 +1,10 @@
 package lecho.lib.hellocharts.renderer;
 
-import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartComputator;
-import lecho.lib.hellocharts.ColumnChartDataProvider;
 import lecho.lib.hellocharts.model.Viewport;
+import lecho.lib.hellocharts.model.provider.ColumnChartDataProvider;
 import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;

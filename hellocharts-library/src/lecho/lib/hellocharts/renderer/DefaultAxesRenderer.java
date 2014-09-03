@@ -1,11 +1,11 @@
 package lecho.lib.hellocharts.renderer;
 
-import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.AxisValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -16,7 +16,9 @@ import android.graphics.Paint.FontMetricsInt;
 import android.text.TextUtils;
 
 /**
- * Default axes renderer. Draws X axis below chart and Y axis on the left.
+ * Default axes renderer. Can draw maximum four axes - two horizontal(top/bottom) and two vertical(left/right).
+ * 
+ * @author Leszek Wach
  */
 public class DefaultAxesRenderer implements AxesRenderer {
 	private static final int DEFAULT_AXIS_MARGIN_DP = 4;
