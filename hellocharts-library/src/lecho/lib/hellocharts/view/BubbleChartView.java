@@ -5,7 +5,7 @@ import lecho.lib.hellocharts.model.BubbleChartData;
 import lecho.lib.hellocharts.model.BubbleValue;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
-import lecho.lib.hellocharts.model.provider.BubbleChartDataProvider;
+import lecho.lib.hellocharts.provider.BubbleChartDataProvider;
 import lecho.lib.hellocharts.renderer.BubbleChartRenderer;
 import android.content.Context;
 import android.support.v4.view.ViewCompat;

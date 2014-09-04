@@ -1,4 +1,4 @@
-package lecho.lib.hellocharts.model.provider;
+package lecho.lib.hellocharts.provider;
 
 import lecho.lib.hellocharts.model.PieChartData;
 

@@ -4,7 +4,7 @@ import lecho.lib.hellocharts.BuildConfig;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.ColumnValue;
 import lecho.lib.hellocharts.model.SelectedValue;
-import lecho.lib.hellocharts.model.provider.ColumnChartDataProvider;
+import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
 import lecho.lib.hellocharts.renderer.ColumnChartRenderer;
 import android.content.Context;
 import android.support.v4.view.ViewCompat;

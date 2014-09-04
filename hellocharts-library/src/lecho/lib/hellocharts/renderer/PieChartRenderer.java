@@ -3,7 +3,7 @@ package lecho.lib.hellocharts.renderer;
 import lecho.lib.hellocharts.model.ArcValue;
 import lecho.lib.hellocharts.model.PieChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
-import lecho.lib.hellocharts.model.provider.PieChartDataProvider;
+import lecho.lib.hellocharts.provider.PieChartDataProvider;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;

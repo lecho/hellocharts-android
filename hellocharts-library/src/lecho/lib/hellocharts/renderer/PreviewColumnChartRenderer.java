@@ -2,7 +2,7 @@ package lecho.lib.hellocharts.renderer;
 
 import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.model.provider.ColumnChartDataProvider;
+import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;
