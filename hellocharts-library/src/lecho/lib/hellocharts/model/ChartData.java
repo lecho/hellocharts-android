@@ -60,4 +60,25 @@ public interface ChartData {
 
 	public void setValueLabelTypeface(Typeface typeface);
 
+	public boolean isValueLabelBackgroundEnabled();
+
+	/**
+	 * Set whether labels should have rectangle background. Default is true.
+	 */
+	public void setValueLabelBackgroundEnabled(boolean isValueLabelBackgroundEnabled);
+
+	public boolean isValueLabelBackgroundAuto();
+
+	/**
+	 * Set false if you want set custom color for all value labels. Default is true.
+	 */
+	public void setValueLabelBackgroundAuto(boolean isValueLabelBackgrountAuto);
+
+	public int getValueLabelBackgroundColor();
+
+	/**
+	 * Set value labels background. This value is used only if isValueLabelBackgroundAuto returns false. Default is
+	 * green.
+	 */
+	public void setValueLabelBackgroundColor(int valueLabelBackgroundColor);
 }

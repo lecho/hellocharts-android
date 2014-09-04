@@ -1,5 +1,6 @@
 package lecho.lib.hellocharts.model;
 
+import lecho.lib.hellocharts.util.Utils;
 import android.graphics.Color;
 import android.graphics.Typeface;
 
@@ -17,7 +18,10 @@ public abstract class AbstractChartData implements ChartData {
 	protected Axis axisYRight;
 	protected int valueLabelTextColor = Color.WHITE;
 	protected int valueLabelTextSize = DEFAULT_TEXT_SIZE_SP;
-	private Typeface valueLabelTypeface;
+	protected Typeface valueLabelTypeface;
+	protected boolean isValueLabelBackgroundEnabled = true;
+	protected boolean isValueLabelBackgrountAuto = true;
+	protected int valueLabelBackgroundColor = Utils.darkenColor(Utils.COLOR_GREEN);
 
 	public AbstractChartData() {
 
@@ -109,6 +113,30 @@ public abstract class AbstractChartData implements ChartData {
 	@Override
 	public void setValueLabelTypeface(Typeface typeface) {
 		this.valueLabelTypeface = typeface;
+	}
+
+	public boolean isValueLabelBackgroundEnabled() {
+		return isValueLabelBackgroundEnabled;
+	}
+
+	public void setValueLabelBackgroundEnabled(boolean isValueLabelBackgroundEnabled) {
+		this.isValueLabelBackgroundEnabled = isValueLabelBackgroundEnabled;
+	}
+
+	public boolean isValueLabelBackgroundAuto() {
+		return isValueLabelBackgrountAuto;
+	}
+
+	public void setValueLabelBackgroundAuto(boolean isValueLabelBackgrountAuto) {
+		this.isValueLabelBackgrountAuto = isValueLabelBackgrountAuto;
+	}
+
+	public int getValueLabelBackgroundColor() {
+		return valueLabelBackgroundColor;
+	}
+
+	public void setValueLabelBackgroundColor(int valueLabelBackgroundColor) {
+		this.valueLabelBackgroundColor = valueLabelBackgroundColor;
 	}
 
 }
