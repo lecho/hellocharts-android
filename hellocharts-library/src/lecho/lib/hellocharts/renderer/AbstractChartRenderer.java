@@ -7,8 +7,10 @@ import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.FontMetricsInt;
 import android.graphics.Typeface;
@@ -18,6 +20,7 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 	protected Chart chart;
 	protected Paint labelPaint = new Paint();
 	protected Paint labelBackgroundPaint = new Paint();
+	protected RectF labelBackgroundRect = new RectF();
 	protected FontMetricsInt fontMetrics = new FontMetricsInt();
 	protected Viewport tempMaxViewport = new Viewport();
 
@@ -75,6 +78,29 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 		this.valueLabelBackgroundColor = data.getValueLabelBackgroundColor();
 		this.labelBackgroundPaint.setColor(valueLabelBackgroundColor);
 
+	}
+
+	protected void drawLabelTextAndBackground(Canvas canvas, char[] labelBuffer, int startIndex, int numChars,
+			int autoBackgroundColor) {
+		final float textX;
+		final float textY;
+
+		if (isValueLabelBackgroundEnabled) {
+
+			if (isValueLabelBackgrountAuto) {
+				labelBackgroundPaint.setColor(autoBackgroundColor);
+			}
+
+			canvas.drawRect(labelBackgroundRect, labelBackgroundPaint);
+
+			textX = labelBackgroundRect.left + labelMargin;
+			textY = labelBackgroundRect.bottom - labelMargin;
+		} else {
+			textX = labelBackgroundRect.left;
+			textY = labelBackgroundRect.bottom;
+		}
+
+		canvas.drawText(labelBuffer, startIndex, numChars, textX, textY, labelPaint);
 	}
 
 	@Override

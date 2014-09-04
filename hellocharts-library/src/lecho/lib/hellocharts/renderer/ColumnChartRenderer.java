@@ -32,6 +32,8 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	private PointF touchedPoint = new PointF();
 	private float[] valuesBuff = new float[1];
 
+	private float fillRatio;
+
 	public ColumnChartRenderer(Context context, Chart chart, ColumnChartDataProvider dataProvider) {
 		super(context, chart);
 		this.dataProvider = dataProvider;
@@ -52,6 +54,14 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	@Override
 	public void initDataMeasuremetns() {
 		chart.getChartComputator().setInternalMargin(labelMargin);// Using label margin because I'm lazy:P
+	}
+
+	@Override
+	public void initDataAttributes() {
+		super.initDataAttributes();
+
+		ColumnChartData data = dataProvider.getColumnChartData();
+		this.fillRatio = data.getFillRatio();
 	}
 
 	public void draw(Canvas canvas) {
@@ -133,7 +143,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 
 	private void drawColumnsForSubcolumns(Canvas canvas) {
 		final ColumnChartData data = dataProvider.getColumnChartData();
-		final float columnWidth = calculateColumnWidth(data.getFillRatio());
+		final float columnWidth = calculateColumnWidth();
 		int columnIndex = 0;
 		for (Column column : data.getColumns()) {
 			processColumnForSubcolumns(canvas, column, columnWidth, columnIndex, MODE_DRAW);
@@ -143,7 +153,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 
 	private void highlightColumnsForSubcolumns(Canvas canvas) {
 		final ColumnChartData data = dataProvider.getColumnChartData();
-		final float columnWidth = calculateColumnWidth(data.getFillRatio());
+		final float columnWidth = calculateColumnWidth();
 		Column column = data.getColumns().get(selectedValue.getFirstIndex());
 		processColumnForSubcolumns(canvas, column, columnWidth, selectedValue.getFirstIndex(), MODE_HIGHLIGHT);
 	}
@@ -153,7 +163,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 		touchedPoint.x = touchX;
 		touchedPoint.y = touchY;
 		final ColumnChartData data = dataProvider.getColumnChartData();
-		final float columnWidth = calculateColumnWidth(data.getFillRatio());
+		final float columnWidth = calculateColumnWidth();
 		int columnIndex = 0;
 		for (Column column : data.getColumns()) {
 			// canvas is not needed for checking touch
@@ -209,7 +219,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 
 	private void drawColumnForStacked(Canvas canvas) {
 		final ColumnChartData data = dataProvider.getColumnChartData();
-		final float columnWidth = calculateColumnWidth(data.getFillRatio());
+		final float columnWidth = calculateColumnWidth();
 		// Columns are indexes from 0 to n, column index is also column X value
 		int columnIndex = 0;
 		for (Column column : data.getColumns()) {
@@ -220,7 +230,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 
 	private void highlightColumnForStacked(Canvas canvas) {
 		final ColumnChartData data = dataProvider.getColumnChartData();
-		final float columnWidth = calculateColumnWidth(data.getFillRatio());
+		final float columnWidth = calculateColumnWidth();
 		// Columns are indexes from 0 to n, column index is also column X value
 		Column column = data.getColumns().get(selectedValue.getFirstIndex());
 		processColumnForStacked(canvas, column, columnWidth, selectedValue.getFirstIndex(), MODE_HIGHLIGHT);
@@ -230,7 +240,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 		touchedPoint.x = touchX;
 		touchedPoint.y = touchY;
 		final ColumnChartData data = dataProvider.getColumnChartData();
-		final float columnWidth = calculateColumnWidth(data.getFillRatio());
+		final float columnWidth = calculateColumnWidth();
 		int columnIndex = 0;
 		for (Column column : data.getColumns()) {
 			// canvas is not needed for checking touch
@@ -305,7 +315,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 		}
 	}
 
-	private float calculateColumnWidth(float fillRatio) {
+	private float calculateColumnWidth() {
 		final ChartComputator computator = chart.getChartComputator();
 		// columnWidht should be at least 2 px
 		float columnWidth = fillRatio * computator.getContentRect().width() / computator.getVisibleViewport().width();
@@ -331,14 +341,14 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	private void drawLabel(Canvas canvas, Column column, ColumnValue columnValue, boolean isStacked, float offset) {
 		final ChartComputator computator = chart.getChartComputator();
 		valuesBuff[0] = columnValue.getValue();
-		final int nummChars = column.getFormatter().formatValue(labelBuffer, valuesBuff, columnValue.getLabel());
+		final int numChars = column.getFormatter().formatValue(labelBuffer, valuesBuff, columnValue.getLabel());
 
-		if (nummChars == 0) {
+		if (numChars == 0) {
 			// No need to draw empty label
 			return;
 		}
 
-		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
+		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - numChars, numChars);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
 		float left = drawRect.centerX() - labelWidth / 2 - labelMargin;
 		float right = drawRect.centerX() + labelWidth / 2 + labelMargin;
@@ -373,15 +383,13 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 				}
 			}
 		} else {
+			// Draw nothing.
 			return;
 		}
 
-		int orginColor = labelPaint.getColor();
-		labelPaint.setColor(columnValue.getDarkenColor());
-		canvas.drawRect(left, top, right, bottom, labelPaint);
-		labelPaint.setColor(orginColor);
-		canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, left + labelMargin, bottom
-				- labelMargin, labelPaint);
+		labelBackgroundRect.set(left, top, right, bottom);
+		drawLabelTextAndBackground(canvas, labelBuffer, labelBuffer.length - numChars, numChars,
+				columnValue.getDarkenColor());
 
 	}
 

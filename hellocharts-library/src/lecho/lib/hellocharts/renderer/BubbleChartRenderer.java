@@ -48,7 +48,6 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	private float minRawRadius;
 	private PointF bubbleCenter = new PointF();
 	private Paint bubblePaint = new Paint();
-	private RectF labelRect = new RectF();
 	private float[] valuesBuff = new float[3];
 
 	/**
@@ -264,19 +263,20 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		valuesBuff[0] = bubbleValue.getX();
 		valuesBuff[1] = bubbleValue.getY();
 		valuesBuff[2] = bubbleValue.getZ();
-		final int nummChars = valueFormatter.formatValue(labelBuffer, valuesBuff, bubbleValue.getLabel());
+		final int numChars = valueFormatter.formatValue(labelBuffer, valuesBuff, bubbleValue.getLabel());
 
-		if (nummChars == 0) {
+		if (numChars == 0) {
 			// No need to draw empty label
 			return;
 		}
 
-		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
+		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - numChars, numChars);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
 		float left = rawX - labelWidth / 2 - labelMargin;
 		float right = rawX + labelWidth / 2 + labelMargin;
 		float top = rawY - labelHeight / 2 - labelMargin;
 		float bottom = rawY + labelHeight / 2 + labelMargin;
+		
 		if (top < contentRect.top) {
 			top = rawY;
 			bottom = rawY + labelHeight + labelMargin * 2;
@@ -294,27 +294,10 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 			right = rawX;
 		}
 
-		final float textX;
-		final float textY;
+		labelBackgroundRect.set(left, top, right, bottom);
+		drawLabelTextAndBackground(canvas, labelBuffer, labelBuffer.length - numChars, numChars,
+				bubbleValue.getDarkenColor());
 
-		if (isValueLabelBackgroundEnabled) {
-
-			labelRect.set(left, top, right, bottom);
-
-			if (isValueLabelBackgrountAuto) {
-				labelBackgroundPaint.setColor(bubbleValue.getDarkenColor());
-			}
-
-			canvas.drawRect(left, top, right, bottom, labelBackgroundPaint);
-
-			textX = left + labelMargin;
-			textY = bottom - labelMargin;
-		} else {
-			textX = left;
-			textY = bottom;
-		}
-
-		canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, textX, textY, labelPaint);
 	}
 
 	private void calculateMaxViewport() {

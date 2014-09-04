@@ -3,6 +3,7 @@ package lecho.lib.hellocharts.renderer;
 import lecho.lib.hellocharts.model.ArcValue;
 import lecho.lib.hellocharts.model.PieChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
+import lecho.lib.hellocharts.model.ValueFormatter;
 import lecho.lib.hellocharts.provider.PieChartDataProvider;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.Chart;
@@ -36,7 +37,6 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	private RectF orginCircleOval = new RectF();
 	private RectF drawCircleOval = new RectF();
 	private PointF arcVector = new PointF();
-	private RectF labelRect = new RectF();
 	private float[] valuesBuff = new float[1];
 
 	private int touchAdditional;
@@ -44,7 +44,8 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	private float circleFillRatio = 1.0f;
 
 	// Center circle related attributes
-	private boolean hasCenterCircle = false;
+	private boolean hasCenterCircle;
+	private float centerCircleScale;
 	private Paint centerCirclePaint = new Paint();
 	// Text1
 	private Paint centerCircleText1Paint = new Paint();
@@ -52,6 +53,11 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	// Text2
 	private Paint centerCircleText2Paint = new Paint();
 	private FontMetricsInt centerCircleText2FontMetrics = new FontMetricsInt();
+
+	private boolean hasLabelsOutside;
+	private boolean hasLabels;
+	private boolean hasLabelsOnlyForSelected;
+	private ValueFormatter valueFormatter;
 
 	public PieChartRenderer(Context context, Chart chart, PieChartDataProvider dataProvider) {
 		super(context, chart);
@@ -93,7 +99,13 @@ public class PieChartRenderer extends AbstractChartRenderer {
 
 		final PieChartData data = dataProvider.getPieChartData();
 
+		hasLabelsOutside = data.hasLabelsOutside();
+		hasLabels = data.hasLabels();
+		hasLabelsOnlyForSelected = data.hasLabelsOnlyForSelected();
+		valueFormatter = data.getFormatter();
+
 		hasCenterCircle = data.hasCenterCircle();
+		centerCircleScale = data.getCenterCircleScale();
 
 		centerCirclePaint.setColor(data.getCenterCircleColor());
 
@@ -202,9 +214,9 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		for (ArcValue arcValue : data.getValues()) {
 			final float angle = Math.abs(arcValue.getValue()) * arcScale;
 			if (MODE_DRAW == mode) {
-				drawArc(canvas, data, arcValue, lastAngle, angle, mode);
+				drawArc(canvas, arcValue, lastAngle, angle, mode);
 			} else if (MODE_HIGHLIGHT == mode) {
-				highlightArc(canvas, data, arcValue, lastAngle, angle, arcIndex);
+				highlightArc(canvas, arcValue, lastAngle, angle, arcIndex);
 			} else {
 				throw new IllegalStateException("Cannot process arc in mode: " + mode);
 			}
@@ -217,7 +229,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	 * Method draws single arc from lastAngle to lastAngle+angle, if mode = {@link #MODE_HIGHLIGHT} arc will be darken
 	 * and will have bigger radius.
 	 */
-	private void drawArc(Canvas canvas, PieChartData data, ArcValue arcValue, float lastAngle, float angle, int mode) {
+	private void drawArc(Canvas canvas, ArcValue arcValue, float lastAngle, float angle, int mode) {
 		arcVector.set((float) (Math.cos(Math.toRadians(lastAngle + angle / 2))),
 				(float) (Math.sin(Math.toRadians(lastAngle + angle / 2))));
 		normalizeVector(arcVector);
@@ -231,37 +243,36 @@ public class PieChartRenderer extends AbstractChartRenderer {
 			drawCircleOval.inset(-touchAdditional, -touchAdditional);
 			arcPaint.setColor(arcValue.getDarkenColor());
 			canvas.drawArc(drawCircleOval, lastAngle, angle, true, arcPaint);
-			if (data.hasLabels() || data.hasLabelsOnlyForSelected()) {
-				drawLabel(canvas, data, arcValue);
+			if (hasLabels || hasLabelsOnlyForSelected) {
+				drawLabel(canvas, arcValue);
 			}
 		} else {
 			arcPaint.setColor(arcValue.getColor());
 			canvas.drawArc(drawCircleOval, lastAngle, angle, true, arcPaint);
-			if (data.hasLabels()) {
-				drawLabel(canvas, data, arcValue);
+			if (hasLabels) {
+				drawLabel(canvas, arcValue);
 			}
 		}
 	}
 
-	private void highlightArc(Canvas canvas, PieChartData data, ArcValue arcValue, float lastAngle, float angle,
-			int arcIndex) {
+	private void highlightArc(Canvas canvas, ArcValue arcValue, float lastAngle, float angle, int arcIndex) {
 		if (selectedValue.getFirstIndex() != arcIndex) {
 			// Not that arc.
 			return;
 		}
-		drawArc(canvas, data, arcValue, lastAngle, angle, MODE_HIGHLIGHT);
+		drawArc(canvas, arcValue, lastAngle, angle, MODE_HIGHLIGHT);
 	}
 
-	private void drawLabel(Canvas canvas, PieChartData data, ArcValue arcValue) {
+	private void drawLabel(Canvas canvas, ArcValue arcValue) {
 		valuesBuff[0] = arcValue.getValue();
-		final int nummChars = data.getFormatter().formatValue(labelBuffer, valuesBuff, arcValue.getLabel());
+		final int numChars = valueFormatter.formatValue(labelBuffer, valuesBuff, arcValue.getLabel());
 
-		if (nummChars == 0) {
+		if (numChars == 0) {
 			// No need to draw empty label
 			return;
 		}
 
-		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
+		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - numChars, numChars);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
 
 		final float centerX = orginCircleOval.centerX();
@@ -269,11 +280,11 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		final float circleRadius = orginCircleOval.width() / 2f;
 		final float labelRadius;
 
-		if (data.hasLabelsOutside()) {
+		if (hasLabelsOutside) {
 			labelRadius = circleRadius * DEFAULT_LABEL_OUTSIDE_RADIUS_FACTOR;
 		} else {
 			if (hasCenterCircle) {
-				labelRadius = circleRadius - (circleRadius - (circleRadius * data.getCenterCircleScale())) / 2;
+				labelRadius = circleRadius - (circleRadius - (circleRadius * centerCircleScale)) / 2;
 			} else {
 				labelRadius = circleRadius * DEFAULT_LABEL_INSIDE_RADIUS_FACTOR;
 			}
@@ -287,7 +298,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		float top;
 		float bottom;
 
-		if (data.hasLabelsOutside()) {
+		if (hasLabelsOutside) {
 			if (rawX > centerX) {
 				// Right half.
 				left = rawX + labelMargin;
@@ -312,13 +323,9 @@ public class PieChartRenderer extends AbstractChartRenderer {
 			bottom = rawY + labelHeight / 2 + labelMargin;
 		}
 
-		labelRect.set(left, top, right, bottom);
-		int orginColor = labelPaint.getColor();
-		labelPaint.setColor(arcValue.getDarkenColor());
-		canvas.drawRect(left, top, right, bottom, labelPaint);
-		labelPaint.setColor(orginColor);
-		canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, left + labelMargin, bottom
-				- labelMargin, labelPaint);
+		labelBackgroundRect.set(left, top, right, bottom);
+		drawLabelTextAndBackground(canvas, labelBuffer, labelBuffer.length - numChars, numChars,
+				arcValue.getDarkenColor());
 	}
 
 	private void normalizeVector(PointF point) {

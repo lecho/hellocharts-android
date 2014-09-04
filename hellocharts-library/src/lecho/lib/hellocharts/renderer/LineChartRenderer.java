@@ -16,7 +16,6 @@ import android.graphics.Paint.Cap;
 import android.graphics.Path;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
-import android.graphics.RectF;
 
 /**
  * 
@@ -41,7 +40,6 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private Path path = new Path();
 	private Paint linePaint = new Paint();
 	private Paint pointPaint = new Paint();
-	private RectF labelRect = new RectF();
 	private float[] valuesBuff = new float[2];
 
 	/**
@@ -412,14 +410,14 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		valuesBuff[0] = pointValue.getX();
 		valuesBuff[1] = pointValue.getY();
 
-		final int nummChars = line.getFormatter().formatValue(labelBuffer, valuesBuff, pointValue.getLabel());
+		final int numChars = line.getFormatter().formatValue(labelBuffer, valuesBuff, pointValue.getLabel());
 
-		if (nummChars == 0) {
+		if (numChars == 0) {
 			// No need to draw empty label
 			return;
 		}
 
-		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - nummChars, nummChars);
+		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - numChars, numChars);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
 		float left = rawX - labelWidth / 2 - labelMargin;
 		float right = rawX + labelWidth / 2 + labelMargin;
@@ -451,13 +449,10 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			left = rawX - labelWidth - labelMargin * 2;
 			right = rawX;
 		}
-		labelRect.set(left, top, right, bottom);
-		int orginColor = labelPaint.getColor();
-		labelPaint.setColor(line.getDarkenColor());
-		canvas.drawRect(left, top, right, bottom, labelPaint);
-		labelPaint.setColor(orginColor);
-		canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, left + labelMargin, bottom
-				- labelMargin, labelPaint);
+
+		labelBackgroundRect.set(left, top, right, bottom);
+		drawLabelTextAndBackground(canvas, labelBuffer, labelBuffer.length - numChars, numChars,
+				line.getDarkenColor());
 	}
 
 	private void drawArea(Canvas canvas, int transparency) {
