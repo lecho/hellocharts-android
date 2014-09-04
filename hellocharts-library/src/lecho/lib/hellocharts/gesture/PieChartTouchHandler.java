@@ -42,13 +42,6 @@ public class PieChartTouchHandler extends ChartTouchHandler {
 		isZoomEnabled = false;// Zoom is not supported by PieChart.
 	}
 
-	/**
-	 * Using first approach of fling animation described here {@link http
-	 * ://developer.android.com/training/custom-views/making-interactive.html}. Consider use of second option with
-	 * ValueAnimator.
-	 * 
-	 * @return
-	 */
 	@Override
 	public boolean computeScroll() {
 		if (!isInteractive) {
@@ -64,13 +57,14 @@ public class PieChartTouchHandler extends ChartTouchHandler {
 		return false;
 	}
 
+	@Override
 	public boolean handleTouchEvent(MotionEvent event) {
 		if (!isInteractive) {
 			return false;
 		}
 		boolean needInvalidate = super.handleTouchEvent(event);
+
 		if (isRotationEnabled) {
-			// TODO: What the heck, why detectros onTouchEvent() always return true?
 			needInvalidate = gestureDetector.onTouchEvent(event) || needInvalidate;
 		}
 		return needInvalidate;
@@ -96,11 +90,13 @@ public class PieChartTouchHandler extends ChartTouchHandler {
 	private class ChartGestureListener extends GestureDetector.SimpleOnGestureListener {
 		@Override
 		public boolean onDown(MotionEvent e) {
-			if (!isRotationEnabled) {
+			if (isRotationEnabled) {
+				scroller.abortAnimation();
+				return true;
+			} else {
 				return false;
 			}
-			scroller.abortAnimation();
-			return true;
+
 		}
 
 		@Override
@@ -110,32 +106,35 @@ public class PieChartTouchHandler extends ChartTouchHandler {
 
 		@Override
 		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-			if (!isRotationEnabled) {
+			if (isRotationEnabled) {
+				// Set the pie rotation directly.
+				final RectF circleOval = pieChart.getCircleOval();
+				final float centerX = circleOval.centerX();
+				final float centerY = circleOval.centerY();
+				float scrollTheta = vectorToScalarScroll(distanceX, distanceY, e2.getX() - centerX, e2.getY() - centerY);
+				pieChart.setChartRotation(pieChart.getChartRotation() - (int) scrollTheta / FLING_VELOCITY_DOWNSCALE,
+						false);
+				return true;
+			} else {
 				return false;
 			}
-			// Set the pie rotation directly.
-			final RectF circleOval = pieChart.getCircleOval();
-			final float centerX = circleOval.centerX();
-			final float centerY = circleOval.centerY();
-			float scrollTheta = vectorToScalarScroll(distanceX, distanceY, e2.getX() - centerX, e2.getY() - centerY);
-			pieChart.setChartRotation(pieChart.getChartRotation() - (int) scrollTheta / FLING_VELOCITY_DOWNSCALE, false);
-			return true;
 		}
 
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-			if (!isRotationEnabled) {
+			if (isRotationEnabled) {
+				// Set up the Scroller for a fling
+				final RectF circleOval = pieChart.getCircleOval();
+				final float centerX = circleOval.centerX();
+				final float centerY = circleOval.centerY();
+				float scrollTheta = vectorToScalarScroll(velocityX, velocityY, e2.getX() - centerX, e2.getY() - centerY);
+				scroller.abortAnimation();
+				scroller.fling(0, (int) pieChart.getChartRotation(), 0, (int) scrollTheta / FLING_VELOCITY_DOWNSCALE,
+						0, 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
+				return true;
+			} else {
 				return false;
 			}
-			// Set up the Scroller for a fling
-			final RectF circleOval = pieChart.getCircleOval();
-			final float centerX = circleOval.centerX();
-			final float centerY = circleOval.centerY();
-			float scrollTheta = vectorToScalarScroll(velocityX, velocityY, e2.getX() - centerX, e2.getY() - centerY);
-			scroller.abortAnimation();
-			scroller.fling(0, (int) pieChart.getChartRotation(), 0, (int) scrollTheta / FLING_VELOCITY_DOWNSCALE, 0, 0,
-					Integer.MIN_VALUE, Integer.MAX_VALUE);
-			return true;
 		}
 
 		/**

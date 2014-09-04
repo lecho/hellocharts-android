@@ -6,6 +6,12 @@ import android.content.Context;
 import android.graphics.PointF;
 import android.view.MotionEvent;
 
+/**
+ * Encapsulates zooming functionality.
+ * 
+ * @author Leszek Wach
+ * 
+ */
 public class ChartZoomer {
 	public static final int ZOOM_HORIZONTAL_AND_VERTICAL = 1;
 	public static final int ZOOM_HORIZONTAL = 2;

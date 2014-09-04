@@ -7,6 +7,12 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.support.v4.widget.ScrollerCompat;
 
+/**
+ * Encapsulates scrolling functionality.
+ * 
+ * @author Leszek Wach
+ * 
+ */
 public class ChartScroller {
 
 	private Viewport scrollerStartViewport = new Viewport(); // Used only for zooms and flings

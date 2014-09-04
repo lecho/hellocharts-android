@@ -6,6 +6,12 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
+/**
+ * Touch Handler for preview charts. It scroll and zoom only preview area, not all preview chart data.
+ * 
+ * @author Leszek Wach
+ * 
+ */
 public class PreviewChartTouchHandler extends ChartTouchHandler {
 
 	public PreviewChartTouchHandler(Context context, Chart chart) {
@@ -13,7 +19,7 @@ public class PreviewChartTouchHandler extends ChartTouchHandler {
 		gestureDetector = new GestureDetector(context, new ChartGestureListener());
 		scaleGestureDetector = new ScaleGestureDetector(context, new ChartScaleGestureListener());
 
-		// Disable value touch, not needed for preview chart.
+		// Disable value touch and selection mode, by default not needed for preview chart.
 		isValueTouchEnabled = false;
 		isValueSelectionEnabled = false;
 	}
@@ -22,33 +28,53 @@ public class PreviewChartTouchHandler extends ChartTouchHandler {
 
 		@Override
 		public boolean onScale(ScaleGestureDetector detector) {
-			float scale = detector.getCurrentSpan() / detector.getPreviousSpan();
-			if (Float.isInfinite(scale)) {
-				scale = 1;
+			if (isZoomEnabled) {
+				float scale = detector.getCurrentSpan() / detector.getPreviousSpan();
+				if (Float.isInfinite(scale)) {
+					scale = 1;
+				}
+				return chartZoomer.scale(chart.getChartComputator(), detector.getFocusX(), detector.getFocusY(), scale);
+			} else {
+				return false;
 			}
-			return chartZoomer.scale(chart.getChartComputator(), detector.getFocusX(), detector.getFocusY(), scale);
 		}
 	}
 
 	private class ChartGestureListener extends GestureDetector.SimpleOnGestureListener {
 		@Override
 		public boolean onDown(MotionEvent e) {
-			return chartScroller.startScroll(chart.getChartComputator());
+			if (isScrollEnabled) {
+				return chartScroller.startScroll(chart.getChartComputator());
+			} else {
+				return false;
+			}
 		}
 
 		@Override
 		public boolean onDoubleTap(MotionEvent e) {
-			return chartZoomer.startZoom(e, chart.getChartComputator());
+			if (isZoomEnabled) {
+				return chartZoomer.startZoom(e, chart.getChartComputator());
+			} else {
+				return false;
+			}
 		}
 
 		@Override
 		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-			return chartScroller.scroll(-distanceX, -distanceY, chart.getChartComputator());
+			if (isScrollEnabled) {
+				return chartScroller.scroll(-distanceX, -distanceY, chart.getChartComputator());
+			} else {
+				return false;
+			}
 		}
 
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-			return chartScroller.fling((int) velocityX, (int) velocityY, chart.getChartComputator());
+			if (isScrollEnabled) {
+				return chartScroller.fling((int) velocityX, (int) velocityY, chart.getChartComputator());
+			} else {
+				return false;
+			}
 		}
 	}
 

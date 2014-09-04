@@ -9,6 +9,12 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
+/**
+ * Default touch handler for most charts. Handles value touch, scroll, fling and zoom.
+ * 
+ * @author Leszek Wach
+ * 
+ */
 public class ChartTouchHandler {
 	protected GestureDetector gestureDetector;
 	protected ScaleGestureDetector scaleGestureDetector;
@@ -40,11 +46,13 @@ public class ChartTouchHandler {
 	}
 
 	/**
+	 * Computes scroll and zoom using {@link ChartScroller} and {@link ChartZoomer}. This method returns true if
+	 * scroll/zoom was computed and chart needs to be invaliedated.
+	 * 
 	 * Using first approach of fling animation described here {@link http
 	 * ://developer.android.com/training/custom-views/making-interactive.html}. Consider use of second option with
 	 * ValueAnimator.
 	 * 
-	 * @return
 	 */
 	public boolean computeScroll() {
 		if (!isInteractive) {
@@ -63,6 +71,9 @@ public class ChartTouchHandler {
 		return needInvalidate;
 	}
 
+	/**
+	 * Handle chart touch event(gestures, clicks). Return true if gesture was handled and chart needs to be invalidated.
+	 */
 	public boolean handleTouchEvent(MotionEvent event) {
 		if (!isInteractive) {
 			return false;
@@ -77,6 +88,8 @@ public class ChartTouchHandler {
 		// value.
 		if (!needInvalidate) {
 
+			// TODO: detectors always return true, use class member needInvalidate instead local variable as workaround.
+			// This flag should be computed inside gesture listeners methods to avoid to many invalidations.
 			needInvalidate = scaleGestureDetector.onTouchEvent(event);
 
 			needInvalidate = gestureDetector.onTouchEvent(event) || needInvalidate;
