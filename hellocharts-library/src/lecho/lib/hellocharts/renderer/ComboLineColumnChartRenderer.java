@@ -39,6 +39,12 @@ public class ComboLineColumnChartRenderer extends AbstractChartRenderer {
 		this.lineChartRenderer.initDataMeasuremetns();
 	}
 
+	@Override
+	public void initDataAttributes() {
+		this.columnChartRenderer.initDataAttributes();
+		this.lineChartRenderer.initDataAttributes();
+	}
+
 	public void draw(Canvas canvas) {
 		this.columnChartRenderer.draw(canvas);
 		this.lineChartRenderer.draw(canvas);

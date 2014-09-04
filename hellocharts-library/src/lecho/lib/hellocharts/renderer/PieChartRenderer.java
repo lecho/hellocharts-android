@@ -86,7 +86,10 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	public void initDataMeasuremetns() {
 		chart.getChartComputator().setInternalMargin(calculateContentAreaMargin());
 		calculateCircleOval();
+	}
 
+	@Override
+	public void initDataAttributes() {
 		final PieChartData data = dataProvider.getPieChartData();
 
 		Typeface typeface = chart.getChartData().getValueLabelTypeface();
@@ -113,7 +116,6 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		centerCircleText2Paint.setTextSize(Utils.sp2px(scaledDensity, data.getCenterText2FontSize()));
 		centerCircleText2Paint.setColor(data.getCenterText2Color());
 		centerCircleText2Paint.getFontMetricsInt(centerCircleText2FontMetrics);
-
 	}
 
 	@Override

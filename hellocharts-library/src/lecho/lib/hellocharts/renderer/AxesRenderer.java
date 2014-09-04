@@ -73,13 +73,13 @@ public class AxesRenderer {
 		}
 	}
 
-	public void initAxesMeasurements() {
+	public void initAxesAttributes() {
 
-		int axisXTopHeight = initAxisMeasurement(chart.getChartData().getAxisXTop(), TOP);
-		int axisXBottomHeight = initAxisMeasurement(chart.getChartData().getAxisXBottom(), BOTTOM);
+		int axisXTopHeight = initAxisAttributes(chart.getChartData().getAxisXTop(), TOP);
+		int axisXBottomHeight = initAxisAttributes(chart.getChartData().getAxisXBottom(), BOTTOM);
 
-		int axisYLeftWidth = initAxisMeasurement(chart.getChartData().getAxisYLeft(), LEFT);
-		int axisYRightWidth = initAxisMeasurement(chart.getChartData().getAxisYRight(), RIGHT);
+		int axisYLeftWidth = initAxisAttributes(chart.getChartData().getAxisYLeft(), LEFT);
+		int axisYRightWidth = initAxisAttributes(chart.getChartData().getAxisYRight(), RIGHT);
 
 		chart.getChartComputator().setAxesMargin(axisYLeftWidth, axisXTopHeight, axisYRightWidth, axisXBottomHeight);
 	}
@@ -103,10 +103,10 @@ public class AxesRenderer {
 	}
 
 	/**
-	 * Initialize measurement for axes(left, right, top, bottom); Returns axis measured width( for left and right) or
-	 * height(for top and bottom).
+	 * Initialize attributes and measurement for axes(left, right, top, bottom); Returns axis measured width( for left
+	 * and right) or height(for top and bottom).
 	 */
-	private int initAxisMeasurement(Axis axis, int position) {
+	private int initAxisAttributes(Axis axis, int position) {
 		if (null == axis) {
 			return 0;
 		}

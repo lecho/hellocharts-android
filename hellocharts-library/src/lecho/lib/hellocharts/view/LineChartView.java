@@ -42,10 +42,10 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 		} else {
 			this.data = data;
 		}
-		axesRenderer.initAxesMeasurements();
+		axesRenderer.initAxesAttributes();
 		chartRenderer.initMaxViewport();
 		chartRenderer.initCurrentViewport();
-		chartRenderer.initDataMeasuremetns();
+		chartRenderer.initDataAttributes();
 
 		ViewCompat.postInvalidateOnAnimation(LineChartView.this);
 	}

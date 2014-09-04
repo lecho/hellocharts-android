@@ -97,18 +97,36 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 		computator.setInternalMargin(calculateContentAreaMargin());
 
-		Typeface typeface = chart.getChartData().getValueLabelTypeface();
-		if (null != typeface) {
-			labelPaint.setTypeface(typeface);
-		}
-		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));
-		labelPaint.getFontMetricsInt(fontMetrics);
-
 		if (needSecondBitmap && computator.getChartWidth() > 0 && computator.getChartHeight() > 0) {
 			secondBitmap = Bitmap.createBitmap(computator.getChartWidth(), computator.getChartHeight(),
 					Bitmap.Config.ARGB_8888);
 			secondCanvas.setBitmap(secondBitmap);
 		}
+	}
+
+	@Override
+	public void initDataAttributes() {
+		LineChartData data = dataProvider.getLineChartData();
+
+		Typeface typeface = data.getValueLabelTypeface();
+		if (null != typeface) {
+			labelPaint.setTypeface(typeface);
+		}
+
+		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));
+		labelPaint.getFontMetricsInt(fontMetrics);
+
+		// Set base value for this chart - default is 0.
+		baseValue = data.getBaseValue();
+
+		// Check if chart need SW bitmap.
+		needSecondBitmap = false;
+		for (Line line : data.getLines()) {
+			if (line.isFilled() || line.isSmooth()) {
+				needSecondBitmap = true;
+			}
+		}
+
 	}
 
 	@Override
@@ -179,14 +197,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private void calculateMaxViewport() {
 		tempMaxViewport.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
 		LineChartData data = dataProvider.getLineChartData();
-		// Set base value for this chart - default is 0.
-		baseValue = data.getBaseValue();
 
-		needSecondBitmap = false;
 		for (Line line : data.getLines()) {
-			if (line.isFilled() || line.isSmooth()) {
-				needSecondBitmap = true;
-			}
 			// Calculate max and min for viewport.
 			for (PointValue pointValue : line.getValues()) {
 				if (pointValue.getX() < tempMaxViewport.left) {

@@ -115,26 +115,32 @@ public abstract class AbstractChartData implements ChartData {
 		this.valueLabelTypeface = typeface;
 	}
 
+	@Override
 	public boolean isValueLabelBackgroundEnabled() {
 		return isValueLabelBackgroundEnabled;
 	}
 
+	@Override
 	public void setValueLabelBackgroundEnabled(boolean isValueLabelBackgroundEnabled) {
 		this.isValueLabelBackgroundEnabled = isValueLabelBackgroundEnabled;
 	}
 
+	@Override
 	public boolean isValueLabelBackgroundAuto() {
 		return isValueLabelBackgrountAuto;
 	}
 
+	@Override
 	public void setValueLabelBackgroundAuto(boolean isValueLabelBackgrountAuto) {
 		this.isValueLabelBackgrountAuto = isValueLabelBackgrountAuto;
 	}
 
+	@Override
 	public int getValueLabelBackgroundColor() {
 		return valueLabelBackgroundColor;
 	}
 
+	@Override
 	public void setValueLabelBackgroundColor(int valueLabelBackgroundColor) {
 		this.valueLabelBackgroundColor = valueLabelBackgroundColor;
 	}

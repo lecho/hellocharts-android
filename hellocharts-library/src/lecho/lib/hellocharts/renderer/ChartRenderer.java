@@ -21,9 +21,14 @@ public interface ChartRenderer {
 	public void initCurrentViewport();
 
 	/**
-	 * Initialize data measurements like font sizes, font colors.
+	 * Initialize measurements i.e. circle area for PieChart.
 	 */
 	public void initDataMeasuremetns();
+
+	/**
+	 * Initialize common data attributes label font size, font color etc.
+	 */
+	public void initDataAttributes();
 
 	/**
 	 * Draw chart data.

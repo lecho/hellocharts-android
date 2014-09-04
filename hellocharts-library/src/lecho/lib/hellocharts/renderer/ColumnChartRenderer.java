@@ -53,7 +53,10 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	@Override
 	public void initDataMeasuremetns() {
 		chart.getChartComputator().setInternalMargin(labelMargin);// Using label margin because I'm lazy:P
+	}
 
+	@Override
+	public void initDataAttributes() {
 		Typeface typeface = chart.getChartData().getValueLabelTypeface();
 		if (null != typeface) {
 			labelPaint.setTypeface(typeface);
