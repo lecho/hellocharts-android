@@ -30,32 +30,80 @@ public class ChartScroller {
 		// surface sizes and pixel offsets, see the docs for {@link computeScrollSurfaceSize()}. For additional
 		// information about the viewport, see the comments for {@link mCurrentViewport}.
 
+		final Viewport maxViewport = computator.getMaximumViewport();
 		final Viewport visibleViewport = computator.getVisibleViewport();
 		final Viewport currentViewport = computator.getCurrentViewport();
 		final Rect contentRect = computator.getContentRect();
 
-		float viewportOffsetX = distanceX * visibleViewport.width() / contentRect.width();
-		float viewportOffsetY = -distanceY * visibleViewport.height() / contentRect.height();
+		final boolean canScrollLeft = currentViewport.left > maxViewport.left;
+		final boolean canScrollRight = currentViewport.right < maxViewport.right;
+		final boolean canScrollTop = currentViewport.top < maxViewport.top;
+		final boolean canScrollBottom = currentViewport.bottom > maxViewport.bottom;
 
-		computator.computeScrollSurfaceSize(surfaceSizeBuffer);
-		computator.setViewportTopLeft(currentViewport.left + viewportOffsetX, currentViewport.top + viewportOffsetY);
-		return true;
+		boolean result = false;
+
+		if (canScrollLeft && distanceX <= 0) {
+			result = true;
+		} else if (canScrollRight && distanceX >= 0) {
+			result = true;
+		}
+
+		if (canScrollTop && distanceY <= 0) {
+			result = true;
+		} else if (canScrollBottom && distanceY >= 0) {
+			result = true;
+		}
+
+		if (result) {
+
+			computator.computeScrollSurfaceSize(surfaceSizeBuffer);
+
+			float viewportOffsetX = distanceX * visibleViewport.width() / contentRect.width();
+			float viewportOffsetY = -distanceY * visibleViewport.height() / contentRect.height();
+
+			computator
+					.setViewportTopLeft(currentViewport.left + viewportOffsetX, currentViewport.top + viewportOffsetY);
+		}
+
+		return result;
 	}
 
 	public boolean computeScrollOffset(ChartComputator computator) {
 		if (scroller.computeScrollOffset()) {
 			// The scroller isn't finished, meaning a fling or programmatic pan operation is
 			// currently active.
-			computator.computeScrollSurfaceSize(surfaceSizeBuffer);
 
 			final Viewport maxViewport = computator.getMaximumViewport();
+			final Viewport currentViewport = computator.getCurrentViewport();
+			final Rect contentRect = computator.getContentRect();
 
-			final float currXRange = maxViewport.left + maxViewport.width() * scroller.getCurrX() / surfaceSizeBuffer.x;
-			final float currYRange = maxViewport.top - maxViewport.height() * scroller.getCurrY() / surfaceSizeBuffer.y;
+			final boolean canScrollX = (currentViewport.left > maxViewport.left || currentViewport.right < maxViewport.right);
+			final boolean canScrollY = (currentViewport.bottom > maxViewport.bottom || currentViewport.top < maxViewport.top);
 
-			computator.setViewportTopLeft(currXRange, currYRange);
+			final int currX = scroller.getCurrX();
+			final int currY = scroller.getCurrY();
 
-			return true;
+			boolean result = false;
+
+			if (canScrollX && currX >= 0 && currX <= surfaceSizeBuffer.x - contentRect.width()) {
+				result = true;
+			}
+
+			if (canScrollY && currY >= 0 && currY <= surfaceSizeBuffer.y - contentRect.height()) {
+				result = true;
+			}
+
+			if (result) {
+
+				computator.computeScrollSurfaceSize(surfaceSizeBuffer);
+
+				final float currXRange = maxViewport.left + maxViewport.width() * currX / surfaceSizeBuffer.x;
+				final float currYRange = maxViewport.top - maxViewport.height() * currY / surfaceSizeBuffer.y;
+
+				computator.setViewportTopLeft(currXRange, currYRange);
+			}
+
+			return result;
 		}
 
 		return false;
