@@ -80,6 +80,9 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 
 	}
 
+	/**
+	 * Draws label text and label background if isValueLabelBackgroundEnabled is true.
+	 */
 	protected void drawLabelTextAndBackground(Canvas canvas, char[] labelBuffer, int startIndex, int numChars,
 			int autoBackgroundColor) {
 		final float textX;

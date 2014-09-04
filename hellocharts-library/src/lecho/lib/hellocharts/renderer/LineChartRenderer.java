@@ -5,6 +5,7 @@ import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.provider.LineChartDataProvider;
+import lecho.lib.hellocharts.util.PathCompat;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;
@@ -18,6 +19,8 @@ import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
 
 /**
+ * 
+ * Renderer for line chart. Can draw lines, cubic lines, filled area chart and scattered chart.
  * 
  * @author Leszek Wach
  * 
@@ -451,8 +454,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		}
 
 		labelBackgroundRect.set(left, top, right, bottom);
-		drawLabelTextAndBackground(canvas, labelBuffer, labelBuffer.length - numChars, numChars,
-				line.getDarkenColor());
+		drawLabelTextAndBackground(canvas, labelBuffer, labelBuffer.length - numChars, numChars, line.getDarkenColor());
 	}
 
 	private void drawArea(Canvas canvas, int transparency) {
@@ -475,97 +477,6 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		float diffX = touchX - x;
 		float diffY = touchY - y;
 		return Math.pow(diffX, 2) + Math.pow(diffY, 2) <= 2 * Math.pow(radius, 2);
-	}
-
-	/**
-	 * Note: PathCompat is written more for fun and clipping cubic lines experiments but it works quite well so I left
-	 * it here. PathCompat uses Canvas.drawLines instead Canvas.drawPath. Supports only normal lines. Warning!:line has
-	 * to be continuous and doesn't support filled area, dashed lines etc. For complete implementation with Bezier's
-	 * curves see that gist {@link https://gist.github.com/lecho/a903e68fe7cccac131d0}
-	 */
-	private static class PathCompat {
-		/**
-		 * Initial buffer size, enough for 64 line segments = 65 points
-		 */
-		private static final int DEFAULT_BUFFER_SIZE = 256;
-
-		/**
-		 * Buffer for point coordinates to avoid calling drawLine for every line segment, instead call drawLines.
-		 */
-		private float[] buffer = new float[DEFAULT_BUFFER_SIZE];
-
-		/**
-		 * Number of points in buffer, index where put next line segment coordinate.
-		 */
-		private int bufferIndex = 0;
-
-		public void moveTo(float x, float y) {
-			if (bufferIndex != 0) {
-				// Move too only works for starting point.
-				return;
-			}
-			buffer[bufferIndex++] = x;
-			buffer[bufferIndex++] = y;
-		}
-
-		public void lineTo(Canvas canvas, Paint paint, float x, float y) {
-
-			addLineToBuffer(x, y);
-
-			drawLinesIfNeeded(canvas, paint);
-		}
-
-		private void drawLinesIfNeeded(Canvas canvas, Paint paint) {
-			if (bufferIndex == buffer.length) {
-				// Buffer full, draw lines and remember last point as the first point in buffer.
-				canvas.drawLines(buffer, 0, bufferIndex, paint);
-				final float lastX = buffer[bufferIndex - 2];
-				final float lastY = buffer[bufferIndex - 1];
-				bufferIndex = 0;
-				buffer[bufferIndex++] = lastX;
-				buffer[bufferIndex++] = lastY;
-			}
-		}
-
-		private void addLineToBuffer(float x, float y) {
-			if (bufferIndex == 0) {
-				// No moveTo, set starting point to 0,0.
-				buffer[bufferIndex++] = 0;
-				buffer[bufferIndex++] = 0;
-			}
-
-			if (bufferIndex == 2) {
-				// First segment.
-				buffer[bufferIndex++] = x;
-				buffer[bufferIndex++] = y;
-			} else {
-				final float lastX = buffer[bufferIndex - 2];
-				final float lastY = buffer[bufferIndex - 1];
-				buffer[bufferIndex++] = lastX;
-				buffer[bufferIndex++] = lastY;
-				buffer[bufferIndex++] = x;
-				buffer[bufferIndex++] = y;
-			}
-		}
-
-		/**
-		 * Resets internal state of PathCompat and prepare it to draw next line.
-		 */
-		public void reset() {
-			bufferIndex = 0;
-		}
-
-		/**
-		 * Draw line segment if there is any not drawn before.
-		 * 
-		 */
-		public void drawPath(Canvas canvas, Paint paint) {
-			if (bufferIndex >= 4) {
-				canvas.drawLines(buffer, 0, bufferIndex, paint);
-			}
-			reset();
-		}
-
 	}
 
 }
