@@ -3,6 +3,7 @@ package lecho.lib.hellocharts.renderer;
 import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.model.BubbleChartData;
 import lecho.lib.hellocharts.model.BubbleValue;
+import lecho.lib.hellocharts.model.ValueFormatter;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.provider.BubbleChartDataProvider;
 import lecho.lib.hellocharts.util.Utils;
@@ -55,6 +56,10 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	 */
 	private RectF bubbleRect = new RectF();
 
+	private boolean hasLabels;
+	private boolean hasLabelsOnlyForSelected;
+	private ValueFormatter valueFormatter;
+
 	public BubbleChartRenderer(Context context, Chart chart, BubbleChartDataProvider dataProvider) {
 		super(context, chart);
 		this.dataProvider = dataProvider;
@@ -84,6 +89,17 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	}
 
 	@Override
+	public void initDataAttributes() {
+		super.initDataAttributes();
+
+		BubbleChartData data = dataProvider.getBubbleChartData();
+
+		this.hasLabels = data.hasLabels();
+		this.hasLabelsOnlyForSelected = data.hasLabelsOnlyForSelected();
+		this.valueFormatter = data.getFormatter();
+	}
+
+	@Override
 	public void draw(Canvas canvas) {
 		drawBubbles(canvas);
 		if (isTouched()) {
@@ -101,7 +117,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		final BubbleChartData data = dataProvider.getBubbleChartData();
 		int valueIndex = 0;
 		for (BubbleValue bubbleValue : data.getValues()) {
-			float rawRadius = processBubble(data, bubbleValue, bubbleCenter);
+			float rawRadius = processBubble(bubbleValue, bubbleCenter);
 
 			if (bubbleValue.getShape() == BubbleValue.SHAPE_SQUARE) {
 				if (bubbleRect.contains(touchX, touchY)) {
@@ -160,22 +176,21 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	private void drawBubbles(Canvas canvas) {
 		final BubbleChartData data = dataProvider.getBubbleChartData();
 		for (BubbleValue bubbleValue : data.getValues()) {
-			drawBubble(canvas, data, bubbleValue);
+			drawBubble(canvas, bubbleValue);
 		}
 	}
 
-	private void drawBubble(Canvas canvas, BubbleChartData data, BubbleValue bubbleValue) {
-		float rawRadius = processBubble(data, bubbleValue, bubbleCenter);
+	private void drawBubble(Canvas canvas, BubbleValue bubbleValue) {
+		float rawRadius = processBubble(bubbleValue, bubbleCenter);
 		// Not touched bubbles are a little smaller than touched to give user touch feedback.
 		rawRadius -= touchAdditional;
 		bubbleRect.inset(touchAdditional, touchAdditional);
 		bubblePaint.setColor(bubbleValue.getColor());
-		drawBubbleShapeAndLabel(canvas, data, bubbleValue, rawRadius, MODE_DRAW);
+		drawBubbleShapeAndLabel(canvas, bubbleValue, rawRadius, MODE_DRAW);
 
 	}
 
-	private void drawBubbleShapeAndLabel(Canvas canvas, BubbleChartData data, BubbleValue bubbleValue, float rawRadius,
-			int mode) {
+	private void drawBubbleShapeAndLabel(Canvas canvas, BubbleValue bubbleValue, float rawRadius, int mode) {
 		if (bubbleValue.getShape() == BubbleValue.SHAPE_SQUARE) {
 			canvas.drawRect(bubbleRect, bubblePaint);
 		} else {
@@ -183,12 +198,12 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		}
 
 		if (MODE_HIGHLIGHT == mode) {
-			if (data.hasLabels() || data.hasLabelsOnlyForSelected()) {
-				drawLabel(canvas, data, bubbleValue, bubbleCenter.x, bubbleCenter.y);
+			if (hasLabels || hasLabelsOnlyForSelected) {
+				drawLabel(canvas, bubbleValue, bubbleCenter.x, bubbleCenter.y);
 			}
 		} else if (MODE_DRAW == mode) {
-			if (data.hasLabels()) {
-				drawLabel(canvas, data, bubbleValue, bubbleCenter.x, bubbleCenter.y);
+			if (hasLabels) {
+				drawLabel(canvas, bubbleValue, bubbleCenter.x, bubbleCenter.y);
 			}
 		} else {
 			throw new IllegalStateException("Cannot process bubble in mode: " + mode);
@@ -198,13 +213,13 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	private void highlightBubbles(Canvas canvas) {
 		final BubbleChartData data = dataProvider.getBubbleChartData();
 		BubbleValue bubbleValue = data.getValues().get(selectedValue.getFirstIndex());
-		highlightBubble(canvas, data, bubbleValue);
+		highlightBubble(canvas, bubbleValue);
 	}
 
-	private void highlightBubble(Canvas canvas, BubbleChartData data, BubbleValue bubbleValue) {
-		float rawRadius = processBubble(data, bubbleValue, bubbleCenter);
+	private void highlightBubble(Canvas canvas, BubbleValue bubbleValue) {
+		float rawRadius = processBubble(bubbleValue, bubbleCenter);
 		bubblePaint.setColor(bubbleValue.getDarkenColor());
-		drawBubbleShapeAndLabel(canvas, data, bubbleValue, rawRadius, MODE_HIGHLIGHT);
+		drawBubbleShapeAndLabel(canvas, bubbleValue, rawRadius, MODE_HIGHLIGHT);
 	}
 
 	/**
@@ -217,7 +232,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	 * @param point
 	 * @return
 	 */
-	private float processBubble(BubbleChartData data, BubbleValue bubbleValue, PointF point) {
+	private float processBubble(BubbleValue bubbleValue, PointF point) {
 		final ChartComputator computator = chart.getChartComputator();
 
 		final float rawX = computator.computeRawX(bubbleValue.getX());
@@ -243,13 +258,13 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		return rawRadius;
 	}
 
-	private void drawLabel(Canvas canvas, BubbleChartData data, BubbleValue bubbleValue, float rawX, float rawY) {
+	private void drawLabel(Canvas canvas, BubbleValue bubbleValue, float rawX, float rawY) {
 		final ChartComputator computator = chart.getChartComputator();
 		final Rect contentRect = computator.getContentRect();
 		valuesBuff[0] = bubbleValue.getX();
 		valuesBuff[1] = bubbleValue.getY();
 		valuesBuff[2] = bubbleValue.getZ();
-		final int nummChars = data.getFormatter().formatValue(labelBuffer, valuesBuff, bubbleValue.getLabel());
+		final int nummChars = valueFormatter.formatValue(labelBuffer, valuesBuff, bubbleValue.getLabel());
 
 		if (nummChars == 0) {
 			// No need to draw empty label
