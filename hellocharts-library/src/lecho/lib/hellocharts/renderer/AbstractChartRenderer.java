@@ -1,6 +1,7 @@
 package lecho.lib.hellocharts.renderer;
 
 import lecho.lib.hellocharts.ChartComputator;
+import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.Utils;
@@ -28,6 +29,10 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 	protected int labelOffset;
 	protected int labelMargin;
 
+	protected boolean isValueLabelBackgroundEnabled;
+	protected boolean isValueLabelBackgrountAuto;
+	protected int valueLabelBackgroundColor;
+
 	public AbstractChartRenderer(Context context, Chart chart) {
 		this.density = context.getResources().getDisplayMetrics().density;
 		this.scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
@@ -43,9 +48,28 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 		labelPaint.setColor(Color.WHITE);
 	}
 
+	@Override
 	public void initCurrentViewport() {
 		ChartComputator computator = chart.getChartComputator();
 		computator.setCurrentViewport(computator.getMaximumViewport());
+	}
+
+	@Override
+	public void initDataAttributes() {
+		final ChartData data = chart.getChartData();
+
+		Typeface typeface = chart.getChartData().getValueLabelTypeface();
+		if (null != typeface) {
+			labelPaint.setTypeface(typeface);
+		}
+
+		labelPaint.setTextSize(Utils.sp2px(scaledDensity, data.getValueLabelTextSize()));
+		labelPaint.getFontMetricsInt(fontMetrics);
+
+		this.isValueLabelBackgroundEnabled = data.isValueLabelBackgroundEnabled();
+		this.isValueLabelBackgrountAuto = data.isValueLabelBackgroundAuto();
+		this.valueLabelBackgroundColor = data.getValueLabelBackgroundColor();
+
 	}
 
 	@Override

@@ -10,7 +10,6 @@ import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.graphics.Paint.Cap;
 import android.graphics.PointF;
 import android.graphics.RectF;
@@ -53,16 +52,6 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	@Override
 	public void initDataMeasuremetns() {
 		chart.getChartComputator().setInternalMargin(labelMargin);// Using label margin because I'm lazy:P
-	}
-
-	@Override
-	public void initDataAttributes() {
-		Typeface typeface = chart.getChartData().getValueLabelTypeface();
-		if (null != typeface) {
-			labelPaint.setTypeface(typeface);
-		}
-		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));
-		labelPaint.getFontMetricsInt(fontMetrics);
 	}
 
 	public void draw(Canvas canvas) {

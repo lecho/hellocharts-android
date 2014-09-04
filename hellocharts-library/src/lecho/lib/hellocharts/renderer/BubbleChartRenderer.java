@@ -13,7 +13,6 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Typeface;
 
 public class BubbleChartRenderer extends AbstractChartRenderer {
 	private static final int DEFAULT_TOUCH_ADDITIONAL_DP = 4;
@@ -82,16 +81,6 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		} else {
 			isBubbleScaledByX = false;
 		}
-	}
-
-	@Override
-	public void initDataAttributes() {
-		Typeface typeface = chart.getChartData().getValueLabelTypeface();
-		if (null != typeface) {
-			labelPaint.setTypeface(typeface);
-		}
-		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));
-		labelPaint.getFontMetricsInt(fontMetrics);
 	}
 
 	@Override

@@ -12,12 +12,11 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.Paint.Cap;
+import android.graphics.Path;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Typeface;
 
 /**
  * 
@@ -106,15 +105,9 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 	@Override
 	public void initDataAttributes() {
+		super.initDataAttributes();
+
 		LineChartData data = dataProvider.getLineChartData();
-
-		Typeface typeface = data.getValueLabelTypeface();
-		if (null != typeface) {
-			labelPaint.setTypeface(typeface);
-		}
-
-		labelPaint.setTextSize(Utils.sp2px(scaledDensity, chart.getChartData().getValueLabelTextSize()));
-		labelPaint.getFontMetricsInt(fontMetrics);
 
 		// Set base value for this chart - default is 0.
 		baseValue = data.getBaseValue();

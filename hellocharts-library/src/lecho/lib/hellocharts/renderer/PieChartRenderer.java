@@ -14,7 +14,6 @@ import android.graphics.Paint.FontMetricsInt;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Typeface;
 import android.text.TextUtils;
 
 /**
@@ -90,14 +89,9 @@ public class PieChartRenderer extends AbstractChartRenderer {
 
 	@Override
 	public void initDataAttributes() {
-		final PieChartData data = dataProvider.getPieChartData();
+		super.initDataAttributes();
 
-		Typeface typeface = chart.getChartData().getValueLabelTypeface();
-		if (null != typeface) {
-			labelPaint.setTypeface(typeface);
-		}
-		labelPaint.setTextSize(Utils.sp2px(scaledDensity, data.getValueLabelTextSize()));
-		labelPaint.getFontMetricsInt(fontMetrics);
+		final PieChartData data = dataProvider.getPieChartData();
 
 		hasCenterCircle = data.hasCenterCircle();
 
