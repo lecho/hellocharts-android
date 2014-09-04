@@ -293,13 +293,28 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 			left = rawX - labelWidth - labelMargin * 2;
 			right = rawX;
 		}
-		labelRect.set(left, top, right, bottom);
-		int orginColor = labelPaint.getColor();
-		labelPaint.setColor(bubbleValue.getDarkenColor());
-		canvas.drawRect(left, top, right, bottom, labelPaint);
-		labelPaint.setColor(orginColor);
-		canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, left + labelMargin, bottom
-				- labelMargin, labelPaint);
+
+		final float textX;
+		final float textY;
+
+		if (isValueLabelBackgroundEnabled) {
+
+			labelRect.set(left, top, right, bottom);
+
+			if (isValueLabelBackgrountAuto) {
+				labelBackgroundPaint.setColor(bubbleValue.getDarkenColor());
+			}
+
+			canvas.drawRect(left, top, right, bottom, labelBackgroundPaint);
+
+			textX = left + labelMargin;
+			textY = bottom - labelMargin;
+		} else {
+			textX = left;
+			textY = bottom;
+		}
+
+		canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, textX, textY, labelPaint);
 	}
 
 	private void calculateMaxViewport() {

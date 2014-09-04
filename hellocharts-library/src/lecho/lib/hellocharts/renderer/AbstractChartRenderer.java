@@ -17,6 +17,7 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 	public int DEFAULT_LABEL_MARGIN_DP = 4;
 	protected Chart chart;
 	protected Paint labelPaint = new Paint();
+	protected Paint labelBackgroundPaint = new Paint();
 	protected FontMetricsInt fontMetrics = new FontMetricsInt();
 	protected Viewport tempMaxViewport = new Viewport();
 
@@ -46,6 +47,9 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 		labelPaint.setTextAlign(Align.LEFT);
 		labelPaint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
 		labelPaint.setColor(Color.WHITE);
+
+		labelBackgroundPaint.setAntiAlias(true);
+		labelBackgroundPaint.setStyle(Paint.Style.FILL);
 	}
 
 	@Override
@@ -69,6 +73,7 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 		this.isValueLabelBackgroundEnabled = data.isValueLabelBackgroundEnabled();
 		this.isValueLabelBackgrountAuto = data.isValueLabelBackgroundAuto();
 		this.valueLabelBackgroundColor = data.getValueLabelBackgroundColor();
+		this.labelBackgroundPaint.setColor(valueLabelBackgroundColor);
 
 	}
 
