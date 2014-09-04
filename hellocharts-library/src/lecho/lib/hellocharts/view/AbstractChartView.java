@@ -10,6 +10,7 @@ import lecho.lib.hellocharts.animation.ChartViewportAnimator;
 import lecho.lib.hellocharts.animation.ChartViewportAnimatorV14;
 import lecho.lib.hellocharts.animation.ChartViewportAnimatorV8;
 import lecho.lib.hellocharts.gesture.ChartTouchHandler;
+import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.renderer.AxesRenderer;
@@ -222,12 +223,12 @@ public abstract class AbstractChartView extends View implements Chart {
 	}
 
 	@Override
-	public int getZoomType() {
+	public ZoomType getZoomType() {
 		return touchHandler.getZoomType();
 	}
 
 	@Override
-	public void setZoomType(int zoomType) {
+	public void setZoomType(ZoomType zoomType) {
 		touchHandler.setZoomType(zoomType);
 	}
 

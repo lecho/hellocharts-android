@@ -80,36 +80,15 @@ public class ChartScroller {
 			// currently active.
 
 			final Viewport maxViewport = computator.getMaximumViewport();
-			final Viewport currentViewport = computator.getCurrentViewport();
-			final Rect contentRect = computator.getContentRect();
 
-			final boolean canScrollX = (currentViewport.left > maxViewport.left || currentViewport.right < maxViewport.right);
-			final boolean canScrollY = (currentViewport.bottom > maxViewport.bottom || currentViewport.top < maxViewport.top);
+			computator.computeScrollSurfaceSize(surfaceSizeBuffer);
 
-			final int currX = scroller.getCurrX();
-			final int currY = scroller.getCurrY();
+			final float currXRange = maxViewport.left + maxViewport.width() * scroller.getCurrX() / surfaceSizeBuffer.x;
+			final float currYRange = maxViewport.top - maxViewport.height() * scroller.getCurrY() / surfaceSizeBuffer.y;
 
-			boolean result = false;
+			computator.setViewportTopLeft(currXRange, currYRange);
 
-			if (canScrollX && currX >= 0 && currX <= surfaceSizeBuffer.x - contentRect.width()) {
-				result = true;
-			}
-
-			if (canScrollY && currY >= 0 && currY <= surfaceSizeBuffer.y - contentRect.height()) {
-				result = true;
-			}
-
-			if (result) {
-
-				computator.computeScrollSurfaceSize(surfaceSizeBuffer);
-
-				final float currXRange = maxViewport.left + maxViewport.width() * currX / surfaceSizeBuffer.x;
-				final float currYRange = maxViewport.top - maxViewport.height() * currY / surfaceSizeBuffer.y;
-
-				computator.setViewportTopLeft(currXRange, currYRange);
-			}
-
-			return result;
+			return true;
 		}
 
 		return false;

@@ -13,17 +13,14 @@ import android.view.MotionEvent;
  * 
  */
 public class ChartZoomer {
-	public static final int ZOOM_HORIZONTAL_AND_VERTICAL = 1;
-	public static final int ZOOM_HORIZONTAL = 2;
-	public static final int ZOOM_VERTICAL = 3;
 	public static final float ZOOM_AMOUNT = 0.25f;
 	private ZoomerCompat zoomer;
-	private int zoomType;
+	private ZoomType zoomType;
 	private PointF zoomFocalPoint = new PointF();// Used for double tap zoom
 	private PointF viewportFocus = new PointF();
 	private Viewport scrollerStartViewport = new Viewport(); // Used only for zooms and flings
 
-	public ChartZoomer(Context context, int zoomType) {
+	public ChartZoomer(Context context, ZoomType zoomType) {
 		zoomer = new ZoomerCompat(context);
 		this.zoomType = zoomType;
 	}
@@ -91,20 +88,20 @@ public class ChartZoomer {
 
 	private void setCurrentViewport(ChartComputator computator, float left, float top, float right, float bottom) {
 		Viewport currentViewport = computator.getCurrentViewport();
-		if (zoomType == ZOOM_HORIZONTAL_AND_VERTICAL) {
+		if (ZoomType.HORIZONTAL_AND_VERTICAL == zoomType) {
 			computator.setCurrentViewport(left, top, right, bottom);
-		} else if (zoomType == ZOOM_HORIZONTAL) {
+		} else if (ZoomType.HORIZONTAL == zoomType) {
 			computator.setCurrentViewport(left, currentViewport.top, right, currentViewport.bottom);
-		} else if (zoomType == ZOOM_VERTICAL) {
+		} else if (ZoomType.VERTICAL == zoomType) {
 			computator.setCurrentViewport(currentViewport.left, top, currentViewport.right, bottom);
 		}
 	}
 
-	public int getZoomType() {
+	public ZoomType getZoomType() {
 		return zoomType;
 	}
 
-	public void setZoomType(int zoomType) {
+	public void setZoomType(ZoomType zoomType) {
 		this.zoomType = zoomType;
 	}
 }

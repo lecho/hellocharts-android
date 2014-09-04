@@ -42,7 +42,7 @@ public class ChartTouchHandler {
 		gestureDetector = new GestureDetector(context, new ChartGestureListener());
 		scaleGestureDetector = new ScaleGestureDetector(context, new ChartScaleGestureListener());
 		chartScroller = new ChartScroller(context);
-		chartZoomer = new ChartZoomer(context, ChartZoomer.ZOOM_HORIZONTAL_AND_VERTICAL);
+		chartZoomer = new ChartZoomer(context, ZoomType.HORIZONTAL_AND_VERTICAL);
 	}
 
 	/**
@@ -199,11 +199,11 @@ public class ChartTouchHandler {
 		this.isScrollEnabled = isScrollEnabled;
 	}
 
-	public void setZoomType(int zoomType) {
+	public void setZoomType(ZoomType zoomType) {
 		chartZoomer.setZoomType(zoomType);
 	}
 
-	public int getZoomType() {
+	public ZoomType getZoomType() {
 		return chartZoomer.getZoomType();
 	}
 
@@ -228,7 +228,7 @@ public class ChartTouchHandler {
 
 	}
 
-	private class ChartScaleGestureListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+	protected class ChartScaleGestureListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
 
 		@Override
 		public boolean onScale(ScaleGestureDetector detector) {
@@ -244,7 +244,7 @@ public class ChartTouchHandler {
 		}
 	}
 
-	private class ChartGestureListener extends GestureDetector.SimpleOnGestureListener {
+	protected class ChartGestureListener extends GestureDetector.SimpleOnGestureListener {
 		@Override
 		public boolean onDown(MotionEvent e) {
 			if (isScrollEnabled) {

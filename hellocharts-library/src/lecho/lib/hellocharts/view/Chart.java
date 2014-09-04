@@ -4,6 +4,7 @@ import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.ViewportChangeListener;
 import lecho.lib.hellocharts.animation.ChartAnimationListener;
 import lecho.lib.hellocharts.gesture.ChartTouchHandler;
+import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.Viewport;
@@ -128,15 +129,15 @@ public interface Chart {
 	/**
 	 * Returns current zoom type for this chart.
 	 * 
-	 * @see #setZoomType(int)
+	 * @see #setZoomType(ZoomType)
 	 */
-	public int getZoomType();
+	public ZoomType getZoomType();
 
 	/**
-	 * Set zoom type, available options: ChartZoomer.ZOOM_HORIZONTAL_AND_VERTICAL, ChartZoomer.ZOOM_HORIZONTAL,
-	 * ChartZoomer.ZOOM_VERTICAL. By default ChartZoomer.ZOOM_HORIZONTAL_AND_VERTICAL.
+	 * Set zoom type, available options: ZoomType.HORIZONTAL_AND_VERTICAL, ZoomType.HORIZONTAL, ZoomType.VERTICAL. By
+	 * default HORIZONTAL_AND_VERTICAL.
 	 */
-	public void setZoomType(int zoomType);
+	public void setZoomType(ZoomType zoomType);
 
 	/**
 	 * Return true if chart value can be touched.

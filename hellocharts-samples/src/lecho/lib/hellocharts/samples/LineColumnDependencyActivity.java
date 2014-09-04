@@ -3,7 +3,7 @@ package lecho.lib.hellocharts.samples;
 import java.util.ArrayList;
 import java.util.List;
 
-import lecho.lib.hellocharts.gesture.ChartZoomer;
+import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.AxisValue;
 import lecho.lib.hellocharts.model.Column;
@@ -103,7 +103,7 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 			// Set selection mode to keep selected month column highlighted.
 			chartBottom.setValueSelectionEnabled(true);
 
-			chartBottom.setZoomType(ChartZoomer.ZOOM_HORIZONTAL);
+			chartBottom.setZoomType(ZoomType.HORIZONTAL);
 
 			// chartBottom.setOnClickListener(new View.OnClickListener() {
 			//
@@ -153,7 +153,7 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 			chartTop.setMaxViewport(v);
 			chartTop.setViewport(v, false);
 
-			chartTop.setZoomType(ChartZoomer.ZOOM_HORIZONTAL);
+			chartTop.setZoomType(ZoomType.HORIZONTAL);
 		}
 
 		private void generateLineData(int color, float range) {

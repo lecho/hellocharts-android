@@ -3,7 +3,7 @@ package lecho.lib.hellocharts.samples;
 import java.util.ArrayList;
 import java.util.List;
 
-import lecho.lib.hellocharts.gesture.ChartZoomer;
+import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
@@ -145,15 +145,15 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 				return true;
 			}
 			if (id == R.id.action_zoom_both) {
-				chart.setZoomType(ChartZoomer.ZOOM_HORIZONTAL_AND_VERTICAL);
+				chart.setZoomType(ZoomType.HORIZONTAL_AND_VERTICAL);
 				return true;
 			}
 			if (id == R.id.action_zoom_horizontal) {
-				chart.setZoomType(ChartZoomer.ZOOM_HORIZONTAL);
+				chart.setZoomType(ZoomType.HORIZONTAL);
 				return true;
 			}
 			if (id == R.id.action_zoom_vertical) {
-				chart.setZoomType(ChartZoomer.ZOOM_VERTICAL);
+				chart.setZoomType(ZoomType.VERTICAL);
 				return true;
 			}
 			return super.onOptionsItemSelected(item);

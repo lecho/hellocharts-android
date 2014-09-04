@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lecho.lib.hellocharts.ViewportChangeListener;
-import lecho.lib.hellocharts.gesture.ChartZoomer;
+import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
@@ -93,7 +93,7 @@ public class PreviewColumnChartActivity extends ActionBarActivity {
 			}
 			if (id == R.id.action_preview_both) {
 				previewXY();
-				previewChart.setZoomType(ChartZoomer.ZOOM_HORIZONTAL_AND_VERTICAL);
+				previewChart.setZoomType(ZoomType.HORIZONTAL_AND_VERTICAL);
 				return true;
 			}
 			if (id == R.id.action_preview_horizontal) {
@@ -150,7 +150,7 @@ public class PreviewColumnChartActivity extends ActionBarActivity {
 			float dy = tempViewport.height() / 4;
 			tempViewport.inset(0, dy);
 			previewChart.setViewport(tempViewport, true);
-			previewChart.setZoomType(ChartZoomer.ZOOM_VERTICAL);
+			previewChart.setZoomType(ZoomType.VERTICAL);
 		}
 
 		private void previewX(boolean animate) {
@@ -158,7 +158,7 @@ public class PreviewColumnChartActivity extends ActionBarActivity {
 			float dx = tempViewport.width() / 4;
 			tempViewport.inset(dx, 0);
 			previewChart.setViewport(tempViewport, animate);
-			previewChart.setZoomType(ChartZoomer.ZOOM_HORIZONTAL);
+			previewChart.setZoomType(ZoomType.HORIZONTAL);
 		}
 
 		private void previewXY() {
