@@ -1,5 +1,6 @@
 package lecho.lib.hellocharts.animation;
 
+import lecho.lib.hellocharts.DummyChartAnimationListener;
 import lecho.lib.hellocharts.view.PieChartView;
 import android.os.Handler;
 import android.os.SystemClock;
