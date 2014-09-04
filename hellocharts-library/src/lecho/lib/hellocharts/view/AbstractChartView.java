@@ -232,6 +232,15 @@ public abstract class AbstractChartView extends View implements Chart {
 		touchHandler.setZoomType(zoomType);
 	}
 
+	public float getMaxZoom() {
+		return chartComputator.getMaxZoom();
+	}
+
+	public void setMaxZoom(float maxZoom) {
+		chartComputator.setMaxZoom(maxZoom);
+		ViewCompat.postInvalidateOnAnimation(this);
+	}
+
 	@Override
 	public void setMaxViewport(Viewport maxViewport) {
 		chartRenderer.setMaxViewport(maxViewport);

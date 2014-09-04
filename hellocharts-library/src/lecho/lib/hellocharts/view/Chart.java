@@ -140,6 +140,18 @@ public interface Chart {
 	public void setZoomType(ZoomType zoomType);
 
 	/**
+	 * Returns current maximum zoom value.
+	 * 
+	 */
+	public float getMaxZoom();
+
+	/**
+	 * Set max zoom value within range (1 - 14). Default maximum zoom is 14.
+	 * 
+	 */
+	public void setMaxZoom(float maxZoom);
+
+	/**
 	 * Return true if chart value can be touched.
 	 * 
 	 * @see #setValueTouchEnabled(boolean)
@@ -181,7 +193,7 @@ public interface Chart {
 	public void setViewport(Viewport targetViewport, boolean isAnimated);
 
 	/**
-	 * Programatically zoom chart to given point(its viewport point). Negative zoomAmount parameter means zoom out.
+	 * Programatically zoom chart to given point(viewport point). Pass negative zoomAmount value to zoom out.
 	 */
 	public void zoom(float x, float y, float zoomAmout);
 

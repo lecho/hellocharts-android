@@ -17,7 +17,7 @@ public class ChartComputator {
 	/**
 	 * Maximum chart zoom.
 	 */
-	protected static final float MAXIMUM_SCALE = 10f;
+	protected static final float MAXIMUM_ZOOM = 14f;
 
 	protected int chartWidth;
 	protected int chartHeight;
@@ -44,10 +44,12 @@ public class ChartComputator {
 	 * 
 	 */
 	protected Viewport currentViewport = new Viewport();
-	protected Viewport maxViewport = new Viewport();// Viewport for whole data ranges
+	protected Viewport maxViewport = new Viewport();
 
 	protected float minViewportWidth;
 	protected float minViewportHeight;
+
+	protected float maxZoom = MAXIMUM_ZOOM;
 
 	/**
 	 * Warning! Viewport listener is disabled for all charts beside preview charts to avoid additional method calls
@@ -103,9 +105,10 @@ public class ChartComputator {
 	}
 
 	/**
-	 * Checks if new viewport dimensions doesn't exceed max available viewport.
+	 * Checks if new viewport doesn't exceed max available viewport.
 	 */
 	public void constrainViewport(float left, float top, float right, float bottom) {
+
 		if (right - left < minViewportWidth) {
 			// Minimum width - constrain horizontal zoom!
 			right = left + minViewportWidth;
@@ -117,6 +120,7 @@ public class ChartComputator {
 				left = right - minViewportWidth;
 			}
 		}
+
 		if (top - bottom < minViewportHeight) {
 			// Minimum height - constrain vertical zoom!
 			bottom = top - minViewportHeight;
@@ -252,8 +256,7 @@ public class ChartComputator {
 
 	public void setMaxViewport(float left, float top, float right, float bottom) {
 		this.maxViewport.set(left, top, right, bottom);
-		minViewportWidth = this.maxViewport.width() / MAXIMUM_SCALE;
-		minViewportHeight = this.maxViewport.height() / MAXIMUM_SCALE;
+		computeMinimumWidthAndHeight();
 	}
 
 	public Viewport getVisibleViewport() {
@@ -286,6 +289,30 @@ public class ChartComputator {
 
 	public int getChartHeight() {
 		return chartHeight;
+	}
+
+	public float getMaxZoom() {
+		return maxZoom;
+	}
+
+	public void setMaxZoom(float maxZoom) {
+		if (maxZoom < 1) {
+			maxZoom = 1;
+		} else if (maxZoom > MAXIMUM_ZOOM) {
+			maxZoom = MAXIMUM_ZOOM;
+		}
+
+		this.maxZoom = maxZoom;
+
+		computeMinimumWidthAndHeight();
+
+		setCurrentViewport(currentViewport);
+
+	}
+
+	private void computeMinimumWidthAndHeight() {
+		minViewportWidth = this.maxViewport.width() / maxZoom;
+		minViewportHeight = this.maxViewport.height() / maxZoom;
 	}
 
 }
