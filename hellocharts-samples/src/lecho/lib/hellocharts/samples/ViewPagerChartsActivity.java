@@ -1,9 +1,28 @@
 package lecho.lib.hellocharts.samples;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import lecho.lib.hellocharts.gesture.ContainerScrollType;
+import lecho.lib.hellocharts.gesture.ZoomType;
+import lecho.lib.hellocharts.model.ArcValue;
+import lecho.lib.hellocharts.model.Axis;
+import lecho.lib.hellocharts.model.BubbleChartData;
+import lecho.lib.hellocharts.model.BubbleValue;
+import lecho.lib.hellocharts.model.Column;
+import lecho.lib.hellocharts.model.ColumnChartData;
+import lecho.lib.hellocharts.model.ColumnValue;
+import lecho.lib.hellocharts.model.Line;
+import lecho.lib.hellocharts.model.LineChartData;
+import lecho.lib.hellocharts.model.PieChartData;
+import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.model.Viewport;
+import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.BubbleChartView;
 import lecho.lib.hellocharts.view.ColumnChartView;
 import lecho.lib.hellocharts.view.LineChartView;
 import lecho.lib.hellocharts.view.PieChartView;
+import lecho.lib.hellocharts.view.PreviewLineChartView;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -122,8 +141,7 @@ public class ViewPagerChartsActivity extends ActionBarActivity implements Action
 
 		@Override
 		public int getCount() {
-			// Show 4 total pages.
-			return 4;
+			return 5;
 		}
 
 		@Override
@@ -136,6 +154,8 @@ public class ViewPagerChartsActivity extends ActionBarActivity implements Action
 			case 2:
 				return "BubbleChart";
 			case 3:
+				return "PreviewLineChart";
+			case 4:
 				return "PieChart";
 			}
 			return null;
@@ -172,21 +192,148 @@ public class ViewPagerChartsActivity extends ActionBarActivity implements Action
 			int sectionNum = getArguments().getInt(ARG_SECTION_NUMBER);
 			switch (sectionNum) {
 			case 1:
-				layout.addView(new LineChartView(getActivity()));
+				LineChartView lineChartView = new LineChartView(getActivity());
+				lineChartView.setLineChartData(generateLineChartData());
+				lineChartView.setZoomType(ZoomType.HORIZONTAL);
+				// Chart is within ViewPager so enable container scroll mode.
+				lineChartView.setContainerScrollEnabled(true, ContainerScrollType.HORIZONTAL);
+				layout.addView(lineChartView);
 				break;
 			case 2:
-				layout.addView(new ColumnChartView(getActivity()));
+				ColumnChartView columnChartView = new ColumnChartView(getActivity());
+				columnChartView.setColumnChartData(generateColumnChartData());
+				columnChartView.setZoomType(ZoomType.HORIZONTAL);
+				columnChartView.setContainerScrollEnabled(true, ContainerScrollType.HORIZONTAL);
+				layout.addView(columnChartView);
 				break;
 			case 3:
-				layout.addView(new BubbleChartView(getActivity()));
+				BubbleChartView bubbleChartView = new BubbleChartView(getActivity());
+				bubbleChartView.setBubbleChartData(generateBubbleChartData());
+				bubbleChartView.setZoomType(ZoomType.HORIZONTAL_AND_VERTICAL);
+				bubbleChartView.setContainerScrollEnabled(true, ContainerScrollType.HORIZONTAL);
+				layout.addView(bubbleChartView);
 				break;
 			case 4:
-				layout.addView(new PieChartView(getActivity()));
+				PreviewLineChartView previewLineChartView = new PreviewLineChartView(getActivity());
+				previewLineChartView.setLineChartData(generatePreviewLineChartData());
+				previewLineChartView.setContainerScrollEnabled(true, ContainerScrollType.HORIZONTAL);
+
+				Viewport tempViewport = new Viewport(previewLineChartView.getMaxViewport());
+				float dx = tempViewport.width() / 6;
+				tempViewport.inset(dx, 0);
+				previewLineChartView.setViewport(tempViewport, false);
+				previewLineChartView.setZoomType(ZoomType.HORIZONTAL);
+
+				layout.addView(previewLineChartView);
+				break;
+			case 5:
+				PieChartView pieChartView = new PieChartView(getActivity());
+				pieChartView.setPieChartData(generatePieChartData());
+				pieChartView.setContainerScrollEnabled(true, ContainerScrollType.HORIZONTAL);
+				layout.addView(pieChartView);
 				break;
 			}
 
 			return rootView;
 		}
+
+		private LineChartData generateLineChartData() {
+			int numValues = 20;
+
+			List<PointValue> values = new ArrayList<PointValue>();
+			for (int i = 0; i < numValues; ++i) {
+				values.add(new PointValue(i, (float) Math.random() * 100f));
+			}
+
+			Line line = new Line(values);
+			line.setColor(Utils.COLOR_GREEN);
+
+			List<Line> lines = new ArrayList<Line>();
+			lines.add(line);
+
+			LineChartData data = new LineChartData(lines);
+			data.setAxisXBottom(new Axis().setName("Axis X"));
+			data.setAxisYLeft(new Axis().setName("Axis Y").setHasLines(true));
+			return data;
+
+		}
+
+		private ColumnChartData generateColumnChartData() {
+			int numSubcolumns = 1;
+			int numColumns = 12;
+			// Column can have many subcolumns, here by default I use 1 subcolumn in each of 8 columns.
+			List<Column> columns = new ArrayList<Column>();
+			List<ColumnValue> values;
+			for (int i = 0; i < numColumns; ++i) {
+
+				values = new ArrayList<ColumnValue>();
+				for (int j = 0; j < numSubcolumns; ++j) {
+					values.add(new ColumnValue((float) Math.random() * 50f + 5, Utils.pickColor()));
+				}
+
+				columns.add(new Column(values));
+			}
+
+			ColumnChartData data = new ColumnChartData(columns);
+
+			data.setAxisXBottom(new Axis().setName("Axis X"));
+			data.setAxisYLeft(new Axis().setName("Axis Y").setHasLines(true));
+			return data;
+
+		}
+
+		private BubbleChartData generateBubbleChartData() {
+			int numBubbles = 10;
+
+			List<BubbleValue> values = new ArrayList<BubbleValue>();
+			for (int i = 0; i < numBubbles; ++i) {
+				BubbleValue value = new BubbleValue(i, (float) Math.random() * 100, (float) Math.random() * 1000);
+				value.setColor(Utils.pickColor());
+				values.add(value);
+			}
+
+			BubbleChartData data = new BubbleChartData(values);
+
+			data.setAxisXBottom(new Axis().setName("Axis X"));
+			data.setAxisYLeft(new Axis().setName("Axis Y").setHasLines(true));
+			return data;
+		}
+
+		private LineChartData generatePreviewLineChartData() {
+			int numValues = 50;
+
+			List<PointValue> values = new ArrayList<PointValue>();
+			for (int i = 0; i < numValues; ++i) {
+				values.add(new PointValue(i, (float) Math.random() * 100f));
+			}
+
+			Line line = new Line(values);
+			line.setColor(Utils.DEFAULT_DARKEN_COLOR);
+			line.setHasPoints(false);// too many values so don't draw points.
+
+			List<Line> lines = new ArrayList<Line>();
+			lines.add(line);
+
+			LineChartData data = new LineChartData(lines);
+			data.setAxisXBottom(new Axis());
+			data.setAxisYLeft(new Axis().setHasLines(true));
+
+			return data;
+
+		}
+
+		private PieChartData generatePieChartData() {
+			int numValues = 6;
+
+			List<ArcValue> values = new ArrayList<ArcValue>();
+			for (int i = 0; i < numValues; ++i) {
+				values.add(new ArcValue((float) Math.random() * 30 + 15, Utils.pickColor()));
+			}
+
+			PieChartData data = new PieChartData(values);
+			return data;
+		}
+
 	}
 
 }
