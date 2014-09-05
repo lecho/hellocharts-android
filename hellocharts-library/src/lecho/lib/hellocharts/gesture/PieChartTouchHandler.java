@@ -62,6 +62,7 @@ public class PieChartTouchHandler extends ChartTouchHandler {
 		if (!isInteractive) {
 			return false;
 		}
+
 		boolean needInvalidate = super.handleTouchEvent(event);
 
 		if (isRotationEnabled) {

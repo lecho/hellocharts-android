@@ -4,6 +4,7 @@ import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.ViewportChangeListener;
 import lecho.lib.hellocharts.animation.ChartAnimationListener;
 import lecho.lib.hellocharts.gesture.ChartTouchHandler;
+import lecho.lib.hellocharts.gesture.ContainerScrollType;
 import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
@@ -219,5 +220,13 @@ public interface Chart {
 	 * Return currently selected value indexes.
 	 */
 	public SelectedValue getSelectedValue();
+
+	public boolean isContainerScrollEnabled();
+
+	/**
+	 * Set isContainerScrollEnabled to true and containerScrollType to HORIZONTAL or VERTICAL if you are using chart
+	 * within scroll container.
+	 */
+	public void setContainerScrollEnabled(boolean isContainerScrollEnabled, ContainerScrollType containerScrollType);
 
 }

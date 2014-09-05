@@ -29,7 +29,7 @@ public class ChartScroller {
 		return true;
 	}
 
-	public boolean scroll(float distanceX, float distanceY, ChartComputator computator) {
+	public boolean scroll(ChartComputator computator, float distanceX, float distanceY, ScrollResult scrollResult) {
 
 		// Scrolling uses math based on the viewport (as opposed to math using pixels). Pixel offset is the offset in
 		// screen pixels, while viewport offset is the offset within the current viewport. For additional information on
@@ -46,21 +46,22 @@ public class ChartScroller {
 		final boolean canScrollTop = currentViewport.top < maxViewport.top;
 		final boolean canScrollBottom = currentViewport.bottom > maxViewport.bottom;
 
-		boolean result = false;
+		boolean canScrollX = false;
+		boolean canScrollY = false;
 
 		if (canScrollLeft && distanceX <= 0) {
-			result = true;
+			canScrollX = true;
 		} else if (canScrollRight && distanceX >= 0) {
-			result = true;
+			canScrollX = true;
 		}
 
 		if (canScrollTop && distanceY <= 0) {
-			result = true;
+			canScrollY = true;
 		} else if (canScrollBottom && distanceY >= 0) {
-			result = true;
+			canScrollY = true;
 		}
 
-		if (result) {
+		if (canScrollX || canScrollY) {
 
 			computator.computeScrollSurfaceSize(surfaceSizeBuffer);
 
@@ -71,7 +72,10 @@ public class ChartScroller {
 					.setViewportTopLeft(currentViewport.left + viewportOffsetX, currentViewport.top + viewportOffsetY);
 		}
 
-		return result;
+		scrollResult.canScrollX = canScrollX;
+		scrollResult.canScrollY = canScrollY;
+
+		return canScrollX || canScrollY;
 	}
 
 	public boolean computeScrollOffset(ChartComputator computator) {
@@ -110,6 +114,11 @@ public class ChartScroller {
 				- computator.getContentRect().width(), 0, surfaceSizeBuffer.y - computator.getContentRect().height(),
 				computator.getContentRect().width() / 2, computator.getContentRect().height() / 2);
 		return true;
+	}
+
+	public static class ScrollResult {
+		public boolean canScrollX;
+		public boolean canScrollY;
 	}
 
 }

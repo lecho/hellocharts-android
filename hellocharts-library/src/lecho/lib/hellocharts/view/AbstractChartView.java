@@ -10,6 +10,7 @@ import lecho.lib.hellocharts.animation.ChartViewportAnimator;
 import lecho.lib.hellocharts.animation.ChartViewportAnimatorV14;
 import lecho.lib.hellocharts.animation.ChartViewportAnimatorV8;
 import lecho.lib.hellocharts.gesture.ChartTouchHandler;
+import lecho.lib.hellocharts.gesture.ContainerScrollType;
 import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.Viewport;
@@ -34,6 +35,8 @@ public abstract class AbstractChartView extends View implements Chart {
 	protected ChartDataAnimator dataAnimator;
 	protected ChartViewportAnimator viewportAnimator;
 	protected boolean isViewportCalculationOnAnimationEnabled = true;
+	protected boolean isContainerScrollEnabled = false;
+	protected ContainerScrollType containerScrollType;
 
 	public AbstractChartView(Context context) {
 		this(context, null, 0);
@@ -87,9 +90,19 @@ public abstract class AbstractChartView extends View implements Chart {
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		super.onTouchEvent(event);
-		if (touchHandler.handleTouchEvent(event)) {
+
+		boolean needInvalidate;
+
+		if (isContainerScrollEnabled) {
+			needInvalidate = touchHandler.handleTouchEvent(event, getParent(), containerScrollType);
+		} else {
+			needInvalidate = touchHandler.handleTouchEvent(event);
+		}
+
+		if (needInvalidate) {
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
+
 		return true;
 	}
 
@@ -301,6 +314,17 @@ public abstract class AbstractChartView extends View implements Chart {
 	@Override
 	public SelectedValue getSelectedValue() {
 		return chartRenderer.getSelectedValue();
+	}
+
+	@Override
+	public boolean isContainerScrollEnabled() {
+		return isContainerScrollEnabled;
+	}
+
+	@Override
+	public void setContainerScrollEnabled(boolean isContainerScrollEnabled, ContainerScrollType containerScrollType) {
+		this.isContainerScrollEnabled = isContainerScrollEnabled;
+		this.containerScrollType = containerScrollType;
 	}
 
 }
