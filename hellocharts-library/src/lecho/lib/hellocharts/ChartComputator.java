@@ -1,6 +1,7 @@
 package lecho.lib.hellocharts;
 
 import lecho.lib.hellocharts.model.Viewport;
+import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.Chart;
 import android.graphics.Point;
 import android.graphics.PointF;
@@ -14,6 +15,7 @@ import android.graphics.Rect;
  * 
  */
 public class ChartComputator {
+
 	/**
 	 * Maximum chart zoom.
 	 */
@@ -108,6 +110,22 @@ public class ChartComputator {
 	 * Checks if new viewport doesn't exceed max available viewport.
 	 */
 	public void constrainViewport(float left, float top, float right, float bottom) {
+
+		if (Utils.almostEqual(maxViewport.left, left)) {
+			left = maxViewport.left;
+		}
+
+		if (Utils.almostEqual(maxViewport.right, right)) {
+			right = maxViewport.right;
+		}
+
+		if (Utils.almostEqual(maxViewport.top, top)) {
+			top = maxViewport.top;
+		}
+
+		if (Utils.almostEqual(maxViewport.bottom, bottom)) {
+			bottom = maxViewport.bottom;
+		}
 
 		if (right - left < minViewportWidth) {
 			// Minimum width - constrain horizontal zoom!

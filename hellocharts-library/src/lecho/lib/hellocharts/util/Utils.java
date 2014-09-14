@@ -5,6 +5,10 @@ import android.graphics.Color;
 import android.util.TypedValue;
 
 public abstract class Utils {
+
+	public static final float MAX_ABSOLUTE_FLOAT_DIFF = 0.00001f;
+	public static final float MAX_RELATIVE_FLOAT_DIFF = 0.001f;
+
 	public static final int POW10[] = { 1, 10, 100, 1000, 10000, 100000, 1000000 };
 	public static final int DEFAULT_COLOR = Color.parseColor("#DFDFDF");
 	public static final int DEFAULT_DARKEN_COLOR = Color.parseColor("#DDDDDD");
@@ -115,23 +119,11 @@ public abstract class Utils {
 	}
 
 	/**
-	 * Checks how many "representable floats" exists between 'a' and 'b' and returns true if that number is less then
-	 * maxUlps. If maxUlps = 1 this will have the same results as nextDawnF(a) >= a <= nextUpF(a)
+	 * Method checks if two float numbers are similar.
 	 */
-	public static boolean almostEqualF(float a, float b, int maxUlps) {
-		if (a == b) {
-			return true;
-		}
-		int intDiff = Math.abs(Float.floatToRawIntBits(a) - Float.floatToRawIntBits(b));
-		if (intDiff < maxUlps) {
-			return true;
-		}
-		return false;
-	}
-
-	public static boolean almostEqualRelativeAndAbs(float a, float b, float maxDiff, float maxRelDiff) {
+	public static boolean almostEqual(float a, float b, float absoluteDiff, float relativeDiff) {
 		float diff = Math.abs(a - b);
-		if (diff <= maxDiff) {
+		if (diff <= absoluteDiff) {
 			return true;
 		}
 
@@ -139,11 +131,15 @@ public abstract class Utils {
 		b = Math.abs(b);
 		float largest = (a > b) ? a : b;
 
-		if (diff <= largest * maxRelDiff) {
+		if (diff <= largest * relativeDiff) {
 			return true;
 		}
 
 		return false;
+	}
+
+	public static boolean almostEqual(float a, float b) {
+		return almostEqual(a, b, MAX_ABSOLUTE_FLOAT_DIFF, MAX_RELATIVE_FLOAT_DIFF);
 	}
 
 	/**
