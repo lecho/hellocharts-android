@@ -63,6 +63,10 @@
             android:label="@string/title_activity_tempo_chart" >
         </activity>
         <activity
+            android:name=".SpeedChartActivity"
+            android:label="@string/title_activity_speed_chart" >
+        </activity>
+        <activity
             android:name=".ViewPagerChartsActivity"
             android:label="@string/title_activity_view_pager_charts" >
         </activity>

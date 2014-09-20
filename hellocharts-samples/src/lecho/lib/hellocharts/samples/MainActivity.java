@@ -116,16 +116,21 @@ public class MainActivity extends ActionBarActivity {
 				startActivity(intent);
 				break;
 			case 8:
-				// Good Bad filled line chart;
+				// Tempo line chart;
 				intent = new Intent(getActivity(), TempoChartActivity.class);
 				startActivity(intent);
 				break;
 			case 9:
+				// Speed line chart;
+				intent = new Intent(getActivity(), SpeedChartActivity.class);
+				startActivity(intent);
+				break;
+			case 10:
 				// Good Bad filled line chart;
 				intent = new Intent(getActivity(), GoodBadChartActivity.class);
 				startActivity(intent);
 				break;
-			case 10:
+			case 11:
 				// Good Bad filled line chart;
 				intent = new Intent(getActivity(), ViewPagerChartsActivity.class);
 				startActivity(intent);
@@ -142,13 +147,18 @@ public class MainActivity extends ActionBarActivity {
 			list.add(new ChartSampleDescription("Column Chart", ""));
 			list.add(new ChartSampleDescription("Pie Chart", ""));
 			list.add(new ChartSampleDescription("Bubble Chart", ""));
-			list.add(new ChartSampleDescription("Preview Line Chart", ""));
-			list.add(new ChartSampleDescription("Preview Column Chart", ""));
-			list.add(new ChartSampleDescription("Combo Line/Column Chart", ""));
-			list.add(new ChartSampleDescription("Line/Column Chart Dependency", ""));
-			list.add(new ChartSampleDescription("Tempo/Speed Chart Sample", ""));
-			list.add(new ChartSampleDescription("Good/Bad Chart Sample", ""));
-			list.add(new ChartSampleDescription("ViewPager with Chart Sample", ""));
+			list.add(new ChartSampleDescription("Preview Line Chart",
+					"Control Line Chart viewport with another Line Chart "));
+			list.add(new ChartSampleDescription("Preview Column Chart",
+					"Control Column Chart viewport with another Column Chart"));
+			list.add(new ChartSampleDescription("Combo Line/Column Chart", "Combo chart with lines and columns"));
+			list.add(new ChartSampleDescription("Line/Column Chart Dependency",
+					"LineChart responds(with animation) to ColumnChart value selection"));
+			list.add(new ChartSampleDescription("Tempo Chart Sample", "Example of reverted axis with time format mm:ss"));
+			list.add(new ChartSampleDescription("Speed Chart Sample", "Exapmle of chart with axes inside chart area"));
+			list.add(new ChartSampleDescription("Good/Bad Chart Sample", "Example of filled area line chart"));
+			list.add(new ChartSampleDescription("ViewPager with Chart Sample",
+					"Charts within ViewPager can be zoomed and scrolled"));
 
 			return list;
 		}
