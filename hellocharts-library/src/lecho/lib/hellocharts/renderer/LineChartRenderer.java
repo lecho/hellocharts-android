@@ -54,14 +54,6 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	 */
 	private Canvas swCanvas = new Canvas();
 
-	// /**
-	// * Indicates when secondBitmap needs to be drawn, that is when chart uses Bezier's curves or filled area. If set
-	// to
-	// * false secondBitmap will not be drawn and therefore chart will be rendered much faster. This flag is set in
-	// * {@link #calculateMaxViewport()} method.
-	// */
-	// private boolean needSecondBitmap = false;
-
 	public LineChartRenderer(Context context, Chart chart, LineChartDataProvider dataProvider) {
 		super(context, chart);
 		this.dataProvider = dataProvider;

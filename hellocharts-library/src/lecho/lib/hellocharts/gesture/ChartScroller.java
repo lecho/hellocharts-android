@@ -110,9 +110,9 @@ public class ChartScroller {
 
 		// TODO probably should be mScroller.forceFinish but ScrollerCompat doesn't have that method.
 		scroller.abortAnimation();
+
 		scroller.fling(startX, startY, velocityX, velocityY, 0, surfaceSizeBuffer.x
-				- computator.getContentRect().width(), 0, surfaceSizeBuffer.y - computator.getContentRect().height(),
-				computator.getContentRect().width() / 2, computator.getContentRect().height() / 2);
+				- computator.getContentRect().width(), 0, surfaceSizeBuffer.y - computator.getContentRect().height());
 		return true;
 	}
 
