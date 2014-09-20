@@ -228,20 +228,6 @@ public class ChartComputator {
 		return false;
 	}
 
-	public boolean isWithinContentRectWidth(float x, float precision) {
-		if (x >= contentRect.left - precision && x <= contentRect.right + precision) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean isWithinContentRectHeight(float y, float precision) {
-		if (y <= contentRect.bottom + precision && y >= contentRect.top - precision) {
-			return true;
-		}
-		return false;
-	}
-
 	public Rect getContentRect() {
 		return contentRect;
 	}

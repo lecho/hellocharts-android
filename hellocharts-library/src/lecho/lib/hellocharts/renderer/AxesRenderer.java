@@ -261,7 +261,7 @@ public class AxesRenderer {
 
 					final float rawX = computator.computeRawX(axisValue.getValue());
 
-					if (checkRawX(computator, rawX, axis.isInside(), position)) {
+					if (checkRawX(contentRect, rawX, axis.isInside(), position)) {
 
 						valuesBuff[0] = axisValue.getValue();
 						final int nummChars = axis.getFormatter().formatValue(labelBuffer, valuesBuff,
@@ -303,10 +303,12 @@ public class AxesRenderer {
 			axisHorizontalDrawBuffer = new float[axisHorizontalStopsBuffer.numStops * 4];
 		}
 
+		int lineIndex = 0;
+
 		for (int i = 0; i < axisHorizontalStopsBuffer.numStops; ++i) {
 			float rawX = computator.computeRawX(axisHorizontalStopsBuffer.stops[i]);
 
-			if (checkRawX(computator, rawX, axis.isInside(), position)) {
+			if (checkRawX(contentRect, rawX, axis.isInside(), position)) {
 
 				valuesBuff[0] = axisHorizontalStopsBuffer.stops[i];
 				final int nummChars = axis.getFormatter().formatValue(labelBuffer, valuesBuff, null,
@@ -315,10 +317,11 @@ public class AxesRenderer {
 						textPaintTab[position]);
 
 				if (axis.hasLines()) {
-					axisHorizontalDrawBuffer[i * 4 + 0] = rawX;
-					axisHorizontalDrawBuffer[i * 4 + 1] = contentRectMargins.top;
-					axisHorizontalDrawBuffer[i * 4 + 2] = rawX;
-					axisHorizontalDrawBuffer[i * 4 + 3] = contentRectMargins.bottom;
+					axisHorizontalDrawBuffer[lineIndex * 4 + 0] = rawX;
+					axisHorizontalDrawBuffer[lineIndex * 4 + 1] = contentRectMargins.top;
+					axisHorizontalDrawBuffer[lineIndex * 4 + 2] = rawX;
+					axisHorizontalDrawBuffer[lineIndex * 4 + 3] = contentRectMargins.bottom;
+					++lineIndex;
 				}
 
 			}
@@ -326,13 +329,22 @@ public class AxesRenderer {
 
 		if (axis.hasLines()) {
 			linePaint.setColor(axis.getLineColor());
-			canvas.drawLines(axisHorizontalDrawBuffer, 0, axisHorizontalStopsBuffer.numStops * 4, linePaint);
+			canvas.drawLines(axisHorizontalDrawBuffer, 0, lineIndex * 4, linePaint);
 		}
 	}
 
-	private boolean checkRawX(ChartComputator computator, float rawX, boolean axisInside, int position) {
+	/**
+	 * For axis inside chart area this method checks if there is place to draw axis label. If yes returns true,
+	 * otherwise false.
+	 */
+	private boolean checkRawX(Rect rect, float rawX, boolean axisInside, int position) {
 		if (axisInside) {
-			return computator.isWithinContentRectWidth(rawX, axisLabelWidthTab[position] / 2);
+			float margin = axisLabelWidthTab[position] / 2;
+			if (rawX >= rect.left + margin && rawX <= rect.right - margin) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		return true;
@@ -423,7 +435,7 @@ public class AxesRenderer {
 
 					final float rawY = computator.computeRawY(value);
 
-					if (checkRawY(computator, rawY, axis.isInside(), position)) {
+					if (checkRawY(contentRect, rawY, axis.isInside(), position)) {
 
 						valuesBuff[0] = axisValue.getValue();
 						final int nummChars = axis.getFormatter().formatValue(labelBuffer, valuesBuff,
@@ -465,29 +477,32 @@ public class AxesRenderer {
 			axisVerticalDrawBuffer = new float[axisVerticalStopsBuffer.numStops * 4];
 		}
 
-		for (int i = 0; i < axisVerticalStopsBuffer.numStops; i++) {
-			final float rawY = computator.computeRawY(axisVerticalStopsBuffer.stops[i]);
+		int lineIndex = 0;
 
-			if (checkRawY(computator, rawY, axis.isInside(), position)) {
+		for (int stopIndex = 0; stopIndex < axisVerticalStopsBuffer.numStops; stopIndex++) {
+			final float rawY = computator.computeRawY(axisVerticalStopsBuffer.stops[stopIndex]);
 
-				valuesBuff[0] = axisVerticalStopsBuffer.stops[i];
+			if (checkRawY(contentRect, rawY, axis.isInside(), position)) {
+
+				valuesBuff[0] = axisVerticalStopsBuffer.stops[stopIndex];
 				final int nummChars = axis.getFormatter().formatValue(labelBuffer, valuesBuff, null,
 						axisVerticalStopsBuffer.decimals);
 				canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY,
 						textPaintTab[position]);
 
 				if (axis.hasLines()) {
-					axisVerticalDrawBuffer[i * 4 + 0] = contentRectMargins.left;
-					axisVerticalDrawBuffer[i * 4 + 1] = rawY;
-					axisVerticalDrawBuffer[i * 4 + 2] = contentRectMargins.right;
-					axisVerticalDrawBuffer[i * 4 + 3] = rawY;
+					axisVerticalDrawBuffer[lineIndex * 4 + 0] = contentRectMargins.left;
+					axisVerticalDrawBuffer[lineIndex * 4 + 1] = rawY;
+					axisVerticalDrawBuffer[lineIndex * 4 + 2] = contentRectMargins.right;
+					axisVerticalDrawBuffer[lineIndex * 4 + 3] = rawY;
+					++lineIndex;
 				}
 			}
 		}
 
 		if (axis.hasLines()) {
 			linePaint.setColor(axis.getLineColor());
-			canvas.drawLines(axisVerticalDrawBuffer, 0, axisVerticalStopsBuffer.numStops * 4, linePaint);
+			canvas.drawLines(axisVerticalDrawBuffer, 0, lineIndex * 4, linePaint);
 		}
 	}
 
@@ -495,13 +510,18 @@ public class AxesRenderer {
 	 * For axis inside chart area this method checks if there is place to draw axis label. If yes returns true,
 	 * otherwise false.
 	 */
-	private boolean checkRawY(ChartComputator computator, float rawY, boolean axisInside, int position) {
+	private boolean checkRawY(Rect rect, float rawY, boolean axisInside, int position) {
 		if (axisInside) {
-			return computator.isWithinContentRectHeight(rawY, axisLabelTextAscentTab[position] * 2);
+			float marginBottom = axisLabelTextAscentTab[BOTTOM] + axisMargin;
+			float marginTop = axisLabelTextAscentTab[TOP] + axisMargin;
+			if (rawY <= rect.bottom - marginBottom && rawY >= rect.top + marginTop) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		return true;
 
 	}
-
 }
