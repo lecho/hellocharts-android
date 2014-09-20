@@ -5,7 +5,6 @@ import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.provider.LineChartDataProvider;
-import lecho.lib.hellocharts.util.PathCompat;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;
@@ -49,23 +48,19 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	 * Not hardware accelerated bitmap used to draw Path(smooth lines and filled area). Bitmap has size of contentRect
 	 * so it is usually smaller than the view so you should used relative coordinates to draw on it.
 	 */
-	private Bitmap secondBitmap;
+	private Bitmap swBitmap;
 	/**
 	 * Canvas to draw on secondBitmap.
 	 */
-	private Canvas secondCanvas = new Canvas();
+	private Canvas swCanvas = new Canvas();
 
-	/**
-	 * Indicates when secondBitmap needs to be drawn, that is when chart uses Bezier's curves or filled area. If set to
-	 * false secondBitmap will not be drawn and therefore chart will be rendered much faster. This flag is set in
-	 * {@link #calculateMaxViewport()} method.
-	 */
-	private boolean needSecondBitmap = false;
-
-	/**
-	 * Simple Path implementation that uses drawLines() method.
-	 */
-	private PathCompat pathCompat = new PathCompat();
+	// /**
+	// * Indicates when secondBitmap needs to be drawn, that is when chart uses Bezier's curves or filled area. If set
+	// to
+	// * false secondBitmap will not be drawn and therefore chart will be rendered much faster. This flag is set in
+	// * {@link #calculateMaxViewport()} method.
+	// */
+	// private boolean needSecondBitmap = false;
 
 	public LineChartRenderer(Context context, Chart chart, LineChartDataProvider dataProvider) {
 		super(context, chart);
@@ -97,10 +92,10 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 		computator.setInternalMargin(calculateContentAreaMargin());
 
-		if (needSecondBitmap && computator.getChartWidth() > 0 && computator.getChartHeight() > 0) {
-			secondBitmap = Bitmap.createBitmap(computator.getChartWidth(), computator.getChartHeight(),
+		if (computator.getChartWidth() > 0 && computator.getChartHeight() > 0) {
+			swBitmap = Bitmap.createBitmap(computator.getChartWidth(), computator.getChartHeight(),
 					Bitmap.Config.ARGB_8888);
-			secondCanvas.setBitmap(secondBitmap);
+			swCanvas.setBitmap(swBitmap);
 		}
 	}
 
@@ -113,41 +108,25 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		// Set base value for this chart - default is 0.
 		baseValue = data.getBaseValue();
 
-		// Check if chart need SW bitmap.
-		needSecondBitmap = false;
-		for (Line line : data.getLines()) {
-			if (line.isFilled() || line.isSmooth()) {
-				needSecondBitmap = true;
-			}
-		}
-
 	}
 
 	@Override
 	public void draw(Canvas canvas) {
 		final LineChartData data = dataProvider.getLineChartData();
 
-		if (needSecondBitmap) {
-			secondCanvas.drawColor(Color.TRANSPARENT, Mode.CLEAR);
-		}
+		swCanvas.drawColor(Color.TRANSPARENT, Mode.CLEAR);
 
 		for (Line line : data.getLines()) {
 			if (line.hasLines()) {
 				if (line.isSmooth()) {
-					drawSmoothPath(secondCanvas, line);
+					drawSmoothPath(swCanvas, line);
 				} else {
-					if (needSecondBitmap) {
-						drawPath(secondCanvas, line);
-					} else {
-						drawPath(canvas, line);
-					}
+					drawPath(swCanvas, line);
 				}
 			}
 		}
 
-		if (needSecondBitmap) {
-			canvas.drawBitmap(secondBitmap, 0, 0, null);
-		}
+		canvas.drawBitmap(swBitmap, 0, 0, null);
 	}
 
 	@Override
@@ -240,25 +219,21 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			final float rawY = computator.computeRawY(pointValue.getY());
 
 			if (valueIndex == 0) {
-				pathCompat.moveTo(rawX, rawY);
+				path.moveTo(rawX, rawY);
 			} else {
-				pathCompat.lineTo(canvas, linePaint, rawX, rawY);
+				path.lineTo(rawX, rawY);
 			}
 
-			if (line.isFilled()) {
-				if (valueIndex == 0) {
-					path.moveTo(rawX, rawY);
-				} else {
-					path.lineTo(rawX, rawY);
-				}
-			}
 			++valueIndex;
+
 		}
 
-		pathCompat.drawPath(canvas, linePaint);
+		canvas.drawPath(path, linePaint);
+
 		if (line.isFilled()) {
 			drawArea(canvas, line.getAreaTransparency());
 		}
+
 		path.reset();
 	}
 
