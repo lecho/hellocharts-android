@@ -34,7 +34,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 	private LineChartDataProvider dataProvider;
 
-	private int contentRectCheckPrecission;
+	private int checkPrecission;
 
 	private float baseValue = 0;
 
@@ -76,7 +76,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		pointPaint.setAntiAlias(true);
 		pointPaint.setStyle(Paint.Style.FILL);
 
-		contentRectCheckPrecission = Utils.dp2px(density, 4);
+		checkPrecission = Utils.dp2px(density, 2);
 
 	}
 
@@ -338,7 +338,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
 			final float rawX = computator.computeRawX(pointValue.getX());
 			final float rawY = computator.computeRawY(pointValue.getY());
-			if (computator.isWithinContentRect((int) rawX, (int) rawY, contentRectCheckPrecission)) {
+			if (computator.isWithinContentRect(rawX, rawY, checkPrecission)) {
 				// Draw points only if they are within contentRect, using contentRect instead of viewport to avoid some
 				// float rounding problems.
 				if (MODE_DRAW == mode) {

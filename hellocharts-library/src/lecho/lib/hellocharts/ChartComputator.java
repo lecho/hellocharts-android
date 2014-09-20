@@ -152,6 +152,7 @@ public class ChartComputator {
 
 		final float curWidth = currentViewport.width();
 		final float curHeight = currentViewport.height();
+
 		left = Math.max(maxViewport.left, Math.min(left, maxViewport.right - curWidth));
 		top = Math.max(maxViewport.bottom + curHeight, Math.min(top, maxViewport.top));
 		constrainViewport(left, top, left + curWidth, top - curHeight);
@@ -218,11 +219,25 @@ public class ChartComputator {
 	/**
 	 * Check if given coordinates lies inside contentRect.
 	 */
-	public boolean isWithinContentRect(int x, int y, int precision) {
+	public boolean isWithinContentRect(float x, float y, float precision) {
 		if (x >= contentRect.left - precision && x <= contentRect.right + precision) {
 			if (y <= contentRect.bottom + precision && y >= contentRect.top - precision) {
 				return true;
 			}
+		}
+		return false;
+	}
+
+	public boolean isWithinContentRectWidth(float x, float precision) {
+		if (x >= contentRect.left - precision && x <= contentRect.right + precision) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isWithinContentRectHeight(float y, float precision) {
+		if (y <= contentRect.bottom + precision && y >= contentRect.top - precision) {
+			return true;
 		}
 		return false;
 	}

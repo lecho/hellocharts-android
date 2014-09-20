@@ -79,6 +79,7 @@ public abstract class AbstractChartView extends View implements Chart {
 	protected void onDraw(Canvas canvas) {
 		long time = System.nanoTime();
 		super.onDraw(canvas);
+
 		if (isEnabled()) {
 			axesRenderer.draw(canvas);
 			int clipRestoreCount = canvas.save();
@@ -89,6 +90,7 @@ public abstract class AbstractChartView extends View implements Chart {
 		} else {
 			canvas.drawColor(Utils.DEFAULT_COLOR);
 		}
+
 		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
 	}
 

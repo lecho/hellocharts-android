@@ -261,7 +261,7 @@ public class AxesRenderer {
 
 					final float rawX = computator.computeRawX(axisValue.getValue());
 
-					if (checkRawX(contentRectMargins, rawX, axis.isInside(), position)) {
+					if (checkRawX(computator, rawX, axis.isInside(), position)) {
 
 						valuesBuff[0] = axisValue.getValue();
 						final int nummChars = axis.getFormatter().formatValue(labelBuffer, valuesBuff,
@@ -306,7 +306,7 @@ public class AxesRenderer {
 		for (int i = 0; i < axisHorizontalStopsBuffer.numStops; ++i) {
 			float rawX = computator.computeRawX(axisHorizontalStopsBuffer.stops[i]);
 
-			if (checkRawX(contentRectMargins, rawX, axis.isInside(), position)) {
+			if (checkRawX(computator, rawX, axis.isInside(), position)) {
 
 				valuesBuff[0] = axisHorizontalStopsBuffer.stops[i];
 				final int nummChars = axis.getFormatter().formatValue(labelBuffer, valuesBuff, null,
@@ -330,18 +330,12 @@ public class AxesRenderer {
 		}
 	}
 
-	private boolean checkRawX(Rect rect, float rawX, boolean axisInside, int position) {
-		if (!axisInside) {
-			return true;
+	private boolean checkRawX(ChartComputator computator, float rawX, boolean axisInside, int position) {
+		if (axisInside) {
+			return computator.isWithinContentRectWidth(rawX, axisLabelWidthTab[position] / 2);
 		}
 
-		int halfLabel = axisLabelWidthTab[position] / 2;
-
-		if (rawX > rect.left + halfLabel && rawX < rect.right - halfLabel) {
-			return true;
-		}
-
-		return false;
+		return true;
 
 	}
 
@@ -429,7 +423,7 @@ public class AxesRenderer {
 
 					final float rawY = computator.computeRawY(value);
 
-					if (checkRawY(contentRectMargins, rawY, axis.isInside(), position)) {
+					if (checkRawY(computator, rawY, axis.isInside(), position)) {
 
 						valuesBuff[0] = axisValue.getValue();
 						final int nummChars = axis.getFormatter().formatValue(labelBuffer, valuesBuff,
@@ -474,7 +468,7 @@ public class AxesRenderer {
 		for (int i = 0; i < axisVerticalStopsBuffer.numStops; i++) {
 			final float rawY = computator.computeRawY(axisVerticalStopsBuffer.stops[i]);
 
-			if (checkRawY(contentRectMargins, rawY, axis.isInside(), position)) {
+			if (checkRawY(computator, rawY, axis.isInside(), position)) {
 
 				valuesBuff[0] = axisVerticalStopsBuffer.stops[i];
 				final int nummChars = axis.getFormatter().formatValue(labelBuffer, valuesBuff, null,
@@ -501,18 +495,12 @@ public class AxesRenderer {
 	 * For axis inside chart area this method checks if there is place to draw axis label. If yes returns true,
 	 * otherwise false.
 	 */
-	private boolean checkRawY(Rect rect, float rawY, boolean axisInside, int position) {
-		if (!axisInside) {
-			return true;
+	private boolean checkRawY(ChartComputator computator, float rawY, boolean axisInside, int position) {
+		if (axisInside) {
+			return computator.isWithinContentRectHeight(rawY, axisLabelTextAscentTab[position] * 2);
 		}
 
-		int doubleHight = axisLabelTextAscentTab[position] * 2;
-
-		if (rawY > rect.top + doubleHight && rawY < rect.bottom - doubleHight) {
-			return true;
-		}
-
-		return false;
+		return true;
 
 	}
 
