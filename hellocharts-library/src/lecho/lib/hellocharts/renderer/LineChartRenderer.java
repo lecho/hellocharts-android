@@ -106,19 +106,30 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	public void draw(Canvas canvas) {
 		final LineChartData data = dataProvider.getLineChartData();
 
-		swCanvas.drawColor(Color.TRANSPARENT, Mode.CLEAR);
+		final Canvas drawCanvas;
+
+		// swBitmap can be null if chart is rendered in layout editor. In that case use default canvas and not swCanvas.
+		if (null != swBitmap) {
+			drawCanvas = swCanvas;
+			drawCanvas.drawColor(Color.TRANSPARENT, Mode.CLEAR);
+		} else {
+			drawCanvas = canvas;
+		}
 
 		for (Line line : data.getLines()) {
 			if (line.hasLines()) {
 				if (line.isSmooth()) {
-					drawSmoothPath(swCanvas, line);
+					drawSmoothPath(drawCanvas, line);
 				} else {
-					drawPath(swCanvas, line);
+					drawPath(drawCanvas, line);
 				}
 			}
 		}
 
-		canvas.drawBitmap(swBitmap, 0, 0, null);
+		if (null != swBitmap) {
+			canvas.drawBitmap(swBitmap, 0, 0, null);
+		}
+
 	}
 
 	@Override
