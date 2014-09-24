@@ -27,7 +27,7 @@ public class Line {
 	private boolean hasLines = true;
 	private boolean hasLabels = false;
 	private boolean hasLabelsOnlyForSelected = false;
-	private boolean isSmooth = false;
+	private boolean isCubic = false;
 	private boolean isFilled = false;
 	private int pointShape = SHAPE_CIRCLE;
 	private ValueFormatter formatter = new SimpleValueFormatter();
@@ -51,7 +51,7 @@ public class Line {
 		this.hasLines = line.hasLines;
 		this.hasLabels = line.hasLabels;
 		this.hasLabelsOnlyForSelected = line.hasLabelsOnlyForSelected;
-		this.isSmooth = line.isSmooth;
+		this.isCubic = line.isCubic;
 		this.isFilled = line.isFilled;
 		this.pointShape = line.pointShape;
 		this.formatter = line.formatter;
@@ -168,12 +168,12 @@ public class Line {
 		return this;
 	}
 
-	public boolean isSmooth() {
-		return isSmooth;
+	public boolean isCubic() {
+		return isCubic;
 	}
 
-	public Line setSmooth(boolean isSmooth) {
-		this.isSmooth = isSmooth;
+	public Line setCubic(boolean isCubic) {
+		this.isCubic = isCubic;
 		return this;
 	}
 

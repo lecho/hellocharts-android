@@ -118,7 +118,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 		for (Line line : data.getLines()) {
 			if (line.hasLines()) {
-				if (line.isSmooth()) {
+				if (line.isCubic()) {
 					drawSmoothPath(drawCanvas, line);
 				} else {
 					drawPath(drawCanvas, line);
