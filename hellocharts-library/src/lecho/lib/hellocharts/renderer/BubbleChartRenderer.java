@@ -4,6 +4,7 @@ import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.model.BubbleChartData;
 import lecho.lib.hellocharts.model.BubbleValue;
 import lecho.lib.hellocharts.model.ValueFormatter;
+import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.provider.BubbleChartDataProvider;
 import lecho.lib.hellocharts.util.Utils;
@@ -118,11 +119,11 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		for (BubbleValue bubbleValue : data.getValues()) {
 			float rawRadius = processBubble(bubbleValue, bubbleCenter);
 
-			if (bubbleValue.getShape() == BubbleValue.SHAPE_SQUARE) {
+			if (ValueShape.SQUARE.equals(bubbleValue.getShape())) {
 				if (bubbleRect.contains(touchX, touchY)) {
 					selectedValue.set(valueIndex, valueIndex, 0);
 				}
-			} else {
+			} else if (ValueShape.CIRCLE.equals(bubbleValue.getShape())) {
 				final float diffX = touchX - bubbleCenter.x;
 				final float diffY = touchY - bubbleCenter.y;
 				final float touchDistance = (float) Math.sqrt((diffX * diffX) + (diffY * diffY));
@@ -130,7 +131,10 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 				if (touchDistance <= rawRadius) {
 					selectedValue.set(valueIndex, valueIndex, 0);
 				}
+			} else {
+				throw new IllegalArgumentException("Invalid bubble shape: " + bubbleValue.getShape());
 			}
+
 			++valueIndex;
 		}
 
@@ -190,10 +194,12 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void drawBubbleShapeAndLabel(Canvas canvas, BubbleValue bubbleValue, float rawRadius, int mode) {
-		if (bubbleValue.getShape() == BubbleValue.SHAPE_SQUARE) {
+		if (ValueShape.SQUARE.equals(bubbleValue.getShape())) {
 			canvas.drawRect(bubbleRect, bubblePaint);
-		} else {
+		} else if (ValueShape.CIRCLE.equals(bubbleValue.getShape())) {
 			canvas.drawCircle(bubbleCenter.x, bubbleCenter.y, rawRadius, bubblePaint);
+		} else {
+			throw new IllegalArgumentException("Invalid bubble shape: " + bubbleValue.getShape());
 		}
 
 		if (MODE_HIGHLIGHT == mode) {
@@ -251,7 +257,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		}
 
 		bubbleCenter.set(rawX, rawY);
-		if (bubbleValue.getShape() == BubbleValue.SHAPE_SQUARE) {
+		if (ValueShape.SQUARE.equals(bubbleValue.getShape())) {
 			bubbleRect.set(rawX - rawRadius, rawY - rawRadius, rawX + rawRadius, rawY + rawRadius);
 		}
 		return rawRadius;
@@ -276,7 +282,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		float right = rawX + labelWidth / 2 + labelMargin;
 		float top = rawY - labelHeight / 2 - labelMargin;
 		float bottom = rawY + labelHeight / 2 + labelMargin;
-		
+
 		if (top < contentRect.top) {
 			top = rawY;
 			bottom = rawY + labelHeight + labelMargin * 2;

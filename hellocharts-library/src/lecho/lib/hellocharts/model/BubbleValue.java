@@ -9,8 +9,6 @@ import lecho.lib.hellocharts.util.Utils;
  * 
  */
 public class BubbleValue {
-	public static final int SHAPE_CIRCLE = 1;
-	public static final int SHAPE_SQUARE = 2;
 	private float x;
 	private float y;
 	private float z;
@@ -22,7 +20,7 @@ public class BubbleValue {
 	private float diffZ;
 	private int color = Utils.DEFAULT_COLOR;
 	private int darkenColor = Utils.DEFAULT_DARKEN_COLOR;
-	private int shape = SHAPE_CIRCLE;
+	private ValueShape shape = ValueShape.CIRCLE;
 	private char[] label;
 
 	public BubbleValue() {
@@ -101,16 +99,12 @@ public class BubbleValue {
 		return darkenColor;
 	}
 
-	public int getShape() {
+	public ValueShape getShape() {
 		return shape;
 	}
 
-	public BubbleValue setShape(int shape) {
-		if (SHAPE_SQUARE == shape) {
-			this.shape = SHAPE_SQUARE;
-		} else {
-			this.shape = SHAPE_CIRCLE;
-		}
+	public BubbleValue setShape(ValueShape shape) {
+		this.shape = shape;
 		return this;
 	}
 
