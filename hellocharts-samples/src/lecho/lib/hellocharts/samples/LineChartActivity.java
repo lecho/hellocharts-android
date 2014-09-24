@@ -9,14 +9,12 @@ import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.ValueShape;
-import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.Chart;
 import lecho.lib.hellocharts.view.LineChartView;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -43,11 +41,17 @@ public class LineChartActivity extends ActionBarActivity {
 
 		private LineChartView chart;
 		private LineChartData data;
+		private int numberOfLines = 1;
+		private int maxNumberOfLines = 4;
+		private int numberOfPoints = 12;
+
+		float[][] randomNumbersTab = new float[maxNumberOfLines][numberOfPoints];
+
 		private boolean hasAxes = true;
 		private boolean hasAxesNames = true;
 		private boolean hasLines = true;
 		private boolean hasPoints = true;
-		private ValueShape pointShape = ValueShape.CIRCLE;
+		private ValueShape shape = ValueShape.CIRCLE;
 		private boolean isFilled = false;
 		private boolean hasLabels = false;
 		private boolean isCubic = false;
@@ -64,7 +68,10 @@ public class LineChartActivity extends ActionBarActivity {
 			chart = (LineChartView) rootView.findViewById(R.id.chart);
 			chart.setOnValueTouchListener(new ValueTouchListener());
 
-			generateDefaultData();
+			// Generate some randome values.
+			generateValues();
+
+			generateData();
 			chart.setLineChartData(data);
 
 			return rootView;
@@ -80,68 +87,58 @@ public class LineChartActivity extends ActionBarActivity {
 		public boolean onOptionsItemSelected(MenuItem item) {
 			int id = item.getItemId();
 			if (id == R.id.action_reset) {
-				generateDefaultData();
-				chart.setLineChartData(data);
+				numberOfLines = 1;
+				generateData();
 				return true;
 			}
 			if (id == R.id.action_add_line) {
 				addLineToData();
-				chart.setLineChartData(data);
 				return true;
 			}
 			if (id == R.id.action_toggle_lines) {
 				toggleLines();
-				chart.setLineChartData(data);
 				return true;
 			}
 			if (id == R.id.action_toggle_points) {
 				togglePoints();
-				chart.setLineChartData(data);
 				return true;
 			}
-			if (id == R.id.action_toggle_bezier) {
-				toggleBezier();
-				chart.setLineChartData(data);
+			if (id == R.id.action_toggle_cubic) {
+				toggleCubic();
 
 				// It is good idea to manually set a little higher max viewport for cubic lines because sometimes line
-				// go above or below max/min. To do that use Viewport.inest() method and pas negative value as dy
+				// go above or below max/min. To do that use Viewport.inest() method and pass negative value as dy
 				// parameter.
 				// Remember to set viewport after you call setLineChartData().
-				Viewport v = chart.getMaxViewport();
-				float dy = v.height() * 0.05f;// just 10%, 5% on the top and 5% on the bottom
-				v.inset(0, -dy);
-				chart.setMaxViewport(v);
-				chart.setViewport(v, true);
+				// Viewport v = chart.getMaxViewport();
+				// float dy = v.height() * 0.05f;// just 10%, 5% on the top and 5% on the bottom
+				// v.inset(0, -dy);
+				// chart.setMaxViewport(v);
+				// chart.setViewport(v, true);
 				return true;
 			}
 			if (id == R.id.action_toggle_area) {
-				toggleArea();
-				chart.setLineChartData(data);
+				toggleFilled();
 				return true;
 			}
 			if (id == R.id.action_shape_circles) {
 				setCircles();
-				chart.setLineChartData(data);
 				return true;
 			}
 			if (id == R.id.action_shape_square) {
 				setSquares();
-				chart.setLineChartData(data);
 				return true;
 			}
 			if (id == R.id.action_toggle_labels) {
 				toggleLabels();
-				chart.setLineChartData(data);
 				return true;
 			}
 			if (id == R.id.action_toggle_axes) {
 				toggleAxes();
-				chart.setLineChartData(data);
 				return true;
 			}
 			if (id == R.id.action_toggle_axes_names) {
 				toggleAxesNames();
-				chart.setLineChartData(data);
 				return true;
 			}
 			if (id == R.id.action_animate) {
@@ -151,18 +148,11 @@ public class LineChartActivity extends ActionBarActivity {
 			}
 			if (id == R.id.action_toggle_selection_mode) {
 				chart.setValueSelectionEnabled(!chart.isValueSelectionEnabled());
+				toggleLabelForSelected();
+
 				Toast.makeText(getActivity(),
 						"Selection mode set to " + chart.isValueSelectionEnabled() + " select any point.",
 						Toast.LENGTH_SHORT).show();
-				return true;
-			}
-			if (id == R.id.action_toggle_label_for_selected) {
-				toggleLabelForSelected();
-				chart.setLineChartData(data);
-				Toast.makeText(
-						getActivity(),
-						"Label for selected to " + data.getLines().get(0).hasLabelsOnlyForSelected()
-								+ ". Works best with value selection mode.", Toast.LENGTH_SHORT).show();
 				return true;
 			}
 			if (id == R.id.action_toggle_touch_zoom) {
@@ -185,23 +175,53 @@ public class LineChartActivity extends ActionBarActivity {
 			return super.onOptionsItemSelected(item);
 		}
 
-		private void generateDefaultData() {
-			int numValues = 12;
-
-			List<PointValue> values = new ArrayList<PointValue>();
-			for (int i = 0; i < numValues; ++i) {
-				values.add(new PointValue(i, (float) Math.random() * 100f));
+		private void generateValues() {
+			for (int i = 0; i < maxNumberOfLines; ++i) {
+				for (int j = 0; j < numberOfPoints; ++j) {
+					randomNumbersTab[i][j] = (float) Math.random() * 100f;
+				}
 			}
+		}
 
-			Line line = new Line(values);
-			line.setColor(Utils.COLOR_GREEN);
+		private void generateData() {
 
 			List<Line> lines = new ArrayList<Line>();
-			lines.add(line);
+			for (int i = 0; i < numberOfLines; ++i) {
+
+				List<PointValue> values = new ArrayList<PointValue>();
+				for (int j = 0; j < numberOfPoints; ++j) {
+					values.add(new PointValue(j, randomNumbersTab[i][j]));
+				}
+
+				Line line = new Line(values);
+				line.setColor(Utils.COLORS[i]);
+				line.setShape(shape);
+				line.setCubic(isCubic);
+				line.setFilled(isFilled);
+				line.setHasLabels(hasLabels);
+				line.setHasLabelsOnlyForSelected(hasLabelForSelected);
+				line.setHasLines(hasLines);
+				line.setHasPoints(hasPoints);
+				lines.add(line);
+			}
 
 			data = new LineChartData(lines);
-			data.setAxisXBottom(new Axis().setName("Axis X"));
-			data.setAxisYLeft(new Axis().setName("Axis Y").setHasLines(true));
+
+			if (hasAxes) {
+				Axis axisX = new Axis();
+				Axis axisY = new Axis().setHasLines(true);
+				if (hasAxesNames) {
+					axisX.setName("Axis X");
+					axisY.setName("Axis Y");
+				}
+				data.setAxisXBottom(axisX);
+				data.setAxisYLeft(axisY);
+			} else {
+				data.setAxisXBottom(null);
+				data.setAxisYLeft(null);
+			}
+
+			chart.setLineChartData(data);
 
 		}
 
@@ -210,120 +230,82 @@ public class LineChartActivity extends ActionBarActivity {
 		 * {@link LineChartView#setLineChartData(LineChartData)}. Last 4th line has non-monotonically x values.
 		 */
 		private void addLineToData() {
-			if (data.getLines().size() >= 4) {
+			if (data.getLines().size() >= maxNumberOfLines) {
 				Toast.makeText(getActivity(), "Samples app uses max 4 lines!", Toast.LENGTH_SHORT).show();
 				return;
+			} else {
+				++numberOfLines;
 			}
 
-			int numValues = 12;
-			List<PointValue> values = new ArrayList<PointValue>();
-			for (int i = 0; i < numValues; ++i) {
-				values.add(new PointValue(i, (float) Math.random() * 100));
-			}
-
-			Line line = new Line();
-
-			int linesNum = data.getLines().size();
-			switch (linesNum) {
-			case 1:
-				line.setColor(Utils.COLOR_BLUE);
-				break;
-			case 2:
-				line.setColor(Utils.COLOR_ORANGE);
-				break;
-			default:
-				// Line chart support lines with different X values and X values don't have to be monotonically.
-				line.setColor(Utils.COLOR_VIOLET);
-				values = new ArrayList<PointValue>();
-				for (int i = 0; i < numValues; ++i) {
-					values.add(new PointValue((float) Math.random() * 12, (float) Math.random() * 100));
-				}
-				Toast.makeText(getActivity(), "Crazy violet line:)", Toast.LENGTH_SHORT).show();
-				break;
-			}
-
-			line.setValues(values);
-			data.getLines().add(line);
+			generateData();
 		}
 
 		private void toggleLines() {
-			for (Line line : data.getLines()) {
-				line.setHasLines(!line.hasLines());
-			}
+			hasLines = !hasLines;
+
+			generateData();
 		}
 
 		private void togglePoints() {
-			for (Line line : data.getLines()) {
-				line.setHasPoints(!line.hasPoints());
-			}
+			hasPoints = !hasPoints;
+
+			generateData();
 		}
 
-		private void toggleBezier() {
-			for (Line line : data.getLines()) {
-				line.setCubic(!line.isCubic());
-			}
+		private void toggleCubic() {
+			isCubic = !isCubic;
+
+			generateData();
 		}
 
-		private void toggleArea() {
-			for (Line line : data.getLines()) {
-				line.setFilled(!line.isFilled());
-			}
+		private void toggleFilled() {
+			isFilled = !isFilled;
+
+			generateData();
 		}
 
 		private void setCircles() {
-			for (Line line : data.getLines()) {
-				line.setShape(ValueShape.CIRCLE);
-			}
+			shape = ValueShape.CIRCLE;
+
+			generateData();
 		}
 
 		private void setSquares() {
-			for (Line line : data.getLines()) {
-				line.setShape(ValueShape.SQUARE);
-			}
+			shape = ValueShape.SQUARE;
+
+			generateData();
 		}
 
 		private void toggleLabels() {
-			for (Line line : data.getLines()) {
-				line.setHasLabels(!line.hasLabels());
+			hasLabels = !hasLabels;
+
+			if (hasLabels) {
+				hasLabelForSelected = false;
 			}
+
+			generateData();
 		}
 
 		private void toggleLabelForSelected() {
-			for (Line line : data.getLines()) {
-				line.setHasLabelsOnlyForSelected(!line.hasLabelsOnlyForSelected());
+			hasLabelForSelected = !hasLabelForSelected;
+
+			if (hasLabelForSelected) {
+				hasLabels = false;
 			}
+
+			generateData();
 		}
 
 		private void toggleAxes() {
-			if (!hasAxes) {
-				// by default axes are auto-generated;
-				data.setAxisXBottom(new Axis().setName("Axis X"));
-				data.setAxisYLeft(new Axis().setName("Axis Y").setHasLines(true));
-			} else {
-				// to disable axes set them to null;
-				data.setAxisXBottom(null);
-				data.setAxisYLeft(null);
-			}
 			hasAxes = !hasAxes;
+
+			generateData();
 		}
 
 		private void toggleAxesNames() {
-			if (hasAxes) {
-				// by default axes are auto-generated;
-				Axis axisX = data.getAxisXBottom();
-				if (TextUtils.isEmpty(axisX.getName())) {
-					axisX.setName("Axis X");
-				} else {
-					axisX.setName(null);
-				}
+			hasAxesNames = !hasAxesNames;
 
-				Axis axisY = data.getAxisYLeft();
-				if (TextUtils.isEmpty(axisY.getName())) {
-					axisY.setName("Axis Y");
-				} else {
-					axisY.setName(null);
-				}
-			}
+			generateData();
 		}
 
 		/**

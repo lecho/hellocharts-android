@@ -99,7 +99,7 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 				chart.setComboLineColumnChartData(data);
 				return true;
 			}
-			if (id == R.id.action_toggle_bezier) {
+			if (id == R.id.action_toggle_cubic) {
 				toggleBezier();
 				chart.setComboLineColumnChartData(data);
 				return true;

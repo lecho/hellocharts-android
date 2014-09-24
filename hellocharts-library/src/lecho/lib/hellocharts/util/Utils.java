@@ -14,12 +14,12 @@ public abstract class Utils {
 	public static final int COLOR_GREEN = Color.parseColor("#99CC00");
 	public static final int COLOR_ORANGE = Color.parseColor("#FFBB33");
 	public static final int COLOR_RED = Color.parseColor("#FF4444");
+	public static final int[] COLORS = new int[] { COLOR_BLUE, COLOR_VIOLET, COLOR_GREEN, COLOR_ORANGE, COLOR_RED };
 	private static final float SATURATION_DARKEN = 1.1f;
 	private static final float INTENSITY_DARKEN = 0.9f;
 
 	public static final int pickColor() {
-		final int[] colors = new int[] { COLOR_BLUE, COLOR_VIOLET, COLOR_GREEN, COLOR_ORANGE, COLOR_RED };
-		return colors[(int) Math.round(Math.random() * (colors.length - 1))];
+		return COLORS[(int) Math.round(Math.random() * (COLORS.length - 1))];
 	}
 
 	public static int dp2px(float density, int dp) {

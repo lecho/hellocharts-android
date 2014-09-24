@@ -20,8 +20,8 @@
         android:title="Toggle points"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/action_toggle_bezier"
-        android:title="Toggle Bezier&apos;s curve"
+        android:id="@+id/action_toggle_cubic"
+        android:title="Toggle Cubic curve"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_toggle_area"
@@ -54,10 +54,6 @@
     <item
         android:id="@+id/action_toggle_selection_mode"
         android:title="Toggle selection mode"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/action_toggle_label_for_selected"
-        android:title="Toggle label for selected"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_toggle_touch_zoom"
