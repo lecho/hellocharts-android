@@ -4,6 +4,7 @@ import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.provider.LineChartDataProvider;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.Chart;
@@ -360,10 +361,12 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void drawPoint(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY, float pointRadius) {
-		if (Line.SHAPE_SQUARE == line.getPointShape()) {
+		if (ValueShape.SQUARE.equals(line.getPointShape())) {
 			canvas.drawRect(rawX - pointRadius, rawY - pointRadius, rawX + pointRadius, rawY + pointRadius, pointPaint);
-		} else {
+		} else if (ValueShape.CIRCLE.equals(line.getPointShape())) {
 			canvas.drawCircle(rawX, rawY, pointRadius, pointPaint);
+		} else {
+			throw new IllegalArgumentException("Invalid point shape: " + line.getPointShape());
 		}
 	}
 

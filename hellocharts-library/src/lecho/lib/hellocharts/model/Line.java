@@ -13,8 +13,6 @@ import lecho.lib.hellocharts.util.Utils;
  * 
  */
 public class Line {
-	public static final int SHAPE_CIRCLE = 1;
-	public static final int SHAPE_SQUARE = 2;
 	private static final int DEFAULT_LINE_STROKE_WIDTH_DP = 3;
 	private static final int DEFAULT_POINT_RADIUS_DP = 6;
 	private static final int DEFAULT_AREA_TRANSPARENCY = 64;
@@ -29,7 +27,7 @@ public class Line {
 	private boolean hasLabelsOnlyForSelected = false;
 	private boolean isCubic = false;
 	private boolean isFilled = false;
-	private int pointShape = SHAPE_CIRCLE;
+	private ValueShape pointShape = ValueShape.CIRCLE;
 	private ValueFormatter formatter = new SimpleValueFormatter();
 	private List<PointValue> values = new ArrayList<PointValue>();
 
@@ -186,16 +184,12 @@ public class Line {
 		return this;
 	}
 
-	public int getPointShape() {
+	public ValueShape getPointShape() {
 		return pointShape;
 	}
 
-	public Line setPointShape(int pointShape) {
-		if (SHAPE_SQUARE == pointShape) {
-			this.pointShape = SHAPE_SQUARE;
-		} else {
-			this.pointShape = SHAPE_CIRCLE;
-		}
+	public Line setPointShape(ValueShape shape) {
+		this.pointShape = shape;
 		return this;
 	}
 
