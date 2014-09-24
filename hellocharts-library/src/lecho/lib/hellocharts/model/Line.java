@@ -27,7 +27,7 @@ public class Line {
 	private boolean hasLabelsOnlyForSelected = false;
 	private boolean isCubic = false;
 	private boolean isFilled = false;
-	private ValueShape pointShape = ValueShape.CIRCLE;
+	private ValueShape shape = ValueShape.CIRCLE;
 	private ValueFormatter formatter = new SimpleValueFormatter();
 	private List<PointValue> values = new ArrayList<PointValue>();
 
@@ -51,7 +51,7 @@ public class Line {
 		this.hasLabelsOnlyForSelected = line.hasLabelsOnlyForSelected;
 		this.isCubic = line.isCubic;
 		this.isFilled = line.isFilled;
-		this.pointShape = line.pointShape;
+		this.shape = line.shape;
 		this.formatter = line.formatter;
 
 		for (PointValue pointValue : line.values) {
@@ -184,12 +184,12 @@ public class Line {
 		return this;
 	}
 
-	public ValueShape getPointShape() {
-		return pointShape;
+	public ValueShape getShape() {
+		return shape;
 	}
 
-	public Line setPointShape(ValueShape shape) {
-		this.pointShape = shape;
+	public Line setShape(ValueShape shape) {
+		this.shape = shape;
 		return this;
 	}
 

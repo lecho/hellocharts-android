@@ -361,12 +361,12 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void drawPoint(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY, float pointRadius) {
-		if (ValueShape.SQUARE.equals(line.getPointShape())) {
+		if (ValueShape.SQUARE.equals(line.getShape())) {
 			canvas.drawRect(rawX - pointRadius, rawY - pointRadius, rawX + pointRadius, rawY + pointRadius, pointPaint);
-		} else if (ValueShape.CIRCLE.equals(line.getPointShape())) {
+		} else if (ValueShape.CIRCLE.equals(line.getShape())) {
 			canvas.drawCircle(rawX, rawY, pointRadius, pointPaint);
 		} else {
-			throw new IllegalArgumentException("Invalid point shape: " + line.getPointShape());
+			throw new IllegalArgumentException("Invalid point shape: " + line.getShape());
 		}
 	}
 
