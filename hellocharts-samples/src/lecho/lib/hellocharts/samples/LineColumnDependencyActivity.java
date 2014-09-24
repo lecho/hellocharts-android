@@ -134,7 +134,7 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 			}
 
 			Line line = new Line(values);
-			line.setColor(Utils.COLOR_GREEN).setSmooth(true);
+			line.setColor(Utils.COLOR_GREEN).setCubic(true);
 
 			List<Line> lines = new ArrayList<Line>();
 			lines.add(line);

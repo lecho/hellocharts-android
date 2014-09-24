@@ -49,7 +49,7 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 		private boolean hasAxesNames = true;
 		private boolean hasPoints = true;
 		private boolean hasLines = true;
-		private boolean hasBeziers = false;
+		private boolean isCubic = false;
 		private boolean hasLabels = false;
 		private boolean labelForSelected = false;
 
@@ -262,9 +262,9 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 		}
 
 		private void toggleBezier() {
-			hasBeziers = !hasBeziers;
+			isCubic = !isCubic;
 			for (Line line : data.getLineChartData().getLines()) {
-				line.setSmooth(hasBeziers);
+				line.setCubic(isCubic);
 			}
 		}
 

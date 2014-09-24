@@ -7,6 +7,7 @@ import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.BubbleChartData;
 import lecho.lib.hellocharts.model.BubbleValue;
+import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.BubbleChartView;
 import lecho.lib.hellocharts.view.Chart;
@@ -158,13 +159,13 @@ public class BubbleChartActivity extends ActionBarActivity {
 
 		private void setCircles() {
 			for (BubbleValue value : data.getValues()) {
-				value.setShape(BubbleValue.SHAPE_CIRCLE);
+				value.setShape(ValueShape.CIRCLE);
 			}
 		}
 
 		private void setSquares() {
 			for (BubbleValue value : data.getValues()) {
-				value.setShape(BubbleValue.SHAPE_SQUARE);
+				value.setShape(ValueShape.SQUARE);
 			}
 		}
 

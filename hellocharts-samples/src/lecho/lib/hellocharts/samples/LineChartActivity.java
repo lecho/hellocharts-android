@@ -8,6 +8,7 @@ import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.Chart;
@@ -43,6 +44,14 @@ public class LineChartActivity extends ActionBarActivity {
 		private LineChartView chart;
 		private LineChartData data;
 		private boolean hasAxes = true;
+		private boolean hasAxesNames = true;
+		private boolean hasLines = true;
+		private boolean hasPoints = true;
+		private ValueShape pointShape = ValueShape.CIRCLE;
+		private boolean isFilled = false;
+		private boolean hasLabels = false;
+		private boolean isCubic = false;
+		private boolean hasLabelForSelected = false;
 
 		public PlaceholderFragment() {
 		}
@@ -251,7 +260,7 @@ public class LineChartActivity extends ActionBarActivity {
 
 		private void toggleBezier() {
 			for (Line line : data.getLines()) {
-				line.setSmooth(!line.isSmooth());
+				line.setCubic(!line.isCubic());
 			}
 		}
 
@@ -263,13 +272,13 @@ public class LineChartActivity extends ActionBarActivity {
 
 		private void setCircles() {
 			for (Line line : data.getLines()) {
-				line.setPointShape(Line.SHAPE_CIRCLE);
+				line.setShape(ValueShape.CIRCLE);
 			}
 		}
 
 		private void setSquares() {
 			for (Line line : data.getLines()) {
-				line.setPointShape(Line.SHAPE_SQUARE);
+				line.setShape(ValueShape.SQUARE);
 			}
 		}
 
