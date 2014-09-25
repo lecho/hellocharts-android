@@ -60,8 +60,7 @@ public class PieChartActivity extends ActionBarActivity {
 			chart = (PieChartView) rootView.findViewById(R.id.chart);
 			chart.setOnValueTouchListener(new ValueTouchListener());
 
-			generateDefaultData();
-			chart.setPieChartData(data);
+			generateData();
 
 			return rootView;
 		}
@@ -76,25 +75,26 @@ public class PieChartActivity extends ActionBarActivity {
 		public boolean onOptionsItemSelected(MenuItem item) {
 			int id = item.getItemId();
 			if (id == R.id.action_reset) {
-				generateDefaultData();
-				chart.setPieChartData(data);
+				reset();
+				generateData();
 				return true;
 			}
 			if (id == R.id.action_explode) {
 				explodeChart();
-				chart.setPieChartData(data);
 				return true;
 			}
 			if (id == R.id.action_single_arc_separation) {
 				separateSingleArc();
-				chart.setPieChartData(data);
 				return true;
 			}
 			if (id == R.id.action_center_circle) {
 				hasCenterCircle = !hasCenterCircle;
+				if (!hasCenterCircle) {
+					hasCenterText1 = false;
+					hasCenterText2 = false;
+				}
 
-				data.setHasCenterCircle(hasCenterCircle);
-				chart.setPieChartData(data);
+				generateData();
 				return true;
 			}
 			if (id == R.id.action_center_text1) {
@@ -103,24 +103,10 @@ public class PieChartActivity extends ActionBarActivity {
 				if (hasCenterText1) {
 					hasCenterCircle = true;
 				}
+
 				hasCenterText2 = false;
 
-				data.setHasCenterCircle(hasCenterCircle);
-				if (hasCenterText1) {
-					data.setCenterText1("Hello!");
-				} else {
-					data.setCenterText1(null);
-				}
-				data.setCenterText2(null);
-
-				// Get roboto-italic font.
-				Typeface tf = Typeface.createFromAsset(getActivity().getAssets(), "Roboto-Italic.ttf");
-				data.setCenterText1Typeface(tf);
-
-				// Get font size from dimens.xml and convert it to sp(library uses sp values).
-				data.setCenterText1FontSize(Utils.px2sp(getResources().getDisplayMetrics().scaledDensity,
-						(int) getResources().getDimension(R.dimen.pie_chart_text1_size)));
-				chart.setPieChartData(data);
+				generateData();
 				return true;
 			}
 			if (id == R.id.action_center_text2) {
@@ -131,35 +117,15 @@ public class PieChartActivity extends ActionBarActivity {
 					hasCenterCircle = true;
 				}
 
-				data.setHasCenterCircle(hasCenterCircle);
-				if (hasCenterText2) {
-					data.setCenterText1("Hello!");
-					data.setCenterText2("Charts (Roboto Italic)");
-				} else {
-					data.setCenterText2(null);
-				}
-
-				Typeface tf = Typeface.createFromAsset(getActivity().getAssets(), "Roboto-Italic.ttf");
-
-				data.setCenterText1Typeface(tf);
-				data.setCenterText1FontSize(Utils.px2sp(getResources().getDisplayMetrics().scaledDensity,
-						(int) getResources().getDimension(R.dimen.pie_chart_text1_size)));
-
-				data.setCenterText2Typeface(tf);
-				data.setCenterText2FontSize(Utils.px2sp(getResources().getDisplayMetrics().scaledDensity,
-						(int) getResources().getDimension(R.dimen.pie_chart_text2_size)));
-
-				chart.setPieChartData(data);
+				generateData();
 				return true;
 			}
 			if (id == R.id.action_toggle_labels) {
 				toggleLabels();
-				chart.setPieChartData(data);
 				return true;
 			}
 			if (id == R.id.action_toggle_labels_outside) {
 				toggleLabelsOutside();
-				chart.setPieChartData(data);
 				return true;
 			}
 			if (id == R.id.action_animate) {
@@ -169,7 +135,6 @@ public class PieChartActivity extends ActionBarActivity {
 			}
 			if (id == R.id.action_toggle_selection_mode) {
 				toggleLabelForSelected();
-				chart.setPieChartData(data);
 				Toast.makeText(getActivity(),
 						"Selection mode set to " + chart.isValueSelectionEnabled() + " select any point.",
 						Toast.LENGTH_SHORT).show();
@@ -178,51 +143,79 @@ public class PieChartActivity extends ActionBarActivity {
 			return super.onOptionsItemSelected(item);
 		}
 
-		private void generateDefaultData() {
+		private void reset() {
+			chart.setCircleFillRatio(1.0f);
+			hasLabels = false;
+			hasLabelsOutside = false;
+			hasCenterCircle = false;
+			hasCenterText1 = false;
+			hasCenterText2 = false;
+			isExploaded = false;
+			hasArcSeparated = false;
+			hasLabelForSelected = false;
+		}
+
+		private void generateData() {
 			int numValues = 6;
 
 			List<ArcValue> values = new ArrayList<ArcValue>();
 			for (int i = 0; i < numValues; ++i) {
-				values.add(new ArcValue((float) Math.random() * 30 + 15, Utils.pickColor()));
+				ArcValue arcValue = new ArcValue((float) Math.random() * 30 + 15, Utils.pickColor());
+
+				if (isExploaded) {
+					arcValue.setArcSpacing(24);
+				}
+
+				if (hasArcSeparated && i == 0) {
+					arcValue.setArcSpacing(32);
+				}
+
+				values.add(arcValue);
 			}
 
 			data = new PieChartData(values);
+			data.setHasLabels(hasLabels);
+			data.setHasLabelsOnlyForSelected(hasLabelForSelected);
+			data.setHasLabelsOutside(hasLabelsOutside);
+			data.setHasCenterCircle(hasCenterCircle);
+
+			if (hasCenterText1) {
+				data.setCenterText1("Hello!");
+
+				// Get roboto-italic font.
+				Typeface tf = Typeface.createFromAsset(getActivity().getAssets(), "Roboto-Italic.ttf");
+				data.setCenterText1Typeface(tf);
+
+				// Get font size from dimens.xml and convert it to sp(library uses sp values).
+				data.setCenterText1FontSize(Utils.px2sp(getResources().getDisplayMetrics().scaledDensity,
+						(int) getResources().getDimension(R.dimen.pie_chart_text1_size)));
+			}
+
+			if (hasCenterText2) {
+				data.setCenterText2("Charts (Roboto Italic)");
+
+				Typeface tf = Typeface.createFromAsset(getActivity().getAssets(), "Roboto-Italic.ttf");
+
+				data.setCenterText2Typeface(tf);
+				data.setCenterText2FontSize(Utils.px2sp(getResources().getDisplayMetrics().scaledDensity,
+						(int) getResources().getDimension(R.dimen.pie_chart_text2_size)));
+			}
+
+			chart.setPieChartData(data);
 		}
 
 		private void explodeChart() {
 			isExploaded = !isExploaded;
-			if (isExploaded) {
-				for (ArcValue value : data.getValues()) {
-					value.setArcSpacing(24);
-				}
-			} else {
-				for (ArcValue value : data.getValues()) {
-					value.setArcSpacing(2);
-				}
-			}
+			generateData();
 
 		}
 
 		private void separateSingleArc() {
 			hasArcSeparated = !hasArcSeparated;
 			if (hasArcSeparated) {
-				// generateDefaultData();
-				data.getValues().get(0).setArcSpacing(32);
-			} else {
-				data.getValues().get(0).setArcSpacing(2);
+				isExploaded = false;
 			}
-		}
-
-		private void toggleLabels() {
-			hasLabels = !hasLabels;
-
-			data.setHasLabels(hasLabels);
-
-			if (hasLabels && hasLabelsOutside) {
-				chart.setCircleFillRatio(0.7f);
-			} else {
-				chart.setCircleFillRatio(1.0f);
-			}
+			generateData();
 		}
 
 		private void toggleLabelsOutside() {
@@ -230,22 +223,54 @@ public class PieChartActivity extends ActionBarActivity {
 			hasLabelsOutside = !hasLabelsOutside;
 			if (hasLabelsOutside) {
 				hasLabels = true;
+				hasLabelForSelected = false;
+				chart.setValueSelectionEnabled(hasLabelForSelected);
 			}
 
-			data.setHasLabels(hasLabels);
-			data.setHasLabelsOutside(hasLabelsOutside);
-
-			if (hasLabels && hasLabelsOutside) {
+			if (hasLabelsOutside) {
 				chart.setCircleFillRatio(0.7f);
 			} else {
 				chart.setCircleFillRatio(1.0f);
 			}
+
+			generateData();
+
+		}
+
+		private void toggleLabels() {
+			hasLabels = !hasLabels;
+
+			if (hasLabels) {
+				hasLabelForSelected = false;
+				chart.setValueSelectionEnabled(hasLabelForSelected);
+
+				if (hasLabelsOutside) {
+					chart.setCircleFillRatio(0.7f);
+				} else {
+					chart.setCircleFillRatio(1.0f);
+				}
+			}
+
+			generateData();
 		}
 
 		private void toggleLabelForSelected() {
 			hasLabelForSelected = !hasLabelForSelected;
-			data.setHasLabelsOnlyForSelected(hasLabelForSelected);
+
 			chart.setValueSelectionEnabled(hasLabelForSelected);
+
+			if (hasLabelForSelected) {
+				hasLabels = false;
+				hasLabelsOutside = false;
+
+				if (hasLabelsOutside) {
+					chart.setCircleFillRatio(0.7f);
+				} else {
+					chart.setCircleFillRatio(1.0f);
+				}
+			}
+
+			generateData();
 		}
 
 		/**

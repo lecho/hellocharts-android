@@ -397,6 +397,7 @@ public class ColumnChartActivity extends ActionBarActivity {
 
 			if (hasLabels) {
 				hasLabelForSelected = false;
+				chart.setValueSelectionEnabled(hasLabelForSelected);
 			}
 
 			generateData();

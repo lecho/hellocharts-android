@@ -183,6 +183,7 @@ public class BubbleChartActivity extends ActionBarActivity {
 
 			if (hasLabels) {
 				hasLabelForSelected = false;
+				chart.setValueSelectionEnabled(hasLabelForSelected);
 			}
 
 			generateData();
