@@ -131,14 +131,6 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 						Toast.LENGTH_SHORT).show();
 				return true;
 			}
-			if (id == R.id.action_toggle_label_for_selected) {
-				toggleLabelForSelected();
-				chart.setComboLineColumnChartData(data);
-				Toast.makeText(getActivity(),
-						"Label for selected to " + labelForSelected + ". Works best with value selection mode.",
-						Toast.LENGTH_SHORT).show();
-				return true;
-			}
 			if (id == R.id.action_toggle_touch_zoom) {
 				chart.setZoomEnabled(!chart.isZoomEnabled());
 				Toast.makeText(getActivity(), "IsZoomEnabled " + chart.isZoomEnabled(), Toast.LENGTH_SHORT).show();

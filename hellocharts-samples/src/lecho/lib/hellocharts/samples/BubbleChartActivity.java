@@ -14,7 +14,6 @@ import lecho.lib.hellocharts.view.Chart;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -44,6 +43,10 @@ public class BubbleChartActivity extends ActionBarActivity {
 		private BubbleChartView chart;
 		private BubbleChartData data;
 		private boolean hasAxes = true;
+		private boolean hasAxesNames = true;
+		private ValueShape shape = ValueShape.CIRCLE;
+		private boolean hasLabels = false;
+		private boolean hasLabelForSelected = false;
 
 		public PlaceholderFragment() {
 		}
@@ -56,8 +59,7 @@ public class BubbleChartActivity extends ActionBarActivity {
 			chart = (BubbleChartView) rootView.findViewById(R.id.chart);
 			chart.setOnValueTouchListener(new ValueTouchListener());
 
-			generateDefaultData();
-			chart.setBubbleChartData(data);
+			generateData();
 
 			return rootView;
 		}
@@ -71,54 +73,39 @@ public class BubbleChartActivity extends ActionBarActivity {
 		public boolean onOptionsItemSelected(MenuItem item) {
 			int id = item.getItemId();
 			if (id == R.id.action_reset) {
-				generateDefaultData();
-				chart.setBubbleChartData(data);
+				reset();
+				generateData();
 				return true;
 			}
 			if (id == R.id.action_shape_circles) {
 				setCircles();
-				chart.setBubbleChartData(data);
 				return true;
 			}
 			if (id == R.id.action_shape_square) {
 				setSquares();
-				chart.setBubbleChartData(data);
 				return true;
 			}
 			if (id == R.id.action_toggle_labels) {
 				toggleLabels();
-				chart.setBubbleChartData(data);
 				return true;
 			}
 			if (id == R.id.action_toggle_axes) {
 				toggleAxes();
-				chart.setBubbleChartData(data);
 				return true;
 			}
 			if (id == R.id.action_toggle_axes_names) {
 				toggleAxesNames();
-				chart.setBubbleChartData(data);
 				return true;
 			}
 			if (id == R.id.action_animate) {
 				prepareDataAnimation();
-				chart.startDataAnimation();
 				return true;
 			}
 			if (id == R.id.action_toggle_selection_mode) {
-				chart.setValueSelectionEnabled(!chart.isValueSelectionEnabled());
+				toggleLabelForSelected();
 				Toast.makeText(getActivity(),
 						"Selection mode set to " + chart.isValueSelectionEnabled() + " select any point.",
 						Toast.LENGTH_SHORT).show();
-				return true;
-			}
-			if (id == R.id.action_toggle_label_for_selected) {
-				toggleLabelForSelected();
-				chart.setBubbleChartData(data);
-				Toast.makeText(
-						getActivity(),
-						"Label for selected to " + data.hasLabelsOnlyForSelected()
-								+ ". Works best with value selection mode.", Toast.LENGTH_SHORT).show();
 				return true;
 			}
 			if (id == R.id.action_toggle_touch_zoom) {
@@ -141,70 +128,88 @@ public class BubbleChartActivity extends ActionBarActivity {
 			return super.onOptionsItemSelected(item);
 		}
 
-		private void generateDefaultData() {
+		private void reset() {
+			hasAxes = true;
+			hasAxesNames = true;
+			shape = ValueShape.CIRCLE;
+			hasLabels = false;
+			hasLabelForSelected = false;
+
+			chart.setValueSelectionEnabled(hasLabelForSelected);
+		}
+
+		private void generateData() {
 
 			List<BubbleValue> values = new ArrayList<BubbleValue>();
 			for (int i = 0; i < BUBBLES_NUM; ++i) {
 				BubbleValue value = new BubbleValue(i, (float) Math.random() * 100, (float) Math.random() * 1000);
 				value.setColor(Utils.pickColor());
+				value.setShape(shape);
 				values.add(value);
 			}
 
 			data = new BubbleChartData(values);
 
-			data.setAxisXBottom(new Axis().setName("Axis X"));
-			data.setAxisYLeft(new Axis().setName("Axis Y").setHasLines(true));
+			if (hasAxes) {
+				Axis axisX = new Axis();
+				Axis axisY = new Axis().setHasLines(true);
+				if (hasAxesNames) {
+					axisX.setName("Axis X");
+					axisY.setName("Axis Y");
+				}
+				data.setAxisXBottom(axisX);
+				data.setAxisYLeft(axisY);
+			} else {
+				data.setAxisXBottom(null);
+				data.setAxisYLeft(null);
+			}
+
+			chart.setBubbleChartData(data);
 
 		}
 
 		private void setCircles() {
-			for (BubbleValue value : data.getValues()) {
-				value.setShape(ValueShape.CIRCLE);
-			}
+			shape = ValueShape.CIRCLE;
+			generateData();
 		}
 
 		private void setSquares() {
-			for (BubbleValue value : data.getValues()) {
-				value.setShape(ValueShape.SQUARE);
-			}
+			shape = ValueShape.SQUARE;
+			generateData();
 		}
 
 		private void toggleLabels() {
-			data.setHasLabels(!data.hasLabels());
+			hasLabels = !hasLabels;
+
+			if (hasLabels) {
+				hasLabelForSelected = false;
+			}
+
+			generateData();
 		}
 
 		private void toggleLabelForSelected() {
-			data.setHasLabelsOnlyForSelected(!data.hasLabelsOnlyForSelected());
+			hasLabelForSelected = !hasLabelForSelected;
+
+			chart.setValueSelectionEnabled(hasLabelForSelected);
+
+			if (hasLabelForSelected) {
+				hasLabels = false;
+			}
+
+			generateData();
 		}
 
 		private void toggleAxes() {
-			if (!hasAxes) {
-				data.setAxisXBottom(new Axis().setName("Axis X"));
-				data.setAxisYLeft(new Axis().setName("Axis Y"));
-			} else {
-				// to disable axes set them to null;
-				data.setAxisXBottom(null);
-				data.setAxisYLeft(null);
-			}
 			hasAxes = !hasAxes;
+
+			generateData();
 		}
 
 		private void toggleAxesNames() {
-			if (hasAxes) {
-				Axis axisX = data.getAxisXBottom();
-				if (TextUtils.isEmpty(axisX.getName())) {
-					axisX.setName("Axis X");
-				} else {
-					axisX.setName(null);
-				}
+			hasAxesNames = !hasAxesNames;
 
-				Axis axisY = data.getAxisYLeft();
-				if (TextUtils.isEmpty(axisY.getName())) {
-					axisY.setName("Axis Y");
-				} else {
-					axisY.setName(null);
-				}
-			}
+			generateData();
 		}
 
 		/**
