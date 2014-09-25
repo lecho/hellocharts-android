@@ -72,7 +72,6 @@ public class LineChartActivity extends ActionBarActivity {
 			generateValues();
 
 			generateData();
-			chart.setLineChartData(data);
 
 			return rootView;
 		}
@@ -87,7 +86,7 @@ public class LineChartActivity extends ActionBarActivity {
 		public boolean onOptionsItemSelected(MenuItem item) {
 			int id = item.getItemId();
 			if (id == R.id.action_reset) {
-				numberOfLines = 1;
+				reset();
 				generateData();
 				return true;
 			}
@@ -147,7 +146,6 @@ public class LineChartActivity extends ActionBarActivity {
 				return true;
 			}
 			if (id == R.id.action_toggle_selection_mode) {
-				chart.setValueSelectionEnabled(!chart.isValueSelectionEnabled());
 				toggleLabelForSelected();
 
 				Toast.makeText(getActivity(),
@@ -181,6 +179,22 @@ public class LineChartActivity extends ActionBarActivity {
 					randomNumbersTab[i][j] = (float) Math.random() * 100f;
 				}
 			}
+		}
+
+		private void reset() {
+			numberOfLines = 1;
+
+			hasAxes = true;
+			hasAxesNames = true;
+			hasLines = true;
+			hasPoints = true;
+			shape = ValueShape.CIRCLE;
+			isFilled = false;
+			hasLabels = false;
+			isCubic = false;
+			hasLabelForSelected = false;
+
+			chart.setValueSelectionEnabled(hasLabelForSelected);
 		}
 
 		private void generateData() {
@@ -288,6 +302,8 @@ public class LineChartActivity extends ActionBarActivity {
 
 		private void toggleLabelForSelected() {
 			hasLabelForSelected = !hasLabelForSelected;
+
+			chart.setValueSelectionEnabled(hasLabelForSelected);
 
 			if (hasLabelForSelected) {
 				hasLabels = false;

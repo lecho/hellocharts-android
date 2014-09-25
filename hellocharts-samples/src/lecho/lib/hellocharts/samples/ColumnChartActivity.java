@@ -14,7 +14,6 @@ import lecho.lib.hellocharts.view.ColumnChartView;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,9 +38,19 @@ public class ColumnChartActivity extends ActionBarActivity {
 	 */
 	public static class PlaceholderFragment extends Fragment {
 
+		private static final int DEFAULT_DATA = 0;
+		private static final int SUBCOLUMNS_DATA = 1;
+		private static final int STACKED_DATA = 2;
+		private static final int NEGATIVE_SUBCOLUMNS_DATA = 3;
+		private static final int NEGATIVE_STACKED_DATA = 4;
+
 		private ColumnChartView chart;
 		private ColumnChartData data;
 		private boolean hasAxes = true;
+		private boolean hasAxesNames = true;
+		private boolean hasLabels = false;
+		private boolean hasLabelForSelected = false;
+		private int dataType = DEFAULT_DATA;
 
 		public PlaceholderFragment() {
 		}
@@ -54,8 +63,7 @@ public class ColumnChartActivity extends ActionBarActivity {
 			chart = (ColumnChartView) rootView.findViewById(R.id.chart);
 			chart.setOnValueTouchListener(new ValueTouchListener());
 
-			generateDefaultData();
-			chart.setColumnChartData(data);
+			generateData();
 
 			return rootView;
 		}
@@ -70,52 +78,40 @@ public class ColumnChartActivity extends ActionBarActivity {
 		public boolean onOptionsItemSelected(MenuItem item) {
 			int id = item.getItemId();
 			if (id == R.id.action_reset) {
-				generateDefaultData();
-				chart.setColumnChartData(data);
+				reset();
+				generateData();
 				return true;
 			}
 			if (id == R.id.action_subcolumns) {
-				showSubcolumns();
-				chart.setColumnChartData(data);
+				dataType = SUBCOLUMNS_DATA;
+				generateData();
 				return true;
 			}
 			if (id == R.id.action_stacked) {
-				showStacked();
-				chart.setColumnChartData(data);
+				dataType = STACKED_DATA;
+				generateData();
 				return true;
 			}
 			if (id == R.id.action_negative_subcolumns) {
-				showNegativeSubcolumns();
-				chart.setColumnChartData(data);
+				dataType = NEGATIVE_SUBCOLUMNS_DATA;
+				generateData();
 				return true;
 			}
 			if (id == R.id.action_negative_stacked) {
-				showNegativeStacked();
-				chart.setColumnChartData(data);
+				dataType = NEGATIVE_STACKED_DATA;
+				generateData();
 				return true;
 			}
 			if (id == R.id.action_toggle_labels) {
 				toggleLabels();
-				chart.setColumnChartData(data);
-				return true;
-			}
-			if (id == R.id.action_toggle_label_for_selected) {
-				toggleLabelForSelected();
-				chart.setColumnChartData(data);
-				Toast.makeText(
-						getActivity(),
-						"Label for selected to " + data.getColumns().get(0).hasLabelsOnlyForSelected()
-								+ ". Works best with value selection mode.", Toast.LENGTH_SHORT).show();
 				return true;
 			}
 			if (id == R.id.action_toggle_axes) {
 				toggleAxes();
-				chart.setColumnChartData(data);
 				return true;
 			}
 			if (id == R.id.action_toggle_axes_names) {
 				toggleAxesNames();
-				chart.setColumnChartData(data);
 				return true;
 			}
 			if (id == R.id.action_animate) {
@@ -124,7 +120,8 @@ public class ColumnChartActivity extends ActionBarActivity {
 				return true;
 			}
 			if (id == R.id.action_toggle_selection_mode) {
-				chart.setValueSelectionEnabled(!chart.isValueSelectionEnabled());
+				toggleLabelForSelected();
+
 				Toast.makeText(getActivity(),
 						"Selection mode set to " + chart.isValueSelectionEnabled() + " select any point.",
 						Toast.LENGTH_SHORT).show();
@@ -150,6 +147,16 @@ public class ColumnChartActivity extends ActionBarActivity {
 			return super.onOptionsItemSelected(item);
 		}
 
+		private void reset() {
+			hasAxes = true;
+			hasAxesNames = true;
+			hasLabels = false;
+			hasLabelForSelected = false;
+			dataType = DEFAULT_DATA;
+			chart.setValueSelectionEnabled(hasLabelForSelected);
+
+		}
+
 		private void generateDefaultData() {
 			int numSubcolumns = 1;
 			int numColumns = 8;
@@ -163,20 +170,36 @@ public class ColumnChartActivity extends ActionBarActivity {
 					values.add(new ColumnValue((float) Math.random() * 50f + 5, Utils.pickColor()));
 				}
 
-				columns.add(new Column(values));
+				Column column = new Column(values);
+				column.setHasLabels(hasLabels);
+				column.setHasLabelsOnlyForSelected(hasLabelForSelected);
+				columns.add(column);
 			}
 
 			data = new ColumnChartData(columns);
 
-			data.setAxisXBottom(new Axis().setName("Axis X"));
-			data.setAxisYLeft(new Axis().setName("Axis Y").setHasLines(true));
+			if (hasAxes) {
+				Axis axisX = new Axis();
+				Axis axisY = new Axis().setHasLines(true);
+				if (hasAxesNames) {
+					axisX.setName("Axis X");
+					axisY.setName("Axis Y");
+				}
+				data.setAxisXBottom(axisX);
+				data.setAxisYLeft(axisY);
+			} else {
+				data.setAxisXBottom(null);
+				data.setAxisYLeft(null);
+			}
+
+			chart.setColumnChartData(data);
 
 		}
 
 		/**
 		 * Generates columns with subcolumns, columns have larger separation than subcolumns.
 		 */
-		private void showSubcolumns() {
+		private void generateSubcolumnsData() {
 			int numSubcolumns = 4;
 			int numColumns = 4;
 			// Column can have many subcolumns, here I use 4 subcolumn in each of 8 columns.
@@ -189,20 +212,36 @@ public class ColumnChartActivity extends ActionBarActivity {
 					values.add(new ColumnValue((float) Math.random() * 50f + 5, Utils.pickColor()));
 				}
 
-				columns.add(new Column(values));
+				Column column = new Column(values);
+				column.setHasLabels(hasLabels);
+				column.setHasLabelsOnlyForSelected(hasLabelForSelected);
+				columns.add(column);
 			}
 
 			data = new ColumnChartData(columns);
 
-			data.setAxisXBottom(new Axis().setName("Axis X"));
-			data.setAxisYLeft(new Axis().setName("Axis Y").setHasLines(true));
+			if (hasAxes) {
+				Axis axisX = new Axis();
+				Axis axisY = new Axis().setHasLines(true);
+				if (hasAxesNames) {
+					axisX.setName("Axis X");
+					axisY.setName("Axis Y");
+				}
+				data.setAxisXBottom(axisX);
+				data.setAxisYLeft(axisY);
+			} else {
+				data.setAxisXBottom(null);
+				data.setAxisYLeft(null);
+			}
+
+			chart.setColumnChartData(data);
 
 		}
 
 		/**
 		 * Generates columns with stacked subcolumns.
 		 */
-		private void showStacked() {
+		private void generateStackedData() {
 			int numSubcolumns = 4;
 			int numColumns = 8;
 			// Column can have many stacked subcolumns, here I use 4 stacke subcolumn in each of 4 columns.
@@ -215,7 +254,10 @@ public class ColumnChartActivity extends ActionBarActivity {
 					values.add(new ColumnValue((float) Math.random() * 20f + 5, Utils.pickColor()));
 				}
 
-				columns.add(new Column(values));
+				Column column = new Column(values);
+				column.setHasLabels(hasLabels);
+				column.setHasLabelsOnlyForSelected(hasLabelForSelected);
+				columns.add(column);
 			}
 
 			data = new ColumnChartData(columns);
@@ -223,11 +265,24 @@ public class ColumnChartActivity extends ActionBarActivity {
 			// Set stacked flag.
 			data.setStacked(true);
 
-			data.setAxisXBottom(new Axis().setName("Axis X"));
-			data.setAxisYLeft(new Axis().setName("Axis Y").setHasLines(true));
+			if (hasAxes) {
+				Axis axisX = new Axis();
+				Axis axisY = new Axis().setHasLines(true);
+				if (hasAxesNames) {
+					axisX.setName("Axis X");
+					axisY.setName("Axis Y");
+				}
+				data.setAxisXBottom(axisX);
+				data.setAxisYLeft(axisY);
+			} else {
+				data.setAxisXBottom(null);
+				data.setAxisYLeft(null);
+			}
+
+			chart.setColumnChartData(data);
 		}
 
-		private void showNegativeSubcolumns() {
+		private void generateNegativeSubcolumnsData() {
 
 			int numSubcolumns = 4;
 			int numColumns = 4;
@@ -241,16 +296,32 @@ public class ColumnChartActivity extends ActionBarActivity {
 					values.add(new ColumnValue((float) Math.random() * 50f * sign + 5 * sign, Utils.pickColor()));
 				}
 
-				columns.add(new Column(values));
+				Column column = new Column(values);
+				column.setHasLabels(hasLabels);
+				column.setHasLabelsOnlyForSelected(hasLabelForSelected);
+				columns.add(column);
 			}
 
 			data = new ColumnChartData(columns);
 
-			data.setAxisXBottom(new Axis().setName("Axis X"));
-			data.setAxisYLeft(new Axis().setName("Axis Y").setHasLines(true));
+			if (hasAxes) {
+				Axis axisX = new Axis();
+				Axis axisY = new Axis().setHasLines(true);
+				if (hasAxesNames) {
+					axisX.setName("Axis X");
+					axisY.setName("Axis Y");
+				}
+				data.setAxisXBottom(axisX);
+				data.setAxisYLeft(axisY);
+			} else {
+				data.setAxisXBottom(null);
+				data.setAxisYLeft(null);
+			}
+
+			chart.setColumnChartData(data);
 		}
 
-		private void showNegativeStacked() {
+		private void generateNegativeStackedData() {
 
 			int numSubcolumns = 4;
 			int numColumns = 8;
@@ -265,7 +336,10 @@ public class ColumnChartActivity extends ActionBarActivity {
 					values.add(new ColumnValue((float) Math.random() * 20f * sign + 5 * sign, Utils.pickColor()));
 				}
 
-				columns.add(new Column(values));
+				Column column = new Column(values);
+				column.setHasLabels(hasLabels);
+				column.setHasLabelsOnlyForSelected(hasLabelForSelected);
+				columns.add(column);
 			}
 
 			data = new ColumnChartData(columns);
@@ -273,8 +347,21 @@ public class ColumnChartActivity extends ActionBarActivity {
 			// Set stacked flag.
 			data.setStacked(true);
 
-			data.setAxisXBottom(new Axis().setName("Axis X"));
-			data.setAxisYLeft(new Axis().setName("Axis Y").setHasLines(true));
+			if (hasAxes) {
+				Axis axisX = new Axis();
+				Axis axisY = new Axis().setHasLines(true);
+				if (hasAxesNames) {
+					axisX.setName("Axis X");
+					axisY.setName("Axis Y");
+				}
+				data.setAxisXBottom(axisX);
+				data.setAxisYLeft(axisY);
+			} else {
+				data.setAxisXBottom(null);
+				data.setAxisYLeft(null);
+			}
+
+			chart.setColumnChartData(data);
 		}
 
 		private int getSign() {
@@ -282,48 +369,60 @@ public class ColumnChartActivity extends ActionBarActivity {
 			return sign[Math.round((float) Math.random())];
 		}
 
-		private void toggleLabels() {
-			for (Column column : data.getColumns()) {
-				column.setHasLabels(!column.hasLabels());
+		private void generateData() {
+			switch (dataType) {
+			case DEFAULT_DATA:
+				generateDefaultData();
+				break;
+			case SUBCOLUMNS_DATA:
+				generateSubcolumnsData();
+				break;
+			case STACKED_DATA:
+				generateStackedData();
+				break;
+			case NEGATIVE_SUBCOLUMNS_DATA:
+				generateNegativeSubcolumnsData();
+				break;
+			case NEGATIVE_STACKED_DATA:
+				generateNegativeStackedData();
+				break;
+			default:
+				generateDefaultData();
+				break;
 			}
+		}
+
+		private void toggleLabels() {
+			hasLabels = !hasLabels;
+
+			if (hasLabels) {
+				hasLabelForSelected = false;
+			}
+
+			generateData();
 		}
 
 		private void toggleLabelForSelected() {
-			for (Column column : data.getColumns()) {
-				column.setHasLabelsOnlyForSelected(!column.hasLabelsOnlyForSelected());
+			hasLabelForSelected = !hasLabelForSelected;
+			chart.setValueSelectionEnabled(hasLabelForSelected);
+
+			if (hasLabelForSelected) {
+				hasLabels = false;
 			}
+
+			generateData();
 		}
 
 		private void toggleAxes() {
-			if (!hasAxes) {
-				// by default axes are auto-generated;
-				data.setAxisXBottom(new Axis().setName("Axis X"));
-				data.setAxisYLeft(new Axis().setName("Axis Y"));
-			} else {
-				// to disable axes set them to null;
-				data.setAxisXBottom(null);
-				data.setAxisYLeft(null);
-			}
 			hasAxes = !hasAxes;
+
+			generateData();
 		}
 
 		private void toggleAxesNames() {
-			if (hasAxes) {
-				// by default axes are auto-generated;
-				Axis axisX = data.getAxisXBottom();
-				if (TextUtils.isEmpty(axisX.getName())) {
-					axisX.setName("Axis X");
-				} else {
-					axisX.setName(null);
-				}
+			hasAxesNames = !hasAxesNames;
 
-				Axis axisY = data.getAxisYLeft();
-				if (TextUtils.isEmpty(axisY.getName())) {
-					axisY.setName("Axis Y");
-				} else {
-					axisY.setName(null);
-				}
-			}
+			generateData();
 		}
 
 		/**
