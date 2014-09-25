@@ -78,6 +78,9 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 		this.valueLabelBackgroundColor = data.getValueLabelBackgroundColor();
 		this.labelBackgroundPaint.setColor(valueLabelBackgroundColor);
 
+		// Important - clear selection when data changed.
+		selectedValue.clear();
+
 	}
 
 	/**
