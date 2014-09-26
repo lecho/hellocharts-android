@@ -99,6 +99,7 @@ public class BubbleChartActivity extends ActionBarActivity {
 			}
 			if (id == R.id.action_animate) {
 				prepareDataAnimation();
+				chart.startDataAnimation();
 				return true;
 			}
 			if (id == R.id.action_toggle_selection_mode) {
@@ -149,6 +150,8 @@ public class BubbleChartActivity extends ActionBarActivity {
 			}
 
 			data = new BubbleChartData(values);
+			data.setHasLabels(hasLabels);
+			data.setHasLabelsOnlyForSelected(hasLabelForSelected);
 
 			if (hasAxes) {
 				Axis axisX = new Axis();
