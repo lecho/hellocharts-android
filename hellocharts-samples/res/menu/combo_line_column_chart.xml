@@ -39,25 +39,4 @@
         android:id="@+id/action_animate"
         android:title="Animate chart"
         app:showAsAction="never"/>
-    <item
-        android:id="@+id/action_toggle_selection_mode"
-        android:title="Toggle selection mode"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/action_toggle_touch_zoom"
-        android:title="Toggle touch zoom"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/action_zoom_both"
-        android:title="Zoom X/Y"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/action_zoom_horizontal"
-        android:title="Zoom X"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/action_zoom_vertical"
-        android:title="Zoom Y"
-        app:showAsAction="never"/>
-
 </menu>

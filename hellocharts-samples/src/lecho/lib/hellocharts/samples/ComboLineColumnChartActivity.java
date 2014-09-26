@@ -3,7 +3,6 @@ package lecho.lib.hellocharts.samples;
 import java.util.ArrayList;
 import java.util.List;
 
-import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
@@ -15,7 +14,6 @@ import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.ComboLineColumnChartView;
 import lecho.lib.hellocharts.view.ComboLineColumnChartView.ComboLineColumnChartOnValueTouchListener;
-import lecho.lib.hellocharts.view.LineChartView;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -45,13 +43,19 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 
 		private ComboLineColumnChartView chart;
 		private ComboLineColumnChartData data;
+
+		private int numberOfLines = 1;
+		private int maxNumberOfLines = 4;
+		private int numberOfPoints = 12;
+
+		float[][] randomNumbersTab = new float[maxNumberOfLines][numberOfPoints];
+
 		private boolean hasAxes = true;
 		private boolean hasAxesNames = true;
 		private boolean hasPoints = true;
 		private boolean hasLines = true;
 		private boolean isCubic = false;
 		private boolean hasLabels = false;
-		private boolean labelForSelected = false;
 
 		public PlaceholderFragment() {
 		}
@@ -64,8 +68,8 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 			chart = (ComboLineColumnChartView) rootView.findViewById(R.id.chart);
 			chart.setOnValueTouchListener(new ValueTouchListener());
 
-			generateDefaultData();
-			chart.setComboLineColumnChartData(data);
+			generateValues();
+			generateData();
 
 			return rootView;
 		}
@@ -80,43 +84,36 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 		public boolean onOptionsItemSelected(MenuItem item) {
 			int id = item.getItemId();
 			if (id == R.id.action_reset) {
-				generateDefaultData();
-				chart.setComboLineColumnChartData(data);
+				reset();
+				generateData();
 				return true;
 			}
 			if (id == R.id.action_add_line) {
 				addLineToData();
-				chart.setComboLineColumnChartData(data);
 				return true;
 			}
 			if (id == R.id.action_toggle_lines) {
 				toggleLines();
-				chart.setComboLineColumnChartData(data);
 				return true;
 			}
 			if (id == R.id.action_toggle_points) {
 				togglePoints();
-				chart.setComboLineColumnChartData(data);
 				return true;
 			}
 			if (id == R.id.action_toggle_cubic) {
-				toggleBezier();
-				chart.setComboLineColumnChartData(data);
+				toggleCubic();
 				return true;
 			}
 			if (id == R.id.action_toggle_labels) {
 				toggleLabels();
-				chart.setComboLineColumnChartData(data);
 				return true;
 			}
 			if (id == R.id.action_toggle_axes) {
 				toggleAxes();
-				chart.setComboLineColumnChartData(data);
 				return true;
 			}
 			if (id == R.id.action_toggle_axes_names) {
 				toggleAxesNames();
-				chart.setComboLineColumnChartData(data);
 				return true;
 			}
 			if (id == R.id.action_animate) {
@@ -124,53 +121,68 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 				chart.startDataAnimation();
 				return true;
 			}
-			if (id == R.id.action_toggle_selection_mode) {
-				chart.setValueSelectionEnabled(!chart.isValueSelectionEnabled());
-				Toast.makeText(getActivity(),
-						"Selection mode set to " + chart.isValueSelectionEnabled() + " select any point.",
-						Toast.LENGTH_SHORT).show();
-				return true;
-			}
-			if (id == R.id.action_toggle_touch_zoom) {
-				chart.setZoomEnabled(!chart.isZoomEnabled());
-				Toast.makeText(getActivity(), "IsZoomEnabled " + chart.isZoomEnabled(), Toast.LENGTH_SHORT).show();
-				return true;
-			}
-			if (id == R.id.action_zoom_both) {
-				chart.setZoomType(ZoomType.HORIZONTAL_AND_VERTICAL);
-				return true;
-			}
-			if (id == R.id.action_zoom_horizontal) {
-				chart.setZoomType(ZoomType.HORIZONTAL);
-				return true;
-			}
-			if (id == R.id.action_zoom_vertical) {
-				chart.setZoomType(ZoomType.VERTICAL);
-				return true;
-			}
 			return super.onOptionsItemSelected(item);
 		}
 
-		private void generateDefaultData() {
-			// Chart looks the best when line data and column data have similar maximum viewports.
-			data = new ComboLineColumnChartData(generateDefaultColumnData(), generateDefaultLineData());
-			data.setAxisXBottom(new Axis().setName("Axis X"));
-			data.setAxisYLeft(new Axis().setName("Axis Y").setHasLines(true));
+		private void generateValues() {
+			for (int i = 0; i < maxNumberOfLines; ++i) {
+				for (int j = 0; j < numberOfPoints; ++j) {
+					randomNumbersTab[i][j] = (float) Math.random() * 50f + 5;
+				}
+			}
 		}
 
-		private LineChartData generateDefaultLineData() {
-			int numValues = 12;
+		private void reset() {
+			numberOfLines = 1;
 
-			List<PointValue> values = new ArrayList<PointValue>();
-			for (int i = 0; i < numValues; ++i) {
-				values.add(new PointValue(i, (float) Math.random() * 50 + 5));
+			hasAxes = true;
+			hasAxesNames = true;
+			hasLines = true;
+			hasPoints = true;
+			hasLabels = false;
+			isCubic = false;
+
+		}
+
+		private void generateData() {
+			// Chart looks the best when line data and column data have similar maximum viewports.
+			data = new ComboLineColumnChartData(generateColumnData(), generateLineData());
+
+			if (hasAxes) {
+				Axis axisX = new Axis();
+				Axis axisY = new Axis().setHasLines(true);
+				if (hasAxesNames) {
+					axisX.setName("Axis X");
+					axisY.setName("Axis Y");
+				}
+				data.setAxisXBottom(axisX);
+				data.setAxisYLeft(axisY);
+			} else {
+				data.setAxisXBottom(null);
+				data.setAxisYLeft(null);
 			}
 
-			Line line = new Line(values);
-			line.setColor(Utils.COLOR_ORANGE);
+			chart.setComboLineColumnChartData(data);
+		}
+
+		private LineChartData generateLineData() {
 
 			List<Line> lines = new ArrayList<Line>();
-			lines.add(line);
+			for (int i = 0; i < numberOfLines; ++i) {
+
+				List<PointValue> values = new ArrayList<PointValue>();
+				for (int j = 0; j < numberOfPoints; ++j) {
+					values.add(new PointValue(j, randomNumbersTab[i][j]));
+				}
+
+				Line line = new Line(values);
+				line.setColor(Utils.COLORS[i]);
+				line.setCubic(isCubic);
+				line.setHasLabels(hasLabels);
+				line.setHasLines(hasLines);
+				line.setHasPoints(hasPoints);
+				lines.add(line);
+			}
 
 			LineChartData lineChartData = new LineChartData(lines);
 
@@ -178,7 +190,7 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 
 		}
 
-		private ColumnChartData generateDefaultColumnData() {
+		private ColumnChartData generateColumnData() {
 			int numSubcolumns = 1;
 			int numColumns = 12;
 			// Column can have many subcolumns, here by default I use 1 subcolumn in each of 8 columns.
@@ -198,124 +210,51 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 			return columnChartData;
 		}
 
-		/**
-		 * Adds lines to data, after that data should be set again with
-		 * {@link LineChartView#setLineChartData(LineChartData)}. Last 4th line has non-monotonically x values.
-		 */
 		private void addLineToData() {
-			if (data.getLineChartData().getLines().size() >= 4) {
+			if (data.getLineChartData().getLines().size() >= maxNumberOfLines) {
 				Toast.makeText(getActivity(), "Samples app uses max 4 lines!", Toast.LENGTH_SHORT).show();
 				return;
+			} else {
+				++numberOfLines;
 			}
 
-			int numValues = 12;
-			List<PointValue> values = new ArrayList<PointValue>();
-			for (int i = 0; i < numValues; ++i) {
-				values.add(new PointValue(i, (float) Math.random() * 50 + 5));
-			}
-
-			Line line = new Line();
-
-			int linesNum = data.getLineChartData().getLines().size();
-			switch (linesNum) {
-			case 1:
-				line.setColor(Utils.COLOR_BLUE);
-				break;
-			case 2:
-				line.setColor(Utils.COLOR_RED);
-				break;
-			default:
-				// Line chart support lines with different X values and X values don't have to be monotonically.
-				line.setColor(Utils.COLOR_VIOLET);
-				values = new ArrayList<PointValue>();
-				for (int i = 0; i < numValues; ++i) {
-					values.add(new PointValue((float) Math.random() * 12, (float) Math.random() * 50f));
-				}
-				Toast.makeText(getActivity(), "Crazy violet line:)", Toast.LENGTH_SHORT).show();
-				break;
-			}
-
-			line.setValues(values);
-			data.getLineChartData().getLines().add(line);
+			generateData();
 		}
 
 		private void toggleLines() {
 			hasLines = !hasLines;
-			for (Line line : data.getLineChartData().getLines()) {
-				line.setHasLines(hasLines);
-			}
+
+			generateData();
 		}
 
 		private void togglePoints() {
 			hasPoints = !hasPoints;
-			for (Line line : data.getLineChartData().getLines()) {
-				line.setHasPoints(hasPoints);
-			}
+
+			generateData();
 		}
 
-		private void toggleBezier() {
+		private void toggleCubic() {
 			isCubic = !isCubic;
-			for (Line line : data.getLineChartData().getLines()) {
-				line.setCubic(isCubic);
-			}
+
+			generateData();
 		}
 
 		private void toggleLabels() {
 			hasLabels = !hasLabels;
-			for (Line line : data.getLineChartData().getLines()) {
-				line.setHasLabels(hasLabels);
-			}
 
-			for (Column column : data.getColumnChartData().getColumns()) {
-				column.setHasLabels(hasLabels);
-			}
-
-		}
-
-		private void toggleLabelForSelected() {
-			labelForSelected = !labelForSelected;
-			for (Line line : data.getLineChartData().getLines()) {
-				line.setHasLabelsOnlyForSelected(labelForSelected);
-			}
-
-			for (Column column : data.getColumnChartData().getColumns()) {
-				column.setHasLabelsOnlyForSelected(!column.hasLabelsOnlyForSelected());
-			}
-
+			generateData();
 		}
 
 		private void toggleAxes() {
-			if (!hasAxes) {
-				// by default axes are auto-generated;
-				data.setAxisXBottom(new Axis().setName("Axis X"));
-				data.setAxisYLeft(new Axis().setName("Axis Y"));
-			} else {
-				// to disable axes set them to null;
-				data.setAxisXBottom(null);
-				data.setAxisYLeft(null);
-			}
 			hasAxes = !hasAxes;
-			hasAxesNames = false;
+
+			generateData();
 		}
 
 		private void toggleAxesNames() {
-			if (hasAxes) {
-				hasAxesNames = !hasAxesNames;
-				// by default axes are auto-generated;
-				Axis axisX = data.getAxisXBottom();
-				if (hasAxesNames) {
-					axisX.setName("Axis X");
-				} else {
-					axisX.setName(null);
-				}
+			hasAxesNames = !hasAxesNames;
 
-				Axis axisY = data.getAxisYLeft();
-				if (hasAxesNames) {
-					axisY.setName("Axis Y");
-				} else {
-					axisY.setName(null);
-				}
-			}
+			generateData();
 		}
 
 		private void prepareDataAnimation() {
