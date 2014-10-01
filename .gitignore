@@ -8,14 +8,6 @@
 # Java class files
 *.class
 
-# Local configuration file (sdk path, etc)
-local.properties
-
-*.prefs
-
-#assets
-assets
-
 # generated files
 bin/
 gen/
@@ -24,4 +16,11 @@ libs/
 build/
 .idea
 .gradle
-gradle-wrapper.jar
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+*.prefs
+
+#assets
+assets
