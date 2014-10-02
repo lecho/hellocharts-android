@@ -205,9 +205,9 @@ public abstract class Utils {
 	 *            The ideal number of stops to create. This should be based on available screen space; the more space
 	 *            there is, the more stops should be shown.
 	 * @param outStops
-	 *            The destination {@link AxisStops} object to populate.
+	 *            The destination {@link AxisAutoStops} object to populate.
 	 */
-	public static void computeAxisStops(float start, float stop, int steps, AxisStops outStops) {
+	public static void computeAxisStops(float start, float stop, int steps, AxisAutoStops outStops) {
 		double range = stop - start;
 		if (steps == 0 || range <= 0) {
 			outStops.stops = new float[] {};

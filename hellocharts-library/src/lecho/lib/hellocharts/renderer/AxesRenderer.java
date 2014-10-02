@@ -13,7 +13,7 @@ import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.AxisValue;
 import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.util.AxisStops;
+import lecho.lib.hellocharts.util.AxisAutoStops;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.Chart;
 
@@ -37,9 +37,11 @@ public class AxesRenderer {
     private Paint[] textPaintTab = new Paint[]{new Paint(), new Paint(), new Paint(), new Paint()};
     private Paint linePaint;
 
-    private float[][] axisDrawBufferTab = new float[4][0];
-    private final AxisStops[] axisStopsBufferTab = new AxisStops[]{new AxisStops(), new AxisStops(), new AxisStops(),
-            new AxisStops()};
+    private int[] axisRawStopsNumTab = new int[4];
+    private float[][] axisRawStopsTab = new float[4][0];
+    private float[][] axisLinesDrawBufferTab = new float[4][0];
+    private final AxisAutoStops[] axisAutoStopsBufferTab = new AxisAutoStops[]{new AxisAutoStops(), new AxisAutoStops(), new AxisAutoStops(),
+            new AxisAutoStops()};
 
     private int[] axisFixedCoordinateTab = new int[4];
     private int[] axisBaselineTab = new int[4];
@@ -250,12 +252,17 @@ public class AxesRenderer {
         final int module = (int) Math.ceil(axis.getValues().size() * axisLabelWidthTab[position]
                 / (contentRect.width() * scale));
 
-        if (axis.hasLines() && axisDrawBufferTab[position].length < axis.getValues().size() * 4) {
-            axisDrawBufferTab[position] = new float[axis.getValues().size() * 4];
+        if (axisRawStopsTab[position].length < axis.getValues().size()) {
+            axisRawStopsTab[position] = new float[axis.getValues().size()];
+        }
+
+        if (axis.hasLines() && axisLinesDrawBufferTab[position].length < axis.getValues().size() * 4) {
+            axisLinesDrawBufferTab[position] = new float[axis.getValues().size() * 4];
         }
 
         int lineIndex = 0;
         int valueIndex = 0;
+        int rawStopIndex = 0;
 
         for (AxisValue axisValue : axis.getValues()) {
             final float value = axisValue.getValue();
@@ -270,20 +277,24 @@ public class AxesRenderer {
 
                     if (checkRawX(contentRect, rawX, axis.isInside(), position)) {
 
+                        axisRawStopsTab[position][rawStopIndex] = rawX;
+
                         valuesBuff[0] = axisValue.getValue();
                         final int nummChars = axis.getFormatter().formatValue(labelBuffer, valuesBuff,
                                 axisValue.getLabel());
 
-                        canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY,
+                        canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, axisRawStopsTab[position][rawStopIndex], rawY,
                                 textPaintTab[position]);
 
                         if (axis.hasLines()) {
-                            axisDrawBufferTab[position][lineIndex * 4 + 0] = rawX;
-                            axisDrawBufferTab[position][lineIndex * 4 + 1] = contentRectMargins.top;
-                            axisDrawBufferTab[position][lineIndex * 4 + 2] = rawX;
-                            axisDrawBufferTab[position][lineIndex * 4 + 3] = contentRectMargins.bottom;
+                            axisLinesDrawBufferTab[position][lineIndex * 4 + 0] = axisRawStopsTab[position][rawStopIndex];
+                            axisLinesDrawBufferTab[position][lineIndex * 4 + 1] = contentRectMargins.top;
+                            axisLinesDrawBufferTab[position][lineIndex * 4 + 2] = axisRawStopsTab[position][rawStopIndex];
+                            axisLinesDrawBufferTab[position][lineIndex * 4 + 3] = contentRectMargins.bottom;
                             ++lineIndex;
                         }
+
+                        ++rawStopIndex;
                     }
                 }
                 // If within viewport - increment valueIndex;
@@ -291,9 +302,11 @@ public class AxesRenderer {
             }
         }
 
+        axisRawStopsNumTab[position] = rawStopIndex;
+
         if (axis.hasLines()) {
             linePaint.setColor(axis.getLineColor());
-            canvas.drawLines(axisDrawBufferTab[position], 0, lineIndex * 4, linePaint);
+            canvas.drawLines(axisLinesDrawBufferTab[position], 0, lineIndex * 4, linePaint);
         }
     }
 
@@ -304,39 +317,50 @@ public class AxesRenderer {
         final Rect contentRectMargins = computator.getContentRectWithMargins();
 
         Utils.computeAxisStops(visibleViewport.left, visibleViewport.right, contentRect.width()
-                / axisLabelWidthTab[position] / 2, axisStopsBufferTab[position]);
+                / axisLabelWidthTab[position] / 2, axisAutoStopsBufferTab[position]);
 
-        if (axis.hasLines() && axisDrawBufferTab[position].length < axisStopsBufferTab[position].numStops * 4) {
-            axisDrawBufferTab[position] = new float[axisStopsBufferTab[position].numStops * 4];
+        if (axisRawStopsTab[position].length < axisAutoStopsBufferTab[position].numStops) {
+            axisRawStopsTab[position] = new float[axisAutoStopsBufferTab[position].numStops];
+        }
+
+        if (axis.hasLines() && axisLinesDrawBufferTab[position].length < axisAutoStopsBufferTab[position].numStops * 4) {
+            axisLinesDrawBufferTab[position] = new float[axisAutoStopsBufferTab[position].numStops * 4];
         }
 
         int lineIndex = 0;
+        int rawStopIndex = 0;
 
-        for (int i = 0; i < axisStopsBufferTab[position].numStops; ++i) {
-            float rawX = computator.computeRawX(axisStopsBufferTab[position].stops[i]);
+        for (int i = 0; i < axisAutoStopsBufferTab[position].numStops; ++i) {
+
+            final float rawX = computator.computeRawX(axisAutoStopsBufferTab[position].stops[i]);
 
             if (checkRawX(contentRect, rawX, axis.isInside(), position)) {
 
-                valuesBuff[0] = axisStopsBufferTab[position].stops[i];
+                axisRawStopsTab[position][rawStopIndex] = rawX;
+
+                valuesBuff[0] = axisAutoStopsBufferTab[position].stops[i];
                 final int nummChars = axis.getFormatter().formatValue(labelBuffer, valuesBuff, null,
-                        axisStopsBufferTab[position].decimals);
-                canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY,
+                        axisAutoStopsBufferTab[position].decimals);
+                canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, axisRawStopsTab[position][rawStopIndex], rawY,
                         textPaintTab[position]);
 
                 if (axis.hasLines()) {
-                    axisDrawBufferTab[position][lineIndex * 4 + 0] = rawX;
-                    axisDrawBufferTab[position][lineIndex * 4 + 1] = contentRectMargins.top;
-                    axisDrawBufferTab[position][lineIndex * 4 + 2] = rawX;
-                    axisDrawBufferTab[position][lineIndex * 4 + 3] = contentRectMargins.bottom;
+                    axisLinesDrawBufferTab[position][lineIndex * 4 + 0] = axisRawStopsTab[position][rawStopIndex];
+                    axisLinesDrawBufferTab[position][lineIndex * 4 + 1] = contentRectMargins.top;
+                    axisLinesDrawBufferTab[position][lineIndex * 4 + 2] = axisRawStopsTab[position][rawStopIndex];
+                    axisLinesDrawBufferTab[position][lineIndex * 4 + 3] = contentRectMargins.bottom;
                     ++lineIndex;
                 }
 
+                ++rawStopIndex;
             }
         }
 
+        axisRawStopsNumTab[position] = rawStopIndex;
+
         if (axis.hasLines()) {
             linePaint.setColor(axis.getLineColor());
-            canvas.drawLines(axisDrawBufferTab[position], 0, lineIndex * 4, linePaint);
+            canvas.drawLines(axisLinesDrawBufferTab[position], 0, lineIndex * 4, linePaint);
         }
     }
 
@@ -422,12 +446,17 @@ public class AxesRenderer {
         final int module = (int) Math.ceil(axis.getValues().size() * axisLabelTextAscentTab[position] * 2
                 / (contentRect.height() * scale));
 
-        if (axis.hasLines() && axisDrawBufferTab[position].length < axis.getValues().size() * 4) {
-            axisDrawBufferTab[position] = new float[axis.getValues().size() * 4];
+        if (axisRawStopsTab[position].length < axis.getValues().size()) {
+            axisRawStopsTab[position] = new float[axis.getValues().size()];
+        }
+
+        if (axis.hasLines() && axisLinesDrawBufferTab[position].length < axis.getValues().size() * 4) {
+            axisLinesDrawBufferTab[position] = new float[axis.getValues().size() * 4];
         }
 
         int lineIndex = 0;
         int valueIndex = 0;
+        int rawStopIndex = 0;
 
         for (AxisValue axisValue : axis.getValues()) {
             final float value = axisValue.getValue();
@@ -442,20 +471,24 @@ public class AxesRenderer {
 
                     if (checkRawY(contentRect, rawY, axis.isInside(), position)) {
 
+                        axisRawStopsTab[position][rawStopIndex] = rawY;
+
                         valuesBuff[0] = axisValue.getValue();
                         final int nummChars = axis.getFormatter().formatValue(labelBuffer, valuesBuff,
                                 axisValue.getLabel());
 
-                        canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY,
+                        canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, axisRawStopsTab[position][rawStopIndex],
                                 textPaintTab[position]);
 
                         if (axis.hasLines()) {
-                            axisDrawBufferTab[position][lineIndex * 4 + 0] = contentRectMargins.left;
-                            axisDrawBufferTab[position][lineIndex * 4 + 1] = rawY;
-                            axisDrawBufferTab[position][lineIndex * 4 + 2] = contentRectMargins.right;
-                            axisDrawBufferTab[position][lineIndex * 4 + 3] = rawY;
+                            axisLinesDrawBufferTab[position][lineIndex * 4 + 0] = contentRectMargins.left;
+                            axisLinesDrawBufferTab[position][lineIndex * 4 + 1] = axisRawStopsTab[position][rawStopIndex];
+                            axisLinesDrawBufferTab[position][lineIndex * 4 + 2] = contentRectMargins.right;
+                            axisLinesDrawBufferTab[position][lineIndex * 4 + 3] = axisRawStopsTab[position][rawStopIndex];
                             ++lineIndex;
                         }
+
+                        ++rawStopIndex;
                     }
                 }
                 // If within viewport - increment valueIndex;
@@ -463,9 +496,11 @@ public class AxesRenderer {
             }
         }
 
+        axisRawStopsNumTab[position] = rawStopIndex;
+
         if (axis.hasLines()) {
             linePaint.setColor(axis.getLineColor());
-            canvas.drawLines(axisDrawBufferTab[position], 0, lineIndex * 4, linePaint);
+            canvas.drawLines(axisLinesDrawBufferTab[position], 0, lineIndex * 4, linePaint);
         }
     }
 
@@ -476,38 +511,49 @@ public class AxesRenderer {
         final Rect contentRectMargins = computator.getContentRectWithMargins();
 
         Utils.computeAxisStops(visibleViewport.bottom, visibleViewport.top, contentRect.height()
-                / axisLabelTextAscentTab[position] / 2, axisStopsBufferTab[position]);
+                / axisLabelTextAscentTab[position] / 2, axisAutoStopsBufferTab[position]);
 
-        if (axis.hasLines() && axisDrawBufferTab[position].length < axisStopsBufferTab[position].numStops * 4) {
-            axisDrawBufferTab[position] = new float[axisStopsBufferTab[position].numStops * 4];
+        if (axisRawStopsTab[position].length < axisAutoStopsBufferTab[position].numStops) {
+            axisRawStopsTab[position] = new float[axisAutoStopsBufferTab[position].numStops];
+        }
+
+        if (axis.hasLines() && axisLinesDrawBufferTab[position].length < axisAutoStopsBufferTab[position].numStops * 4) {
+            axisLinesDrawBufferTab[position] = new float[axisAutoStopsBufferTab[position].numStops * 4];
         }
 
         int lineIndex = 0;
+        int rawStopIndex = 0;
 
-        for (int stopIndex = 0; stopIndex < axisStopsBufferTab[position].numStops; stopIndex++) {
-            final float rawY = computator.computeRawY(axisStopsBufferTab[position].stops[stopIndex]);
+        for (int i = 0; rawStopIndex < axisAutoStopsBufferTab[position].numStops; i++) {
+            final float rawY = computator.computeRawY(axisAutoStopsBufferTab[position].stops[i]);
 
             if (checkRawY(contentRect, rawY, axis.isInside(), position)) {
 
-                valuesBuff[0] = axisStopsBufferTab[position].stops[stopIndex];
+                axisRawStopsTab[position][rawStopIndex] = rawY;
+
+                valuesBuff[0] = axisAutoStopsBufferTab[position].stops[rawStopIndex];
                 final int nummChars = axis.getFormatter().formatValue(labelBuffer, valuesBuff, null,
-                        axisStopsBufferTab[position].decimals);
-                canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, rawY,
+                        axisAutoStopsBufferTab[position].decimals);
+                canvas.drawText(labelBuffer, labelBuffer.length - nummChars, nummChars, rawX, axisRawStopsTab[position][rawStopIndex],
                         textPaintTab[position]);
 
                 if (axis.hasLines()) {
-                    axisDrawBufferTab[position][lineIndex * 4 + 0] = contentRectMargins.left;
-                    axisDrawBufferTab[position][lineIndex * 4 + 1] = rawY;
-                    axisDrawBufferTab[position][lineIndex * 4 + 2] = contentRectMargins.right;
-                    axisDrawBufferTab[position][lineIndex * 4 + 3] = rawY;
+                    axisLinesDrawBufferTab[position][lineIndex * 4 + 0] = contentRectMargins.left;
+                    axisLinesDrawBufferTab[position][lineIndex * 4 + 1] = axisRawStopsTab[position][rawStopIndex];
+                    axisLinesDrawBufferTab[position][lineIndex * 4 + 2] = contentRectMargins.right;
+                    axisLinesDrawBufferTab[position][lineIndex * 4 + 3] = axisRawStopsTab[position][rawStopIndex];
                     ++lineIndex;
                 }
+
+                ++rawStopIndex;
             }
         }
 
+        axisRawStopsNumTab[position] = rawStopIndex;
+
         if (axis.hasLines()) {
             linePaint.setColor(axis.getLineColor());
-            canvas.drawLines(axisDrawBufferTab[position], 0, lineIndex * 4, linePaint);
+            canvas.drawLines(axisLinesDrawBufferTab[position], 0, lineIndex * 4, linePaint);
         }
     }
 
