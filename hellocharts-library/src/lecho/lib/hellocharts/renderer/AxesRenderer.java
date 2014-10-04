@@ -28,9 +28,9 @@ public class AxesRenderer {
 	private static final int LEFT = 1;
 	private static final int RIGHT = 2;
 	private static final int BOTTOM = 3;
-	
+
 	private static final char[] labelWidthChars = new char[] { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-		'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0' };
+			'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0' };
 
 	private Chart chart;
 	private int axisMargin;
@@ -43,8 +43,9 @@ public class AxesRenderer {
 	private AxisAutoStops[] axisAutoStopsBufferTab = new AxisAutoStops[] { new AxisAutoStops(), new AxisAutoStops(),
 			new AxisAutoStops(), new AxisAutoStops() };
 
-	private int[] axisFixedCoordinateTab = new int[4];
-	private int[] axisBaselineTab = new int[4];
+	private float[] axisFixedCoordinateTab = new float[4];
+	private float[] axisBaselineTab = new float[4];
+	private float[] axisSeparationLineTab = new float[4];
 	private int[] axisLabelWidthTab = new int[4];
 	private int[] axisLabelTextAscentTab = new int[4];
 	private int[] axisLabelTextDescentTab = new int[4];
@@ -190,7 +191,6 @@ public class AxesRenderer {
 		textPaintTab[position].setTextAlign(Align.CENTER);
 
 		final Axis axis;
-		final float separationBaseline;
 
 		if (BOTTOM == position) {
 			axis = chart.getChartData().getAxisXBottom();
@@ -207,7 +207,7 @@ public class AxesRenderer {
 						+ axisLabelTextAscentTab[position] + axisLabelTextDescentTab[position];
 			}
 
-			separationBaseline = computator.getContentRect().bottom;
+			axisSeparationLineTab[position] = computator.getContentRect().bottom;
 
 		} else if (TOP == position) {
 			axis = chart.getChartData().getAxisXTop();
@@ -223,7 +223,7 @@ public class AxesRenderer {
 						- axisLabelTextAscentTab[position] - axisLabelTextDescentTab[position];
 			}
 
-			separationBaseline = computator.getContentRect().top;
+			axisSeparationLineTab[position] = computator.getContentRect().top;
 
 		} else {
 			throw new IllegalArgumentException("Invalid position for horizontal axis: " + position);
@@ -242,8 +242,8 @@ public class AxesRenderer {
 		}
 
 		// Draw separation line with the same color as axis text. Only horizontal axes have separation lines.
-		canvas.drawLine(computator.getContentRectWithMargins().left, separationBaseline,
-				computator.getContentRectWithMargins().right, separationBaseline, textPaintTab[position]);
+		canvas.drawLine(computator.getContentRectWithMargins().left, axisSeparationLineTab[position],
+				computator.getContentRectWithMargins().right, axisSeparationLineTab[position], textPaintTab[position]);
 
 	}
 
