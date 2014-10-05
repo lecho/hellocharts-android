@@ -32,8 +32,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -176,27 +174,37 @@ public class ViewPagerChartsActivity extends ActionBarActivity implements Action
 				LineChartView lineChartView = new LineChartView(getActivity());
 				lineChartView.setLineChartData(generateLineChartData());
 				lineChartView.setZoomType(ZoomType.HORIZONTAL);
-				// Chart is within ViewPager so enable container scroll mode.
+
+				/** Note: Chart is within ViewPager so enable container scroll mode. **/
 				lineChartView.setContainerScrollEnabled(true, ContainerScrollType.HORIZONTAL);
+
 				layout.addView(lineChartView);
 				break;
 			case 2:
 				ColumnChartView columnChartView = new ColumnChartView(getActivity());
 				columnChartView.setColumnChartData(generateColumnChartData());
 				columnChartView.setZoomType(ZoomType.HORIZONTAL);
+
+				/** Note: Chart is within ViewPager so enable container scroll mode. **/
 				columnChartView.setContainerScrollEnabled(true, ContainerScrollType.HORIZONTAL);
+
 				layout.addView(columnChartView);
 				break;
 			case 3:
 				BubbleChartView bubbleChartView = new BubbleChartView(getActivity());
 				bubbleChartView.setBubbleChartData(generateBubbleChartData());
 				bubbleChartView.setZoomType(ZoomType.HORIZONTAL_AND_VERTICAL);
+
+				/** Note: Chart is within ViewPager so enable container scroll mode. **/
 				bubbleChartView.setContainerScrollEnabled(true, ContainerScrollType.HORIZONTAL);
+
 				layout.addView(bubbleChartView);
 				break;
 			case 4:
 				PreviewLineChartView previewLineChartView = new PreviewLineChartView(getActivity());
 				previewLineChartView.setLineChartData(generatePreviewLineChartData());
+
+				/** Note: Chart is within ViewPager so enable container scroll mode. **/
 				previewLineChartView.setContainerScrollEnabled(true, ContainerScrollType.HORIZONTAL);
 
 				Viewport tempViewport = new Viewport(previewLineChartView.getMaxViewport());
@@ -210,7 +218,10 @@ public class ViewPagerChartsActivity extends ActionBarActivity implements Action
 			case 5:
 				PieChartView pieChartView = new PieChartView(getActivity());
 				pieChartView.setPieChartData(generatePieChartData());
+
+				/** Note: Chart is within ViewPager so enable container scroll mode. **/
 				pieChartView.setContainerScrollEnabled(true, ContainerScrollType.HORIZONTAL);
+
 				layout.addView(pieChartView);
 				break;
 			}
