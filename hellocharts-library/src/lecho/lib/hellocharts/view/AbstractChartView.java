@@ -81,12 +81,13 @@ public abstract class AbstractChartView extends View implements Chart {
 		super.onDraw(canvas);
 
 		if (isEnabled()) {
-			axesRenderer.draw(canvas);
+			axesRenderer.drawInBackground(canvas);
 			int clipRestoreCount = canvas.save();
 			canvas.clipRect(chartComputator.getContentRect());
 			chartRenderer.draw(canvas);
 			canvas.restoreToCount(clipRestoreCount);
 			chartRenderer.drawUnclipped(canvas);
+			axesRenderer.drawInForeground(canvas);
 		} else {
 			canvas.drawColor(Utils.DEFAULT_COLOR);
 		}
