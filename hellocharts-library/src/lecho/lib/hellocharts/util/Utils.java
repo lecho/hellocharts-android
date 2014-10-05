@@ -204,14 +204,14 @@ public abstract class Utils {
 	 * @param steps
 	 *            The ideal number of stops to create. This should be based on available screen space; the more space
 	 *            there is, the more stops should be shown.
-	 * @param outStops
-	 *            The destination {@link AxisAutoStops} object to populate.
+	 * @param outValues
+	 *            The destination {@link AxisAutoValues} object to populate.
 	 */
-	public static void computeAxisStops(float start, float stop, int steps, AxisAutoStops outStops) {
+	public static void computeAxisAutoValues(float start, float stop, int steps, AxisAutoValues outValues) {
 		double range = stop - start;
 		if (steps == 0 || range <= 0) {
-			outStops.stops = new float[] {};
-			outStops.numStops = 0;
+			outValues.values = new float[] {};
+			outValues.valuesNumber = 0;
 			return;
 		}
 
@@ -228,27 +228,27 @@ public abstract class Utils {
 		double last = Utils.nextUp(Math.floor(stop / interval) * interval);
 
 		double intervalValue;
-		int stopIndex;
-		int numStops = 0;
+		int valueIndex;
+		int valuesNum = 0;
 		for (intervalValue = first; intervalValue <= last; intervalValue += interval) {
-			++numStops;
+			++valuesNum;
 		}
 
-		outStops.numStops = numStops;
+		outValues.valuesNumber = valuesNum;
 
-		if (outStops.stops.length < numStops) {
+		if (outValues.values.length < valuesNum) {
 			// Ensure stops contains at least numStops elements.
-			outStops.stops = new float[numStops];
+			outValues.values = new float[valuesNum];
 		}
 
-		for (intervalValue = first, stopIndex = 0; stopIndex < numStops; intervalValue += interval, ++stopIndex) {
-			outStops.stops[stopIndex] = (float) intervalValue;
+		for (intervalValue = first, valueIndex = 0; valueIndex < valuesNum; intervalValue += interval, ++valueIndex) {
+			outValues.values[valueIndex] = (float) intervalValue;
 		}
 
 		if (interval < 1) {
-			outStops.decimals = (int) Math.ceil(-Math.log10(interval));
+			outValues.decimals = (int) Math.ceil(-Math.log10(interval));
 		} else {
-			outStops.decimals = 0;
+			outValues.decimals = 0;
 		}
 	}
 

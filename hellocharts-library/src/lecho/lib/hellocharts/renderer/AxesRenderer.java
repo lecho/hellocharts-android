@@ -4,7 +4,7 @@ import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.AxisValue;
 import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.util.AxisAutoStops;
+import lecho.lib.hellocharts.util.AxisAutoValues;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;
@@ -23,12 +23,14 @@ import android.text.TextUtils;
  */
 public class AxesRenderer {
 	private static final int DEFAULT_AXIS_MARGIN_DP = 2;
-	// Axis positions and also *Tabs indexes.
+	// Axis positions indexes, used for indexing tabs that holds axes parameters, see below.
 	private static final int TOP = 0;
 	private static final int LEFT = 1;
 	private static final int RIGHT = 2;
 	private static final int BOTTOM = 3;
 
+	// Used to measure label width. If label has mas 5 characters only 5 first characters of this array are used to
+	// measure text width.
 	private static final char[] labelWidthChars = new char[] { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
 			'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0' };
 
@@ -39,24 +41,37 @@ public class AxesRenderer {
 	private Paint[] textPaintTab = new Paint[] { new Paint(), new Paint(), new Paint(), new Paint() };
 	private Paint linePaint;
 
+	// Holds number of values that should be drown for each axis.
 	private int[] axisValuesToDrawNumTab = new int[4];
-	private float[][] axisRawStopsTab = new float[4][0];
-	private float[][] axisAutoStopsToDrawTab = new float[4][0];
+	// Holds raw values to draw for each axis.
+	private float[][] axisRawValuesTab = new float[4][0];
+	// Holds auto-generated values that should be drawn, i.e if axis is inside not all auto-generated values should be
+	// drawn to avoid overdrawing. Used only for auto axes.
+	private float[][] axisAutoValuesToDrawTab = new float[4][0];
+	// Holds custom values that should be drawn, used only for custom axes.
 	private AxisValue[][] axisValuesToDrawTab = new AxisValue[4][0];
+	// Buffers for axes lines coordinates(to draw grid in the background).
 	private float[][] axisLinesDrawBufferTab = new float[4][0];
-	private AxisAutoStops[] axisAutoStopsBufferTab = new AxisAutoStops[] { new AxisAutoStops(), new AxisAutoStops(),
-			new AxisAutoStops(), new AxisAutoStops() };
+	// Buffers for auto-generated values for each axis, used only if there are auto axes.
+	private AxisAutoValues[] axisAutoValuesBufferTab = new AxisAutoValues[] { new AxisAutoValues(),
+			new AxisAutoValues(), new AxisAutoValues(), new AxisAutoValues() };
 
+	// Holds fixed coordinates for each axis, for horizontal axes Y value is fixed, for vertical axes X value is fixed.
 	private float[] axisFixedCoordinateTab = new float[4];
+	// Holds baselines for axes names.
 	private float[] axisBaselineTab = new float[4];
+	// Holds fixed coordinate for axes separations lines, used only for horizontal axes where fixed value is Y.
 	private float[] axisSeparationLineTab = new float[4];
+	// Text parameters for each axis.
 	private int[] axisLabelWidthTab = new int[4];
 	private int[] axisLabelTextAscentTab = new int[4];
 	private int[] axisLabelTextDescentTab = new int[4];
 	private FontMetricsInt[] fontMetricsTab = new FontMetricsInt[] { new FontMetricsInt(), new FontMetricsInt(),
 			new FontMetricsInt(), new FontMetricsInt() };
 
+	// Buffer used to pass axis value to ValueFormatter implementation.
 	private float[] valuesBuff = new float[1];
+	// Holds formated axis value label.
 	private char[] labelBuffer = new char[32];
 
 	private float density;
@@ -90,36 +105,42 @@ public class AxesRenderer {
 		chart.getChartComputator().setAxesMargin(axisYLeftWidth, axisXTopHeight, axisYRightWidth, axisXBottomHeight);
 	}
 
+	/**
+	 * Prepare axes coordinates and draw axes lines(if enabled) in the background.
+	 * 
+	 * @param canvas
+	 */
 	public void drawInBackground(Canvas canvas) {
 		Axis axis = chart.getChartData().getAxisYLeft();
 		if (null != axis) {
-			prepareAxisVertical(axis, LEFT);
-
+			prepareAxis(axis, LEFT);
 			drawAxisVerticalLines(canvas, axis, LEFT);
 		}
 
 		axis = chart.getChartData().getAxisYRight();
 		if (null != axis) {
-			prepareAxisVertical(axis, RIGHT);
-
+			prepareAxis(axis, RIGHT);
 			drawAxisVerticalLines(canvas, axis, RIGHT);
 		}
 
 		axis = chart.getChartData().getAxisXBottom();
 		if (null != axis) {
-			prepareAxisHorizontal(axis, BOTTOM);
-
+			prepareAxis(axis, BOTTOM);
 			drawAxisHorizontalLines(canvas, axis, BOTTOM);
 		}
 
 		axis = chart.getChartData().getAxisXTop();
 		if (null != axis) {
-			prepareAxisHorizontal(axis, TOP);
-
+			prepareAxis(axis, TOP);
 			drawAxisHorizontalLines(canvas, axis, TOP);
 		}
 	}
 
+	/**
+	 * Draw axes labels and names in the foreground.
+	 * 
+	 * @param canvas
+	 */
 	public void drawInForeground(Canvas canvas) {
 		Axis axis = chart.getChartData().getAxisYLeft();
 		if (null != axis) {
@@ -213,14 +234,12 @@ public class AxesRenderer {
 		return result;
 	}
 
-	// ********** HORIZONTAL X AXES ****************
-
-	private void prepareAxisHorizontal(Axis axis, int position) {
+	private void prepareAxis(Axis axis, int position) {
 		final ChartComputator computator = chart.getChartComputator();
 
-		textPaintTab[position].setTextAlign(Align.CENTER);
-
 		if (BOTTOM == position) {
+			textPaintTab[position].setTextAlign(Align.CENTER);
+
 			if (axis.isInside()) {
 				axisFixedCoordinateTab[position] = computator.getContentRectWithMargins().bottom - axisMargin
 						- axisLabelTextDescentTab[position];
@@ -236,6 +255,8 @@ public class AxesRenderer {
 			axisSeparationLineTab[position] = computator.getContentRect().bottom;
 
 		} else if (TOP == position) {
+			textPaintTab[position].setTextAlign(Align.CENTER);
+
 			if (axis.isInside()) {
 				axisFixedCoordinateTab[position] = computator.getContentRectWithMargins().top + axisMargin
 						+ axisLabelTextAscentTab[position];
@@ -250,17 +271,59 @@ public class AxesRenderer {
 
 			axisSeparationLineTab[position] = computator.getContentRect().top;
 
+		} else if (LEFT == position) {
+			textPaintTab[position].setTextAlign(Align.RIGHT);
+
+			if (axis.isInside()) {
+				axisFixedCoordinateTab[position] = computator.getContentRectWithMargins().left + axisMargin
+						+ axisLabelWidthTab[position];
+				axisBaselineTab[position] = computator.getContentRectWithMargins().left - axisMargin
+						- axisLabelTextDescentTab[position];
+			} else {
+				axisFixedCoordinateTab[position] = computator.getContentRectWithMargins().left - axisMargin;
+				axisBaselineTab[position] = axisFixedCoordinateTab[position] - axisLabelWidthTab[position] - axisMargin
+						- axisLabelTextDescentTab[position];
+			}
+
+			axisSeparationLineTab[position] = computator.getContentRect().left;
+
+		} else if (RIGHT == position) {
+			textPaintTab[position].setTextAlign(Align.LEFT);
+
+			if (axis.isInside()) {
+				axisFixedCoordinateTab[position] = computator.getContentRectWithMargins().right - axisMargin
+						- axisLabelWidthTab[position];
+				axisBaselineTab[position] = computator.getContentRectWithMargins().right + axisMargin
+						+ axisLabelTextAscentTab[position];
+			} else {
+				axisFixedCoordinateTab[position] = computator.getContentRectWithMargins().right + axisMargin;
+				axisBaselineTab[position] = axisFixedCoordinateTab[position] + axisLabelWidthTab[position] + axisMargin
+						+ axisLabelTextAscentTab[position];
+			}
+
+			axisSeparationLineTab[position] = computator.getContentRect().right;
+
 		} else {
 			throw new IllegalArgumentException("Invalid position for horizontal axis: " + position);
 		}
 
-		if (axis.isAutoGenerated()) {
-			prepareAxisHorizontalAuto(axis, position);
-		} else {
-			prepareAxisHorizontalCustom(axis, position);
+		if (TOP == position || BOTTOM == position) {
+			if (axis.isAutoGenerated()) {
+				prepareAxisHorizontalAuto(axis, position);
+			} else {
+				prepareAxisHorizontalCustom(axis, position);
+			}
+		} else if (LEFT == position || RIGHT == position) {
+			if (axis.isAutoGenerated()) {
+				prepareAxisVerticalAuto(axis, position);
+			} else {
+				prepareAxisVerticalCustom(axis, position);
+			}
 		}
 
 	}
+
+	// ********** HORIZONTAL X AXES ****************
 
 	private void prepareAxisHorizontalCustom(Axis axis, int position) {
 		final ChartComputator computator = chart.getChartComputator();
@@ -276,13 +339,13 @@ public class AxesRenderer {
 			axisLinesDrawBufferTab[position] = new float[axis.getValues().size() * 4];
 		}
 
-		if (axisRawStopsTab[position].length < axis.getValues().size()) {
-			axisRawStopsTab[position] = new float[axis.getValues().size()];
+		if (axisRawValuesTab[position].length < axis.getValues().size()) {
+			axisRawValuesTab[position] = new float[axis.getValues().size()];
 			axisValuesToDrawTab[position] = new AxisValue[axis.getValues().size()];
 		}
 
 		int valueIndex = 0;
-		int stopsToDrawIndex = 0;
+		int valueToDrawIndex = 0;
 
 		for (AxisValue axisValue : axis.getValues()) {
 			final float value = axisValue.getValue();
@@ -297,10 +360,10 @@ public class AxesRenderer {
 
 					if (checkRawX(contentRect, rawX, axis.isInside(), position)) {
 
-						axisRawStopsTab[position][stopsToDrawIndex] = rawX;
-						axisValuesToDrawTab[position][stopsToDrawIndex] = axisValue;
+						axisRawValuesTab[position][valueToDrawIndex] = rawX;
+						axisValuesToDrawTab[position][valueToDrawIndex] = axisValue;
 
-						++stopsToDrawIndex;
+						++valueToDrawIndex;
 
 					}
 				}
@@ -309,7 +372,7 @@ public class AxesRenderer {
 			}
 		}
 
-		axisValuesToDrawNumTab[position] = stopsToDrawIndex;
+		axisValuesToDrawNumTab[position] = valueToDrawIndex;
 
 	}
 
@@ -318,34 +381,35 @@ public class AxesRenderer {
 		final Viewport visibleViewport = computator.getVisibleViewport();
 		final Rect contentRect = computator.getContentRect();
 
-		Utils.computeAxisStops(visibleViewport.left, visibleViewport.right, contentRect.width()
-				/ axisLabelWidthTab[position] / 2, axisAutoStopsBufferTab[position]);
+		Utils.computeAxisAutoValues(visibleViewport.left, visibleViewport.right, contentRect.width()
+				/ axisLabelWidthTab[position] / 2, axisAutoValuesBufferTab[position]);
 
-		if (axis.hasLines() && axisLinesDrawBufferTab[position].length < axisAutoStopsBufferTab[position].numStops * 4) {
-			axisLinesDrawBufferTab[position] = new float[axisAutoStopsBufferTab[position].numStops * 4];
+		if (axis.hasLines()
+				&& axisLinesDrawBufferTab[position].length < axisAutoValuesBufferTab[position].valuesNumber * 4) {
+			axisLinesDrawBufferTab[position] = new float[axisAutoValuesBufferTab[position].valuesNumber * 4];
 		}
 
-		if (axisRawStopsTab[position].length < axisAutoStopsBufferTab[position].numStops) {
-			axisRawStopsTab[position] = new float[axisAutoStopsBufferTab[position].numStops];
-			axisAutoStopsToDrawTab[position] = new float[axisAutoStopsBufferTab[position].numStops];
+		if (axisRawValuesTab[position].length < axisAutoValuesBufferTab[position].valuesNumber) {
+			axisRawValuesTab[position] = new float[axisAutoValuesBufferTab[position].valuesNumber];
+			axisAutoValuesToDrawTab[position] = new float[axisAutoValuesBufferTab[position].valuesNumber];
 		}
 
-		int stopsToDrawIndex = 0;
+		int valueToDrawIndex = 0;
 
-		for (int i = 0; i < axisAutoStopsBufferTab[position].numStops; ++i) {
+		for (int i = 0; i < axisAutoValuesBufferTab[position].valuesNumber; ++i) {
 
-			final float rawX = computator.computeRawX(axisAutoStopsBufferTab[position].stops[i]);
+			final float rawX = computator.computeRawX(axisAutoValuesBufferTab[position].values[i]);
 
 			if (checkRawX(contentRect, rawX, axis.isInside(), position)) {
 
-				axisRawStopsTab[position][stopsToDrawIndex] = rawX;
-				axisAutoStopsToDrawTab[position][stopsToDrawIndex] = axisAutoStopsBufferTab[position].stops[i];
+				axisRawValuesTab[position][valueToDrawIndex] = rawX;
+				axisAutoValuesToDrawTab[position][valueToDrawIndex] = axisAutoValuesBufferTab[position].values[i];
 
-				++stopsToDrawIndex;
+				++valueToDrawIndex;
 			}
 		}
 
-		axisValuesToDrawNumTab[position] = stopsToDrawIndex;
+		axisValuesToDrawNumTab[position] = valueToDrawIndex;
 
 	}
 
@@ -356,43 +420,43 @@ public class AxesRenderer {
 
 		final Rect contentRectMargins = chart.getChartComputator().getContentRectWithMargins();
 
-		int stopsToDrawIndex = 0;
+		int valueToDrawIndex = 0;
 
-		for (; stopsToDrawIndex < axisValuesToDrawNumTab[position]; ++stopsToDrawIndex) {
+		for (; valueToDrawIndex < axisValuesToDrawNumTab[position]; ++valueToDrawIndex) {
 
-			axisLinesDrawBufferTab[position][stopsToDrawIndex * 4 + 0] = axisRawStopsTab[position][stopsToDrawIndex];
-			axisLinesDrawBufferTab[position][stopsToDrawIndex * 4 + 1] = contentRectMargins.top;
-			axisLinesDrawBufferTab[position][stopsToDrawIndex * 4 + 2] = axisRawStopsTab[position][stopsToDrawIndex];
-			axisLinesDrawBufferTab[position][stopsToDrawIndex * 4 + 3] = contentRectMargins.bottom;
+			axisLinesDrawBufferTab[position][valueToDrawIndex * 4 + 0] = axisRawValuesTab[position][valueToDrawIndex];
+			axisLinesDrawBufferTab[position][valueToDrawIndex * 4 + 1] = contentRectMargins.top;
+			axisLinesDrawBufferTab[position][valueToDrawIndex * 4 + 2] = axisRawValuesTab[position][valueToDrawIndex];
+			axisLinesDrawBufferTab[position][valueToDrawIndex * 4 + 3] = contentRectMargins.bottom;
 		}
 
 		linePaint.setColor(axis.getLineColor());
-		canvas.drawLines(axisLinesDrawBufferTab[position], 0, stopsToDrawIndex * 4, linePaint);
+		canvas.drawLines(axisLinesDrawBufferTab[position], 0, valueToDrawIndex * 4, linePaint);
 	}
 
 	private void drawAxisHorizontalLabels(Canvas canvas, Axis axis, int position) {
 		final Rect contentRectMargins = chart.getChartComputator().getContentRectWithMargins();
 
-		int stopsToDrawIndex = 0;
+		int valueToDrawIndex = 0;
 
-		for (; stopsToDrawIndex < axisValuesToDrawNumTab[position]; ++stopsToDrawIndex) {
+		for (; valueToDrawIndex < axisValuesToDrawNumTab[position]; ++valueToDrawIndex) {
 
 			final int numChars;
 
 			if (axis.isAutoGenerated()) {
-				valuesBuff[0] = axisAutoStopsToDrawTab[position][stopsToDrawIndex];
+				valuesBuff[0] = axisAutoValuesToDrawTab[position][valueToDrawIndex];
 
 				numChars = axis.getFormatter().formatAutoValue(labelBuffer, valuesBuff,
-						axisAutoStopsBufferTab[position].decimals);
+						axisAutoValuesBufferTab[position].decimals);
 			} else {
-				valuesBuff[0] = axisValuesToDrawTab[position][stopsToDrawIndex].getValue();
+				valuesBuff[0] = axisValuesToDrawTab[position][valueToDrawIndex].getValue();
 
 				numChars = axis.getFormatter().formatValue(labelBuffer, valuesBuff,
-						axisValuesToDrawTab[position][stopsToDrawIndex].getLabel());
+						axisValuesToDrawTab[position][valueToDrawIndex].getLabel());
 			}
 
 			canvas.drawText(labelBuffer, labelBuffer.length - numChars, numChars,
-					axisRawStopsTab[position][stopsToDrawIndex], axisFixedCoordinateTab[position],
+					axisRawValuesTab[position][valueToDrawIndex], axisFixedCoordinateTab[position],
 					textPaintTab[position]);
 
 		}
@@ -428,49 +492,6 @@ public class AxesRenderer {
 
 	// ********** VERTICAL Y AXES ****************
 
-	private void prepareAxisVertical(Axis axis, int position) {
-		final ChartComputator computator = chart.getChartComputator();
-
-		if (LEFT == position) {
-			textPaintTab[position].setTextAlign(Align.RIGHT);
-
-			if (axis.isInside()) {
-				axisFixedCoordinateTab[position] = computator.getContentRectWithMargins().left + axisMargin
-						+ axisLabelWidthTab[position];
-				axisBaselineTab[position] = computator.getContentRectWithMargins().left - axisMargin
-						- axisLabelTextDescentTab[position];
-			} else {
-				axisFixedCoordinateTab[position] = computator.getContentRectWithMargins().left - axisMargin;
-				axisBaselineTab[position] = axisFixedCoordinateTab[position] - axisLabelWidthTab[position] - axisMargin
-						- axisLabelTextDescentTab[position];
-			}
-
-		} else if (RIGHT == position) {
-			textPaintTab[position].setTextAlign(Align.LEFT);
-
-			if (axis.isInside()) {
-				axisFixedCoordinateTab[position] = computator.getContentRectWithMargins().right - axisMargin
-						- axisLabelWidthTab[position];
-				axisBaselineTab[position] = computator.getContentRectWithMargins().right + axisMargin
-						+ axisLabelTextAscentTab[position];
-			} else {
-				axisFixedCoordinateTab[position] = computator.getContentRectWithMargins().right + axisMargin;
-				axisBaselineTab[position] = axisFixedCoordinateTab[position] + axisLabelWidthTab[position] + axisMargin
-						+ axisLabelTextAscentTab[position];
-			}
-		} else {
-			throw new IllegalArgumentException("Invalid position for horizontal axis: " + position);
-		}
-
-		// drawing axis values
-		if (axis.isAutoGenerated()) {
-			prepareAxisVerticalAuto(axis, position);
-		} else {
-			prepareAxisVerticalCustom(axis, position);
-		}
-
-	}
-
 	private void prepareAxisVerticalCustom(Axis axis, int position) {
 		final ChartComputator computator = chart.getChartComputator();
 		final Viewport maxViewport = computator.getMaximumViewport();
@@ -485,13 +506,13 @@ public class AxesRenderer {
 			axisLinesDrawBufferTab[position] = new float[axis.getValues().size() * 4];
 		}
 
-		if (axisRawStopsTab[position].length < axis.getValues().size()) {
-			axisRawStopsTab[position] = new float[axis.getValues().size()];
+		if (axisRawValuesTab[position].length < axis.getValues().size()) {
+			axisRawValuesTab[position] = new float[axis.getValues().size()];
 			axisValuesToDrawTab[position] = new AxisValue[axis.getValues().size()];
 		}
 
 		int valueIndex = 0;
-		int stopsToDrawIndex = 0;
+		int valueToDrawIndex = 0;
 
 		for (AxisValue axisValue : axis.getValues()) {
 			final float value = axisValue.getValue();
@@ -506,10 +527,10 @@ public class AxesRenderer {
 
 					if (checkRawY(contentRect, rawY, axis.isInside(), position)) {
 
-						axisRawStopsTab[position][stopsToDrawIndex] = rawY;
-						axisValuesToDrawTab[position][stopsToDrawIndex] = axisValue;
+						axisRawValuesTab[position][valueToDrawIndex] = rawY;
+						axisValuesToDrawTab[position][valueToDrawIndex] = axisValue;
 
-						++stopsToDrawIndex;
+						++valueToDrawIndex;
 					}
 				}
 				// If within viewport - increment valueIndex;
@@ -517,7 +538,7 @@ public class AxesRenderer {
 			}
 		}
 
-		axisValuesToDrawNumTab[position] = stopsToDrawIndex;
+		axisValuesToDrawNumTab[position] = valueToDrawIndex;
 	}
 
 	private void prepareAxisVerticalAuto(Axis axis, int position) {
@@ -525,27 +546,28 @@ public class AxesRenderer {
 		final Viewport visibleViewport = computator.getVisibleViewport();
 		final Rect contentRect = computator.getContentRect();
 
-		Utils.computeAxisStops(visibleViewport.bottom, visibleViewport.top, contentRect.height()
-				/ axisLabelTextAscentTab[position] / 2, axisAutoStopsBufferTab[position]);
+		Utils.computeAxisAutoValues(visibleViewport.bottom, visibleViewport.top, contentRect.height()
+				/ axisLabelTextAscentTab[position] / 2, axisAutoValuesBufferTab[position]);
 
-		if (axis.hasLines() && axisLinesDrawBufferTab[position].length < axisAutoStopsBufferTab[position].numStops * 4) {
-			axisLinesDrawBufferTab[position] = new float[axisAutoStopsBufferTab[position].numStops * 4];
+		if (axis.hasLines()
+				&& axisLinesDrawBufferTab[position].length < axisAutoValuesBufferTab[position].valuesNumber * 4) {
+			axisLinesDrawBufferTab[position] = new float[axisAutoValuesBufferTab[position].valuesNumber * 4];
 		}
 
-		if (axisRawStopsTab[position].length < axisAutoStopsBufferTab[position].numStops) {
-			axisRawStopsTab[position] = new float[axisAutoStopsBufferTab[position].numStops];
-			axisAutoStopsToDrawTab[position] = new float[axisAutoStopsBufferTab[position].numStops];
+		if (axisRawValuesTab[position].length < axisAutoValuesBufferTab[position].valuesNumber) {
+			axisRawValuesTab[position] = new float[axisAutoValuesBufferTab[position].valuesNumber];
+			axisAutoValuesToDrawTab[position] = new float[axisAutoValuesBufferTab[position].valuesNumber];
 		}
 
 		int stopsToDrawIndex = 0;
 
-		for (int i = 0; i < axisAutoStopsBufferTab[position].numStops; i++) {
-			final float rawY = computator.computeRawY(axisAutoStopsBufferTab[position].stops[i]);
+		for (int i = 0; i < axisAutoValuesBufferTab[position].valuesNumber; i++) {
+			final float rawY = computator.computeRawY(axisAutoValuesBufferTab[position].values[i]);
 
 			if (checkRawY(contentRect, rawY, axis.isInside(), position)) {
 
-				axisRawStopsTab[position][stopsToDrawIndex] = rawY;
-				axisAutoStopsToDrawTab[position][stopsToDrawIndex] = axisAutoStopsBufferTab[position].stops[i];
+				axisRawValuesTab[position][stopsToDrawIndex] = rawY;
+				axisAutoValuesToDrawTab[position][stopsToDrawIndex] = axisAutoValuesBufferTab[position].values[i];
 
 				++stopsToDrawIndex;
 			}
@@ -566,9 +588,9 @@ public class AxesRenderer {
 		for (; stopsToDrawIndex < axisValuesToDrawNumTab[position]; ++stopsToDrawIndex) {
 
 			axisLinesDrawBufferTab[position][stopsToDrawIndex * 4 + 0] = contentRectMargins.left;
-			axisLinesDrawBufferTab[position][stopsToDrawIndex * 4 + 1] = axisRawStopsTab[position][stopsToDrawIndex];
+			axisLinesDrawBufferTab[position][stopsToDrawIndex * 4 + 1] = axisRawValuesTab[position][stopsToDrawIndex];
 			axisLinesDrawBufferTab[position][stopsToDrawIndex * 4 + 2] = contentRectMargins.right;
-			axisLinesDrawBufferTab[position][stopsToDrawIndex * 4 + 3] = axisRawStopsTab[position][stopsToDrawIndex];
+			axisLinesDrawBufferTab[position][stopsToDrawIndex * 4 + 3] = axisRawValuesTab[position][stopsToDrawIndex];
 		}
 
 		linePaint.setColor(axis.getLineColor());
@@ -585,10 +607,10 @@ public class AxesRenderer {
 			final int numChars;
 
 			if (axis.isAutoGenerated()) {
-				valuesBuff[0] = axisAutoStopsToDrawTab[position][stopsToDrawIndex];
+				valuesBuff[0] = axisAutoValuesToDrawTab[position][stopsToDrawIndex];
 
 				numChars = axis.getFormatter().formatAutoValue(labelBuffer, valuesBuff,
-						axisAutoStopsBufferTab[position].decimals);
+						axisAutoValuesBufferTab[position].decimals);
 			} else {
 				valuesBuff[0] = axisValuesToDrawTab[position][stopsToDrawIndex].getValue();
 
@@ -597,7 +619,7 @@ public class AxesRenderer {
 			}
 
 			canvas.drawText(labelBuffer, labelBuffer.length - numChars, numChars, axisFixedCoordinateTab[position],
-					axisRawStopsTab[position][stopsToDrawIndex], textPaintTab[position]);
+					axisRawValuesTab[position][stopsToDrawIndex], textPaintTab[position]);
 
 		}
 
