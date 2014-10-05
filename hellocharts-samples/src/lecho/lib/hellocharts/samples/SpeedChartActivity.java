@@ -115,7 +115,7 @@ public class SpeedChartActivity extends ActionBarActivity {
 					.setTextColor(Utils.COLOR_RED).setInside(true));
 
 			// Height axis, this axis need custom formatter that will translate values back to real height values.
-			data.setAxisYRight(new Axis().setName("Height [m]").setMaxLabelChars(3)
+			data.setAxisYRight(new Axis().setName("Height [m]").setMaxLabelChars(3).setTextColor(Utils.COLOR_BLUE)
 					.setFormatter(new HeightValueFormater(scale, sub, 0, null, null)).setInside(true));
 
 			// Set data
@@ -147,19 +147,11 @@ public class SpeedChartActivity extends ActionBarActivity {
 			}
 
 			@Override
-			public int formatValue(char[] formattedValue, float[] values, char[] label) {
+			public int formatAutoValue(char[] formattedValue, float[] values, int digits) {
 				int index = values.length - 1;// I just need last value from this array because SimpleValueFormatter
 				// uses only last value and that is enough for axis labels.
 				values[index] = (values[index] + sub) / scale;
-				return super.formatValue(formattedValue, values, label);
-			}
-
-			@Override
-			public int formatValue(char[] formattedValue, float[] values, char[] label, int digits) {
-				int index = values.length - 1;// I just need last value from this array because SimpleValueFormatter
-				// uses only last value and that is enough for axis labels.
-				values[index] = (values[index] + sub) / scale;
-				return super.formatValue(formattedValue, values, label, digits);
+				return super.formatAutoValue(formattedValue, values, digits);
 			}
 		}
 

@@ -70,12 +70,19 @@ public class SimpleValueFormatter implements ValueFormatter {
 
 	@Override
 	public int formatValue(char[] formattedValue, float[] values, char[] label) {
-		return formatValue(formattedValue, values, label, digitsNumber);
+
+		return format(formattedValue, values, label, digitsNumber);
+
 	}
 
 	@Override
-	public int formatValue(char[] formattedValue, float[] values, char[] label, int digits) {
+	public int formatAutoValue(char[] formattedValue, float[] values, int digits) {
 
+		return format(formattedValue, values, null, digits);
+
+	}
+
+	private int format(char[] formattedValue, float[] values, char[] label, int digits) {
 		if (manualDigitsForAutoAxes) {
 			digits = digitsNumber;
 		}

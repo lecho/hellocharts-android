@@ -166,7 +166,7 @@ public class TempoChartActivity extends ActionBarActivity {
 		}
 
 		/**
-		 * Recalculated height values to display on axis.
+		 * Recalculated height values to display on axis. For this example I use auto-generated height axis so I override only formatAutoValue method.
 		 */
 		private static class HeightValueFormater extends SimpleValueFormatter {
 
@@ -181,19 +181,11 @@ public class TempoChartActivity extends ActionBarActivity {
 			}
 
 			@Override
-			public int formatValue(char[] formattedValue, float[] values, char[] label) {
+			public int formatAutoValue(char[] formattedValue, float[] values, int digits) {
 				int index = values.length - 1;// I just need last value from this array because SimpleValueFormatter
 				// uses only last value and that is enough for axis labels.
 				values[index] = (values[index] + sub) / scale;
-				return super.formatValue(formattedValue, values, label);
-			}
-
-			@Override
-			public int formatValue(char[] formattedValue, float[] values, char[] label, int digits) {
-				int index = values.length - 1;// I just need last value from this array because SimpleValueFormatter
-				// uses only last value and that is enough for axis labels.
-				values[index] = (values[index] + sub) / scale;
-				return super.formatValue(formattedValue, values, label, digits);
+				return super.formatAutoValue(formattedValue, values, digits);
 			}
 		}
 
