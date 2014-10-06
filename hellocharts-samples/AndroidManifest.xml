@@ -70,6 +70,10 @@
             android:name=".ViewPagerChartsActivity"
             android:label="@string/title_activity_view_pager_charts" >
         </activity>
+        <activity
+            android:name=".AboutActivity"
+            android:label="@string/title_activity_about" >
+        </activity>
     </application>
 
 </manifest>
