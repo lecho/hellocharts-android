@@ -414,11 +414,15 @@ public class AxesRenderer {
 	}
 
 	private void drawAxisHorizontalLines(Canvas canvas, Axis axis, int position) {
+		final Rect contentRectMargins = chart.getChartComputator().getContentRectWithMargins();
+
+		// Draw separation line with the same color as axis text. Only horizontal axes have separation lines.
+		canvas.drawLine(contentRectMargins.left, axisSeparationLineTab[position], contentRectMargins.right,
+				axisSeparationLineTab[position], textPaintTab[position]);
+
 		if (!axis.hasLines()) {
 			return;
 		}
-
-		final Rect contentRectMargins = chart.getChartComputator().getContentRectWithMargins();
 
 		int valueToDrawIndex = 0;
 
@@ -460,10 +464,6 @@ public class AxesRenderer {
 					textPaintTab[position]);
 
 		}
-
-		// Draw separation line with the same color as axis text. Only horizontal axes have separation lines.
-		canvas.drawLine(contentRectMargins.left, axisSeparationLineTab[position], contentRectMargins.right,
-				axisSeparationLineTab[position], textPaintTab[position]);
 
 		// Drawing axis name
 		if (!TextUtils.isEmpty(axis.getName())) {
