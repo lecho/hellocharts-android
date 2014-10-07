@@ -19,14 +19,32 @@ public abstract class AbstractChartData implements ChartData {
 	protected int valueLabelTextColor = Color.WHITE;
 	protected int valueLabelTextSize = DEFAULT_TEXT_SIZE_SP;
 	protected Typeface valueLabelTypeface;
+
+	/** If true each value label will have background rectangle */
 	protected boolean isValueLabelBackgroundEnabled = true;
+
+	/**
+	 * If true and {@link #isValueLabelBackgroundEnabled} is true each label will have background rectangle and that
+	 * rectangle will be filled with color specified for given value.
+	 */
 	protected boolean isValueLabelBackgrountAuto = true;
-	protected int valueLabelBackgroundColor = Utils.darkenColor(Utils.COLOR_GREEN);
+
+	/**
+	 * If {@link #isValueLabelBackgroundEnabled} is true and {@link #isValueLabelBackgrountAuto} is false each label
+	 * will have background rectangle and that rectangle will be filled with this color. Helpful if you want all labels
+	 * to have the same background color.
+	 */
+	protected int valueLabelBackgroundColor = Utils.darkenColor(Utils.DEFAULT_DARKEN_COLOR);
 
 	public AbstractChartData() {
 
 	}
 
+	/**
+	 * Copy constructor for deep copy.
+	 * 
+	 * @param data
+	 */
 	public AbstractChartData(AbstractChartData data) {
 		if (null != data.axisXBottom) {
 			this.axisXBottom = new Axis(data.axisXBottom);

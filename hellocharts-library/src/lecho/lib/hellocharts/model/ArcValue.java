@@ -10,12 +10,26 @@ import lecho.lib.hellocharts.util.Utils;
  */
 public class ArcValue {
 	private static final int DEFAULT_ARC_SPACING_DP = 2;
+
+	/** Current value of this arc. */
 	private float value;
+
+	/** Origin value of this arc, used during value animation. */
 	private float orginValue;
+
+	/** Difference between originValue and targetValue. */
 	private float diff;
+
+	/** Color of this arc. */
 	private int color = Utils.DEFAULT_COLOR;
+
+	/** Darken color used to draw label background and give touch feedback. */
 	private int darkenColor = Utils.DEFAULT_DARKEN_COLOR;
+
+	/** Spacing between this arc and its neighbors. */
 	private int arcSpacing = DEFAULT_ARC_SPACING_DP;
+
+	/** Custom label for this arc, if not set number formatting will be used. */
 	private char[] label;
 
 	public ArcValue() {

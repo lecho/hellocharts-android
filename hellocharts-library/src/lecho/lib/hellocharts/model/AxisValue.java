@@ -38,6 +38,11 @@ public class AxisValue {
 		return label;
 	}
 
+	/**
+	 * Set custom label for this axis value.
+	 * 
+	 * @param label
+	 */
 	public AxisValue setLabel(char[] label) {
 		this.label = label;
 		return this;

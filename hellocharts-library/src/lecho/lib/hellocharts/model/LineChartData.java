@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Data model for line chart.
+ * Data model for LineChartView.
  * 
  * @author Leszek Wach
  * 

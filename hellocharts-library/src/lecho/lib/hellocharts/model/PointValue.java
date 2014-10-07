@@ -1,7 +1,7 @@
 package lecho.lib.hellocharts.model;
 
 /**
- * Single point coordinates.
+ * Single point coordinates, used for LineChartData.
  * 
  * @author Leszek Wach
  * 

@@ -23,55 +23,75 @@ import android.text.TextUtils;
  */
 public class AxesRenderer {
 	private static final int DEFAULT_AXIS_MARGIN_DP = 2;
-	// Axis positions indexes, used for indexing tabs that holds axes parameters, see below.
+
+	/** Axis positions indexes, used for indexing tabs that holds axes parameters, see below. */
 	private static final int TOP = 0;
 	private static final int LEFT = 1;
 	private static final int RIGHT = 2;
 	private static final int BOTTOM = 3;
 
-	// Used to measure label width. If label has mas 5 characters only 5 first characters of this array are used to
-	// measure text width.
+	/**
+	 * Used to measure label width. If label has mas 5 characters only 5 first characters of this array are used to
+	 * measure text width.
+	 **/
 	private static final char[] labelWidthChars = new char[] { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
 			'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0' };
 
 	private Chart chart;
 	private int axisMargin;
 
-	// 4 text paints for every axis, not all have to be used, indexed with TOP, LEFT, RIGHT, BOTTOM.
+	/** 4 text paints for every axis, not all have to be used, indexed with TOP, LEFT, RIGHT, BOTTOM. */
 	private Paint[] textPaintTab = new Paint[] { new Paint(), new Paint(), new Paint(), new Paint() };
 	private Paint linePaint;
 
-	// Holds number of values that should be drown for each axis.
+	/** Holds number of values that should be drown for each axis. */
 	private int[] axisValuesToDrawNumTab = new int[4];
-	// Holds raw values to draw for each axis.
+
+	/** Holds raw values to draw for each axis. */
 	private float[][] axisRawValuesTab = new float[4][0];
-	// Holds auto-generated values that should be drawn, i.e if axis is inside not all auto-generated values should be
-	// drawn to avoid overdrawing. Used only for auto axes.
+
+	/**
+	 * Holds auto-generated values that should be drawn, i.e if axis is inside not all auto-generated values should be
+	 * drawn to avoid overdrawing. Used only for auto axes.
+	 **/
 	private float[][] axisAutoValuesToDrawTab = new float[4][0];
-	// Holds custom values that should be drawn, used only for custom axes.
+
+	/** Holds custom values that should be drawn, used only for custom axes. */
 	private AxisValue[][] axisValuesToDrawTab = new AxisValue[4][0];
-	// Buffers for axes lines coordinates(to draw grid in the background).
+
+	/** Buffers for axes lines coordinates(to draw grid in the background). */
 	private float[][] axisLinesDrawBufferTab = new float[4][0];
-	// Buffers for auto-generated values for each axis, used only if there are auto axes.
+
+	/** Buffers for auto-generated values for each axis, used only if there are auto axes. */
 	private AxisAutoValues[] axisAutoValuesBufferTab = new AxisAutoValues[] { new AxisAutoValues(),
 			new AxisAutoValues(), new AxisAutoValues(), new AxisAutoValues() };
 
-	// Holds fixed coordinates for each axis, for horizontal axes Y value is fixed, for vertical axes X value is fixed.
+	/** Holds fixed coordinates for each axis, for horizontal axes Y value is fixed, for vertical axes X value is fixed. */
 	private float[] axisFixedCoordinateTab = new float[4];
-	// Holds baselines for axes names.
+
+	/** Holds baselines for axes names. */
 	private float[] axisBaselineTab = new float[4];
-	// Holds fixed coordinate for axes separations lines, used only for horizontal axes where fixed value is Y.
+
+	/** Holds fixed coordinate for axes separations lines, used only for horizontal axes where fixed value is Y. */
 	private float[] axisSeparationLineTab = new float[4];
-	// Text parameters for each axis.
+
+	/** Label max width for each axis. */
 	private int[] axisLabelWidthTab = new int[4];
+
+	/** Label height for each axis. */
 	private int[] axisLabelTextAscentTab = new int[4];
+
+	/** Label descent for each axis. **/
 	private int[] axisLabelTextDescentTab = new int[4];
+
+	/** Font metrics for each axis. */
 	private FontMetricsInt[] fontMetricsTab = new FontMetricsInt[] { new FontMetricsInt(), new FontMetricsInt(),
 			new FontMetricsInt(), new FontMetricsInt() };
 
-	// Buffer used to pass axis value to ValueFormatter implementation.
+	/** Buffer used to pass axis value to ValueFormatter implementation. */
 	private float[] valuesBuff = new float[1];
-	// Holds formated axis value label.
+
+	/** Holds formated axis value label. */
 	private char[] labelBuffer = new char[32];
 
 	private float density;

@@ -4,11 +4,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Partial copy of android.graphics.Viewport but top should be greater then bottom. Viewport holds four float
- * coordinates for a viewport viewport. The viewport is represented by the coordinates of its 4 edges (left, top,
- * right bottom). These fields can be accessed directly. Use width() and height() to retrieve the viewport's width and
- * height. Note: most methods do not check to see that the coordinates are sorted correctly (i.e. left <= right and
- * bottom <= top).
+ * Partial copy of android.graphics.Rect but here the top should be greater then the bottom. Viewport holds 4 float
+ * coordinates for a chart extremes. The viewport is represented by the coordinates of its 4 edges (left, top, right
+ * bottom). These fields can be accessed directly. Use width() and height() to retrieve the viewport's width and height.
+ * Note: most methods do not check to see that the coordinates are sorted correctly (i.e. left <= right and bottom <=
+ * top).
  * 
  * Viewport implements Parcerable.
  * 
@@ -100,16 +100,16 @@ public class Viewport implements Parcelable {
 	}
 
 	/**
-	 * @return the viewport's width. This does not check for a valid viewport (i.e. left <= right) so the result may
-	 *         be negative.
+	 * @return the viewport's width. This does not check for a valid viewport (i.e. left <= right) so the result may be
+	 *         negative.
 	 */
 	public final float width() {
 		return right - left;
 	}
 
 	/**
-	 * @return the viewport's height. This does not check for a valid viewport (i.e. top <= bottom) so the result may
-	 *         be negative.
+	 * @return the viewport's height. This does not check for a valid viewport (i.e. top <= bottom) so the result may be
+	 *         negative.
 	 */
 	public final float height() {
 		return top - bottom;
@@ -194,9 +194,9 @@ public class Viewport implements Parcelable {
 	}
 
 	/**
-	 * Inset the viewport by (dx,dy). If dx is positive, then the sides are moved inwards, making the viewport
-	 * narrower. If dx is negative, then the sides are moved outwards, making the viewport wider. The same holds true
-	 * for dy and the top and bottom.
+	 * Inset the viewport by (dx,dy). If dx is positive, then the sides are moved inwards, making the viewport narrower.
+	 * If dx is negative, then the sides are moved outwards, making the viewport wider. The same holds true for dy and
+	 * the top and bottom.
 	 * 
 	 * @param dx
 	 *            The amount to add(subtract) from the viewport's left(right)
@@ -228,8 +228,8 @@ public class Viewport implements Parcelable {
 	}
 
 	/**
-	 * Returns true iff the 4 specified sides of a viewport are inside or equal to this viewport. i.e. is this
-	 * viewport a superset of the specified viewport. An empty viewport never contains another viewport.
+	 * Returns true iff the 4 specified sides of a viewport are inside or equal to this viewport. i.e. is this viewport
+	 * a superset of the specified viewport. An empty viewport never contains another viewport.
 	 * 
 	 * @param left
 	 *            The left side of the viewport being tested for containment
@@ -249,8 +249,8 @@ public class Viewport implements Parcelable {
 	}
 
 	/**
-	 * Returns true iff the specified viewport r is inside or equal to this viewport. An empty viewport never
-	 * contains another viewport.
+	 * Returns true iff the specified viewport r is inside or equal to this viewport. An empty viewport never contains
+	 * another viewport.
 	 * 
 	 * @param v
 	 *            The viewport being tested for containment.
@@ -308,9 +308,9 @@ public class Viewport implements Parcelable {
 	}
 
 	/**
-	 * If the viewport specified by left,top,right,bottom intersects this viewport, return true and set this viewport
-	 * to that intersection, otherwise return false and do not change this viewport. No check is performed to see if
-	 * either viewport is empty. Note: To just test for intersection, use intersects()
+	 * If the viewport specified by left,top,right,bottom intersects this viewport, return true and set this viewport to
+	 * that intersection, otherwise return false and do not change this viewport. No check is performed to see if either
+	 * viewport is empty. Note: To just test for intersection, use intersects()
 	 * 
 	 * @param left
 	 *            The left side of the viewport being intersected with this viewport
@@ -344,8 +344,8 @@ public class Viewport implements Parcelable {
 
 	/**
 	 * If the specified viewport intersects this viewport, return true and set this viewport to that intersection,
-	 * otherwise return false and do not change this viewport. No check is performed to see if either viewport is
-	 * empty. To just test for intersection, use intersects()
+	 * otherwise return false and do not change this viewport. No check is performed to see if either viewport is empty.
+	 * To just test for intersection, use intersects()
 	 * 
 	 * @param v
 	 *            The viewport being intersected with this viewport.

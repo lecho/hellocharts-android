@@ -11,29 +11,64 @@ import android.graphics.Typeface;
 public interface ChartData {
 
 	/**
-	 * Updates data by scale during animation
+	 * Updates data by scale during animation.
+	 * 
+	 * @param scale
+	 *            value from 0 to 1.0
 	 */
 	public void update(float scale);
 
 	/**
-	 * Inform data that animation finished(data should be update with scale 1.0f)
+	 * Inform data that animation finished(data should be update with scale 1.0f).
 	 */
 	public void finish();
 
+	/**
+	 * Set horizontal axis at the bottom of the chart. Pass null to remove that axis.
+	 * 
+	 * @param axisX
+	 */
 	public void setAxisXBottom(Axis axisX);
 
+	/**
+	 * @see #setAxisXBottom(Axis)
+	 */
 	public Axis getAxisXBottom();
 
+	/**
+	 * Set vertical axis on the left of the chart. Pass null to remove that axis.
+	 * 
+	 * @param axisY
+	 */
 	public void setAxisYLeft(Axis axisY);
 
+	/**
+	 * @see #setAxisYLeft(Axis)
+	 */
 	public Axis getAxisYLeft();
 
+	/**
+	 * Set horizontal axis at the top of the chart. Pass null to remove that axis.
+	 * 
+	 * @param axisX
+	 */
 	public void setAxisXTop(Axis axisX);
 
+	/**
+	 * @see #setAxisXTop(Axis)
+	 */
 	public Axis getAxisXTop();
 
+	/**
+	 * Set vertical axis on the right of the chart. Pass null to remove that axis.
+	 * 
+	 * @param axisY
+	 */
 	public void setAxisYRight(Axis axisY);
 
+	/**
+	 * @see #see #setAxisYRight(Axis)
+	 */
 	public Axis getAxisYRight();
 
 	/**
@@ -56,10 +91,23 @@ public interface ChartData {
 	 */
 	public void setValueLabelTextSize(int labelsTextSize);
 
+	/**
+	 * Returns Typeface for value labels.
+	 * 
+	 * @return Typeface or null if Typeface is not set.
+	 */
 	public Typeface getValueLabelTypeface();
 
+	/**
+	 * Set Typeface for all values labels.
+	 * 
+	 * @param typeface
+	 */
 	public void setValueLabelTypeface(Typeface typeface);
 
+	/**
+	 * @see #setValueLabelBackgroundEnabled(boolean)
+	 */
 	public boolean isValueLabelBackgroundEnabled();
 
 	/**
@@ -67,6 +115,9 @@ public interface ChartData {
 	 */
 	public void setValueLabelBackgroundEnabled(boolean isValueLabelBackgroundEnabled);
 
+	/**
+	 * @see #setValueLabelBackgroundAuto(boolean)
+	 */
 	public boolean isValueLabelBackgroundAuto();
 
 	/**
@@ -74,6 +125,9 @@ public interface ChartData {
 	 */
 	public void setValueLabelBackgroundAuto(boolean isValueLabelBackgrountAuto);
 
+	/**
+	 * @see #setValueLabelBackgroundColor(int)
+	 */
 	public int getValueLabelBackgroundColor();
 
 	/**

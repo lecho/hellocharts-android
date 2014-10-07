@@ -47,6 +47,9 @@ public class SelectedValue {
 		set(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
 	}
 
+	/**
+	 * Return true if selected value have meaningful value.
+	 */
 	public boolean isSet() {
 		if (firstIndex >= 0 && secondIndex >= 0 && thirdIndex >= 0) {
 			return true;
