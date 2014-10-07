@@ -8,23 +8,23 @@ Works best when hardware acceleration is available so I recommend using it with 
 Screens
 -------
 
-![](screens/scr-line1.png)
+![](https://raw.github.com/lecho/filechooser/master/screens/scr-line1.png)
 
-![](screens/scr-tempo.png)
+![](https://raw.github.com/lecho/filechooser/master/screens/scr-tempo.png)
 
-![](screens/scr-good-bad.png)
+![](https://raw.github.com/lecho/filechooser/master/screens/scr-good-bad.png)
 
-![](screens/scr-dependency.png)
+![](https://raw.github.com/lecho/filechooser/master/screens/scr-dependency.png)
 
-![](screens/scr-combo.png)
+![](https://raw.github.com/lecho/filechooser/master/screens/scr-combo.png)
 
-![](screens/scr-column1.png)
+![](https://raw.github.com/lecho/filechooser/master/screens/scr-column1.png)
 
-![](screens/scr-preview-column.png)
+![](https://raw.github.com/lecho/filechooser/master/screens/scr-preview-column.png)
 
-![](screens/scr-pie1.png)
+![](https://raw.github.com/lecho/filechooser/master/screens/scr-pie1.png)
 
-![](screens/scr-bubble1.png)
+![](https://raw.github.com/lecho/filechooser/master/screens/scr-bubble1.png)
 
 
 License
