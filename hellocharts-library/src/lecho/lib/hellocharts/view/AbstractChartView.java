@@ -32,6 +32,7 @@ public abstract class AbstractChartView extends View implements Chart {
 	protected ChartRenderer chartRenderer;
 	protected ChartDataAnimator dataAnimator;
 	protected ChartViewportAnimator viewportAnimator;
+	protected boolean isInteractive = true;
 	protected boolean isViewportCalculationOnAnimationEnabled = true;
 	protected boolean isContainerScrollEnabled = false;
 	protected ContainerScrollType containerScrollType;
@@ -94,26 +95,34 @@ public abstract class AbstractChartView extends View implements Chart {
 	public boolean onTouchEvent(MotionEvent event) {
 		super.onTouchEvent(event);
 
-		boolean needInvalidate;
+		if (isInteractive) {
 
-		if (isContainerScrollEnabled) {
-			needInvalidate = touchHandler.handleTouchEvent(event, getParent(), containerScrollType);
+			boolean needInvalidate;
+
+			if (isContainerScrollEnabled) {
+				needInvalidate = touchHandler.handleTouchEvent(event, getParent(), containerScrollType);
+			} else {
+				needInvalidate = touchHandler.handleTouchEvent(event);
+			}
+
+			if (needInvalidate) {
+				ViewCompat.postInvalidateOnAnimation(this);
+			}
+
+			return true;
 		} else {
-			needInvalidate = touchHandler.handleTouchEvent(event);
-		}
 
-		if (needInvalidate) {
-			ViewCompat.postInvalidateOnAnimation(this);
+			return false;
 		}
-
-		return true;
 	}
 
 	@Override
 	public void computeScroll() {
 		super.computeScroll();
-		if (touchHandler.computeScroll()) {
-			ViewCompat.postInvalidateOnAnimation(this);
+		if (isInteractive) {
+			if (touchHandler.computeScroll()) {
+				ViewCompat.postInvalidateOnAnimation(this);
+			}
 		}
 	}
 
@@ -199,12 +208,12 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	@Override
 	public boolean isInteractive() {
-		return touchHandler.isInteractive();
+		return isInteractive;
 	}
 
 	@Override
 	public void setInteractive(boolean isInteractive) {
-		touchHandler.setInteractive(isInteractive);
+		this.isInteractive = isInteractive;
 	}
 
 	@Override

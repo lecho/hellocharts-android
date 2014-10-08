@@ -44,9 +44,6 @@ public class PieChartTouchHandler extends ChartTouchHandler {
 
 	@Override
 	public boolean computeScroll() {
-		if (!isInteractive) {
-			return false;
-		}
 		if (!isRotationEnabled) {
 			return false;
 		}
@@ -59,10 +56,6 @@ public class PieChartTouchHandler extends ChartTouchHandler {
 
 	@Override
 	public boolean handleTouchEvent(MotionEvent event) {
-		if (!isInteractive) {
-			return false;
-		}
-
 		boolean needInvalidate = super.handleTouchEvent(event);
 
 		if (isRotationEnabled) {

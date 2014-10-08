@@ -24,7 +24,6 @@ public class ChartTouchHandler {
 	protected ChartZoomer chartZoomer;
 	protected Chart chart;
 
-	protected boolean isInteractive = true;
 	protected boolean isZoomEnabled = true;
 	protected boolean isScrollEnabled = true;
 	protected boolean isValueTouchEnabled = true;
@@ -67,10 +66,6 @@ public class ChartTouchHandler {
 	 * 
 	 */
 	public boolean computeScroll() {
-		if (!isInteractive) {
-			return false;
-		}
-
 		final ChartComputator computator = chart.getChartComputator();
 
 		boolean needInvalidate = false;
@@ -87,10 +82,6 @@ public class ChartTouchHandler {
 	 * Handle chart touch event(gestures, clicks). Return true if gesture was handled and chart needs to be invalidated.
 	 */
 	public boolean handleTouchEvent(MotionEvent event) {
-		if (!isInteractive) {
-			return false;
-		}
-
 		boolean needInvalidate = false;
 
 		// TODO: detectors always return true, use class member needInvalidate instead local variable as workaround.
@@ -224,14 +215,6 @@ public class ChartTouchHandler {
 		} else {
 			return renderer.isTouched();
 		}
-	}
-
-	public boolean isInteractive() {
-		return isInteractive;
-	}
-
-	public void setInteractive(boolean isInteractive) {
-		this.isInteractive = isInteractive;
 	}
 
 	public void setZoomEnabled(boolean isZoomEnabled) {
