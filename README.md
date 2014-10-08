@@ -27,8 +27,6 @@ Screens and Samples
 
 ![](screens/scr-tempo.png)
 
-![](screens/scr-good-bad.png)
-
 ![](screens/scr-dependency.png)
 
 ![](screens/scr-combo.png)
@@ -46,7 +44,7 @@ Usage
 
 Contribution
 ------------
-Yes:) If you found a bug, have an idea how to improve library or have a question, please create new issue. If you would like to contribute code do it by forking the repository and sending a pull request. 
+Yes:) If you found a bug, have an idea how to improve library or have a question, please create new issue. If you would like to contribute code fork the repository and send a pull request. 
 
 I was trying to make library easy to extends with new type of charts. For most common chart types new ChartRenderer should be enough. In some cases (like pie chart) new implementation of ChartComputator or/and ChartTouchHandler will be required.
 
