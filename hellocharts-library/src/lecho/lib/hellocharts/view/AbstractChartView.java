@@ -22,12 +22,10 @@ import android.graphics.Canvas;
 import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
 public abstract class AbstractChartView extends View implements Chart {
-	private static final String TAG = "AbstractChartView";
 	protected ChartComputator chartComputator;
 	protected AxesRenderer axesRenderer;
 	protected ChartTouchHandler touchHandler;
@@ -77,7 +75,6 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		long time = System.nanoTime();
 		super.onDraw(canvas);
 
 		if (isEnabled()) {
@@ -91,8 +88,6 @@ public abstract class AbstractChartView extends View implements Chart {
 		} else {
 			canvas.drawColor(Utils.DEFAULT_COLOR);
 		}
-
-		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
 	}
 
 	@Override
