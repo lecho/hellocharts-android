@@ -28,23 +28,14 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/app_icon"
             android:layout_centerHorizontal="true"
-            android:layout_margin="8dp"
             android:text="@string/app_name"
             android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <TextView
-            android:id="@+id/author"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/app_name"
-            android:layout_centerHorizontal="true"
-            android:text="@string/about_author" />
 
         <LinearLayout
             android:id="@+id/version_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/author"
+            android:layout_below="@id/app_name"
             android:layout_centerHorizontal="true"
             android:orientation="horizontal" >
 
@@ -61,11 +52,19 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/version_layout"
+            android:layout_centerHorizontal="true"
+            android:text="@string/about_author" />
+
+        <TextView
             android:id="@+id/go_to_github"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/version_layout"
-            android:layout_marginTop="16dp"
+            android:layout_below="@id/author"
+            android:layout_marginTop="8dp"
             android:gravity="center"
             android:padding="8dp"
             android:text="@string/about_go_to_github"

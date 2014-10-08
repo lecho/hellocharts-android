@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">HelloCharts-Samples</string>
+    <string name="app_name">HelloCharts</string>
     <string name="action_about">About</string>
     <string name="title_activity_line_chart">LineChartActivity</string>
     <string name="title_activity_column_chart">ColumnChartActivity</string>
@@ -19,8 +19,7 @@
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
     <string name="title_activity_about">AboutActivity</string>
-    <string name="menu_about">About app</string>
-    <string name="about_version_label">"Version "</string>
+    <string name="about_version_label">"Library version "</string>
     <string name="about_author">Leszek Wach 2014</string>
     <string name="about_app_icon_content_description">App icon</string>
     <string name="about_go_to_github">Go to GitHub</string>
