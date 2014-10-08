@@ -46,6 +46,11 @@ Usage
 
 Contribution
 ------------
+Yes:) If you found a bug, have an idea how to improve library or have a question, please create new issue. If you would like to contribute code do it by forking the repository and sending a pull request. 
+
+I was trying to make library easy to extends with new type of charts. For most common chart types new ChartRenderer should be enough. In some cases (like pie chart) new implementation of ChartComputator or/and ChartTouchHandler will be required.
+
+In theory chart doesn't have to extend View or ViewGroup. It should be possible(I haven't yet tried it) to implement chart as a plain java object that will be never drawn on screen i.e. chart implementation that draw something on in-memory bitmap and save results on sdcard or send it via internet connection.
 
 License
 =======
