@@ -4,9 +4,24 @@ HelloCharts for Android
 Charting library for Android compatible with API 8+(Android 2.2). 
 Works best when hardware acceleration is available so I recommend using it with API 14+(Android 4.0).
 
+Supports
+--------
 
-Screens
--------
+ - Line chart
+ - Column chart
+ - Pie chart
+ - Bubble chart
+ - Combo chart(columns/lines)
+ - Preview charts(for column chart and line chart)
+ - Animations
+ - Zoom(pinch to zoom, double tap zoom), scroll and fling
+ - Value selection
+ - Customizable labels for values
+ - Custom and auto-generated axes(most charts handles four axes: top, bottom, left, right)
+ - Some other attributes like colours, fonts, lines thickness, pints radius etc.
+
+Screens and Samples
+-------------------
 
 ![](screens/scr-line1.png)
 
@@ -26,6 +41,11 @@ Screens
 
 ![](screens/scr-bubble1.png)
 
+Usage
+-----
+
+Contribution
+------------
 
 License
 =======
