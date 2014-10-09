@@ -63,8 +63,8 @@ task androidSourcesJar(type: Jar) {
 	from android.sourceSets.main.java.sourceFiles
 }
 
-// To publish to maven local execute "gradle build publishToMavenLocal" 
-// To publish to nexus execute "gradle build publish"
+// To publish to maven local execute "gradle clean build publishToMavenLocal"
+// To publish to nexus execute "gradle clean build publish"
 android.libraryVariants
 publishing {
     publications {
