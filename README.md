@@ -73,12 +73,13 @@ Apache License, version 2.0.
 ##Usage
 
 Every chart view can be defined in layout xml file:
-```xml
+
+ ```xml
     <lecho.lib.hellocharts.LineChartView
         android:id="@+id/chart"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-```
+ ```
 
  or created in code and added to layout later:
 
@@ -87,7 +88,7 @@ Every chart view can be defined in layout xml file:
     layout.addView(chart);
  ```
 
- Use methods from *ChartView class to define chart behavior, for example:
+ Use methods from *Chart classes to define chart behaviour, for example:
 
  ```java
     Chart.setInteractive(boolean isInteractive);
@@ -109,9 +110,9 @@ Every chart view can be defined in layout xml file:
     LineChartView.setLineChartData(LineChartData data);
  ```
 
- After you set chart data you can still modify its attributes but right after that you should call set*ChartData()
- method again to let chart recalculate and redraw data. There is also an option to use copy constructor for deep copy of
- chart data. You can safely modify copy in other threads and pass it to set*ChartData() method later.
+ After the chart data has been set you can still modify its attributes but right after that you should call
+ `set*ChartData()` method again to let chart recalculate and redraw data. There is also an option to use copy constructor for deep copy of
+ chart data. You can safely modify copy in other threads and pass it to `set*ChartData()` method later.
 
 #License
 

@@ -60,9 +60,9 @@ public interface ChartRenderer {
 
 	public Viewport getMaxViewport();
 
-	public void setViewport(Viewport viewport);
+	public void setCurrentViewport(Viewport viewport);
 
-	public Viewport getViewport();
+	public Viewport getCurrentViewport();
 
 	public void selectValue(SelectedValue selectedValue);
 

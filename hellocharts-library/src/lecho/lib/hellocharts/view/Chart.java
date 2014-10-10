@@ -180,18 +180,24 @@ public interface Chart {
 	public void setMaxViewport(Viewport maxViewport);
 
 	/**
-	 * Returns current viewport. Don't modify it directly, use {@link #setViewport(Viewport, boolean)} instead.
+	 * Returns current viewport. Don't modify it directly, use {@link #setCurrentViewport(Viewport, boolean)} instead.
 	 * 
-	 * @see #setViewport(Viewport, boolean)
+	 * @see #setCurrentViewport(Viewport, boolean)
 	 */
-	public Viewport getViewport();
+	public Viewport getCurrentViewport();
 
 	/**
 	 * Sets current viewport. If isAnimated is true chart will be animated during viewport changes.
 	 * 
-	 * * Note. viewport have to be set after chartData has been set.
+	 * Note. viewport have to be set after chartData has been set.
 	 */
-	public void setViewport(Viewport targetViewport, boolean isAnimated);
+	public void setCurrentViewport(Viewport targetViewport, boolean isAnimated);
+
+	/**
+	 * Reset maximum viewport and current viewport. Values for both viewports will be auto-calculated using current chart
+	 * data ranges.
+	 */
+	public void resetViewports();
 
 	/**
 	 * Programatically zoom chart to given point(viewport point). Pass negative zoomAmount value to zoom out.

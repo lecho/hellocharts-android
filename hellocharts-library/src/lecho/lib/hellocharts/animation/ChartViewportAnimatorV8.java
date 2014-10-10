@@ -28,7 +28,7 @@ public class ChartViewportAnimatorV8 implements ChartViewportAnimator {
 			if (elapsed > duration) {
 				isAnimationStarted = false;
 				handler.removeCallbacks(runnable);
-				chart.setViewport(targetViewport, false);
+				chart.setCurrentViewport(targetViewport, false);
 				animationListener.onAnimationFinished();
 				return;
 			}
@@ -39,7 +39,7 @@ public class ChartViewportAnimatorV8 implements ChartViewportAnimator {
 			float diffBottom = (targetViewport.bottom - startViewport.bottom) * scale;
 			newViewport.set(startViewport.left + diffLeft, startViewport.top + diffTop,
 					startViewport.right + diffRight, startViewport.bottom + diffBottom);
-			chart.setViewport(newViewport, false);
+			chart.setCurrentViewport(newViewport, false);
 
 			handler.postDelayed(this, 16);
 		}
@@ -69,7 +69,7 @@ public class ChartViewportAnimatorV8 implements ChartViewportAnimator {
 	public void cancelAnimation() {
 		isAnimationStarted = false;
 		handler.removeCallbacks(runnable);
-		chart.setViewport(targetViewport, false);
+		chart.setCurrentViewport(targetViewport, false);
 		animationListener.onAnimationFinished();
 	}
 

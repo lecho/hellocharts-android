@@ -278,19 +278,26 @@ public abstract class AbstractChartView extends View implements Chart {
 	}
 
 	@Override
-	public void setViewport(Viewport targetViewport, boolean isAnimated) {
-		if (isAnimated) {
+	public void setCurrentViewport(Viewport targetViewport, boolean isAnimated) {
+		if (isAnimated && null != targetViewport) {
 			viewportAnimator.cancelAnimation();
-			viewportAnimator.startAnimation(getViewport(), targetViewport);
+			viewportAnimator.startAnimation(getCurrentViewport(), targetViewport);
 		} else {
-			chartRenderer.setViewport(targetViewport);
+			chartRenderer.setCurrentViewport(targetViewport);
 		}
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
 	@Override
-	public Viewport getViewport() {
-		return getChartRenderer().getViewport();
+	public Viewport getCurrentViewport() {
+		return getChartRenderer().getCurrentViewport();
+	}
+	
+	@Override
+	public void resetViewports() {
+		chartRenderer.setMaxViewport(null);
+		chartRenderer.setCurrentViewport(null);
+		
 	}
 
 	/**

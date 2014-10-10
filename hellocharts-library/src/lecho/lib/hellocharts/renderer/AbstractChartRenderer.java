@@ -135,7 +135,7 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 	}
 
 	@Override
-	public void setViewport(Viewport viewport) {
+	public void setCurrentViewport(Viewport viewport) {
 		if (null == viewport) {
 			initCurrentViewport();
 		} else {
@@ -144,7 +144,7 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 	}
 
 	@Override
-	public Viewport getViewport() {
+	public Viewport getCurrentViewport() {
 		return chart.getChartComputator().getCurrentViewport();
 	}
 

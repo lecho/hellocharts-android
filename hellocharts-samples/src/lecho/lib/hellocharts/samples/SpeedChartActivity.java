@@ -127,7 +127,7 @@ public class SpeedChartActivity extends ActionBarActivity {
 			Viewport v = chart.getMaxViewport();
 			v.set(v.left, speedRange, v.right, 0);
 			chart.setMaxViewport(v);
-			chart.setViewport(v, false);
+			chart.setCurrentViewport(v, false);
 
 		}
 

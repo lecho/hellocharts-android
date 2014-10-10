@@ -145,7 +145,7 @@ public class PreviewLineChartActivity extends ActionBarActivity {
 			Viewport tempViewport = new Viewport(chart.getMaxViewport());
 			float dy = tempViewport.height() / 4;
 			tempViewport.inset(0, dy);
-			previewChart.setViewport(tempViewport, true);
+			previewChart.setCurrentViewport(tempViewport, true);
 			previewChart.setZoomType(ZoomType.VERTICAL);
 		}
 
@@ -153,7 +153,7 @@ public class PreviewLineChartActivity extends ActionBarActivity {
 			Viewport tempViewport = new Viewport(chart.getMaxViewport());
 			float dx = tempViewport.width() / 4;
 			tempViewport.inset(dx, 0);
-			previewChart.setViewport(tempViewport, animate);
+			previewChart.setCurrentViewport(tempViewport, animate);
 			previewChart.setZoomType(ZoomType.HORIZONTAL);
 		}
 
@@ -164,7 +164,7 @@ public class PreviewLineChartActivity extends ActionBarActivity {
 			float dx = tempViewport.width() / 4;
 			float dy = tempViewport.height() / 4;
 			tempViewport.inset(dx, dy);
-			previewChart.setViewport(tempViewport, true);
+			previewChart.setCurrentViewport(tempViewport, true);
 		}
 
 		/**
@@ -176,7 +176,7 @@ public class PreviewLineChartActivity extends ActionBarActivity {
 			@Override
 			public void onViewportChanged(Viewport newViewport) {
 				// don't use animation, it is unnecessary when using preview chart.
-				chart.setViewport(newViewport, false);
+				chart.setCurrentViewport(newViewport, false);
 			}
 
 		}

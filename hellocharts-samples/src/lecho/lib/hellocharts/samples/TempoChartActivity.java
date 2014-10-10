@@ -145,7 +145,7 @@ public class TempoChartActivity extends ActionBarActivity {
 			Viewport v = chart.getMaxViewport();
 			v.set(v.left, tempoRange, v.right, 0);
 			chart.setMaxViewport(v);
-			chart.setViewport(v, false);
+			chart.setCurrentViewport(v, false);
 
 		}
 
@@ -166,7 +166,8 @@ public class TempoChartActivity extends ActionBarActivity {
 		}
 
 		/**
-		 * Recalculated height values to display on axis. For this example I use auto-generated height axis so I override only formatAutoValue method.
+		 * Recalculated height values to display on axis. For this example I use auto-generated height axis so I
+		 * override only formatAutoValue method.
 		 */
 		private static class HeightValueFormater extends SimpleValueFormatter {
 
