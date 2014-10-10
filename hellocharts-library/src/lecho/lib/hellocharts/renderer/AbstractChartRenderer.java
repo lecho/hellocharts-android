@@ -10,9 +10,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.RectF;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.FontMetricsInt;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 
 public abstract class AbstractChartRenderer implements ChartRenderer {
@@ -23,6 +23,7 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 	protected RectF labelBackgroundRect = new RectF();
 	protected FontMetricsInt fontMetrics = new FontMetricsInt();
 	protected Viewport tempMaxViewport = new Viewport();
+	protected boolean isViewportCalculationEnabled = true;
 
 	protected float density;
 	protected float scaledDensity;
@@ -57,8 +58,10 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 
 	@Override
 	public void initCurrentViewport() {
-		ChartComputator computator = chart.getChartComputator();
-		computator.setCurrentViewport(computator.getMaximumViewport());
+		if (isViewportCalculationEnabled) {
+			ChartComputator computator = chart.getChartComputator();
+			computator.setCurrentViewport(computator.getMaximumViewport());
+		}
 	}
 
 	@Override
@@ -146,6 +149,16 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 	@Override
 	public Viewport getCurrentViewport() {
 		return chart.getChartComputator().getCurrentViewport();
+	}
+
+	@Override
+	public boolean isViewportCalculationEnabled() {
+		return isViewportCalculationEnabled;
+	}
+
+	@Override
+	public void setViewportCalculationEnabled(boolean isEnabled) {
+		this.isViewportCalculationEnabled = isEnabled;
 	}
 
 	@Override

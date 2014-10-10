@@ -145,8 +145,8 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 
 			chartTop.setLineChartData(lineData);
 
-			// For build-up animation you have to disable viewport recalculation on animation.
-			chartTop.setViewportCalculationOnAnimationEnabled(false);
+			// For build-up animation you have to disable viewport recalculation.
+			chartTop.setViewportCalculationEnabled(false);
 
 			// And set initial max viewport and current viewport- remember to set viewports after data.
 			Viewport v = new Viewport(0, 110, 6, 0);

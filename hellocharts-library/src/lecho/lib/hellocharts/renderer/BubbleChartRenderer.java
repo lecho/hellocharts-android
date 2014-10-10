@@ -73,8 +73,10 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 
 	@Override
 	public void initMaxViewport() {
-		calculateMaxViewport();
-		chart.getChartComputator().setMaxViewport(tempMaxViewport);
+		if (isViewportCalculationEnabled) {
+			calculateMaxViewport();
+			chart.getChartComputator().setMaxViewport(tempMaxViewport);
+		}
 	}
 
 	@Override

@@ -33,7 +33,6 @@ public abstract class AbstractChartView extends View implements Chart {
 	protected ChartDataAnimator dataAnimator;
 	protected ChartViewportAnimator viewportAnimator;
 	protected boolean isInteractive = true;
-	protected boolean isViewportCalculationOnAnimationEnabled = true;
 	protected boolean isContainerScrollEnabled = false;
 	protected ContainerScrollType containerScrollType;
 
@@ -142,32 +141,18 @@ public abstract class AbstractChartView extends View implements Chart {
 	}
 
 	@Override
-	public boolean isViewportCalculationOnAnimationEnabled() {
-		return isViewportCalculationOnAnimationEnabled;
-	}
-
-	@Override
-	public void setViewportCalculationOnAnimationEnabled(boolean isEnabled) {
-		this.isViewportCalculationOnAnimationEnabled = isEnabled;
-	}
-
-	@Override
 	public void animationDataUpdate(float scale) {
 		getChartData().update(scale);
-		if (isViewportCalculationOnAnimationEnabled) {
-			chartRenderer.initMaxViewport();
-			chartRenderer.initCurrentViewport();
-		}
+		chartRenderer.initMaxViewport();
+		chartRenderer.initCurrentViewport();
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
 	@Override
 	public void animationDataFinished() {
 		getChartData().finish();
-		if (isViewportCalculationOnAnimationEnabled) {
-			chartRenderer.initMaxViewport();
-			chartRenderer.initCurrentViewport();
-		}
+		chartRenderer.initMaxViewport();
+		chartRenderer.initCurrentViewport();
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
@@ -292,12 +277,21 @@ public abstract class AbstractChartView extends View implements Chart {
 	public Viewport getCurrentViewport() {
 		return getChartRenderer().getCurrentViewport();
 	}
-	
+
 	@Override
 	public void resetViewports() {
 		chartRenderer.setMaxViewport(null);
 		chartRenderer.setCurrentViewport(null);
-		
+	}
+
+	@Override
+	public boolean isViewportCalculationEnabled() {
+		return chartRenderer.isViewportCalculationEnabled();
+	}
+
+	@Override
+	public void setViewportCalculationEnabled(boolean isEnabled) {
+		chartRenderer.setViewportCalculationEnabled(isEnabled);
 	}
 
 	/**

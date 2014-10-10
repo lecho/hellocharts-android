@@ -23,13 +23,15 @@ public class ComboLineColumnChartRenderer extends AbstractChartRenderer {
 
 	@Override
 	public void initMaxViewport() {
-		this.columnChartRenderer.initMaxViewport();
-		this.lineChartRenderer.initMaxViewport();
+		if (isViewportCalculationEnabled) {
+			this.columnChartRenderer.initMaxViewport();
+			this.lineChartRenderer.initMaxViewport();
 
-		// Union maxViewports from both renderers.
-		tempMaxViewport = this.lineChartRenderer.tempMaxViewport;
-		tempMaxViewport.union(this.columnChartRenderer.tempMaxViewport);
-		chart.getChartComputator().setMaxViewport(tempMaxViewport);
+			// Union maxViewports from both renderers.
+			tempMaxViewport = this.lineChartRenderer.tempMaxViewport;
+			tempMaxViewport.union(this.columnChartRenderer.tempMaxViewport);
+			chart.getChartComputator().setMaxViewport(tempMaxViewport);
+		}
 
 	}
 

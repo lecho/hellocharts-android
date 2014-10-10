@@ -60,14 +60,17 @@ public interface Chart {
 	public void cancelDataAnimation();
 
 	/**
-	 * Return true if viewport calculation on animation is enabled, otherwise false.
+	 * Return true if auto viewports recalculations are enabled, false otherwise.
 	 */
-	public boolean isViewportCalculationOnAnimationEnabled();
+	public boolean isViewportCalculationEnabled();
 
 	/**
-	 * Enable or disable viewport recalculations on data animation.
+	 * Set true to enable viewports(max and current) recalculations during animations or after set*ChartData method is
+	 * called. If you disable viewports calculations viewports will not change until you change them manually or enable
+	 * calculations again. Disabled viewport calculations is usefull if you want show only part of chart by setting
+	 * custom viewport and don't want any operation to change that viewport
 	 */
-	public void setViewportCalculationOnAnimationEnabled(boolean isEnabled);
+	public void setViewportCalculationEnabled(boolean isEnabled);
 
 	/**
 	 * Set listener for data animation to be notified when data animation started and finished. By default that flag is
@@ -194,8 +197,8 @@ public interface Chart {
 	public void setCurrentViewport(Viewport targetViewport, boolean isAnimated);
 
 	/**
-	 * Reset maximum viewport and current viewport. Values for both viewports will be auto-calculated using current chart
-	 * data ranges.
+	 * Reset maximum viewport and current viewport. Values for both viewports will be auto-calculated using current
+	 * chart data ranges.
 	 */
 	public void resetViewports();
 

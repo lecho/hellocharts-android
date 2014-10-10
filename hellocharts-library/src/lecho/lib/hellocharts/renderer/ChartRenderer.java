@@ -11,12 +11,13 @@ public interface ChartRenderer {
 
 	/**
 	 * Initialize maximum viewport, called when chart data changed.Usually you will have to do some calculation in
-	 * implementation of that method.
+	 * implementation of that method. If isViewportCalculationEnabled is false this method should do nothing.
 	 */
 	public void initMaxViewport();
 
 	/**
-	 * Initialize currentViewport, usually set it equals to maxViewport.
+	 * Initialize currentViewport, usually set it equals to maxViewport. If isViewportCalculationEnabled is false this
+	 * method should do nothing.
 	 */
 	public void initCurrentViewport();
 
@@ -63,6 +64,10 @@ public interface ChartRenderer {
 	public void setCurrentViewport(Viewport viewport);
 
 	public Viewport getCurrentViewport();
+
+	public boolean isViewportCalculationEnabled();
+
+	public void setViewportCalculationEnabled(boolean isEnabled);
 
 	public void selectValue(SelectedValue selectedValue);
 
