@@ -11,9 +11,11 @@ import java.util.List;
  */
 public class ColumnChartData extends AbstractChartData {
 	public static final float DEFAULT_FILL_RATIO = 0.75f;
+	public static final float DEFAULT_BASE_VALUE = 0.0f;
 	private List<Column> columns = new ArrayList<Column>();
 	private boolean isStacked = false;
 	private float fillRatio = DEFAULT_FILL_RATIO;
+	private float baseValue = DEFAULT_BASE_VALUE;
 
 	public ColumnChartData() {
 	}
@@ -84,6 +86,18 @@ public class ColumnChartData extends AbstractChartData {
 			fillRatio = 1;
 		}
 		this.fillRatio = fillRatio;
+		return this;
+	}
+
+	public float getBaseValue() {
+		return baseValue;
+	}
+
+	/**
+	 * Set value below which values will be drawn as negative, by default 0.
+	 */
+	public ColumnChartData setBaseValue(float baseValue) {
+		this.baseValue = baseValue;
 		return this;
 	}
 

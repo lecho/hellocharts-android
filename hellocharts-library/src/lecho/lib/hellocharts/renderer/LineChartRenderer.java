@@ -37,7 +37,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 	private int checkPrecission;
 
-	private float baseValue = 0;
+	private float baseValue;
 
 	private int touchTolleranceMargin;
 	private Path path = new Path();
