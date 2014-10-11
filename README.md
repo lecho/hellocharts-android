@@ -4,7 +4,7 @@ Charting library for Android compatible with API 8+(Android 2.2).
 Works best when hardware acceleration is available so I recommend using it with API 14+(Android 4.0).
 Apache License, version 2.0.
 
-##Supports
+##Features
 
  - Line chart
  - Column chart
@@ -12,12 +12,9 @@ Apache License, version 2.0.
  - Bubble chart
  - Combo chart(columns/lines)
  - Preview charts(for column chart and line chart)
- - Animations
  - Zoom(pinch to zoom, double tap zoom), scroll and fling
- - Value selection
- - Customizable labels for values
  - Custom and auto-generated axes(most charts handles four axes: top, bottom, left, right)
- - Some other attributes like colours, fonts, lines thickness etc.
+ - Animations
 
 ##Screens and Samples
 
@@ -47,24 +44,24 @@ Apache License, version 2.0.
  **or**
 
  - download/clone repository and import hellocharts-library project into your workspace: `File -> Import -> Android ->
- Existing Android Code` and select hellocharts-library directory.
- - right click on application project `Properties -> Android -> Add` and select hellocharts library project.
+ Existing Android Code` and select hellocharts-library directory. Right click on application project `Properties ->
+ Android -> Add` and select hellocharts library project.
 
 ###Android Studio/Gradle
 
- - download/clone repository and import hellocharts-library as module: `File -> Import Module` and select hellocharts-library directory.
- - add dependency:
+ - download/clone repository and import hellocharts-library as module: `File -> Import Module` and select
+ hellocharts-library directory. Add dependency:
  ```groovy
      compile project(':hellocharts-library')
  ```
 
  **or**
 
- - download/clone repository and publish library artifact into your local or remote repository.
- - go to hellocharts-library directory and execute `gradle clean build publishToMavenLocal` to publish to maven local repository.
- - go to hellocharts-library directory and execute `gradle clean build publish` to publish to other repository
-  configured in build.gradle(you need to modify repository url and credentials in build.gradle file)
- - add dependency:
+ - download/clone repository and publish library artifact into your local or remote repository. Go to
+ hellocharts-library directory and execute `gradle clean build publishToMavenLocal` to publish to maven local
+  repository. Go to hellocharts-library directory and execute `gradle clean build publish` to publish to other
+  repository configured in build.gradle(you need to modify repository url and credentials in build.gradle file). Add
+  dependency:
  ```groovy
      compile 'lecho.lib.hellocharts:hellocharts-library:1.0@aar'
      compile 'com.android.support:support-v4:20+'
@@ -88,15 +85,15 @@ Every chart view can be defined in layout xml file:
     layout.addView(chart);
  ```
 
- Use methods from *Chart classes to define chart behaviour, for example:
+ Use methods from *Chart classes to define chart behaviour, example methods:
 
  ```java
     Chart.setInteractive(boolean isInteractive);
     Chart.setZoomType(ZoomType zoomType);
-    Chart.setContainerScrollEnabled(boolean isContainerScrollEnabled, ContainerScrollType containerScrollType);
+    Chart.setContainerScrollEnabled(boolean isEnabled, ContainerScrollType type);
  ```
 
- Use methods from data models to define how chart looks like, for example
+ Use methods from data models to define how chart looks like, example methods:
 
  ```java
     ChartData.setAxisXBottom(Axis axisX);
@@ -104,15 +101,33 @@ Every chart view can be defined in layout xml file:
     Line.setStrokeWidth(int strokeWidthDp);
  ```
 
- Every chart has its own method to set chart data:
+ Every chart has its own method to set chart data and its own data model, example for line chart:
 
  ```java
+    LineChartView chart = new LineChartView(context);
+
+    List<PointValue> values = new ArrayList<PointValue>(numValues);
+    values.add(new PointValue(0, 2));
+    values.add(new PointValue(1, 4));
+    values.add(new PointValue(2, 3));
+    values.add(new PointValue(3, 4));
+
+    //In most cased you can call data model methods in builder-pattern-like manner.
+    Line line = new Line(values).setColor(Color.Blue).setCubic(true);
+    List<Line> lines = new ArrayList<Line>(1);
+    lines.add(line);
+
+    LineChartData data = new LineChartData();
+    data.setLines(lines);
+
     LineChartView.setLineChartData(LineChartData data);
  ```
 
  After the chart data has been set you can still modify its attributes but right after that you should call
  `set*ChartData()` method again to let chart recalculate and redraw data. There is also an option to use copy constructor for deep copy of
  chart data. You can safely modify copy in other threads and pass it to `set*ChartData()` method later.
+
+ Check out hellocharts-samples project for more usage examples. I will try to update documentation soon.
 
 #License
 
