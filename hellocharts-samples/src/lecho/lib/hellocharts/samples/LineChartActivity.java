@@ -3,12 +3,14 @@ package lecho.lib.hellocharts.samples;
 import java.util.ArrayList;
 import java.util.List;
 
+import lecho.lib.hellocharts.animation.ChartAnimationListener;
 import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.ValueShape;
+import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.Chart;
 import lecho.lib.hellocharts.view.LineChartView;
@@ -73,6 +75,11 @@ public class LineChartActivity extends ActionBarActivity {
 
 			generateData();
 
+			// Disable viewpirt recalculations, see toggleCubic() method for more info.
+			chart.setViewportCalculationEnabled(false);
+
+			resetViewport();
+
 			return rootView;
 		}
 
@@ -104,16 +111,6 @@ public class LineChartActivity extends ActionBarActivity {
 			}
 			if (id == R.id.action_toggle_cubic) {
 				toggleCubic();
-
-				// It is good idea to manually set a little higher max viewport for cubic lines because sometimes line
-				// go above or below max/min. To do that use Viewport.inest() method and pass negative value as dy
-				// parameter.
-				// Remember to set viewport after you call setLineChartData().
-				// Viewport v = chart.getMaxViewport();
-				// float dy = v.height() * 0.05f;// just 10%, 5% on the top and 5% on the bottom
-				// v.inset(0, -dy);
-				// chart.setMaxViewport(v);
-				// chart.setViewport(v, true);
 				return true;
 			}
 			if (id == R.id.action_toggle_area) {
@@ -195,6 +192,16 @@ public class LineChartActivity extends ActionBarActivity {
 			hasLabelForSelected = false;
 
 			chart.setValueSelectionEnabled(hasLabelForSelected);
+			resetViewport();
+		}
+
+		private void resetViewport() {
+			// Reset viewport height range to (0,100)
+			final Viewport v = new Viewport(chart.getMaxViewport());
+			v.bottom = 0;
+			v.top = 100;
+			chart.setMaxViewport(v);
+			chart.setCurrentViewport(v, false);
 		}
 
 		private void generateData() {
@@ -235,6 +242,7 @@ public class LineChartActivity extends ActionBarActivity {
 				data.setAxisYLeft(null);
 			}
 
+			data.setBaseValue(Float.NEGATIVE_INFINITY);
 			chart.setLineChartData(data);
 
 		}
@@ -270,6 +278,52 @@ public class LineChartActivity extends ActionBarActivity {
 			isCubic = !isCubic;
 
 			generateData();
+
+			if (isCubic) {
+				// It is good idea to manually set a little higher max viewport for cubic lines because sometimes line
+				// go above or below max/min. To do that use Viewport.inest() method and pass negative value as dy
+				// parameter or just set top and bottom values manually.
+				// In this example I know that Y values are within (0,100) range so I set viewport height range manually
+				// to (-5, 105).
+				// To make this works during animations you should use Chart.setViewportCalculationEnabled(false) before
+				// modifying viewport.
+				// Remember to set viewport after you call setLineChartData().
+				final Viewport v = new Viewport(chart.getMaxViewport());
+				v.bottom = -5;
+				v.top = 105;
+				// You have to set max and current viewports separately.
+				chart.setMaxViewport(v);
+				// I changing current viewport with animation in this case.
+				chart.setCurrentViewport(v, true);
+			} else {
+				// If not cubic restore viewport to (0,100) range.
+				final Viewport v = new Viewport(chart.getMaxViewport());
+				v.bottom = 0;
+				v.top = 100;
+
+				// You have to set max and current viewports separately.
+				// In this case, if I want animation I have to set current viewport first and use animation listener.
+				// Max viewport will be set in onAnimationFinished method.
+				chart.setViewportAnimationListener(new ChartAnimationListener() {
+
+					@Override
+					public void onAnimationStarted() {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public void onAnimationFinished() {
+						// Set max viewpirt and remove listener.
+						chart.setMaxViewport(v);
+						chart.setViewportAnimationListener(null);
+
+					}
+				});
+				// Set current viewpirt with animation;
+				chart.setCurrentViewport(v, true);
+			}
+
 		}
 
 		private void toggleFilled() {
