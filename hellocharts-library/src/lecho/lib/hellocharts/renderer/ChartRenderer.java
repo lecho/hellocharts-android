@@ -27,7 +27,8 @@ public interface ChartRenderer {
 	public void initDataMeasuremetns();
 
 	/**
-	 * Initialize common data attributes label font size, font color etc.
+	 * Initialize common data attributes label font size, font color etc. Should be called before viewports
+	 * initializations.
 	 */
 	public void initDataAttributes();
 

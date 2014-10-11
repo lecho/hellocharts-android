@@ -47,9 +47,9 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 			this.data = data;
 		}
 		axesRenderer.initAxesAttributes();
+		chartRenderer.initDataAttributes();
 		chartRenderer.initMaxViewport();
 		chartRenderer.initCurrentViewport();
-		chartRenderer.initDataAttributes();
 
 		ViewCompat.postInvalidateOnAnimation(ColumnChartView.this);
 

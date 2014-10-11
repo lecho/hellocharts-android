@@ -69,9 +69,9 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 			this.data = data;
 		}
 		axesRenderer.initAxesAttributes();
+		chartRenderer.initDataAttributes();
 		chartRenderer.initMaxViewport();
 		chartRenderer.initCurrentViewport();
-		chartRenderer.initDataAttributes();
 
 		ViewCompat.postInvalidateOnAnimation(PieChartView.this);
 	}
