@@ -1,8 +1,8 @@
 #HelloCharts for Android
 
 Charting library for Android compatible with API 8+(Android 2.2).
-Works best when hardware acceleration is available so I recommend using it with API 14+(Android 4.0).
-Apache License, version 2.0.
+Works best when hardware acceleration is available, so API 14+(Android 4.0) is recommended.
+Apache License 2.0.
 
 ##Features
 
@@ -13,7 +13,7 @@ Apache License, version 2.0.
  - Combo chart(columns/lines)
  - Preview charts(for column chart and line chart)
  - Zoom(pinch to zoom, double tap zoom), scroll and fling
- - Custom and auto-generated axes(most charts handles four axes: top, bottom, left, right)
+ - Custom and auto-generated axes(top, bottom, left, right)
  - Animations
 
 ##Screens and Demos
