@@ -108,8 +108,6 @@ Every chart view can be defined in layout xml file:
  Every chart has its own method to set chart data and its own data model, example for line chart:
 
  ```java
-    LineChartView chart = new LineChartView(context);
-
     List<PointValue> values = new ArrayList<PointValue>(numValues);
     values.add(new PointValue(0, 2));
     values.add(new PointValue(1, 4));
@@ -124,7 +122,8 @@ Every chart view can be defined in layout xml file:
     LineChartData data = new LineChartData();
     data.setLines(lines);
 
-    LineChartView.setLineChartData(LineChartData data);
+	LineChartView chart = new LineChartView(context);
+    chart.setLineChartData(data);
  ```
 
  After the chart data has been set you can still modify its attributes but right after that you should call
