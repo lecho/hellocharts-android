@@ -18,8 +18,8 @@ Apache License, version 2.0.
 
 ##Screens and Demos
 
-Code of a demo application is in hellocharts-samples directory.   
-The demo app is also ready for download on the [Google Play](https://play.google.com/store/apps/details?id=lecho.lib.hellocharts.samples).  
+Code of a demo application is in `hellocharts-samples` directory.   
+The demo app is also ready for download on [Google Play](https://play.google.com/store/apps/details?id=lecho.lib.hellocharts.samples).  
 Short video is available on [YouTube](https://www.youtube.com/watch?v=xbSBjyjH2SY).
 
 ![](screens/scr-line1.png)
@@ -76,7 +76,7 @@ Short video is available on [YouTube](https://www.youtube.com/watch?v=xbSBjyjH2S
 Every chart view can be defined in layout xml file:
 
  ```xml
-    <lecho.lib.hellocharts.LineChartView
+    <lecho.lib.hellocharts.view.LineChartView
         android:id="@+id/chart"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
