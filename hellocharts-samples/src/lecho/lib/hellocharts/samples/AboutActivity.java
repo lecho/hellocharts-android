@@ -19,7 +19,7 @@ import android.widget.TextView;
 
 public class AboutActivity extends ActionBarActivity {
 	public static final String TAG = AboutActivity.class.getSimpleName();
-	public static final String GITHUB_URL = "https://github.com/lecho/filechooser";
+	public static final String GITHUB_URL = "github.com/lecho/hellocharts-android";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

@@ -16,7 +16,11 @@ Apache License, version 2.0.
  - Custom and auto-generated axes(most charts handles four axes: top, bottom, left, right)
  - Animations
 
-##Screens and Samples
+##Screens and Demos
+
+Code of a demo application is in hellocharts-samples directory.   
+The demo app is also ready for download on the [Google Play](https://play.google.com/store/apps/details?id=lecho.lib.hellocharts.samples).  
+Short video is available on [YouTube](https://www.youtube.com/watch?v=xbSBjyjH2SY).
 
 ![](screens/scr-line1.png)
 
