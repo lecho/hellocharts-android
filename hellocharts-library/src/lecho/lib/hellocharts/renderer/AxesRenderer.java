@@ -70,7 +70,7 @@ public class AxesRenderer {
 	private float[] axisFixedCoordinateTab = new float[4];
 
 	/** Holds baselines for axes names. */
-	private float[] axisBaselineTab = new float[4];
+	private float[] axisNameBaselineTab = new float[4];
 
 	/** Holds fixed coordinate for axes separations lines, used only for horizontal axes where fixed value is Y. */
 	private float[] axisSeparationLineTab = new float[4];
@@ -263,12 +263,12 @@ public class AxesRenderer {
 			if (axis.isInside()) {
 				axisFixedCoordinateTab[position] = computator.getContentRectWithMargins().bottom - axisMargin
 						- axisLabelTextDescentTab[position];
-				axisBaselineTab[position] = computator.getContentRectWithMargins().bottom
+				axisNameBaselineTab[position] = computator.getContentRectWithMargins().bottom
 						+ axisLabelTextAscentTab[position] + axisMargin;
 			} else {
 				axisFixedCoordinateTab[position] = computator.getContentRectWithMargins().bottom
 						+ axisLabelTextAscentTab[position] + axisMargin;
-				axisBaselineTab[position] = axisFixedCoordinateTab[position] + axisMargin
+				axisNameBaselineTab[position] = axisFixedCoordinateTab[position] + axisMargin
 						+ axisLabelTextAscentTab[position] + axisLabelTextDescentTab[position];
 			}
 
@@ -280,45 +280,45 @@ public class AxesRenderer {
 			if (axis.isInside()) {
 				axisFixedCoordinateTab[position] = computator.getContentRectWithMargins().top + axisMargin
 						+ axisLabelTextAscentTab[position];
-				axisBaselineTab[position] = computator.getContentRectWithMargins().top - axisMargin
+				axisNameBaselineTab[position] = computator.getContentRectWithMargins().top - axisMargin
 						- axisLabelTextDescentTab[position];
 			} else {
 				axisFixedCoordinateTab[position] = computator.getContentRectWithMargins().top - axisMargin
 						- axisLabelTextDescentTab[position];
-				axisBaselineTab[position] = axisFixedCoordinateTab[position] - axisMargin
+				axisNameBaselineTab[position] = axisFixedCoordinateTab[position] - axisMargin
 						- axisLabelTextAscentTab[position] - axisLabelTextDescentTab[position];
 			}
 
 			axisSeparationLineTab[position] = computator.getContentRect().top;
 
 		} else if (LEFT == position) {
-			textPaintTab[position].setTextAlign(Align.RIGHT);
 
 			if (axis.isInside()) {
-				axisFixedCoordinateTab[position] = computator.getContentRectWithMargins().left + axisMargin
-						+ axisLabelWidthTab[position];
-				axisBaselineTab[position] = computator.getContentRectWithMargins().left - axisMargin
+				textPaintTab[position].setTextAlign(Align.LEFT);
+				axisFixedCoordinateTab[position] = computator.getContentRectWithMargins().left + axisMargin;
+				axisNameBaselineTab[position] = computator.getContentRectWithMargins().left - axisMargin
 						- axisLabelTextDescentTab[position];
 			} else {
+				textPaintTab[position].setTextAlign(Align.RIGHT);
 				axisFixedCoordinateTab[position] = computator.getContentRectWithMargins().left - axisMargin;
-				axisBaselineTab[position] = axisFixedCoordinateTab[position] - axisLabelWidthTab[position] - axisMargin
-						- axisLabelTextDescentTab[position];
+				axisNameBaselineTab[position] = axisFixedCoordinateTab[position] - axisLabelWidthTab[position]
+						- axisMargin - axisLabelTextDescentTab[position];
 			}
 
 			axisSeparationLineTab[position] = computator.getContentRect().left;
 
 		} else if (RIGHT == position) {
-			textPaintTab[position].setTextAlign(Align.LEFT);
 
 			if (axis.isInside()) {
-				axisFixedCoordinateTab[position] = computator.getContentRectWithMargins().right - axisMargin
-						- axisLabelWidthTab[position];
-				axisBaselineTab[position] = computator.getContentRectWithMargins().right + axisMargin
+				textPaintTab[position].setTextAlign(Align.RIGHT);
+				axisFixedCoordinateTab[position] = computator.getContentRectWithMargins().right - axisMargin;
+				axisNameBaselineTab[position] = computator.getContentRectWithMargins().right + axisMargin
 						+ axisLabelTextAscentTab[position];
 			} else {
+				textPaintTab[position].setTextAlign(Align.LEFT);
 				axisFixedCoordinateTab[position] = computator.getContentRectWithMargins().right + axisMargin;
-				axisBaselineTab[position] = axisFixedCoordinateTab[position] + axisLabelWidthTab[position] + axisMargin
-						+ axisLabelTextAscentTab[position];
+				axisNameBaselineTab[position] = axisFixedCoordinateTab[position] + axisLabelWidthTab[position]
+						+ axisMargin + axisLabelTextAscentTab[position];
 			}
 
 			axisSeparationLineTab[position] = computator.getContentRect().right;
@@ -487,7 +487,8 @@ public class AxesRenderer {
 
 		// Drawing axis name
 		if (!TextUtils.isEmpty(axis.getName())) {
-			canvas.drawText(axis.getName(), contentRectMargins.centerX(), axisBaselineTab[position],
+			textPaintTab[position].setTextAlign(Align.CENTER);
+			canvas.drawText(axis.getName(), contentRectMargins.centerX(), axisNameBaselineTab[position],
 					textPaintTab[position]);
 		}
 	}
@@ -648,7 +649,7 @@ public class AxesRenderer {
 			textPaintTab[position].setTextAlign(Align.CENTER);
 			canvas.save();
 			canvas.rotate(-90, contentRectMargins.centerY(), contentRectMargins.centerY());
-			canvas.drawText(axis.getName(), contentRectMargins.centerY(), axisBaselineTab[position],
+			canvas.drawText(axis.getName(), contentRectMargins.centerY(), axisNameBaselineTab[position],
 					textPaintTab[position]);
 			canvas.restore();
 		}

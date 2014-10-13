@@ -6,7 +6,6 @@ import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
 import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;
-import android.support.v4.view.ScaleGestureDetectorCompat;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
