@@ -34,9 +34,9 @@ public class PreviewChartTouchHandler extends ChartTouchHandler {
 					scale = 1;
 				}
 				return chartZoomer.scale(chart.getChartComputator(), detector.getFocusX(), detector.getFocusY(), scale);
-			} else {
-				return false;
 			}
+
+			return false;
 		}
 	}
 

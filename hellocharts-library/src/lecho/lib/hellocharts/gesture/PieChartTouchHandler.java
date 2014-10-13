@@ -87,9 +87,9 @@ public class PieChartTouchHandler extends ChartTouchHandler {
 			if (isRotationEnabled) {
 				scroller.abortAnimation();
 				return true;
-			} else {
-				return false;
 			}
+
+			return false;
 
 		}
 
@@ -109,9 +109,9 @@ public class PieChartTouchHandler extends ChartTouchHandler {
 				pieChart.setChartRotation(pieChart.getChartRotation() - (int) scrollTheta / FLING_VELOCITY_DOWNSCALE,
 						false);
 				return true;
-			} else {
-				return false;
 			}
+
+			return false;
 		}
 
 		@Override
@@ -126,9 +126,9 @@ public class PieChartTouchHandler extends ChartTouchHandler {
 				scroller.fling(0, (int) pieChart.getChartRotation(), 0, (int) scrollTheta / FLING_VELOCITY_DOWNSCALE,
 						0, 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
 				return true;
-			} else {
-				return false;
 			}
+
+			return false;
 		}
 
 		/**

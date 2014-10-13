@@ -6,6 +6,8 @@ import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
 import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;
+import android.support.v4.view.ScaleGestureDetectorCompat;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -273,9 +275,9 @@ public class ChartTouchHandler {
 					scale = 1;
 				}
 				return chartZoomer.scale(chart.getChartComputator(), detector.getFocusX(), detector.getFocusY(), scale);
-			} else {
-				return false;
 			}
+
+			return false;
 		}
 	}
 
@@ -290,18 +292,20 @@ public class ChartTouchHandler {
 				disallowParentInterceptTouchEvent();
 
 				return chartScroller.startScroll(chart.getChartComputator());
-			} else {
-				return false;
 			}
+
+			return false;
+
 		}
 
 		@Override
 		public boolean onDoubleTap(MotionEvent e) {
+			Log.e("TAG", "on double tab");
 			if (isZoomEnabled) {
 				return chartZoomer.startZoom(e, chart.getChartComputator());
-			} else {
-				return false;
 			}
+
+			return false;
 		}
 
 		@Override
@@ -313,18 +317,19 @@ public class ChartTouchHandler {
 				allowParentInterceptTouchEvent(scrollResult);
 
 				return canScroll;
-			} else {
-				return false;
 			}
+
+			return false;
+
 		}
 
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 			if (isScrollEnabled) {
 				return chartScroller.fling((int) -velocityX, (int) -velocityY, chart.getChartComputator());
-			} else {
-				return false;
 			}
+
+			return false;
 		}
 	}
 
