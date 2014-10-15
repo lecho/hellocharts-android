@@ -19,8 +19,10 @@ Apache License 2.0.
 ##Screens and Demos
 
 Code of a demo application is in `hellocharts-samples` directory.   
-The demo app is also ready for download on [Google Play](https://play.google.com/store/apps/details?id=lecho.lib.hellocharts.samples).  
-Short video is available on [YouTube](https://www.youtube.com/watch?v=xbSBjyjH2SY).
+The **demo app** is also ready for download on [Google Play](https://play.google.com/store/apps/details?id=lecho.lib.hellocharts.samples).  
+Short **video** is available on [YouTube](https://www.youtube.com/watch?v=xbSBjyjH2SY).
+
+![](screens/scr_column_line_chart_dependency.gif)
 
 ![](screens/scr-line1.png)
 
@@ -37,6 +39,8 @@ Short video is available on [YouTube](https://www.youtube.com/watch?v=xbSBjyjH2S
 ![](screens/scr-pie1.png)
 
 ![](screens/scr-bubble1.png)
+
+![](screens/scr_preview_column_chart.gif)
 
 ##Download and Import
 
@@ -108,7 +112,7 @@ Every chart view can be defined in layout xml file:
  Every chart has its own method to set chart data and its own data model, example for line chart:
 
  ```java
-    List<PointValue> values = new ArrayList<PointValue>(numValues);
+    List<PointValue> values = new ArrayList<PointValue>();
     values.add(new PointValue(0, 2));
     values.add(new PointValue(1, 4));
     values.add(new PointValue(2, 3));
@@ -116,7 +120,7 @@ Every chart view can be defined in layout xml file:
 
     //In most cased you can call data model methods in builder-pattern-like manner.
     Line line = new Line(values).setColor(Color.Blue).setCubic(true);
-    List<Line> lines = new ArrayList<Line>(1);
+    List<Line> lines = new ArrayList<Line>();
     lines.add(line);
 
     LineChartData data = new LineChartData();
