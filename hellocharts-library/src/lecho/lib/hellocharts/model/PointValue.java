@@ -1,5 +1,7 @@
 package lecho.lib.hellocharts.model;
 
+import lecho.lib.hellocharts.view.Chart;
+
 /**
  * Single point coordinates, used for LineChartData.
  * 
@@ -48,6 +50,12 @@ public class PointValue {
 		return this;
 	}
 
+	/**
+	 * Set target values that should be reached when data animation finish then call {@link Chart#startDataAnimation()}
+	 * 
+	 * @param target
+	 * @return
+	 */
 	public PointValue setTarget(float targetX, float targetY) {
 		set(x, y);
 		this.diffX = targetX - orginX;

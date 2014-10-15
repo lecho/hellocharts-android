@@ -121,7 +121,7 @@ public interface ChartData {
 	public boolean isValueLabelBackgroundAuto();
 
 	/**
-	 * Set false if you want set custom color for all value labels. Default is true.
+	 * Set false if you want to set custom color for all value labels. Default is true.
 	 */
 	public void setValueLabelBackgroundAuto(boolean isValueLabelBackgrountAuto);
 

@@ -12,6 +12,13 @@ import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 
+/**
+ * LineChart, supports cubic lines, filled lines, circle and square points. Point radius and stroke width can be
+ * adjusted usind LineChartData attributes.
+ * 
+ * @author Leszek Wach
+ * 
+ */
 public class LineChartView extends AbstractChartView implements LineChartDataProvider {
 	private static final String TAG = "LineChartView";
 	protected LineChartData data;

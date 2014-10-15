@@ -12,6 +12,12 @@ import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 
+/**
+ * BubbleChart, supports circle bubbles and square bubbles.
+ * 
+ * @author lecho
+ * 
+ */
 public class BubbleChartView extends AbstractChartView implements BubbleChartDataProvider {
 	private static final String TAG = "BubbleChartView";
 	protected BubbleChartData data;

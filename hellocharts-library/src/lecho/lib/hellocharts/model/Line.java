@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.view.Chart;
 
 /**
  * Single line for line chart.
@@ -18,6 +19,7 @@ public class Line {
 	private static final int DEFAULT_AREA_TRANSPARENCY = 64;
 	private int color = Utils.DEFAULT_COLOR;
 	private int darkenColor = Utils.DEFAULT_DARKEN_COLOR;
+	/** Transparency of area when line is filled. **/
 	private int areaTransparency = DEFAULT_AREA_TRANSPARENCY;
 	private int strokeWidth = DEFAULT_LINE_STROKE_WIDTH_DP;
 	private int pointRadius = DEFAULT_POINT_RADIUS_DP;
@@ -97,10 +99,19 @@ public class Line {
 		return darkenColor;
 	}
 
+	/**
+	 * @see #setAreaTransparency(int)
+	 */
 	public int getAreaTransparency() {
 		return areaTransparency;
 	}
 
+	/**
+	 * Set area transparency(255 is full opacity) for filled lines
+	 * 
+	 * @param areaTransparency
+	 * @return
+	 */
 	public Line setAreaTransparency(int areaTransparency) {
 		this.areaTransparency = areaTransparency;
 		return this;
@@ -145,10 +156,17 @@ public class Line {
 		return this;
 	}
 
+	/**
+	 * @see #setHasLabelsOnlyForSelected(boolean)
+	 */
 	public boolean hasLabelsOnlyForSelected() {
 		return hasLabelsOnlyForSelected;
 	}
 
+	/**
+	 * Set true if you want to show value labels only for selected value, works best when chart has
+	 * isValueSelectionEnabled set to true {@link Chart#setValueSelectionEnabled(boolean)}.
+	 */
 	public Line setHasLabelsOnlyForSelected(boolean hasLabelsOnlyForSelected) {
 		this.hasLabelsOnlyForSelected = hasLabelsOnlyForSelected;
 		if (hasLabelsOnlyForSelected) {
@@ -184,10 +202,19 @@ public class Line {
 		return this;
 	}
 
+	/**
+	 * @see #setShape(ValueShape)
+	 */
 	public ValueShape getShape() {
 		return shape;
 	}
 
+	/**
+	 * Set shape for points, possible values: SQUARE, CIRCLE
+	 * 
+	 * @param shape
+	 * @return
+	 */
 	public Line setShape(ValueShape shape) {
 		this.shape = shape;
 		return this;

@@ -85,8 +85,8 @@ public interface Chart {
 
 	/**
 	 * Set listener for current viewport changes. It will be called when viewport change either by gesture or
-	 * programmatically. Warning! This method works only for preview charts. It is intentionally disabled for other
-	 * types of charts to avoid unnecessary method calls during invalidation.
+	 * programmatically. Note! This method works only for preview charts. It is intentionally disabled for other types
+	 * of charts to avoid unnecessary method calls during invalidation.
 	 * 
 	 */
 	public void setViewportChangeListener(ViewportChangeListener viewportChangeListener);
@@ -230,6 +230,9 @@ public interface Chart {
 	 */
 	public SelectedValue getSelectedValue();
 
+	/**
+	 * @see #setContainerScrollEnabled(boolean, ContainerScrollType)
+	 */
 	public boolean isContainerScrollEnabled();
 
 	/**

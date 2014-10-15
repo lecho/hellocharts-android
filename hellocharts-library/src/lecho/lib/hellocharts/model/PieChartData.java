@@ -3,6 +3,7 @@ package lecho.lib.hellocharts.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import lecho.lib.hellocharts.view.Chart;
 import lecho.lib.hellocharts.view.PieChartView;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -132,10 +133,17 @@ public class PieChartData extends AbstractChartData {
 		return this;
 	}
 
+	/**
+	 * @see #setHasLabelsOnlyForSelected(boolean)
+	 */
 	public boolean hasLabelsOnlyForSelected() {
 		return hasLabelsOnlyForSelected;
 	}
 
+	/**
+	 * Set true if you want to show value labels only for selected value, works best when chart has
+	 * isValueSelectionEnabled set to true {@link Chart#setValueSelectionEnabled(boolean)}.
+	 */
 	public PieChartData setHasLabelsOnlyForSelected(boolean hasLabelsOnlyForSelected) {
 		this.hasLabelsOnlyForSelected = hasLabelsOnlyForSelected;
 		if (hasLabelsOnlyForSelected) {

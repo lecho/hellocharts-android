@@ -3,6 +3,8 @@ package lecho.lib.hellocharts.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import lecho.lib.hellocharts.view.Chart;
+
 /**
  * Single column for ColumnChart. One column can be divided into multiple sub-columns(ColumnValues) especially for
  * stacked ColumnChart.
@@ -73,10 +75,17 @@ public class Column {
 		return this;
 	}
 
+	/**
+	 * @see #setHasLabelsOnlyForSelected(boolean)
+	 */
 	public boolean hasLabelsOnlyForSelected() {
 		return hasLabelsOnlyForSelected;
 	}
 
+	/**
+	 * Set true if you want to show value labels only for selected value, works best when chart has
+	 * isValueSelectionEnabled set to true {@link Chart#setValueSelectionEnabled(boolean)}.
+	 */
 	public Column setHasLabelsOnlyForSelected(boolean hasLabelsOnlyForSelected) {
 		this.hasLabelsOnlyForSelected = hasLabelsOnlyForSelected;
 		if (hasLabelsOnlyForSelected) {

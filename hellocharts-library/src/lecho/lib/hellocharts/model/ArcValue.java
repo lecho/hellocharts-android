@@ -1,6 +1,7 @@
 package lecho.lib.hellocharts.model;
 
 import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.view.Chart;
 
 /**
  * Model representing single slice/arc on PieChart.
@@ -77,6 +78,12 @@ public class ArcValue {
 		return this;
 	}
 
+	/**
+	 * Set target value that should be reached when data animation finish then call {@link Chart#startDataAnimation()}
+	 * 
+	 * @param target
+	 * @return
+	 */
 	public ArcValue setTarget(float target) {
 		setValue(value);
 		this.diff = target - orginValue;

@@ -11,6 +11,12 @@ import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 
+/**
+ * ColumnChart/BarChart, supports subcolumns, stacked collumns and negative values.
+ * 
+ * @author Leszek Wach
+ * 
+ */
 public class ColumnChartView extends AbstractChartView implements ColumnChartDataProvider {
 	private static final String TAG = "ColumnChartView";
 	private ColumnChartData data;

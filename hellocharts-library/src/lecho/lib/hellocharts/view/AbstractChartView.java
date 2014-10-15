@@ -25,6 +25,12 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+/**
+ * Abstract class for charts views.
+ * 
+ * @author Leszek Wach
+ * 
+ */
 public abstract class AbstractChartView extends View implements Chart {
 	protected ChartComputator chartComputator;
 	protected AxesRenderer axesRenderer;

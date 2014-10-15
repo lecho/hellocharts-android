@@ -17,6 +17,12 @@ import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 
+/**
+ * ComboChart, supports ColumnChart combined with LineChart. Lines are always drawn on top.
+ * 
+ * @author Leszek Wach
+ * 
+ */
 public class ComboLineColumnChartView extends AbstractChartView implements ComboLineColumnChartDataProvider {
 	private static final String TAG = "ComboLineColumnChartView";
 	protected ComboLineColumnChartData data;

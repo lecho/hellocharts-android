@@ -1,6 +1,7 @@
 package lecho.lib.hellocharts.model;
 
 import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.view.Chart;
 
 /**
  * Single value for ColumnChart. Column values are drown side by side for default Column configuration. If ColumnChart
@@ -58,6 +59,12 @@ public class ColumnValue {
 		return this;
 	}
 
+	/**
+	 * Set target value that should be reached when data animation finish then call {@link Chart#startDataAnimation()}
+	 * 
+	 * @param target
+	 * @return
+	 */
 	public ColumnValue setTarget(float target) {
 		setValue(value);
 		this.diff = target - orginValue;

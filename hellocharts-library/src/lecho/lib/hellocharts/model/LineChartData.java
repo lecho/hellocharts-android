@@ -62,6 +62,9 @@ public class LineChartData extends AbstractChartData {
 		return this;
 	}
 
+	/**
+	 * @see #setBaseValue(float)
+	 */
 	public float getBaseValue() {
 		return baseValue;
 	}

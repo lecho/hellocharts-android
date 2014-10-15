@@ -89,6 +89,9 @@ public class ColumnChartData extends AbstractChartData {
 		return this;
 	}
 
+	/**
+	 * @see #setBaseValue(float)
+	 */
 	public float getBaseValue() {
 		return baseValue;
 	}

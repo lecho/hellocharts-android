@@ -1,7 +1,7 @@
 package lecho.lib.hellocharts.model;
 
 /**
- * Single axis value, Use it to manually set axis labels position. You can use label attribute to display text instead
+ * Single axis value, use it to manually set axis labels position. You can use label attribute to display text instead
  * of number but value formatter implementation have to handle it.
  * 
  * @author Leszek Wach

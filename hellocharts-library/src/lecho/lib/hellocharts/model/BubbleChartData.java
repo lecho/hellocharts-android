@@ -3,6 +3,8 @@ package lecho.lib.hellocharts.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import lecho.lib.hellocharts.view.Chart;
+
 /**
  * Data for BubbleChart.
  * 
@@ -82,10 +84,17 @@ public class BubbleChartData extends AbstractChartData {
 		return this;
 	}
 
+	/**
+	 * @see #setHasLabelsOnlyForSelected(boolean)
+	 */
 	public boolean hasLabelsOnlyForSelected() {
 		return hasLabelsOnlyForSelected;
 	}
 
+	/**
+	 * Set true if you want to show value labels only for selected value, works best when chart has
+	 * isValueSelectionEnabled set to true {@link Chart#setValueSelectionEnabled(boolean)}.
+	 */
 	public BubbleChartData setHasLabelsOnlyForSelected(boolean hasLabelsOnlyForSelected) {
 		this.hasLabelsOnlyForSelected = hasLabelsOnlyForSelected;
 		if (hasLabelsOnlyForSelected) {
@@ -104,7 +113,8 @@ public class BubbleChartData extends AbstractChartData {
 	}
 
 	/**
-	 * Set minimal bubble radius in dp, helpful when you want small bubbles to be visible on chart, default 6dp
+	 * Set minimal bubble radius in dp, helpful when you want small bubbles(bubbles with very small z values compared to
+	 * other bubbles) to be visible on chart, default 6dp
 	 */
 	public void setMinBubbleRadius(int minBubbleRadius) {
 		this.minBubbleRadius = minBubbleRadius;
