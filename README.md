@@ -22,7 +22,7 @@ Code of a demo application is in `hellocharts-samples` directory.
 The **demo app** is also ready for download on [Google Play](https://play.google.com/store/apps/details?id=lecho.lib.hellocharts.samples).  
 Short **video** is available on [YouTube](https://www.youtube.com/watch?v=xbSBjyjH2SY).
 
-![](screens/scr_column_line_chart_dependency.gif)
+![](screens/scr_dependecy_preview.gif)
 
 ![](screens/scr-line1.png)
 
@@ -39,8 +39,6 @@ Short **video** is available on [YouTube](https://www.youtube.com/watch?v=xbSBjy
 ![](screens/scr-pie1.png)
 
 ![](screens/scr-bubble1.png)
-
-![](screens/scr_preview_column_chart.gif)
 
 ##Download and Import
 
