@@ -168,7 +168,8 @@ public interface Chart {
 	public void setValueTouchEnabled(boolean isValueTouchEnabled);
 
 	/**
-	 * Returns maximum viewport for this chart. Don't modify it directly, use {@link #setMaximumViewport(Viewport)} instead.
+	 * Returns maximum viewport for this chart. Don't modify it directly, use {@link #setMaximumViewport(Viewport)}
+	 * instead.
 	 * 
 	 * @see #setMaximumViewport(Viewport)
 	 */
@@ -208,7 +209,7 @@ public interface Chart {
 	public float getZoomLevel();
 
 	/**
-	 * Programatically zoom chart to given point(viewport point). Call this method after you chart data had been set.
+	 * Programatically zoom chart to given point(viewport point). Call this method after chart data had been set.
 	 * 
 	 * @param x
 	 *            x within chart maximum viewport
