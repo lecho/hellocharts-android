@@ -259,11 +259,6 @@ public class ChartTouchHandler {
 		this.isValueSelectionEnabled = isValueSelectionEnabled;
 	}
 
-	public void startZoom(float x, float y, float zoom) {
-		chartZoomer.startZoom(x, y, zoom, chart.getChartComputator());
-
-	}
-
 	protected class ChartScaleGestureListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
 
 		@Override

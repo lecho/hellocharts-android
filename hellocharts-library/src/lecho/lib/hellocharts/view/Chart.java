@@ -203,9 +203,23 @@ public interface Chart {
 	public void resetViewports();
 
 	/**
-	 * Programatically zoom chart to given point(viewport point). Pass negative zoomAmount value to zoom out.
+	 * Returns current zoom level.
 	 */
-	public void zoom(float x, float y, float zoomAmout);
+	public float getZoomLevel();
+
+	/**
+	 * Programatically zoom chart to given point(viewport point). Call this method after you chart data had been set.
+	 * 
+	 * @param x
+	 *            x within chart maximum viewport
+	 * @param y
+	 *            y within chart maximum viewport
+	 * @param zoomLevel
+	 *            value from 1 to maxZoom(default 14). 1 means chart has no zoom, 14 means chart has maximum zoom.
+	 * @param isAnimated
+	 *            set true if zoom should be animated.
+	 */
+	public void setZoomLevel(float x, float y, float zoomLevel, boolean isAnimated);
 
 	/**
 	 * Return true if value selection mode is enabled.

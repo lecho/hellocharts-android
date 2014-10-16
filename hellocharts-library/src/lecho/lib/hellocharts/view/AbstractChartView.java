@@ -300,17 +300,47 @@ public abstract class AbstractChartView extends View implements Chart {
 		chartRenderer.setViewportCalculationEnabled(isEnabled);
 	}
 
-	/**
-	 * Smoothly zooms the chart in or out according to value of zoomAmount.
-	 * 
-	 * @param zoomAmout
-	 *            positive value for zoom in, negative for zoom out.
-	 */
 	@Override
-	public void zoom(float x, float y, float zoomAmout) {
-		if (chartComputator.getVisibleViewport().contains(x, y)) {
-			touchHandler.startZoom(x, y, zoomAmout);
-			ViewCompat.postInvalidateOnAnimation(this);
+	public float getZoomLevel() {
+		Viewport maxViewport = getMaxViewport();
+		Viewport currentViewport = getCurrentViewport();
+
+		return Math.max(maxViewport.width() / currentViewport.width(), maxViewport.height() / currentViewport.height());
+
+	}
+
+	@Override
+	public void setZoomLevel(float x, float y, float zoomLevel, boolean isAnimated) {
+		if (getMaxViewport().contains(x, y)) {
+			// Compute zoom by changing chart current viewport.
+
+			if (zoomLevel < 1) {
+				zoomLevel = 1;
+			} else if (zoomLevel > getMaxZoom()) {
+				zoomLevel = getMaxZoom();
+			}
+
+			Viewport zoomViewport = new Viewport(getMaxViewport());
+
+			float newWidth = zoomViewport.width();
+			float newHeight = zoomViewport.height();
+
+			ZoomType zoomType = getZoomType();
+			if (ZoomType.HORIZONTAL_AND_VERTICAL == zoomType) {
+				newWidth = zoomViewport.width() / zoomLevel;
+				newHeight = zoomViewport.height() / zoomLevel;
+			} else if (ZoomType.HORIZONTAL == zoomType) {
+				newWidth = zoomViewport.width() / zoomLevel;
+			} else if (ZoomType.VERTICAL == zoomType) {
+				newHeight = zoomViewport.height() / zoomLevel;
+			}
+
+			final float halfWidth = newWidth / 2;
+			final float halfHeight = newHeight / 2;
+
+			zoomViewport.set(x - halfWidth, y + halfHeight, x + halfWidth, y - halfHeight);
+
+			setCurrentViewport(zoomViewport, isAnimated);
 		}
 	}
 

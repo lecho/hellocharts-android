@@ -36,14 +36,6 @@ public class ChartZoomer {
 		return true;
 	}
 
-	public boolean startZoom(float x, float y, float zoom, ChartComputator computator) {
-		zoomer.forceFinished(true);
-		scrollerStartViewport.set(computator.getCurrentViewport());
-		zoomFocalPoint.set(x, y);
-		zoomer.startZoom(zoom);
-		return true;
-	}
-
 	public boolean computeZoom(ChartComputator computator) {
 		if (zoomer.computeZoom()) {
 			// Performs the zoom since a zoom is in progress (either programmatically or via
