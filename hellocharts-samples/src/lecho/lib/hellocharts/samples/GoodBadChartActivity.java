@@ -48,10 +48,10 @@ public class GoodBadChartActivity extends ActionBarActivity {
 			chart.setLineChartData(data);
 
 			// Increase viewport height for better look
-			Viewport v = chart.getMaxViewport();
+			Viewport v = chart.getMaximumViewport();
 			float dy = v.height() * 0.2f;
 			v.inset(0, -dy);
-			chart.setMaxViewport(v);
+			chart.setMaximumViewport(v);
 			chart.setCurrentViewport(v, false);
 
 			return rootView;

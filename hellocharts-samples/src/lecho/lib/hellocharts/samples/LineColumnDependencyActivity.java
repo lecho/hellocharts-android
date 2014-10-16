@@ -150,7 +150,7 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 
 			// And set initial max viewport and current viewport- remember to set viewports after data.
 			Viewport v = new Viewport(0, 110, 6, 0);
-			chartTop.setMaxViewport(v);
+			chartTop.setMaximumViewport(v);
 			chartTop.setCurrentViewport(v, false);
 
 			chartTop.setZoomType(ZoomType.HORIZONTAL);

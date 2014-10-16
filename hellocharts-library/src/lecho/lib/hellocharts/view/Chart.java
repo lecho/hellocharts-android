@@ -168,11 +168,11 @@ public interface Chart {
 	public void setValueTouchEnabled(boolean isValueTouchEnabled);
 
 	/**
-	 * Returns maximum viewport for this chart. Don't modify it directly, use {@link #setMaxViewport(Viewport)} instead.
+	 * Returns maximum viewport for this chart. Don't modify it directly, use {@link #setMaximumViewport(Viewport)} instead.
 	 * 
-	 * @see #setMaxViewport(Viewport)
+	 * @see #setMaximumViewport(Viewport)
 	 */
-	public Viewport getMaxViewport();
+	public Viewport getMaximumViewport();
 
 	/**
 	 * Set maximum viewport. If you set bigger maximum viewport data will be more concentrate and there will be more
@@ -180,7 +180,7 @@ public interface Chart {
 	 * 
 	 * Note. MaxViewport have to be set after chartData has been set.
 	 */
-	public void setMaxViewport(Viewport maxViewport);
+	public void setMaximumViewport(Viewport maxViewport);
 
 	/**
 	 * Returns current viewport. Don't modify it directly, use {@link #setCurrentViewport(Viewport, boolean)} instead.

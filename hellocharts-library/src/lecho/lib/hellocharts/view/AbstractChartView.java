@@ -258,13 +258,13 @@ public abstract class AbstractChartView extends View implements Chart {
 	}
 
 	@Override
-	public void setMaxViewport(Viewport maxViewport) {
+	public void setMaximumViewport(Viewport maxViewport) {
 		chartRenderer.setMaxViewport(maxViewport);
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
 	@Override
-	public Viewport getMaxViewport() {
+	public Viewport getMaximumViewport() {
 		return chartRenderer.getMaxViewport();
 	}
 
@@ -302,7 +302,7 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	@Override
 	public float getZoomLevel() {
-		Viewport maxViewport = getMaxViewport();
+		Viewport maxViewport = getMaximumViewport();
 		Viewport currentViewport = getCurrentViewport();
 
 		return Math.max(maxViewport.width() / currentViewport.width(), maxViewport.height() / currentViewport.height());
@@ -311,7 +311,7 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	@Override
 	public void setZoomLevel(float x, float y, float zoomLevel, boolean isAnimated) {
-		if (getMaxViewport().contains(x, y)) {
+		if (getMaximumViewport().contains(x, y)) {
 			// Compute zoom by changing chart current viewport.
 
 			if (zoomLevel < 1) {
@@ -320,7 +320,7 @@ public abstract class AbstractChartView extends View implements Chart {
 				zoomLevel = getMaxZoom();
 			}
 
-			Viewport zoomViewport = new Viewport(getMaxViewport());
+			Viewport zoomViewport = new Viewport(getMaximumViewport());
 
 			float newWidth = zoomViewport.width();
 			float newHeight = zoomViewport.height();

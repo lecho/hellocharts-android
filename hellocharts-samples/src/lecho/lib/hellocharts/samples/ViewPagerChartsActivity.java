@@ -207,7 +207,7 @@ public class ViewPagerChartsActivity extends ActionBarActivity implements Action
 				/** Note: Chart is within ViewPager so enable container scroll mode. **/
 				previewLineChartView.setContainerScrollEnabled(true, ContainerScrollType.HORIZONTAL);
 
-				Viewport tempViewport = new Viewport(previewLineChartView.getMaxViewport());
+				Viewport tempViewport = new Viewport(previewLineChartView.getMaximumViewport());
 				float dx = tempViewport.width() / 6;
 				tempViewport.inset(dx, 0);
 				previewLineChartView.setCurrentViewport(tempViewport, false);

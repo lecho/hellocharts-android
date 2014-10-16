@@ -124,9 +124,9 @@ public class SpeedChartActivity extends ActionBarActivity {
 			// Important: adjust viewport, you could skip this step but in this case it will looks better with custom
 			// viewport. Set
 			// viewport with Y range 0-55;
-			Viewport v = chart.getMaxViewport();
+			Viewport v = chart.getMaximumViewport();
 			v.set(v.left, speedRange, v.right, 0);
-			chart.setMaxViewport(v);
+			chart.setMaximumViewport(v);
 			chart.setCurrentViewport(v, false);
 
 		}

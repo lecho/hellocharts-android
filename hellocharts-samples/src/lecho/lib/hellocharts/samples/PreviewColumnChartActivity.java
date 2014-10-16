@@ -146,7 +146,7 @@ public class PreviewColumnChartActivity extends ActionBarActivity {
 		}
 
 		private void previewY() {
-			Viewport tempViewport = new Viewport(chart.getMaxViewport());
+			Viewport tempViewport = new Viewport(chart.getMaximumViewport());
 			float dy = tempViewport.height() / 4;
 			tempViewport.inset(0, dy);
 			previewChart.setCurrentViewport(tempViewport, true);
@@ -154,7 +154,7 @@ public class PreviewColumnChartActivity extends ActionBarActivity {
 		}
 
 		private void previewX(boolean animate) {
-			Viewport tempViewport = new Viewport(chart.getMaxViewport());
+			Viewport tempViewport = new Viewport(chart.getMaximumViewport());
 			float dx = tempViewport.width() / 4;
 			tempViewport.inset(dx, 0);
 			previewChart.setCurrentViewport(tempViewport, animate);
@@ -163,7 +163,7 @@ public class PreviewColumnChartActivity extends ActionBarActivity {
 
 		private void previewXY() {
 			// Better to not modify viewport of any chart directly so create a copy.
-			Viewport tempViewport = new Viewport(chart.getMaxViewport());
+			Viewport tempViewport = new Viewport(chart.getMaximumViewport());
 			// Make temp viewport smaller.
 			float dx = tempViewport.width() / 4;
 			float dy = tempViewport.height() / 4;
