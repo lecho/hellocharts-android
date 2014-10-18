@@ -227,6 +227,32 @@ public abstract class AbstractChartView extends View implements Chart {
 		touchHandler.setScrollEnabled(isScrollEnabled);
 	}
 
+	public void moveTo(float x, float y, boolean isAnimated) {
+		Viewport maxViewport = getMaximumViewport();
+
+		if (maxViewport.contains(x, y)) {
+
+			Viewport currentViewport = getCurrentViewport();
+			Viewport scrollViewport = new Viewport(currentViewport);
+
+			final float width = currentViewport.width();
+			final float height = currentViewport.height();
+
+			final float halfWidth = width / 2;
+			final float halfHeight = height / 2;
+
+			float left = x - halfWidth;
+			float top = y + halfHeight;
+
+			left = Math.max(maxViewport.left, Math.min(left, maxViewport.right - width));
+			top = Math.max(maxViewport.bottom + height, Math.min(top, maxViewport.top));
+
+			scrollViewport.set(left, top, left + height, top - height);
+			
+			setCurrentViewport(scrollViewport, isAnimated);
+		}
+	}
+
 	@Override
 	public boolean isValueTouchEnabled() {
 		return touchHandler.isValueTouchEnabled();
@@ -255,6 +281,50 @@ public abstract class AbstractChartView extends View implements Chart {
 	public void setMaxZoom(float maxZoom) {
 		chartComputator.setMaxZoom(maxZoom);
 		ViewCompat.postInvalidateOnAnimation(this);
+	}
+
+	@Override
+	public float getZoomLevel() {
+		Viewport maxViewport = getMaximumViewport();
+		Viewport currentViewport = getCurrentViewport();
+
+		return Math.max(maxViewport.width() / currentViewport.width(), maxViewport.height() / currentViewport.height());
+
+	}
+
+	@Override
+	public void setZoomLevel(float x, float y, float zoomLevel, boolean isAnimated) {
+		Viewport zoomViewport = new Viewport(getMaximumViewport());
+
+		if (zoomViewport.contains(x, y)) {
+			// Compute zoom by changing chart current viewport.
+
+			if (zoomLevel < 1) {
+				zoomLevel = 1;
+			} else if (zoomLevel > getMaxZoom()) {
+				zoomLevel = getMaxZoom();
+			}
+
+			float newWidth = zoomViewport.width();
+			float newHeight = zoomViewport.height();
+
+			ZoomType zoomType = getZoomType();
+			if (ZoomType.HORIZONTAL_AND_VERTICAL == zoomType) {
+				newWidth = zoomViewport.width() / zoomLevel;
+				newHeight = zoomViewport.height() / zoomLevel;
+			} else if (ZoomType.HORIZONTAL == zoomType) {
+				newWidth = zoomViewport.width() / zoomLevel;
+			} else if (ZoomType.VERTICAL == zoomType) {
+				newHeight = zoomViewport.height() / zoomLevel;
+			}
+
+			final float halfWidth = newWidth / 2;
+			final float halfHeight = newHeight / 2;
+
+			zoomViewport.set(x - halfWidth, y + halfHeight, x + halfWidth, y - halfHeight);
+
+			setCurrentViewport(zoomViewport, isAnimated);
+		}
 	}
 
 	@Override
@@ -298,50 +368,6 @@ public abstract class AbstractChartView extends View implements Chart {
 	@Override
 	public void setViewportCalculationEnabled(boolean isEnabled) {
 		chartRenderer.setViewportCalculationEnabled(isEnabled);
-	}
-
-	@Override
-	public float getZoomLevel() {
-		Viewport maxViewport = getMaximumViewport();
-		Viewport currentViewport = getCurrentViewport();
-
-		return Math.max(maxViewport.width() / currentViewport.width(), maxViewport.height() / currentViewport.height());
-
-	}
-
-	@Override
-	public void setZoomLevel(float x, float y, float zoomLevel, boolean isAnimated) {
-		if (getMaximumViewport().contains(x, y)) {
-			// Compute zoom by changing chart current viewport.
-
-			if (zoomLevel < 1) {
-				zoomLevel = 1;
-			} else if (zoomLevel > getMaxZoom()) {
-				zoomLevel = getMaxZoom();
-			}
-
-			Viewport zoomViewport = new Viewport(getMaximumViewport());
-
-			float newWidth = zoomViewport.width();
-			float newHeight = zoomViewport.height();
-
-			ZoomType zoomType = getZoomType();
-			if (ZoomType.HORIZONTAL_AND_VERTICAL == zoomType) {
-				newWidth = zoomViewport.width() / zoomLevel;
-				newHeight = zoomViewport.height() / zoomLevel;
-			} else if (ZoomType.HORIZONTAL == zoomType) {
-				newWidth = zoomViewport.width() / zoomLevel;
-			} else if (ZoomType.VERTICAL == zoomType) {
-				newHeight = zoomViewport.height() / zoomLevel;
-			}
-
-			final float halfWidth = newWidth / 2;
-			final float halfHeight = newHeight / 2;
-
-			zoomViewport.set(x - halfWidth, y + halfHeight, x + halfWidth, y - halfHeight);
-
-			setCurrentViewport(zoomViewport, isAnimated);
-		}
 	}
 
 	@Override

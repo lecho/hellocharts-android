@@ -126,9 +126,17 @@ public interface Chart {
 	public boolean isScrollEnabled();
 
 	/**
-	 * Set true to enable scroll, false to disable, by default true;
+	 * Set true to enable touch scroll/fling, false to disable touch scroll/fling, by default true;
 	 */
 	public void setScrollEnabled(boolean isScrollEnabled);
+
+	/**
+	 * Move/Srcoll viewport to position x,y(that position must be within maximum chart viewport). If possible viewport
+	 * will be centered at this point. Width and height of viewport will not be modified.
+	 * 
+	 * @see #setCurrentViewport(Viewport, boolean);
+	 */
+	public void moveTo(float x, float y, boolean isAnimated);
 
 	/**
 	 * Returns current zoom type for this chart.
@@ -154,6 +162,25 @@ public interface Chart {
 	 * 
 	 */
 	public void setMaxZoom(float maxZoom);
+
+	/**
+	 * Returns current zoom level.
+	 */
+	public float getZoomLevel();
+
+	/**
+	 * Programatically zoom chart to given point(viewport point). Call this method after chart data had been set.
+	 * 
+	 * @param x
+	 *            x within chart maximum viewport
+	 * @param y
+	 *            y within chart maximum viewport
+	 * @param zoomLevel
+	 *            value from 1 to maxZoom(default 14). 1 means chart has no zoom, 14 means chart has maximum zoom.
+	 * @param isAnimated
+	 *            set true if zoom should be animated.
+	 */
+	public void setZoomLevel(float x, float y, float zoomLevel, boolean isAnimated);
 
 	/**
 	 * Return true if chart value can be touched.
@@ -202,25 +229,6 @@ public interface Chart {
 	 * chart data ranges.
 	 */
 	public void resetViewports();
-
-	/**
-	 * Returns current zoom level.
-	 */
-	public float getZoomLevel();
-
-	/**
-	 * Programatically zoom chart to given point(viewport point). Call this method after chart data had been set.
-	 * 
-	 * @param x
-	 *            x within chart maximum viewport
-	 * @param y
-	 *            y within chart maximum viewport
-	 * @param zoomLevel
-	 *            value from 1 to maxZoom(default 14). 1 means chart has no zoom, 14 means chart has maximum zoom.
-	 * @param isAnimated
-	 *            set true if zoom should be animated.
-	 */
-	public void setZoomLevel(float x, float y, float zoomLevel, boolean isAnimated);
 
 	/**
 	 * Return true if value selection mode is enabled.
