@@ -6,21 +6,21 @@ Apache License 2.0.
 
 ##Features
 
- - Line chart
- - Column chart
+ - Line chart(cubic lines, filled lines, scattered points)
+ - Column chart(grouped, stacked, negative values)
  - Pie chart
  - Bubble chart
  - Combo chart(columns/lines)
  - Preview charts(for column chart and line chart)
  - Zoom(pinch to zoom, double tap zoom), scroll and fling
- - Custom and auto-generated axes(top, bottom, left, right)
+ - Custom and auto-generated axes(top, bottom, left, right, inside)
  - Animations
 
 ##Screens and Demos
 
-Code of a demo application is in `hellocharts-samples` directory.   
-The **demo app** is also ready for download on [Google Play](https://play.google.com/store/apps/details?id=lecho.lib.hellocharts.samples).  
-Short **video** is available on [YouTube](https://www.youtube.com/watch?v=xbSBjyjH2SY).
+ - Code of a demo application is in `hellocharts-samples` directory.   
+ - The **demo app** is also ready for download on [**Google Play**](https://play.google.com/store/apps/details?id=lecho.lib.hellocharts.samples).  
+ - Short **video** is available on [**YouTube**](https://www.youtube.com/watch?v=xbSBjyjH2SY).
 
 ![](screens/scr_dependecy_preview.gif)
 
@@ -132,8 +132,6 @@ Every chart view can be defined in layout xml file:
  `set*ChartData()` method again to let chart recalculate and redraw data. There is also an option to use copy constructor for deep copy of
  chart data. You can safely modify copy in other threads and pass it to `set*ChartData()` method later.
 
- Check out hellocharts-samples project for more usage examples. I will try to update documentation soon.
-
 #License
 
     Copyright 2014 Leszek Wach
@@ -149,3 +147,9 @@ Every chart view can be defined in layout xml file:
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+
+---
+     HelloCharts library uses code from InteractiveChart sample available 
+     on Android Developers page:
+	 
+       http://developer.android.com/training/gestures/scale.html
