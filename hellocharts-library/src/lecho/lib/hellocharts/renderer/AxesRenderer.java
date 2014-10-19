@@ -352,8 +352,12 @@ public class AxesRenderer {
 		final Rect contentRect = computator.getContentRect();
 		float scale = maxViewport.width() / visibleViewport.width();
 
-		final int module = (int) Math.ceil(axis.getValues().size() * axisLabelWidthTab[position]
+		int module = (int) Math.ceil(axis.getValues().size() * axisLabelWidthTab[position]
 				/ (contentRect.width() * scale));
+
+		if (module < 1) {
+			module = 1;
+		}
 
 		if (axis.hasLines() && axisLinesDrawBufferTab[position].length < axis.getValues().size() * 4) {
 			axisLinesDrawBufferTab[position] = new float[axis.getValues().size() * 4];
@@ -520,8 +524,12 @@ public class AxesRenderer {
 		final Rect contentRect = computator.getContentRect();
 		float scale = maxViewport.height() / visibleViewport.height();
 
-		final int module = (int) Math.ceil(axis.getValues().size() * axisLabelTextAscentTab[position] * 2
+		int module = (int) Math.ceil(axis.getValues().size() * axisLabelTextAscentTab[position] * 2
 				/ (contentRect.height() * scale));
+
+		if (module < 1) {
+			module = 1;
+		}
 
 		if (axis.hasLines() && axisLinesDrawBufferTab[position].length < axis.getValues().size() * 4) {
 			axisLinesDrawBufferTab[position] = new float[axis.getValues().size() * 4];

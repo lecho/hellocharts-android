@@ -40,7 +40,7 @@ Apache License 2.0.
 
 ##Download and Import
 
-###Eclipse
+###Eclipse/ADT
 
  - download hellocharts-library-<version>.jar from releases page and copy it into the `libs` folder of your
  application project.
@@ -132,6 +132,7 @@ Every chart view can be defined in layout xml file:
 
 #License
 
+	HelloCharts	
     Copyright 2014 Leszek Wach
 
     Licensed under the Apache License, Version 2.0 (the "License");
