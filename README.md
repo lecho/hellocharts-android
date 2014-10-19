@@ -24,8 +24,6 @@ Apache License 2.0.
 
 ![](screens/scr_dependecy_preview.gif)
 
-![](screens/scr-line1.png)
-
 ![](screens/scr-tempo.png)
 
 ![](screens/scr-dependency.png)
