@@ -17,9 +17,10 @@ public interface ValueFormatter {
 	public int formatValue(char[] formattedValue, float[] values, char[] label);
 
 	/**
-	 * Used for auto-generated axes. Formats values with given number of digits after decimal separator. Result is
-	 * stored in given array. Method returns number of chars for formatted value. The formated value starts at index
-	 * [formattedValue.length - nummChars] and ends at index [formatteValue.length-1].
+	 * Used only for auto-generated axes. If you are not going to use your implementation for aut-generated axes you can
+	 * skip implementation of this method and just return 0. </br> Formats values with given number of digits after
+	 * decimal separator. Result is stored in given array. Method returns number of chars for formatted value. The
+	 * formated value starts at index [formattedValue.length - nummChars] and ends at index [formatteValue.length-1].
 	 */
 	public int formatAutoValue(char[] formattedValue, float[] values, int digits);
 }
