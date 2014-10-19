@@ -352,7 +352,7 @@ public class AxesRenderer {
 		final Rect contentRect = computator.getContentRect();
 		float scale = maxViewport.width() / visibleViewport.width();
 
-		int module = (int) Math.ceil(axis.getValues().size() * axisLabelWidthTab[position]
+		int module = (int) Math.ceil((axis.getValues().size() * axisLabelWidthTab[position])
 				/ (contentRect.width() * scale));
 
 		if (module < 1) {
@@ -524,7 +524,7 @@ public class AxesRenderer {
 		final Rect contentRect = computator.getContentRect();
 		float scale = maxViewport.height() / visibleViewport.height();
 
-		int module = (int) Math.ceil(axis.getValues().size() * axisLabelTextAscentTab[position] * 2
+		int module = (int) Math.ceil((axis.getValues().size() * axisLabelTextAscentTab[position] * 2)
 				/ (contentRect.height() * scale));
 
 		if (module < 1) {
