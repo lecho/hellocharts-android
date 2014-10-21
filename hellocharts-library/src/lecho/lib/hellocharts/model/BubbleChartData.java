@@ -8,8 +8,6 @@ import lecho.lib.hellocharts.view.Chart;
 /**
  * Data for BubbleChart.
  * 
- * @author Leszek Wach
- * 
  */
 public class BubbleChartData extends AbstractChartData {
 	public static final int DEFAULT_MIN_BUBBLE_RADIUS_DP = 6;

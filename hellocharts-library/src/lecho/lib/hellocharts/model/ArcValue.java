@@ -6,8 +6,6 @@ import lecho.lib.hellocharts.view.Chart;
 /**
  * Model representing single slice/arc on PieChart.
  * 
- * @author Leszek Wach
- * 
  */
 public class ArcValue {
 	private static final int DEFAULT_ARC_SPACING_DP = 2;

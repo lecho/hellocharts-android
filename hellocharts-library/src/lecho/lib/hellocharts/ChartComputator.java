@@ -138,6 +138,8 @@ public class ChartComputator {
 		currentViewport.top = Math.min(maxViewport.top, top);
 		currentViewport.right = Math.min(maxViewport.right, right);
 		currentViewport.bottom = Math.max(maxViewport.bottom, bottom);
+
+		viewportChangeListener.onViewportChanged(currentViewport);
 	}
 
 	/**
@@ -228,39 +230,94 @@ public class ChartComputator {
 		return false;
 	}
 
+	/**
+	 * Returns content rectangle in pixels.
+	 * 
+	 * @see #setContentArea(int, int, int, int, int, int)
+	 */
 	public Rect getContentRect() {
 		return contentRect;
 	}
 
+	/**
+	 * Returns content rectangle with chart internal margins, for example for LineChart contentRectWithMargins is bigger
+	 * than contentRect by point radius, thanks to that points are not cut on edges.
+	 * 
+	 * @see #setContentArea(int, int, int, int, int, int)
+	 */
 	public Rect getContentRectWithMargins() {
 		return contentRectWithMargins;
 	}
 
+	/**
+	 * Returns current chart viewport, returned object is mutable but should not be modified.
+	 * 
+	 * @return
+	 */
 	public Viewport getCurrentViewport() {
 		return currentViewport;
 	}
 
+	/**
+	 * Set new values for curent viewport, that will change what part of chart is visible. Current viewport must be
+	 * equal or smaller than maximum viewport.
+	 * 
+	 * @param left
+	 * @param top
+	 * @param right
+	 * @param bottom
+	 */
 	public void setCurrentViewport(float left, float top, float right, float bottom) {
 		constrainViewport(left, top, right, bottom);
 	}
 
+	/**
+	 * Set current viewport to the same values as viewport passed in parameter. This method use deep copy so parameter
+	 * can be safely modified later. Current viewport must be equal or smaller than maximum viewport.
+	 * 
+	 * @param viewport
+	 */
 	public void setCurrentViewport(Viewport viewport) {
 		constrainViewport(viewport.left, viewport.top, viewport.right, viewport.bottom);
 	}
 
+	/**
+	 * Returns maximum viewport - values ranges extremes.
+	 * 
+	 * @return
+	 */
 	public Viewport getMaximumViewport() {
 		return maxViewport;
 	}
 
+	/**
+	 * Set maximum viewport to the same values as viewport passed in parameter. This method use deep copy so parameter
+	 * can be safely modified later.
+	 * 
+	 * @param viewport
+	 */
 	public void setMaxViewport(Viewport maxViewport) {
 		setMaxViewport(maxViewport.left, maxViewport.top, maxViewport.right, maxViewport.bottom);
 	}
 
+	/**
+	 * Set new values for maximum viewport, that will change what part of chart is visible.
+	 * 
+	 * @param left
+	 * @param top
+	 * @param right
+	 * @param bottom
+	 */
 	public void setMaxViewport(float left, float top, float right, float bottom) {
 		this.maxViewport.set(left, top, right, bottom);
 		computeMinimumWidthAndHeight();
 	}
 
+	/**
+	 * Returns viewport for visible part of chart, for most charts it is equal to current viewport.
+	 * 
+	 * @return
+	 */
 	public Viewport getVisibleViewport() {
 		return currentViewport;
 	}
@@ -297,6 +354,11 @@ public class ChartComputator {
 		return maxZoom;
 	}
 
+	/**
+	 * Set maximum zoom level, default is 14.
+	 * 
+	 * @param maxZoom
+	 */
 	public void setMaxZoom(float maxZoom) {
 		if (maxZoom < 1) {
 			maxZoom = 1;

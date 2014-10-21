@@ -11,8 +11,6 @@ import android.graphics.Typeface;
 /**
  * Data for PieChart, by default it doesn't have axes.
  * 
- * @author Leszek Wach
- * 
  */
 public class PieChartData extends AbstractChartData {
 	public static final int DEFAULT_CENTER_TEXT1_SIZE_SP = 42;

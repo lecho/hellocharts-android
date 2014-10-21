@@ -3,8 +3,6 @@ package lecho.lib.hellocharts.model;
 /**
  * Holds selected values indexes, i.e. for LineChartModel it will be firstIndex=lineIndex; secondIndex=valueIndex.
  * 
- * @author Leszek Wach
- * 
  */
 public class SelectedValue {
 

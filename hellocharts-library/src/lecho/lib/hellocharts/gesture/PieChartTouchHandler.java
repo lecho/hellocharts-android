@@ -13,8 +13,6 @@ import android.view.ScaleGestureDetector;
  * Scroller(ScrollerCompat) directly to compute PieChart rotation when user scroll. ChartScroller and ChartZoomer are
  * not really used here.
  * 
- * @author Leszek Wach
- * 
  */
 public class PieChartTouchHandler extends ChartTouchHandler {
 	/**

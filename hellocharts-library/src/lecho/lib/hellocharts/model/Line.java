@@ -10,8 +10,6 @@ import lecho.lib.hellocharts.view.Chart;
 /**
  * Single line for line chart.
  * 
- * @author Leszek Wach
- * 
  */
 public class Line {
 	private static final int DEFAULT_LINE_STROKE_WIDTH_DP = 3;
@@ -179,6 +177,12 @@ public class Line {
 		return pointRadius;
 	}
 
+	/**
+	 * Set radius for points for this line.
+	 * 
+	 * @param pointRadius
+	 * @return
+	 */
 	public Line setPointRadius(int pointRadius) {
 		this.pointRadius = pointRadius;
 		return this;

@@ -12,8 +12,6 @@ import android.os.Parcelable;
  * 
  * Viewport implements Parcerable.
  * 
- * @author Leszek Wach
- * 
  */
 public class Viewport implements Parcelable {
 

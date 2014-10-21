@@ -19,7 +19,6 @@ import android.text.TextUtils;
 /**
  * Default axes renderer. Can draw maximum four axes - two horizontal(top/bottom) and two vertical(left/right).
  * 
- * @author Leszek Wach
  */
 public class AxesRenderer {
 	private static final int DEFAULT_AXIS_MARGIN_DP = 2;

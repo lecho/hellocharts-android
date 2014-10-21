@@ -4,8 +4,6 @@ package lecho.lib.hellocharts.model;
  * Single axis value, use it to manually set axis labels position. You can use label attribute to display text instead
  * of number but value formatter implementation have to handle it.
  * 
- * @author Leszek Wach
- * 
  */
 public class AxisValue {
 	private float value;

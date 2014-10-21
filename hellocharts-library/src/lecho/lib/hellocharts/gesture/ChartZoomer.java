@@ -9,8 +9,6 @@ import android.view.MotionEvent;
 /**
  * Encapsulates zooming functionality.
  * 
- * @author Leszek Wach
- * 
  */
 public class ChartZoomer {
 	public static final float ZOOM_AMOUNT = 0.25f;

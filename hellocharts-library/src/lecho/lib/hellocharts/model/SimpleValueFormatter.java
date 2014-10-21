@@ -13,8 +13,6 @@ import lecho.lib.hellocharts.util.Utils;
  * number value. Note3: only last value from values array is formated, for LineChart that is Y value, for BubbleChart
  * that is Z value.
  * 
- * @author Leszek Wach
- * 
  */
 public class SimpleValueFormatter implements ValueFormatter {
 	protected static final int DEFAULT_DIGITS_NUMBER = 0;

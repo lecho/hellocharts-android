@@ -6,8 +6,6 @@ import java.util.List;
 /**
  * Data model for column chart.
  * 
- * @author Leszek Wach
- * 
  */
 public class ColumnChartData extends AbstractChartData {
 	public static final float DEFAULT_FILL_RATIO = 0.75f;
@@ -69,6 +67,12 @@ public class ColumnChartData extends AbstractChartData {
 		return isStacked;
 	}
 
+	/**
+	 * Set true if you want stacked column chart.
+	 * 
+	 * @param isStacked
+	 * @return
+	 */
 	public ColumnChartData setStacked(boolean isStacked) {
 		this.isStacked = isStacked;
 		return this;
@@ -78,6 +82,13 @@ public class ColumnChartData extends AbstractChartData {
 		return fillRatio;
 	}
 
+	/**
+	 * Set fill ration for columns, value from 0 to 1, 1 means that there will be almost no free space between columns,
+	 * 0 means that columns will have minimum width(2px).
+	 * 
+	 * @param fillRatio
+	 * @return
+	 */
 	public ColumnChartData setFillRatio(float fillRatio) {
 		if (fillRatio < 0) {
 			fillRatio = 0;

@@ -9,8 +9,6 @@ import lecho.lib.hellocharts.view.Chart;
  * Single column for ColumnChart. One column can be divided into multiple sub-columns(ColumnValues) especially for
  * stacked ColumnChart.
  * 
- * @author Leszek Wach
- * 
  */
 public class Column {
 	private boolean hasLabels = false;

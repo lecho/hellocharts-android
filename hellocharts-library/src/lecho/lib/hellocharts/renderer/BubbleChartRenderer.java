@@ -23,6 +23,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 
 	private BubbleChartDataProvider dataProvider;
 
+	/** Additional value added to bubble radius when drawing highlighted bubble, used to give tauch feedback. */
 	private int touchAdditional;
 
 	/**

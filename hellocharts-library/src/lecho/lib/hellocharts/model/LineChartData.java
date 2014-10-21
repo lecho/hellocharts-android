@@ -6,8 +6,6 @@ import java.util.List;
 /**
  * Data model for LineChartView.
  * 
- * @author Leszek Wach
- * 
  */
 public class LineChartData extends AbstractChartData {
 	public static final float DEFAULT_BASE_VALUE = 0.0f;

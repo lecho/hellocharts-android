@@ -10,8 +10,6 @@ import android.support.v4.widget.ScrollerCompat;
 /**
  * Encapsulates scrolling functionality.
  * 
- * @author Leszek Wach
- * 
  */
 public class ChartScroller {
 

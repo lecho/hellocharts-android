@@ -5,8 +5,6 @@ import lecho.lib.hellocharts.view.Chart;
 /**
  * Single point coordinates, used for LineChartData.
  * 
- * @author Leszek Wach
- * 
  */
 public class PointValue {
 

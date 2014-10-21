@@ -14,6 +14,10 @@ import android.graphics.Paint.Cap;
 import android.graphics.PointF;
 import android.graphics.RectF;
 
+/**
+ * Magic renderer for ColumnChart.
+ * 
+ */
 public class ColumnChartRenderer extends AbstractChartRenderer {
 	public static final int DEFAULT_SUBCOLUMN_SPACING_DP = 1;
 	public static final int DEFAULT_COLUMN_TOUCH_ADDITIONAL_WIDTH_DP = 4;
@@ -24,14 +28,26 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 
 	private ColumnChartDataProvider dataProvider;
 
+	/** Additional width for hightlighted column, used to give tauch feedback. */
 	private int touchAdditionalWidth;
+
+	/** Spacing between sub-columns. */
 	private int subcolumnSpacing;
+
+	/** Paint used to draw every column. */
 	private Paint columnPaint = new Paint();
+
+	/** Holds coordinates for currently processed column/sub-column. */
 	private RectF drawRect = new RectF();
+
+	/** Coordinated of user tauch. */
 	private PointF touchedPoint = new PointF();
+
+	/** Used to pass tauched value to tauch listener. */
 	private float[] valuesBuff = new float[1];
 
 	private float fillRatio;
+
 	private float baseValue;
 
 	public ColumnChartRenderer(Context context, Chart chart, ColumnChartDataProvider dataProvider) {

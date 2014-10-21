@@ -6,8 +6,6 @@ import lecho.lib.hellocharts.view.Chart;
 /**
  * Single value drawn as bubble on BubbleChart.
  * 
- * @author Leszek Wach
- * 
  */
 public class BubbleValue {
 

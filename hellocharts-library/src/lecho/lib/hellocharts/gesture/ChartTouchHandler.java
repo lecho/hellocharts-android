@@ -14,8 +14,6 @@ import android.view.ViewParent;
 /**
  * Default touch handler for most charts. Handles value touch, scroll, fling and zoom.
  * 
- * @author Leszek Wach
- * 
  */
 public class ChartTouchHandler {
 	protected GestureDetector gestureDetector;

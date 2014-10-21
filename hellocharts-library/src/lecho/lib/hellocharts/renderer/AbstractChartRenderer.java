@@ -15,14 +15,30 @@ import android.graphics.Paint.FontMetricsInt;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 
+/**
+ * Abstract renderer implementation, every chart renderer extends this class(although it is not required it helps).
+ * 
+ */
 public abstract class AbstractChartRenderer implements ChartRenderer {
 	public int DEFAULT_LABEL_MARGIN_DP = 4;
 	protected Chart chart;
+
+	/** Paint for value labels. */
 	protected Paint labelPaint = new Paint();
+
+	/** Paint for labels background. */
 	protected Paint labelBackgroundPaint = new Paint();
+
+	/** Holds coordinates for label background rect. */
 	protected RectF labelBackgroundRect = new RectF();
+
+	/** Font metrics for label paint, used to determine text height. */
 	protected FontMetricsInt fontMetrics = new FontMetricsInt();
+
+	/** Temporary max viewport used during maximum viewport calculations. */
 	protected Viewport tempMaxViewport = new Viewport();
+
+	/** If true maximum and current viewport will be calculated when chart data change or during data animations. */
 	protected boolean isViewportCalculationEnabled = true;
 
 	protected float density;

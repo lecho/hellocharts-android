@@ -16,8 +16,6 @@ import lecho.lib.hellocharts.util.Utils;
  * labels(that depends on renderer implementation), you can change name using {@link #setName(String)}, by default axis
  * name is empty and therefore not displayed.
  * 
- * @author Leszek Wach
- * 
  */
 public class Axis {
 	public static final int DEFAULT_TEXT_SIZE_SP = 12;

@@ -4,8 +4,6 @@ package lecho.lib.hellocharts.model;
  * Interface for all value formatters used for axes and value labels. Implementations of this interface should be fast,
  * use constants, char characters etc. Avoid string operations.
  * 
- * @author Leszek Wach
- * 
  */
 public interface ValueFormatter {
 

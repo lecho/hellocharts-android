@@ -5,8 +5,6 @@ import android.graphics.Typeface;
 /**
  * Base interface for all chart data models.
  * 
- * @author Leszek Wach
- * 
  */
 public interface ChartData {
 

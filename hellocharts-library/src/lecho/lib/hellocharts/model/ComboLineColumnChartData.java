@@ -1,9 +1,7 @@
 package lecho.lib.hellocharts.model;
 
 /**
- * Data model for combo line-column chart.
- * 
- * @author Leszek Wach
+ * Data model for combo line-column chart. It uses ColumnChartData and LineChartData internally.
  * 
  */
 public class ComboLineColumnChartData extends AbstractChartData {

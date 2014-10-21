@@ -9,8 +9,6 @@ import android.view.ScaleGestureDetector;
 /**
  * Touch Handler for preview charts. It scroll and zoom only preview area, not all preview chart data.
  * 
- * @author Leszek Wach
- * 
  */
 public class PreviewChartTouchHandler extends ChartTouchHandler {
 
