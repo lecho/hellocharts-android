@@ -18,7 +18,7 @@ public class ChartComputator {
 	/**
 	 * Maximum chart zoom.
 	 */
-	protected static final float MAXIMUM_ZOOM = 14f;
+	protected static final float MAXIMUM_ZOOM = 20f;
 
 	protected int chartWidth;
 	protected int chartHeight;
@@ -355,7 +355,7 @@ public class ChartComputator {
 	}
 
 	/**
-	 * Set maximum zoom level, default is 14.
+	 * Set maximum zoom level, default is 20.
 	 * 
 	 * @param maxZoom
 	 */

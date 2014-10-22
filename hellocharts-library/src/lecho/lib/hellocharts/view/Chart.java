@@ -158,7 +158,7 @@ public interface Chart {
 	public float getMaxZoom();
 
 	/**
-	 * Set max zoom value within range (1 - 14). Default maximum zoom is 14.
+	 * Set max zoom value within range (1 - 20). Default maximum zoom is 20.
 	 * 
 	 */
 	public void setMaxZoom(float maxZoom);
@@ -176,7 +176,7 @@ public interface Chart {
 	 * @param y
 	 *            y within chart maximum viewport
 	 * @param zoomLevel
-	 *            value from 1 to maxZoom(default 14). 1 means chart has no zoom, 14 means chart has maximum zoom.
+	 *            value from 1 to maxZoom(default 20). 1 means chart has no zoom, 20 means chart has maximum zoom.
 	 * @param isAnimated
 	 *            set true if zoom should be animated.
 	 */
