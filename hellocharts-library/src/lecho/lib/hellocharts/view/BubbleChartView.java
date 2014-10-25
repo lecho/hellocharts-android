@@ -101,6 +101,7 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
 	 */
 	public void removeMargins() {
 		bubbleChartRenderer.removeMargins();
+		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
 	public interface BubbleChartOnValueTouchListener {

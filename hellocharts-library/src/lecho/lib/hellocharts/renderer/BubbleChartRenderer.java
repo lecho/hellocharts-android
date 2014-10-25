@@ -331,12 +331,26 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 				tempMaxViewport.top = bubbleValue.getY();
 			}
 		}
+
 		maxRadius = (float) Math.sqrt(maxZ / Math.PI);
+
+		// Number 4 is determined by trials and errors method, no magic behind it:).
 		bubbleScaleX = tempMaxViewport.width() / (maxRadius * 4);
+		if (bubbleScaleX == 0) {
+			// case for 0 viewport width.
+			bubbleScaleX = 1;
+		}
+
 		bubbleScaleY = tempMaxViewport.height() / (maxRadius * 4);
+		if (bubbleScaleY == 0) {
+			// case for 0 viewport height.
+			bubbleScaleY = 1;
+		}
+
 		// For cases when user sets different than 1 bubble scale in BubbleChartData.
 		bubbleScaleX *= data.getBubbleScale();
 		bubbleScaleY *= data.getBubbleScale();
+
 		// Prevent cutting of bubbles on the edges of chart area.
 		tempMaxViewport.inset(-maxRadius * bubbleScaleX, -maxRadius * bubbleScaleY);
 
