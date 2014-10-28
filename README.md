@@ -132,6 +132,11 @@ Every chart view can be defined in layout xml file:
  `set*ChartData()` method again to let chart recalculate and redraw data. There is also an option to use copy constructor for deep copy of
  chart data. You can safely modify copy in other threads and pass it to `set*ChartData()` method later.
 
+
+##Contributing
+
+Yes:) If you found a bug, have an idea how to improve library or have a question, please create new issue or comment existing one. If you would like to contribute code fork the repository and send a pull request.
+
 #License
 
 	HelloCharts	
