@@ -53,6 +53,8 @@ Apache License 2.0.
 
 ###Android Studio/Gradle
 
+ You will need to install Build-tools 21.0.2 and Android Support Repository(from Android SDK Manager).
+
  - download/clone repository and import hellocharts-library as module: `File -> Import Module` and select
  hellocharts-library directory. Add dependency:
  ```groovy
@@ -67,8 +69,8 @@ Apache License 2.0.
   repository configured in build.gradle(you need to modify repository url and credentials in build.gradle file). Add
   dependency:
  ```groovy
-     compile 'lecho.lib.hellocharts:hellocharts-library:1.0@aar'
-     compile 'com.android.support:support-v4:20+'
+     compile 'lecho.lib.hellocharts:hellocharts-library:1.1@aar'
+     compile 'com.android.support:support-v4:21.0.+'
  ```
 
 ##Usage
