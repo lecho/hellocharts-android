@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import android.graphics.PathEffect;
+
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.Chart;
 
@@ -28,6 +30,7 @@ public class Line {
 	private boolean isCubic = false;
 	private boolean isFilled = false;
 	private ValueShape shape = ValueShape.CIRCLE;
+	private PathEffect pathEffect;
 	private ValueFormatter formatter = new SimpleValueFormatter();
 	private List<PointValue> values = new ArrayList<PointValue>();
 
@@ -52,6 +55,7 @@ public class Line {
 		this.isCubic = line.isCubic;
 		this.isFilled = line.isFilled;
 		this.shape = line.shape;
+		this.pathEffect = line.pathEffect;
 		this.formatter = line.formatter;
 
 		for (PointValue pointValue : line.values) {
@@ -222,6 +226,20 @@ public class Line {
 	public Line setShape(ValueShape shape) {
 		this.shape = shape;
 		return this;
+	}
+
+	public PathEffect getPathEffect() {
+		return pathEffect;
+	}
+
+	/**
+	 * Set path effect for this line, note: it will slow down drawing, try to not use complicated effects,
+	 * DashPathEffect should be safe choice.
+	 * 
+	 * @param pathEffect
+	 */
+	public void setPathEffect(PathEffect pathEffect) {
+		this.pathEffect = pathEffect;
 	}
 
 	public ValueFormatter getFormatter() {

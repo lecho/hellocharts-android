@@ -15,6 +15,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Cap;
 import android.graphics.Path;
+import android.graphics.PathEffect;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
 
@@ -216,8 +217,9 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	 */
 	private void drawPath(Canvas canvas, final Line line) {
 		final ChartComputator computator = chart.getChartComputator();
-		linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
-		linePaint.setColor(line.getColor());
+
+		prepareLinePaint(line);
+
 		int valueIndex = 0;
 		for (PointValue pointValue : line.getValues()) {
 
@@ -249,8 +251,9 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	 */
 	private void drawSmoothPath(Canvas canvas, final Line line) {
 		final ChartComputator computator = chart.getChartComputator();
-		linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
-		linePaint.setColor(line.getColor());
+
+		prepareLinePaint(line);
+
 		final int lineSize = line.getValues().size();
 		float prepreviousPointX = Float.NaN;
 		float prepreviousPointY = Float.NaN;
@@ -331,6 +334,15 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			drawArea(canvas, line.getAreaTransparency());
 		}
 		path.reset();
+	}
+
+	private void prepareLinePaint(final Line line) {
+		linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
+		linePaint.setColor(line.getColor());
+		PathEffect pathEffect = line.getPathEffect();
+		if (null != pathEffect) {
+			linePaint.setPathEffect(pathEffect);
+		}
 	}
 
 	// TODO Drawing points can be done in the same loop as drawing lines but it
