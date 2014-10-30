@@ -4,6 +4,8 @@ Charting library for Android compatible with API 8+(Android 2.2).
 Works best when hardware acceleration is available, so API 14+(Android 4.0) is recommended.
 Apache License 2.0.
 
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-HelloCharts%20for%20Android-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1068)
+
 ##Features
 
  - Line chart(cubic lines, filled lines, scattered points)
@@ -18,7 +20,7 @@ Apache License 2.0.
 
 ##Screens and Demos
 
- - Code of a demo application is in `hellocharts-samples` directory.   
+ - Code of a demo application is in `hellocharts-samples` directory. Demo app requires appcompat v21. 
  - The **demo app** is also ready for download on [**Google Play**](https://play.google.com/store/apps/details?id=lecho.lib.hellocharts.samples).  
  - Short **video** is available on [**YouTube**](https://www.youtube.com/watch?v=xbSBjyjH2SY).
 
