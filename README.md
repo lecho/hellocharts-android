@@ -20,7 +20,7 @@ Apache License 2.0.
 
 ##Screens and Demos
 
- - Code of a demo application is in `hellocharts-samples` directory. Demo app requires appcompat v21. 
+ - Code of a demo application is in `hellocharts-samples` directory, requires appcompat v21. 
  - The **demo app** is also ready for download on [**Google Play**](https://play.google.com/store/apps/details?id=lecho.lib.hellocharts.samples).  
  - Short **video** is available on [**YouTube**](https://www.youtube.com/watch?v=xbSBjyjH2SY).
 
