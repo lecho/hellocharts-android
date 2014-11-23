@@ -1,13 +1,11 @@
 package lecho.lib.hellocharts.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
-import android.graphics.PathEffect;
 
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.Chart;
+import android.graphics.PathEffect;
 
 /**
  * Single line for line chart.
@@ -77,7 +75,7 @@ public class Line {
 
 	public void setValues(List<PointValue> values) {
 		if (null == values) {
-			this.values = Collections.emptyList();
+			this.values = new ArrayList<PointValue>();
 		} else {
 			this.values = values;
 		}
