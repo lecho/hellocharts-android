@@ -18,7 +18,7 @@ public class ChartComputator {
 	/**
 	 * Maximum chart zoom.
 	 */
-	protected static final float MAXIMUM_ZOOM = 20f;
+	protected static final float DEFAULT_MAXIMUM_ZOOM = 20f;
 
 	protected int chartWidth;
 	protected int chartHeight;
@@ -50,7 +50,7 @@ public class ChartComputator {
 	protected float minViewportWidth;
 	protected float minViewportHeight;
 
-	protected float maxZoom = MAXIMUM_ZOOM;
+	protected float maxZoom = DEFAULT_MAXIMUM_ZOOM;
 
 	/**
 	 * Warning! Viewport listener is disabled for all charts beside preview charts to avoid additional method calls
@@ -362,8 +362,6 @@ public class ChartComputator {
 	public void setMaxZoom(float maxZoom) {
 		if (maxZoom < 1) {
 			maxZoom = 1;
-		} else if (maxZoom > MAXIMUM_ZOOM) {
-			maxZoom = MAXIMUM_ZOOM;
 		}
 
 		this.maxZoom = maxZoom;
