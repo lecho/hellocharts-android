@@ -248,7 +248,7 @@ public abstract class AbstractChartView extends View implements Chart {
 			top = Math.max(maxViewport.bottom + height, Math.min(top, maxViewport.top));
 
 			scrollViewport.set(left, top, left + height, top - height);
-			
+
 			setCurrentViewport(scrollViewport, isAnimated);
 		}
 	}
@@ -294,10 +294,11 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	@Override
 	public void setZoomLevel(float x, float y, float zoomLevel, boolean isAnimated) {
-		Viewport zoomViewport = new Viewport(getMaximumViewport());
+		final Viewport maxViewport = getMaximumViewport();
 
-		if (zoomViewport.contains(x, y)) {
-			// Compute zoom by changing chart current viewport.
+		if (maxViewport.contains(x, y)) {
+
+			Viewport zoomViewport = new Viewport(getMaximumViewport());
 
 			if (zoomLevel < 1) {
 				zoomLevel = 1;
@@ -305,23 +306,43 @@ public abstract class AbstractChartView extends View implements Chart {
 				zoomLevel = getMaxZoom();
 			}
 
-			float newWidth = zoomViewport.width();
-			float newHeight = zoomViewport.height();
-
-			ZoomType zoomType = getZoomType();
-			if (ZoomType.HORIZONTAL_AND_VERTICAL == zoomType) {
-				newWidth = zoomViewport.width() / zoomLevel;
-				newHeight = zoomViewport.height() / zoomLevel;
-			} else if (ZoomType.HORIZONTAL == zoomType) {
-				newWidth = zoomViewport.width() / zoomLevel;
-			} else if (ZoomType.VERTICAL == zoomType) {
-				newHeight = zoomViewport.height() / zoomLevel;
-			}
+			final float newWidth = zoomViewport.width() / zoomLevel;
+			final float newHeight = zoomViewport.height() / zoomLevel;
 
 			final float halfWidth = newWidth / 2;
 			final float halfHeight = newHeight / 2;
 
-			zoomViewport.set(x - halfWidth, y + halfHeight, x + halfWidth, y - halfHeight);
+			float left = x - halfWidth;
+			float right = x + halfWidth;
+			float top = y + halfHeight;
+			float bottom = y - halfHeight;
+
+			if (left < maxViewport.left) {
+				left = maxViewport.left;
+				right = left + newWidth;
+			} else if (right > maxViewport.right) {
+				right = maxViewport.right;
+				left = right - newWidth;
+			}
+
+			if (top > maxViewport.top) {
+				top = maxViewport.top;
+				bottom = top - newHeight;
+			} else if (bottom < maxViewport.bottom) {
+				bottom = maxViewport.bottom;
+				top = bottom + newHeight;
+			}
+
+			ZoomType zoomType = getZoomType();
+			if (ZoomType.HORIZONTAL_AND_VERTICAL == zoomType) {
+				zoomViewport.set(left, top, right, bottom);
+			} else if (ZoomType.HORIZONTAL == zoomType) {
+				zoomViewport.left = left;
+				zoomViewport.right = right;
+			} else if (ZoomType.VERTICAL == zoomType) {
+				zoomViewport.top = top;
+				zoomViewport.bottom = bottom;
+			}
 
 			setCurrentViewport(zoomViewport, isAnimated);
 		}
