@@ -3,6 +3,7 @@ package lecho.lib.hellocharts.renderer;
 import lecho.lib.hellocharts.model.ArcValue;
 import lecho.lib.hellocharts.model.PieChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
+import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
 import lecho.lib.hellocharts.model.ValueFormatter;
 import lecho.lib.hellocharts.provider.PieChartDataProvider;
 import lecho.lib.hellocharts.util.Utils;
@@ -165,7 +166,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		for (ArcValue arcValue : data.getValues()) {
 			final float angle = Math.abs(arcValue.getValue()) * arcScale;
 			if (touchAngle >= lastAngle) {
-				selectedValue.set(arcIndex, arcIndex, arcIndex);
+				selectedValue.set(arcIndex, arcIndex, SelectedValueType.NONE);
 			}
 			lastAngle += angle;
 			++arcIndex;
@@ -420,7 +421,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 			final float tempAngle = Math.abs(arcValue.getValue()) * arcScale;
 			if (touchAngle >= lastAngle) {
 				if (null != selectedValue) {
-					selectedValue.set(arcIndex, arcIndex, arcIndex);
+					selectedValue.set(arcIndex, arcIndex, SelectedValueType.NONE);
 				}
 				return arcValue;
 			}

@@ -8,6 +8,7 @@ import lecho.lib.hellocharts.model.ComboLineColumnChartData;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.SelectedValue;
+import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
 import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
 import lecho.lib.hellocharts.provider.ComboLineColumnChartDataProvider;
 import lecho.lib.hellocharts.provider.LineChartDataProvider;
@@ -80,14 +81,14 @@ public class ComboLineColumnChartView extends AbstractChartView implements Combo
 
 		if (selectedValue.isSet()) {
 
-			if (ComboLineColumnChartRenderer.TYPE_COLUMN == selectedValue.getThirdIndex()) {
+			if (SelectedValueType.COLUMN.equals(selectedValue.getType())) {
 
 				ColumnValue value = data.getColumnChartData().getColumns().get(selectedValue.getFirstIndex())
 						.getValues().get(selectedValue.getSecondIndex());
 				onValueTouchListener.onColumnValueTouched(selectedValue.getFirstIndex(),
 						selectedValue.getSecondIndex(), value);
 
-			} else if (ComboLineColumnChartRenderer.TYPE_LINE == selectedValue.getThirdIndex()) {
+			} else if (SelectedValueType.LINE.equals(selectedValue.getType())) {
 
 				PointValue value = data.getLineChartData().getLines().get(selectedValue.getFirstIndex()).getValues()
 						.get(selectedValue.getSecondIndex());
@@ -95,7 +96,7 @@ public class ComboLineColumnChartView extends AbstractChartView implements Combo
 						value);
 
 			} else {
-				throw new IllegalArgumentException("Invalid selected value type " + selectedValue.getThirdIndex());
+				throw new IllegalArgumentException("Invalid selected value type " + selectedValue.getType().name());
 			}
 		} else {
 			onValueTouchListener.onNothingTouched();

@@ -4,6 +4,7 @@ import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.ColumnValue;
+import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
 import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.Chart;
@@ -331,7 +332,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 
 	private void checkRectToDraw(int columnIndex, int valueIndex) {
 		if (drawRect.contains(touchedPoint.x, touchedPoint.y)) {
-			selectedValue.set(columnIndex, valueIndex, 0);
+			selectedValue.set(columnIndex, valueIndex, SelectedValueType.NONE);
 		}
 	}
 

@@ -1,5 +1,6 @@
 package lecho.lib.hellocharts.renderer;
 
+import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
 import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
 import lecho.lib.hellocharts.provider.LineChartDataProvider;
 import lecho.lib.hellocharts.view.Chart;
@@ -7,8 +8,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 
 public class ComboLineColumnChartRenderer extends AbstractChartRenderer {
-	public static final int TYPE_LINE = 1;
-	public static final int TYPE_COLUMN = 2;
 
 	private ColumnChartRenderer columnChartRenderer;
 	private LineChartRenderer lineChartRenderer;
@@ -65,10 +64,10 @@ public class ComboLineColumnChartRenderer extends AbstractChartRenderer {
 		// check ColumnChartRenderer.
 		if (this.lineChartRenderer.checkTouch(touchX, touchY)) {
 			selectedValue.set(this.lineChartRenderer.getSelectedValue());
-			selectedValue.setThirdIndex(TYPE_LINE);
+			selectedValue.setType(SelectedValueType.LINE);
 		} else if (this.columnChartRenderer.checkTouch(touchX, touchY)) {
 			selectedValue.set(this.columnChartRenderer.getSelectedValue());
-			selectedValue.setThirdIndex(TYPE_COLUMN);
+			selectedValue.setType(SelectedValueType.COLUMN);
 		}
 
 		return isTouched();

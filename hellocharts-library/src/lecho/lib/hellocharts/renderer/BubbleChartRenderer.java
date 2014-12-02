@@ -3,6 +3,7 @@ package lecho.lib.hellocharts.renderer;
 import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.model.BubbleChartData;
 import lecho.lib.hellocharts.model.BubbleValue;
+import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
 import lecho.lib.hellocharts.model.ValueFormatter;
 import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.model.Viewport;
@@ -124,7 +125,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 
 			if (ValueShape.SQUARE.equals(bubbleValue.getShape())) {
 				if (bubbleRect.contains(touchX, touchY)) {
-					selectedValue.set(valueIndex, valueIndex, 0);
+					selectedValue.set(valueIndex, valueIndex, SelectedValueType.NONE);
 				}
 			} else if (ValueShape.CIRCLE.equals(bubbleValue.getShape())) {
 				final float diffX = touchX - bubbleCenter.x;
@@ -132,7 +133,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 				final float touchDistance = (float) Math.sqrt((diffX * diffX) + (diffY * diffY));
 
 				if (touchDistance <= rawRadius) {
-					selectedValue.set(valueIndex, valueIndex, 0);
+					selectedValue.set(valueIndex, valueIndex, SelectedValueType.NONE);
 				}
 			} else {
 				throw new IllegalArgumentException("Invalid bubble shape: " + bubbleValue.getShape());

@@ -4,6 +4,7 @@ import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
 import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.provider.LineChartDataProvider;
 import lecho.lib.hellocharts.util.Utils;
@@ -165,7 +166,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 				final float rawValueX = computator.computeRawX(pointValue.getX());
 				final float rawValueY = computator.computeRawY(pointValue.getY());
 				if (isInArea(rawValueX, rawValueY, touchX, touchY, pointRadius + touchTolleranceMargin)) {
-					selectedValue.set(lineIndex, valueIndex, 0);
+					selectedValue.set(lineIndex, valueIndex, SelectedValueType.NONE);
 				}
 				++valueIndex;
 			}

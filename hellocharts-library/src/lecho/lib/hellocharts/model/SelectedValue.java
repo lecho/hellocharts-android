@@ -17,39 +17,43 @@ public class SelectedValue {
 	private int secondIndex;
 
 	/**
-	 * Used only for combo charts i.e 1 means user selected LinePoint, 2 means user selected ColumnValue.
+	 * Used only for combo charts, in other cases should have value NONE.
 	 */
-	private int thirdIndex;
+	private SelectedValueType type = SelectedValueType.NONE;
 
 	public SelectedValue() {
 		clear();
 	}
 
-	public SelectedValue(int firstIndex, int secondIndex, int dataType) {
-		set(firstIndex, secondIndex, dataType);
+	public SelectedValue(int firstIndex, int secondIndex, SelectedValueType type) {
+		set(firstIndex, secondIndex, type);
 	}
 
-	public void set(int firstIndex, int secondIndex, int third) {
+	public void set(int firstIndex, int secondIndex, SelectedValueType type) {
 		this.firstIndex = firstIndex;
 		this.secondIndex = secondIndex;
-		this.thirdIndex = third;
+		if (null != type) {
+			this.type = type;
+		} else {
+			this.type = SelectedValueType.NONE;
+		}
 	}
 
 	public void set(SelectedValue selectedValue) {
 		this.firstIndex = selectedValue.firstIndex;
 		this.secondIndex = selectedValue.secondIndex;
-		this.thirdIndex = selectedValue.thirdIndex;
+		this.type = selectedValue.type;
 	}
 
 	public void clear() {
-		set(Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
+		set(Integer.MIN_VALUE, Integer.MIN_VALUE, SelectedValueType.NONE);
 	}
 
 	/**
 	 * Return true if selected value have meaningful value.
 	 */
 	public boolean isSet() {
-		if (firstIndex >= 0 && secondIndex >= 0 && thirdIndex >= 0) {
+		if (firstIndex >= 0 && secondIndex >= 0) {
 			return true;
 		} else {
 			return false;
@@ -78,24 +82,21 @@ public class SelectedValue {
 		this.secondIndex = secondIndex;
 	}
 
-	/**
-	 * Used only for combo charts i.e 1 means user selected LinePoint, 2 means user selected ColumnValue,.
-	 */
-	public int getThirdIndex() {
-		return thirdIndex;
+	public SelectedValueType getType() {
+		return type;
 	}
 
-	public void setThirdIndex(int thirdIndex) {
-		this.thirdIndex = thirdIndex;
+	public void setType(SelectedValueType type) {
+		this.type = type;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + thirdIndex;
 		result = prime * result + firstIndex;
 		result = prime * result + secondIndex;
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
 
@@ -108,19 +109,25 @@ public class SelectedValue {
 		if (getClass() != obj.getClass())
 			return false;
 		SelectedValue other = (SelectedValue) obj;
-		if (thirdIndex != other.thirdIndex)
-			return false;
 		if (firstIndex != other.firstIndex)
 			return false;
 		if (secondIndex != other.secondIndex)
+			return false;
+		if (type != other.type)
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "SelectedValue [firstIndex=" + firstIndex + ", secondIndex=" + secondIndex + ", thirdIndex="
-				+ thirdIndex + "]";
+		return "SelectedValue [firstIndex=" + firstIndex + ", secondIndex=" + secondIndex + ", type=" + type + "]";
+	}
+
+	/**
+	 * Used in combo chart to determine if selected value is used for line or column selection.
+	 */
+	public enum SelectedValueType {
+		NONE, LINE, COLUMN
 	}
 
 }
