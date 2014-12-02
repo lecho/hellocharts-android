@@ -404,6 +404,7 @@ public abstract class AbstractChartView extends View implements Chart {
 	@Override
 	public void selectValue(SelectedValue selectedValue) {
 		chartRenderer.selectValue(selectedValue);
+		callTouchListener();
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
