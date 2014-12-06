@@ -54,6 +54,9 @@ public class Axis {
 	/** Formatter used to format labels. */
 	private ValueFormatter formatter = new SimpleValueFormatter();
 
+	/** If true draws a line between the labels and the graph **/
+	private boolean hasSepLine = true;
+
 	/**
 	 * Creates auto-generated axis without name and with default formatter.
 	 * 
@@ -209,4 +212,14 @@ public class Axis {
 		}
 		return this;
 	}
+
+	public Axis setHasSepLine(boolean hasLine) {
+		this.hasSepLine = hasLine;
+		return this;
+	}
+
+	public boolean hasSepLine() {
+		this.hasSepLine;
+	}
+
 }
