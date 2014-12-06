@@ -440,8 +440,10 @@ public class AxesRenderer {
 		final Rect contentRectMargins = chart.getChartComputator().getContentRectWithMargins();
 
 		// Draw separation line with the same color as axis text. Only horizontal axes have separation lines.
-		canvas.drawLine(contentRectMargins.left, axisSeparationLineTab[position], contentRectMargins.right,
+		if (axis.hasSepLine()) {
+			canvas.drawLine(contentRectMargins.left, axisSeparationLineTab[position], contentRectMargins.right,
 				axisSeparationLineTab[position], textPaintTab[position]);
+		}
 
 		if (!axis.hasLines()) {
 			return;
