@@ -1,5 +1,12 @@
 package lecho.lib.hellocharts.renderer;
 
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Paint.Cap;
+import android.graphics.PointF;
+import android.graphics.RectF;
+
 import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
@@ -8,12 +15,6 @@ import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
 import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.Chart;
-import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Paint.Cap;
-import android.graphics.PointF;
-import android.graphics.RectF;
 
 /**
  * Magic renderer for ColumnChart.
@@ -50,8 +51,10 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	private float fillRatio;
 
 	private float baseValue;
+    private int radiusX;
+    private int radiusY;
 
-	public ColumnChartRenderer(Context context, Chart chart, ColumnChartDataProvider dataProvider) {
+    public ColumnChartRenderer(Context context, Chart chart, ColumnChartDataProvider dataProvider) {
 		super(context, chart);
 		this.dataProvider = dataProvider;
 		subcolumnSpacing = Utils.dp2px(density, DEFAULT_SUBCOLUMN_SPACING_DP);
@@ -312,7 +315,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void drawSubcolumn(Canvas canvas, Column column, ColumnValue columnValue, boolean isStacked) {
-		canvas.drawRect(drawRect, columnPaint);
+		canvas.drawRoundRect(drawRect, radiusX, radiusY, columnPaint);
 		if (column.hasLabels()) {
 			drawLabel(canvas, column, columnValue, isStacked, labelOffset);
 		}
@@ -322,8 +325,8 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 			boolean isStacked) {
 		if (selectedValue.getSecondIndex() == valueIndex) {
 			columnPaint.setColor(columnValue.getDarkenColor());
-			canvas.drawRect(drawRect.left - touchAdditionalWidth, drawRect.top, drawRect.right + touchAdditionalWidth,
-					drawRect.bottom, columnPaint);
+			canvas.drawRoundRect(new RectF(drawRect.left - touchAdditionalWidth, drawRect.top, drawRect.right + touchAdditionalWidth,
+					drawRect.bottom), radiusX, radiusY, columnPaint);
 			if (column.hasLabels() || column.hasLabelsOnlyForSelected()) {
 				drawLabel(canvas, column, columnValue, isStacked, labelOffset);
 			}
@@ -414,4 +417,10 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 
 	}
 
+    public void setRadiusX(int rx) {
+        this.radiusX = rx;
+    }
+    public void setRadiusY(int ry) {
+        this.radiusY = ry;
+    }
 }

@@ -1,12 +1,5 @@
 package lecho.lib.hellocharts.renderer;
 
-import lecho.lib.hellocharts.ChartComputator;
-import lecho.lib.hellocharts.model.Axis;
-import lecho.lib.hellocharts.model.AxisValue;
-import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.util.AxisAutoValues;
-import lecho.lib.hellocharts.util.Utils;
-import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -15,6 +8,14 @@ import android.graphics.Paint.FontMetricsInt;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.text.TextUtils;
+
+import lecho.lib.hellocharts.ChartComputator;
+import lecho.lib.hellocharts.model.Axis;
+import lecho.lib.hellocharts.model.AxisValue;
+import lecho.lib.hellocharts.model.Viewport;
+import lecho.lib.hellocharts.util.AxisAutoValues;
+import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.view.Chart;
 
 /**
  * Default axes renderer. Can draw maximum four axes - two horizontal(top/bottom) and two vertical(left/right).
@@ -440,9 +441,10 @@ public class AxesRenderer {
 		final Rect contentRectMargins = chart.getChartComputator().getContentRectWithMargins();
 
 		// Draw separation line with the same color as axis text. Only horizontal axes have separation lines.
-		canvas.drawLine(contentRectMargins.left, axisSeparationLineTab[position], contentRectMargins.right,
-				axisSeparationLineTab[position], textPaintTab[position]);
-
+        if (axis.hasSepline()) {
+            canvas.drawLine(contentRectMargins.left, axisSeparationLineTab[position], contentRectMargins.right,
+                    axisSeparationLineTab[position], textPaintTab[position]);
+        }
 		if (!axis.hasLines()) {
 			return;
 		}
