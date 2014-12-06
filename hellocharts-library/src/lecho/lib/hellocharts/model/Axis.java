@@ -1,10 +1,10 @@
 package lecho.lib.hellocharts.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.graphics.Color;
 import android.graphics.Typeface;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import lecho.lib.hellocharts.util.Utils;
 
@@ -54,7 +54,10 @@ public class Axis {
 	/** Formatter used to format labels. */
 	private ValueFormatter formatter = new SimpleValueFormatter();
 
-	/**
+    /** If true draws a line between the labels and the graph **/
+    private boolean hasSepLine;
+
+    /**
 	 * Creates auto-generated axis without name and with default formatter.
 	 * 
 	 * @see SimpleValueFormatter
@@ -80,7 +83,7 @@ public class Axis {
 		this.maxLabelChars = axis.maxLabelChars;
 		this.typeface = axis.typeface;
 		this.formatter = axis.formatter;
-
+        this.hasSepLine = true;
 		for (AxisValue axisValue : values) {
 			this.values.add(new AxisValue(axisValue));
 		}
@@ -209,4 +212,13 @@ public class Axis {
 		}
 		return this;
 	}
+
+    public Axis setHasSepLine(boolean hasLine) {
+        this.hasSepLine = hasLine;
+        return this;
+    }
+
+    public boolean hasSepline() {
+        return this.hasSepLine;
+    }
 }

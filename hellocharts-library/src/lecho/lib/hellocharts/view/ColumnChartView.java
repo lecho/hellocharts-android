@@ -1,15 +1,16 @@
 package lecho.lib.hellocharts.view;
 
+import android.content.Context;
+import android.support.v4.view.ViewCompat;
+import android.util.AttributeSet;
+import android.util.Log;
+
 import lecho.lib.hellocharts.BuildConfig;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.ColumnValue;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
 import lecho.lib.hellocharts.renderer.ColumnChartRenderer;
-import android.content.Context;
-import android.support.v4.view.ViewCompat;
-import android.util.AttributeSet;
-import android.util.Log;
 
 /**
  * ColumnChart/BarChart, supports subcolumns, stacked collumns and negative values.
@@ -91,7 +92,12 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 		}
 	}
 
-	public interface ColumnChartOnValueTouchListener {
+    public void setRectangleRadii(int rx, int ry) {
+        ((ColumnChartRenderer)this.chartRenderer).setRadiusX(rx);
+        ((ColumnChartRenderer)this.chartRenderer).setRadiusY(ry);
+    }
+
+    public interface ColumnChartOnValueTouchListener {
 
 		public void onValueTouched(int selectedLine, int selectedValue, ColumnValue point);
 

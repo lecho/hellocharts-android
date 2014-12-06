@@ -1,8 +1,9 @@
 package lecho.lib.hellocharts.renderer;
 
+import android.graphics.Canvas;
+
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.Viewport;
-import android.graphics.Canvas;
 
 /**
  * Interface for all chart renderer.
@@ -73,5 +74,4 @@ public interface ChartRenderer {
 	public void selectValue(SelectedValue selectedValue);
 
 	public SelectedValue getSelectedValue();
-
 }
