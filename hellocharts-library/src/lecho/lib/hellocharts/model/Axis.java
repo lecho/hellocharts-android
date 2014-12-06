@@ -55,7 +55,7 @@ public class Axis {
 	private ValueFormatter formatter = new SimpleValueFormatter();
 
 	/** If true draws a line between the labels and the graph **/
-	private boolean hasSepLine = true;
+	private boolean hasSeparationLine = true;
 
 	/**
 	 * Creates auto-generated axis without name and with default formatter.
@@ -83,6 +83,7 @@ public class Axis {
 		this.maxLabelChars = axis.maxLabelChars;
 		this.typeface = axis.typeface;
 		this.formatter = axis.formatter;
+		this.hasSeparationLine = axis.hasSeparationLine;
 
 		for (AxisValue axisValue : values) {
 			this.values.add(new AxisValue(axisValue));
@@ -213,13 +214,16 @@ public class Axis {
 		return this;
 	}
 
-	public Axis setHasSepLine(boolean hasLine) {
-		this.hasSepLine = hasLine;
+	/**
+	 * Set true if you want to draw separation line for this axis, set false to hide separation line, by default true.
+	 */
+	public Axis setHasSeparationLine(boolean hasSeparationLine) {
+		this.hasSeparationLine = hasSeparationLine;
 		return this;
 	}
 
-	public boolean hasSepLine() {
-		this.hasSepLine;
+	public boolean hasSeparationLine() {
+		return hasSeparationLine;
 	}
 
 }
