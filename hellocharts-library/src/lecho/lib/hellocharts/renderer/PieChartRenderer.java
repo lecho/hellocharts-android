@@ -152,11 +152,17 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		final float centerX = orginCircleOval.centerX();
 		final float centerY = orginCircleOval.centerY();
 		final float circleRadius = orginCircleOval.width() / 2f;
-		// Check if touch is on circle area, if not return false;
+
 		arcVector.set(touchX - centerX, touchY - centerY);
+		// Check if touch is on circle area, if not return false;
 		if (arcVector.length() > circleRadius + touchAdditional) {
 			return false;
 		}
+		// Check if touch is not in center circle, if yes return false;
+		if (data.hasCenterCircle() && arcVector.length() < circleRadius * data.getCenterCircleScale()) {
+			return false;
+		}
+
 		// Get touchAngle and align touch 0 degrees with chart 0 degrees, that why I subtracting start angle, adding 360
 		// and modulo 360 translates i.e -20 degrees to 340 degrees.
 		final float touchAngle = (pointToAngle(touchX, touchY, centerX, centerY) - rotation + 360f) % 360f;
