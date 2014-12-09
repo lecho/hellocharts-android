@@ -6,7 +6,7 @@ buildscript {
     mavenCentral()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:0.12.+'
+    classpath 'com.android.tools.build:gradle:1.0.0'
   }
 }
 
@@ -18,7 +18,7 @@ dependencies {
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21.0.2"
+    buildToolsVersion "21.1.1"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
@@ -27,10 +27,9 @@ android {
 
     defaultConfig {
         minSdkVersion 8
-        targetSdkVersion 19
+        targetSdkVersion 21
         versionCode 1
         versionName '1.0'
-        applicationId 'lecho.lib.hellocharts'
     }
 
     sourceSets {
@@ -47,7 +46,7 @@ android {
 	
 	 buildTypes {
 		release {
-			runProguard false
+			minifyEnabled false
 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 		}
 	}
@@ -71,7 +70,7 @@ publishing {
         maven(MavenPublication) {
             artifact "${project.buildDir}/outputs/aar/${project.name}.aar"
             artifactId project.name
-            groupId android.defaultConfig.applicationId
+            groupId "lecho.lib.hellocharts"
             version android.defaultConfig.versionName
 			
 			artifact androidSourcesJar {
