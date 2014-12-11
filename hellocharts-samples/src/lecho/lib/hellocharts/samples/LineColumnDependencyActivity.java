@@ -84,8 +84,9 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 				values = new ArrayList<ColumnValue>();
 				for (int j = 0; j < numSubcolumns; ++j) {
 					values.add(new ColumnValue((float) Math.random() * 50f + 5, Utils.pickColor()));
-					axisValues.add(new AxisValue(i, months[i].toCharArray()));
 				}
+
+                axisValues.add(new AxisValue(i, months[i].toCharArray()));
 
 				columns.add(new Column(values).setHasLabelsOnlyForSelected(true));
 			}
