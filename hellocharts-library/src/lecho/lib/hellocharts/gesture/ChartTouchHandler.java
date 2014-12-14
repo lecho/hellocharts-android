@@ -56,7 +56,7 @@ public class ChartTouchHandler {
 
 	/**
 	 * Computes scroll and zoom using {@link ChartScroller} and {@link ChartZoomer}. This method returns true if
-	 * scroll/zoom was computed and chart needs to be invaliedated.
+	 * scroll/zoom was computed and chart needs to be invalidated.
 	 * 
 	 * Using first approach of fling animation described here {@link http
 	 * ://developer.android.com/training/custom-views/making-interactive.html}. Consider use of second option with
@@ -83,7 +83,7 @@ public class ChartTouchHandler {
 		boolean needInvalidate = false;
 
 		// TODO: detectors always return true, use class member needInvalidate instead local variable as workaround.
-		// This flag should be computed inside gesture listeners methods to avoid to many invalidations.
+		// This flag should be computed inside gesture listeners methods to avoid invalidation.
 		needInvalidate = gestureDetector.onTouchEvent(event);
 
 		needInvalidate = scaleGestureDetector.onTouchEvent(event) || needInvalidate;
@@ -180,7 +180,7 @@ public class ChartTouchHandler {
 			break;
 		case MotionEvent.ACTION_MOVE:
 			// If value was touched and now touch point is outside of value area - clear touch and invalidate, user
-			// probably moved finger away from point without leaving finger of the screen surface
+			// probably moved finger away from given chart value.
 			if (renderer.isTouched()) {
 				if (!checkTouch(renderer, event.getX(), event.getY())) {
 					renderer.clearTouch();

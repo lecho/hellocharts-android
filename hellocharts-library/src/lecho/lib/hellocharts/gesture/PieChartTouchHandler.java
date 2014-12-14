@@ -19,7 +19,6 @@ public class PieChartTouchHandler extends ChartTouchHandler {
 	 * The initial fling velocity is divided by this amount.
 	 */
 	public static final int FLING_VELOCITY_DOWNSCALE = 4;
-
 	/**
 	 * PieChartTouchHandler uses its own instance of Scroller.
 	 */

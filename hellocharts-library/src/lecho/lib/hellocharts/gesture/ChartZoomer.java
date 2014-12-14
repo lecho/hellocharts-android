@@ -36,8 +36,7 @@ public class ChartZoomer {
 
 	public boolean computeZoom(ChartComputator computator) {
 		if (zoomer.computeZoom()) {
-			// Performs the zoom since a zoom is in progress (either programmatically or via
-			// double-touch).
+			// Performs the zoom since a zoom is in progress.
 			final float newWidth = (1.0f - zoomer.getCurrZoom()) * scrollerStartViewport.width();
 			final float newHeight = (1.0f - zoomer.getCurrZoom()) * scrollerStartViewport.height();
 			final float pointWithinViewportX = (zoomFocalPoint.x - scrollerStartViewport.left)
