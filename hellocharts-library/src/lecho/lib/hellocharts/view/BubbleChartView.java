@@ -77,7 +77,7 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
 			BubbleValue value = data.getValues().get(selectedValue.getFirstIndex());
 			onValueTouchListener.onValueTouched(selectedValue.getFirstIndex(), value);
 		} else {
-			onValueTouchListener.onNothingTouched();
+			onValueTouchListener.onValueDeselected();
 		}
 	}
 
@@ -107,7 +107,7 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
 	public interface BubbleChartOnValueTouchListener {
 		public void onValueTouched(int selectedBubble, BubbleValue value);
 
-		public void onNothingTouched();
+		public void onValueDeselected();
 
 	}
 
@@ -118,7 +118,7 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
 		}
 
 		@Override
-		public void onNothingTouched() {
+		public void onValueDeselected() {
 		}
 
 	}

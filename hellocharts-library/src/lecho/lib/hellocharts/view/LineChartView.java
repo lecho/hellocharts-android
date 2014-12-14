@@ -77,7 +77,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 					.get(selectedValue.getSecondIndex());
 			onValueTouchListener.onValueTouched(selectedValue.getFirstIndex(), selectedValue.getSecondIndex(), point);
 		} else {
-			onValueTouchListener.onNothingTouched();
+			onValueTouchListener.onValueDeselected();
 		}
 	}
 
@@ -96,7 +96,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 	public interface LineChartOnValueTouchListener {
 		public void onValueTouched(int selectedLine, int selectedValue, PointValue value);
 
-		public void onNothingTouched();
+		public void onValueDeselected();
 
 	}
 
@@ -107,7 +107,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 		}
 
 		@Override
-		public void onNothingTouched() {
+		public void onValueDeselected() {
 		}
 
 	}

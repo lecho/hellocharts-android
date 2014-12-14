@@ -94,7 +94,7 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 			ArcValue arcValue = data.getValues().get(selectedValue.getFirstIndex());
 			onValueTouchListener.onValueTouched(selectedValue.getFirstIndex(), arcValue);
 		} else {
-			onValueTouchListener.onNothingTouched();
+			onValueTouchListener.onValueDeselected();
 		}
 	}
 
@@ -199,7 +199,7 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 	public interface PieChartOnValueTouchListener {
 		public void onValueTouched(int selectedArc, ArcValue value);
 
-		public void onNothingTouched();
+		public void onValueDeselected();
 
 	}
 
@@ -210,7 +210,7 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 		}
 
 		@Override
-		public void onNothingTouched() {
+		public void onValueDeselected() {
 		}
 	}
 }

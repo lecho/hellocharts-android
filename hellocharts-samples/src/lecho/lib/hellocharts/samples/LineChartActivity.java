@@ -402,7 +402,7 @@ public class LineChartActivity extends ActionBarActivity {
 			}
 
 			@Override
-			public void onNothingTouched() {
+			public void onValueDeselected() {
 				// TODO Auto-generated method stub
 
 			}

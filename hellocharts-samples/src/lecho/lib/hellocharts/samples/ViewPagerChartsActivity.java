@@ -11,7 +11,7 @@ import lecho.lib.hellocharts.model.BubbleChartData;
 import lecho.lib.hellocharts.model.BubbleValue;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
-import lecho.lib.hellocharts.model.ColumnValue;
+import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PieChartData;
@@ -255,12 +255,12 @@ public class ViewPagerChartsActivity extends ActionBarActivity implements Action
 			int numColumns = 12;
 			// Column can have many subcolumns, here by default I use 1 subcolumn in each of 8 columns.
 			List<Column> columns = new ArrayList<Column>();
-			List<ColumnValue> values;
+			List<SubcolumnValue> values;
 			for (int i = 0; i < numColumns; ++i) {
 
-				values = new ArrayList<ColumnValue>();
+				values = new ArrayList<SubcolumnValue>();
 				for (int j = 0; j < numSubcolumns; ++j) {
-					values.add(new ColumnValue((float) Math.random() * 50f + 5, Utils.pickColor()));
+					values.add(new SubcolumnValue((float) Math.random() * 50f + 5, Utils.pickColor()));
 				}
 
 				columns.add(new Column(values));
