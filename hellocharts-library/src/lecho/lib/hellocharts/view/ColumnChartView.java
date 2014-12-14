@@ -2,7 +2,7 @@ package lecho.lib.hellocharts.view;
 
 import lecho.lib.hellocharts.BuildConfig;
 import lecho.lib.hellocharts.model.ColumnChartData;
-import lecho.lib.hellocharts.model.ColumnValue;
+import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
 import lecho.lib.hellocharts.renderer.ColumnChartRenderer;
@@ -71,11 +71,11 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 		SelectedValue selectedValue = chartRenderer.getSelectedValue();
 
 		if (selectedValue.isSet()) {
-			ColumnValue value = data.getColumns().get(selectedValue.getFirstIndex()).getValues()
+			SubcolumnValue value = data.getColumns().get(selectedValue.getFirstIndex()).getValues()
 					.get(selectedValue.getSecondIndex());
 			onValueTouchListener.onValueTouched(selectedValue.getFirstIndex(), selectedValue.getSecondIndex(), value);
 		} else {
-			onValueTouchListener.onNothingTouched();
+			onValueTouchListener.onValueDeselected();
 		}
 	}
 
@@ -93,20 +93,20 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 
 	public interface ColumnChartOnValueTouchListener {
 
-		public void onValueTouched(int selectedLine, int selectedValue, ColumnValue point);
+		public void onValueTouched(int selectedLine, int selectedValue, SubcolumnValue point);
 
-		public void onNothingTouched();
+		public void onValueDeselected();
 
 	}
 
 	private static class DummyOnValueTouchListener implements ColumnChartOnValueTouchListener {
 
 		@Override
-		public void onValueTouched(int selectedLine, int selectedValue, ColumnValue value) {
+		public void onValueTouched(int selectedLine, int selectedValue, SubcolumnValue value) {
 		}
 
 		@Override
-		public void onNothingTouched() {
+		public void onValueDeselected() {
 		}
 
 	}

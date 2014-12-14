@@ -8,7 +8,7 @@ import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
-import lecho.lib.hellocharts.model.ColumnValue;
+import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.ColumnChartView;
@@ -119,12 +119,12 @@ public class PreviewColumnChartActivity extends ActionBarActivity {
 			int numSubcolumns = 1;
 			int numColumns = 50;
 			List<Column> columns = new ArrayList<Column>();
-			List<ColumnValue> values;
+			List<SubcolumnValue> values;
 			for (int i = 0; i < numColumns; ++i) {
 
-				values = new ArrayList<ColumnValue>();
+				values = new ArrayList<SubcolumnValue>();
 				for (int j = 0; j < numSubcolumns; ++j) {
-					values.add(new ColumnValue((float) Math.random() * 50f + 5, Utils.pickColor()));
+					values.add(new SubcolumnValue((float) Math.random() * 50f + 5, Utils.pickColor()));
 				}
 
 				columns.add(new Column(values));
@@ -138,7 +138,7 @@ public class PreviewColumnChartActivity extends ActionBarActivity {
 			// set color to grey to make preview area more visible.
 			previewData = new ColumnChartData(data);
 			for (Column column : previewData.getColumns()) {
-				for (ColumnValue value : column.getValues()) {
+				for (SubcolumnValue value : column.getValues()) {
 					value.setColor(Utils.DEFAULT_DARKEN_COLOR);
 				}
 			}

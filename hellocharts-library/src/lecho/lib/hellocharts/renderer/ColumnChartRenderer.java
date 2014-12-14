@@ -3,7 +3,7 @@ package lecho.lib.hellocharts.renderer;
 import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
-import lecho.lib.hellocharts.model.ColumnValue;
+import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
 import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
 import lecho.lib.hellocharts.util.Utils;
@@ -131,7 +131,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 
 	private void calculateMaxViewportForSubcolumns(ColumnChartData data) {
 		for (Column column : data.getColumns()) {
-			for (ColumnValue columnValue : column.getValues()) {
+			for (SubcolumnValue columnValue : column.getValues()) {
 				if (columnValue.getValue() >= baseValue && columnValue.getValue() > tempMaxViewport.top) {
 					tempMaxViewport.top = columnValue.getValue();
 				}
@@ -146,7 +146,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 		for (Column column : data.getColumns()) {
 			float sumPositive = baseValue;
 			float sumNegative = baseValue;
-			for (ColumnValue columnValue : column.getValues()) {
+			for (SubcolumnValue columnValue : column.getValues()) {
 				if (columnValue.getValue() >= baseValue) {
 					sumPositive += columnValue.getValue();
 				} else {
@@ -211,7 +211,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 		// rawValueX is horizontal center of that column
 		float subcolumnRawX = rawX - halfColumnWidth;
 		int valueIndex = 0;
-		for (ColumnValue columnValue : column.getValues()) {
+		for (SubcolumnValue columnValue : column.getValues()) {
 			columnPaint.setColor(columnValue.getColor());
 			if (subcolumnRawX > rawX + halfColumnWidth) {
 				break;
@@ -278,7 +278,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 		float mostNegativeValue = baseValue;
 		float subcolumnBaseValue = baseValue;
 		int valueIndex = 0;
-		for (ColumnValue columnValue : column.getValues()) {
+		for (SubcolumnValue columnValue : column.getValues()) {
 			columnPaint.setColor(columnValue.getColor());
 			if (columnValue.getValue() >= baseValue) {
 				// Using values instead of raw pixels make code easier to
@@ -311,14 +311,14 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 		}
 	}
 
-	private void drawSubcolumn(Canvas canvas, Column column, ColumnValue columnValue, boolean isStacked) {
+	private void drawSubcolumn(Canvas canvas, Column column, SubcolumnValue columnValue, boolean isStacked) {
 		canvas.drawRect(drawRect, columnPaint);
 		if (column.hasLabels()) {
 			drawLabel(canvas, column, columnValue, isStacked, labelOffset);
 		}
 	}
 
-	private void highlightSubcolumn(Canvas canvas, Column column, ColumnValue columnValue, int valueIndex,
+	private void highlightSubcolumn(Canvas canvas, Column column, SubcolumnValue columnValue, int valueIndex,
 			boolean isStacked) {
 		if (selectedValue.getSecondIndex() == valueIndex) {
 			columnPaint.setColor(columnValue.getDarkenColor());
@@ -346,7 +346,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 		return columnWidth;
 	}
 
-	private void calculateRectToDraw(ColumnValue columnValue, float left, float right, float rawBaseY, float rawY) {
+	private void calculateRectToDraw(SubcolumnValue columnValue, float left, float right, float rawBaseY, float rawY) {
 		// Calculate rect that will be drawn as column, subcolumn or label background.
 		drawRect.left = left;
 		drawRect.right = right;
@@ -359,7 +359,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 		}
 	}
 
-	private void drawLabel(Canvas canvas, Column column, ColumnValue columnValue, boolean isStacked, float offset) {
+	private void drawLabel(Canvas canvas, Column column, SubcolumnValue columnValue, boolean isStacked, float offset) {
 		final ChartComputator computator = chart.getChartComputator();
 		valuesBuff[0] = columnValue.getValue();
 		final int numChars = column.getFormatter().formatValue(labelBuffer, valuesBuff, columnValue.getLabel());

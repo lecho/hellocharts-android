@@ -6,7 +6,7 @@ import java.util.List;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
-import lecho.lib.hellocharts.model.ColumnValue;
+import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.model.ComboLineColumnChartData;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
@@ -195,12 +195,12 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 			int numColumns = 12;
 			// Column can have many subcolumns, here by default I use 1 subcolumn in each of 8 columns.
 			List<Column> columns = new ArrayList<Column>();
-			List<ColumnValue> values;
+			List<SubcolumnValue> values;
 			for (int i = 0; i < numColumns; ++i) {
 
-				values = new ArrayList<ColumnValue>();
+				values = new ArrayList<SubcolumnValue>();
 				for (int j = 0; j < numSubcolumns; ++j) {
-					values.add(new ColumnValue((float) Math.random() * 50 + 5, Utils.COLOR_GREEN));
+					values.add(new SubcolumnValue((float) Math.random() * 50 + 5, Utils.COLOR_GREEN));
 				}
 
 				columns.add(new Column(values));
@@ -269,7 +269,7 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 
 			// Columns animations
 			for (Column column : data.getColumnChartData().getColumns()) {
-				for (ColumnValue value : column.getValues()) {
+				for (SubcolumnValue value : column.getValues()) {
 					value.setTarget((float) Math.random() * 50 + 5);
 				}
 			}
@@ -278,13 +278,13 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 		private class ValueTouchListener implements ComboLineColumnChartOnValueTouchListener {
 
 			@Override
-			public void onNothingTouched() {
+			public void onValueDeselected() {
 				// TODO Auto-generated method stub
 
 			}
 
 			@Override
-			public void onColumnValueTouched(int selectedLine, int selectedValue, ColumnValue value) {
+			public void onColumnValueTouched(int selectedLine, int selectedValue, SubcolumnValue value) {
 				Toast.makeText(getActivity(), "Selected column: " + value, Toast.LENGTH_SHORT).show();
 
 			}

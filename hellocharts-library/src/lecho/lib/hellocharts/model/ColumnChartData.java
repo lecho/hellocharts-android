@@ -5,7 +5,11 @@ import java.util.List;
 
 /**
  * Data model for column chart.
- * 
+ *
+ * Note: you can set X value for columns or sub-columns, columns are by default indexed from 0 to numOfColumns-1 and
+ * column index is used as column X value, so first column has X value 0, second clumn has X value 1 etc.
+ * If you want to display AxisValue for given column you should initialize AxisValue with X value of that column.
+ *
  */
 public class ColumnChartData extends AbstractChartData {
 	public static final float DEFAULT_FILL_RATIO = 0.75f;
@@ -69,7 +73,7 @@ public class ColumnChartData extends AbstractChartData {
 
 	/**
 	 * Set true if you want stacked column chart.
-	 * 
+	 *
 	 * @param isStacked
 	 * @return
 	 */
@@ -85,7 +89,7 @@ public class ColumnChartData extends AbstractChartData {
 	/**
 	 * Set fill ration for columns, value from 0 to 1, 1 means that there will be almost no free space between columns,
 	 * 0 means that columns will have minimum width(2px).
-	 * 
+	 *
 	 * @param fillRatio
 	 * @return
 	 */
@@ -119,11 +123,11 @@ public class ColumnChartData extends AbstractChartData {
 		final int numColumns = 4;
 		ColumnChartData data = new ColumnChartData();
 		List<Column> columns = new ArrayList<Column>(numColumns);
-		List<ColumnValue> values;
+		List<SubcolumnValue> values;
 		Column column;
 		for (int i = 1; i <= numColumns; ++i) {
-			values = new ArrayList<ColumnValue>(numColumns);
-			values.add(new ColumnValue(i));
+			values = new ArrayList<SubcolumnValue>(numColumns);
+			values.add(new SubcolumnValue(i));
 			column = new Column(values);
 			columns.add(column);
 		}

@@ -7,7 +7,7 @@ import lecho.lib.hellocharts.gesture.ZoomType;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
-import lecho.lib.hellocharts.model.ColumnValue;
+import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.Chart;
 import lecho.lib.hellocharts.view.ColumnChartView;
@@ -162,12 +162,12 @@ public class ColumnChartActivity extends ActionBarActivity {
 			int numColumns = 8;
 			// Column can have many subcolumns, here by default I use 1 subcolumn in each of 8 columns.
 			List<Column> columns = new ArrayList<Column>();
-			List<ColumnValue> values;
+			List<SubcolumnValue> values;
 			for (int i = 0; i < numColumns; ++i) {
 
-				values = new ArrayList<ColumnValue>();
+				values = new ArrayList<SubcolumnValue>();
 				for (int j = 0; j < numSubcolumns; ++j) {
-					values.add(new ColumnValue((float) Math.random() * 50f + 5, Utils.pickColor()));
+					values.add(new SubcolumnValue((float) Math.random() * 50f + 5, Utils.pickColor()));
 				}
 
 				Column column = new Column(values);
@@ -204,12 +204,12 @@ public class ColumnChartActivity extends ActionBarActivity {
 			int numColumns = 4;
 			// Column can have many subcolumns, here I use 4 subcolumn in each of 8 columns.
 			List<Column> columns = new ArrayList<Column>();
-			List<ColumnValue> values;
+			List<SubcolumnValue> values;
 			for (int i = 0; i < numColumns; ++i) {
 
-				values = new ArrayList<ColumnValue>();
+				values = new ArrayList<SubcolumnValue>();
 				for (int j = 0; j < numSubcolumns; ++j) {
-					values.add(new ColumnValue((float) Math.random() * 50f + 5, Utils.pickColor()));
+					values.add(new SubcolumnValue((float) Math.random() * 50f + 5, Utils.pickColor()));
 				}
 
 				Column column = new Column(values);
@@ -246,12 +246,12 @@ public class ColumnChartActivity extends ActionBarActivity {
 			int numColumns = 8;
 			// Column can have many stacked subcolumns, here I use 4 stacke subcolumn in each of 4 columns.
 			List<Column> columns = new ArrayList<Column>();
-			List<ColumnValue> values;
+			List<SubcolumnValue> values;
 			for (int i = 0; i < numColumns; ++i) {
 
-				values = new ArrayList<ColumnValue>();
+				values = new ArrayList<SubcolumnValue>();
 				for (int j = 0; j < numSubcolumns; ++j) {
-					values.add(new ColumnValue((float) Math.random() * 20f + 5, Utils.pickColor()));
+					values.add(new SubcolumnValue((float) Math.random() * 20f + 5, Utils.pickColor()));
 				}
 
 				Column column = new Column(values);
@@ -287,13 +287,13 @@ public class ColumnChartActivity extends ActionBarActivity {
 			int numSubcolumns = 4;
 			int numColumns = 4;
 			List<Column> columns = new ArrayList<Column>();
-			List<ColumnValue> values;
+			List<SubcolumnValue> values;
 			for (int i = 0; i < numColumns; ++i) {
 
-				values = new ArrayList<ColumnValue>();
+				values = new ArrayList<SubcolumnValue>();
 				for (int j = 0; j < numSubcolumns; ++j) {
 					int sign = getSign();
-					values.add(new ColumnValue((float) Math.random() * 50f * sign + 5 * sign, Utils.pickColor()));
+					values.add(new SubcolumnValue((float) Math.random() * 50f * sign + 5 * sign, Utils.pickColor()));
 				}
 
 				Column column = new Column(values);
@@ -327,13 +327,13 @@ public class ColumnChartActivity extends ActionBarActivity {
 			int numColumns = 8;
 			// Column can have many stacked subcolumns, here I use 4 stacke subcolumn in each of 4 columns.
 			List<Column> columns = new ArrayList<Column>();
-			List<ColumnValue> values;
+			List<SubcolumnValue> values;
 			for (int i = 0; i < numColumns; ++i) {
 
-				values = new ArrayList<ColumnValue>();
+				values = new ArrayList<SubcolumnValue>();
 				for (int j = 0; j < numSubcolumns; ++j) {
 					int sign = getSign();
-					values.add(new ColumnValue((float) Math.random() * 20f * sign + 5 * sign, Utils.pickColor()));
+					values.add(new SubcolumnValue((float) Math.random() * 20f * sign + 5 * sign, Utils.pickColor()));
 				}
 
 				Column column = new Column(values);
@@ -432,7 +432,7 @@ public class ColumnChartActivity extends ActionBarActivity {
 		 */
 		private void prepareDataAnimation() {
 			for (Column column : data.getColumns()) {
-				for (ColumnValue value : column.getValues()) {
+				for (SubcolumnValue value : column.getValues()) {
 					value.setTarget((float) Math.random() * 100);
 				}
 			}
@@ -441,13 +441,13 @@ public class ColumnChartActivity extends ActionBarActivity {
 		private class ValueTouchListener implements ColumnChartView.ColumnChartOnValueTouchListener {
 
 			@Override
-			public void onValueTouched(int selectedLine, int selectedValue, ColumnValue value) {
+			public void onValueTouched(int selectedLine, int selectedValue, SubcolumnValue value) {
 				Toast.makeText(getActivity(), "Selected: " + value, Toast.LENGTH_SHORT).show();
 
 			}
 
 			@Override
-			public void onNothingTouched() {
+			public void onValueDeselected() {
 				// TODO Auto-generated method stub
 
 			}

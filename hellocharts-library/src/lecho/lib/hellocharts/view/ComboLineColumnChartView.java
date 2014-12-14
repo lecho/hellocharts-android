@@ -3,7 +3,7 @@ package lecho.lib.hellocharts.view;
 import lecho.lib.hellocharts.BuildConfig;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.ColumnChartData;
-import lecho.lib.hellocharts.model.ColumnValue;
+import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.model.ComboLineColumnChartData;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
@@ -83,7 +83,7 @@ public class ComboLineColumnChartView extends AbstractChartView implements Combo
 
 			if (SelectedValueType.COLUMN.equals(selectedValue.getType())) {
 
-				ColumnValue value = data.getColumnChartData().getColumns().get(selectedValue.getFirstIndex())
+				SubcolumnValue value = data.getColumnChartData().getColumns().get(selectedValue.getFirstIndex())
 						.getValues().get(selectedValue.getSecondIndex());
 				onValueTouchListener.onColumnValueTouched(selectedValue.getFirstIndex(),
 						selectedValue.getSecondIndex(), value);
@@ -99,7 +99,7 @@ public class ComboLineColumnChartView extends AbstractChartView implements Combo
 				throw new IllegalArgumentException("Invalid selected value type " + selectedValue.getType().name());
 			}
 		} else {
-			onValueTouchListener.onNothingTouched();
+			onValueTouchListener.onValueDeselected();
 		}
 	}
 
@@ -116,21 +116,21 @@ public class ComboLineColumnChartView extends AbstractChartView implements Combo
 	}
 
 	public interface ComboLineColumnChartOnValueTouchListener {
-		public void onColumnValueTouched(int selectedLine, int selectedValue, ColumnValue value);
+		public void onColumnValueTouched(int selectedLine, int selectedValue, SubcolumnValue value);
 
 		public void onPointValueTouched(int selectedLine, int selectedValue, PointValue value);
 
-		public void onNothingTouched();
+		public void onValueDeselected();
 	}
 
 	private static class DummyOnValueTouchListener implements ComboLineColumnChartOnValueTouchListener {
 
 		@Override
-		public void onNothingTouched() {
+		public void onValueDeselected() {
 		}
 
 		@Override
-		public void onColumnValueTouched(int selectedLine, int selectedValue, ColumnValue value) {
+		public void onColumnValueTouched(int selectedLine, int selectedValue, SubcolumnValue value) {
 
 		}
 

@@ -8,20 +8,23 @@ import lecho.lib.hellocharts.view.Chart;
 /**
  * Single column for ColumnChart. One column can be divided into multiple sub-columns(ColumnValues) especially for
  * stacked ColumnChart.
- * 
+ *
+ * Note: you can set X value for columns or sub-columns, columns are by default indexed from 0 to numOfColumns-1 and
+ * column index is used as column X value, so first column has X value 0, second clumn has X value 1 etc.
+ * If you want to display AxisValue for given column you should initialize AxisValue with X value of that column.
  */
 public class Column {
 	private boolean hasLabels = false;
 	private boolean hasLabelsOnlyForSelected = false;
 	private ValueFormatter formatter = new SimpleValueFormatter();
 	// TODO: consider Collections.emptyList()
-	private List<ColumnValue> values = new ArrayList<ColumnValue>();
+	private List<SubcolumnValue> values = new ArrayList<SubcolumnValue>();
 
 	public Column() {
 
 	}
 
-	public Column(List<ColumnValue> values) {
+	public Column(List<SubcolumnValue> values) {
 		setValues(values);
 	}
 
@@ -30,31 +33,31 @@ public class Column {
 		this.hasLabelsOnlyForSelected = column.hasLabelsOnlyForSelected;
 		this.formatter = column.formatter;
 
-		for (ColumnValue columnValue : column.values) {
-			this.values.add(new ColumnValue(columnValue));
+		for (SubcolumnValue columnValue : column.values) {
+			this.values.add(new SubcolumnValue(columnValue));
 		}
 	}
 
 	public void update(float scale) {
-		for (ColumnValue value : values) {
+		for (SubcolumnValue value : values) {
 			value.update(scale);
 		}
 
 	}
 
 	public void finish() {
-		for (ColumnValue value : values) {
+		for (SubcolumnValue value : values) {
 			value.finish();
 		}
 	}
 
-	public List<ColumnValue> getValues() {
+	public List<SubcolumnValue> getValues() {
 		return values;
 	}
 
-	public Column setValues(List<ColumnValue> values) {
+	public Column setValues(List<SubcolumnValue> values) {
 		if (null == values) {
-			this.values = new ArrayList<ColumnValue>();
+			this.values = new ArrayList<SubcolumnValue>();
 		} else {
 			this.values = values;
 		}

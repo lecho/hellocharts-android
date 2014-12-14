@@ -8,7 +8,7 @@ import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.AxisValue;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
-import lecho.lib.hellocharts.model.ColumnValue;
+import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
@@ -78,12 +78,12 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 
 			List<AxisValue> axisValues = new ArrayList<AxisValue>();
 			List<Column> columns = new ArrayList<Column>();
-			List<ColumnValue> values;
+			List<SubcolumnValue> values;
 			for (int i = 0; i < numColumns; ++i) {
 
-				values = new ArrayList<ColumnValue>();
+				values = new ArrayList<SubcolumnValue>();
 				for (int j = 0; j < numSubcolumns; ++j) {
-					values.add(new ColumnValue((float) Math.random() * 50f + 5, Utils.pickColor()));
+					values.add(new SubcolumnValue((float) Math.random() * 50f + 5, Utils.pickColor()));
 				}
 
                 axisValues.add(new AxisValue(i, months[i].toCharArray()));
@@ -176,13 +176,13 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 		private class ValueTouchListener implements ColumnChartView.ColumnChartOnValueTouchListener {
 
 			@Override
-			public void onValueTouched(int selectedLine, int selectedValue, ColumnValue value) {
+			public void onValueTouched(int selectedLine, int selectedValue, SubcolumnValue value) {
 				generateLineData(value.getColor(), 100);
 
 			}
 
 			@Override
-			public void onNothingTouched() {
+			public void onValueDeselected() {
 
 				generateLineData(Utils.COLOR_GREEN, 0);
 
