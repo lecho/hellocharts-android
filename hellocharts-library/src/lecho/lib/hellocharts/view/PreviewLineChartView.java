@@ -13,7 +13,7 @@ import android.util.Log;
 /**
  * Preview chart that can be used as overview for other LineChart. When you change Viewport of this chart, visible area
  * of other chart will change. For that you need also to use
- * {@link Chart#setViewportChangeListener(ViewportChangeListener)}
+ * {@link Chart#setViewportChangeListener(lecho.lib.hellocharts.ViewportChangeListener)}
  * 
  * @author Leszek Wach
  * 

@@ -294,7 +294,7 @@ public class ChartComputator {
 	 * Set maximum viewport to the same values as viewport passed in parameter. This method use deep copy so parameter
 	 * can be safely modified later.
 	 * 
-	 * @param viewport
+	 * @param maxViewport
 	 */
 	public void setMaxViewport(Viewport maxViewport) {
 		setMaxViewport(maxViewport.left, maxViewport.top, maxViewport.right, maxViewport.bottom);

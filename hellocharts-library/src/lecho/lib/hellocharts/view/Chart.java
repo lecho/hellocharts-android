@@ -158,7 +158,7 @@ public interface Chart {
 	public float getMaxZoom();
 
 	/**
-	 * Set max zoom value within range (1 - 20). Default maximum zoom is 20.
+	 * Set max zoom value >= 1. Default maximum zoom is 20.
 	 * 
 	 */
 	public void setMaxZoom(float maxZoom);
