@@ -2,12 +2,12 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
 buildscript {
-  repositories {
-    mavenCentral()
-  }
-  dependencies {
-    classpath 'com.android.tools.build:gradle:1.0.0'
-  }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.0.0'
+    }
 }
 
 dependencies {
@@ -28,8 +28,8 @@ android {
     defaultConfig {
         minSdkVersion 8
         targetSdkVersion 21
-        versionCode 2
-        versionName '1.1'
+        versionCode 3
+        versionName '1.3'
     }
 
     sourceSets {
@@ -43,23 +43,35 @@ android {
             assets.srcDirs = ['assets']
         }
     }
-	
-	 buildTypes {
-		release {
-			minifyEnabled false
-			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-		}
-	}
 
-	lintOptions {
-		abortOnError false
-	}
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
 
 }
 
 task androidSourcesJar(type: Jar) {
-	classifier = 'sources'
-	from android.sourceSets.main.java.sourceFiles
+    classifier = 'sources'
+    from android.sourceSets.main.java.sourceFiles
+}
+
+//Execute "gradle clean jarRelease" to cook jar.
+android.libraryVariants.all { variant ->
+    def name = variant.buildType.name
+    if (name.equals(com.android.builder.core.BuilderConstants.DEBUG)) {
+        return; // Skip debug builds.
+    }
+    def task = project.tasks.create "jar${name.capitalize()}", Jar
+    task.dependsOn variant.javaCompile
+    task.from variant.javaCompile.destinationDir
+    artifacts.add('archives', task);
 }
 
 // To publish to maven local execute "gradle clean build publishToMavenLocal"
@@ -72,13 +84,13 @@ publishing {
             artifactId project.name
             groupId "lecho.lib.hellocharts"
             version android.defaultConfig.versionName
-			
-			artifact androidSourcesJar {
+
+            artifact androidSourcesJar {
                 classifier "sources"
             }
         }
     }
-    
+
     repositories {
         maven {
             credentials {
