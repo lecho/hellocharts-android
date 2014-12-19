@@ -186,6 +186,10 @@ public abstract class Utils {
 				charCount++;
 			}
 		}
+        if (formattedValue[index + 1] == separator) {
+            formattedValue[index--] = '0';
+            charCount++;
+        }
 		if (negative) {
 			formattedValue[index--] = '-';
 			charCount++;
