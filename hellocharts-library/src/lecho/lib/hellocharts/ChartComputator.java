@@ -1,5 +1,7 @@
 package lecho.lib.hellocharts;
 
+import lecho.lib.hellocharts.listener.DummyVieportChangeListener;
+import lecho.lib.hellocharts.listener.ViewportChangeListener;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.Chart;
 import android.graphics.Point;
