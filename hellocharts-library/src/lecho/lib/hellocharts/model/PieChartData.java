@@ -1,25 +1,25 @@
 package lecho.lib.hellocharts.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import lecho.lib.hellocharts.formatter.SimpleValueFormatter;
-import lecho.lib.hellocharts.formatter.ValueFormatter;
-import lecho.lib.hellocharts.view.Chart;
-import lecho.lib.hellocharts.view.PieChartView;
 import android.graphics.Color;
 import android.graphics.Typeface;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import lecho.lib.hellocharts.formatter.PieChartValueFormatter;
+import lecho.lib.hellocharts.formatter.SimplePieChartValueFormatter;
+import lecho.lib.hellocharts.view.Chart;
+import lecho.lib.hellocharts.view.PieChartView;
+
 /**
  * Data for PieChart, by default it doesn't have axes.
- * 
  */
 public class PieChartData extends AbstractChartData {
 	public static final int DEFAULT_CENTER_TEXT1_SIZE_SP = 42;
 	public static final int DEFAULT_CENTER_TEXT2_SIZE_SP = 16;
 	public static final float DEFAULT_CENTER_CIRCLE_SCALE = 0.6f;
 
-	private ValueFormatter formatter = new SimpleValueFormatter();
+	private PieChartValueFormatter formatter = new SimplePieChartValueFormatter();
 	private boolean hasLabels = false;
 	private boolean hasLabelsOnlyForSelected = false;
 	private boolean hasLabelsOutside = false;
@@ -43,7 +43,9 @@ public class PieChartData extends AbstractChartData {
 	public PieChartData() {
 		setAxisXBottom(null);
 		setAxisYLeft(null);
-	};
+	}
+
+	;
 
 	public PieChartData(List<ArcValue> values) {
 		setValues(values);
@@ -256,14 +258,12 @@ public class PieChartData extends AbstractChartData {
 		this.centerText2Typeface = text2Typeface;
 	}
 
-	public ValueFormatter getFormatter() {
+	public PieChartValueFormatter getFormatter() {
 		return formatter;
 	}
 
-	public PieChartData setFormatter(ValueFormatter formatter) {
-		if (null == formatter) {
-			this.formatter = new SimpleValueFormatter();
-		} else {
+	public PieChartData setFormatter(PieChartValueFormatter formatter) {
+		if (null != formatter) {
 			this.formatter = formatter;
 		}
 		return this;

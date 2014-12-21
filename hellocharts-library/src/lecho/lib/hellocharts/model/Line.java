@@ -1,13 +1,14 @@
 package lecho.lib.hellocharts.model;
 
+import android.graphics.PathEffect;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import lecho.lib.hellocharts.formatter.SimpleValueFormatter;
-import lecho.lib.hellocharts.formatter.ValueFormatter;
+import lecho.lib.hellocharts.formatter.LineChartValueFormatter;
+import lecho.lib.hellocharts.formatter.SimpleLineChartValueFormatter;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.Chart;
-import android.graphics.PathEffect;
 
 /**
  * Single line for line chart.
@@ -31,7 +32,7 @@ public class Line {
 	private boolean isFilled = false;
 	private ValueShape shape = ValueShape.CIRCLE;
 	private PathEffect pathEffect;
-	private ValueFormatter formatter = new SimpleValueFormatter();
+	private LineChartValueFormatter formatter = new SimpleLineChartValueFormatter();
 	private List<PointValue> values = new ArrayList<PointValue>();
 
 	public Line() {
@@ -242,14 +243,12 @@ public class Line {
 		this.pathEffect = pathEffect;
 	}
 
-	public ValueFormatter getFormatter() {
+	public LineChartValueFormatter getFormatter() {
 		return formatter;
 	}
 
-	public Line setFormatter(ValueFormatter formatter) {
-		if (null == formatter) {
-			this.formatter = new SimpleValueFormatter();
-		} else {
+	public Line setFormatter(LineChartValueFormatter formatter) {
+		if (null != formatter) {
 			this.formatter = formatter;
 		}
 		return this;

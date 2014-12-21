@@ -1,14 +1,5 @@
 package lecho.lib.hellocharts.renderer;
 
-import lecho.lib.hellocharts.ChartComputator;
-import lecho.lib.hellocharts.model.Line;
-import lecho.lib.hellocharts.model.LineChartData;
-import lecho.lib.hellocharts.model.PointValue;
-import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
-import lecho.lib.hellocharts.model.ValueShape;
-import lecho.lib.hellocharts.provider.LineChartDataProvider;
-import lecho.lib.hellocharts.util.Utils;
-import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -20,12 +11,20 @@ import android.graphics.PathEffect;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
 
+import lecho.lib.hellocharts.ChartComputator;
+import lecho.lib.hellocharts.model.Line;
+import lecho.lib.hellocharts.model.LineChartData;
+import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
+import lecho.lib.hellocharts.model.ValueShape;
+import lecho.lib.hellocharts.provider.LineChartDataProvider;
+import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.view.Chart;
+
 /**
- * 
  * Renderer for line chart. Can draw lines, cubic lines, filled area chart and scattered chart.
- * 
+ *
  * @author Leszek Wach
- * 
  */
 public class LineChartRenderer extends AbstractChartRenderer {
 	private static final float LINE_SMOOTHNES = 0.16f;
@@ -45,7 +44,6 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private Path path = new Path();
 	private Paint linePaint = new Paint();
 	private Paint pointPaint = new Paint();
-	private float[] valuesBuff = new float[2];
 
 	/**
 	 * Not hardware accelerated bitmap used to draw Path(smooth lines and filled area). Bitmap has size of contentRect
@@ -392,7 +390,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void highlightPoint(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY, int lineIndex,
-			int valueIndex) {
+								int valueIndex) {
 		if (selectedValue.getFirstIndex() == lineIndex && selectedValue.getSecondIndex() == valueIndex) {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
 			pointPaint.setColor(line.getDarkenColor());
@@ -406,11 +404,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private void drawLabel(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY, float offset) {
 		final ChartComputator computator = chart.getChartComputator();
 		final Rect contentRect = computator.getContentRect();
-		valuesBuff[0] = pointValue.getX();
-		valuesBuff[1] = pointValue.getY();
-
-		final int numChars = line.getFormatter().formatValue(labelBuffer, valuesBuff, pointValue.getLabel());
-
+		final int numChars = line.getFormatter().formatChartValue(labelBuffer, pointValue);
 		if (numChars == 0) {
 			// No need to draw empty label
 			return;

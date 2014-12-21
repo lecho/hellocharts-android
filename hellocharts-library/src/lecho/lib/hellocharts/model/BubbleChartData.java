@@ -3,18 +3,17 @@ package lecho.lib.hellocharts.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import lecho.lib.hellocharts.formatter.SimpleValueFormatter;
-import lecho.lib.hellocharts.formatter.ValueFormatter;
+import lecho.lib.hellocharts.formatter.BubbleChartValueFormatter;
+import lecho.lib.hellocharts.formatter.SimpleBubbleChartValueFormatter;
 import lecho.lib.hellocharts.view.Chart;
 
 /**
  * Data for BubbleChart.
- * 
  */
 public class BubbleChartData extends AbstractChartData {
 	public static final int DEFAULT_MIN_BUBBLE_RADIUS_DP = 6;
 	public static final float DEFAULT_BUBBLE_SCALE = 1f;
-	private ValueFormatter formatter = new SimpleValueFormatter();
+	private BubbleChartValueFormatter formatter = new SimpleBubbleChartValueFormatter();
 	private boolean hasLabels = false;
 	private boolean hasLabelsOnlyForSelected = false;
 	private int minBubbleRadius = DEFAULT_MIN_BUBBLE_RADIUS_DP;
@@ -23,7 +22,7 @@ public class BubbleChartData extends AbstractChartData {
 	private List<BubbleValue> values = new ArrayList<BubbleValue>();
 
 	public BubbleChartData() {
-	};
+	}
 
 	public BubbleChartData(List<BubbleValue> values) {
 		setValues(values);
@@ -105,7 +104,7 @@ public class BubbleChartData extends AbstractChartData {
 
 	/**
 	 * Returns minimal bubble radius in dp.
-	 * 
+	 *
 	 * @see #setMinBubbleRadius(int)
 	 */
 	public int getMinBubbleRadius() {
@@ -122,7 +121,7 @@ public class BubbleChartData extends AbstractChartData {
 
 	/**
 	 * Returns bubble scale which is used to adjust bubble size.
-	 * 
+	 *
 	 * @see #setBubbleScale(float)
 	 */
 	public float getBubbleScale() {
@@ -137,14 +136,12 @@ public class BubbleChartData extends AbstractChartData {
 		this.bubbleScale = bubbleScale;
 	}
 
-	public ValueFormatter getFormatter() {
+	public BubbleChartValueFormatter getFormatter() {
 		return formatter;
 	}
 
-	public BubbleChartData setFormatter(ValueFormatter formatter) {
-		if (null == formatter) {
-			this.formatter = new SimpleValueFormatter();
-		} else {
+	public BubbleChartData setFormatter(BubbleChartValueFormatter formatter) {
+		if (null != formatter) {
 			this.formatter = formatter;
 		}
 		return this;

@@ -1,0 +1,12 @@
+package lecho.lib.hellocharts.formatter;
+
+import lecho.lib.hellocharts.model.ArcValue;
+
+
+public class SimplePieChartValueFormatter extends AbstractValueFormatter implements PieChartValueFormatter {
+
+	@Override
+	public int formatChartValue(char[] formattedValue, ArcValue value) {
+		return super.formatFloatValueWithPrependedAndAppendedText(formattedValue, value.getValue(), value.getLabel());
+	}
+}

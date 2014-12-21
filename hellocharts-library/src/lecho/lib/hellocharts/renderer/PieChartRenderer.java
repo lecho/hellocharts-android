@@ -1,13 +1,5 @@
 package lecho.lib.hellocharts.renderer;
 
-import lecho.lib.hellocharts.model.ArcValue;
-import lecho.lib.hellocharts.model.PieChartData;
-import lecho.lib.hellocharts.model.SelectedValue;
-import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
-import lecho.lib.hellocharts.formatter.ValueFormatter;
-import lecho.lib.hellocharts.provider.PieChartDataProvider;
-import lecho.lib.hellocharts.util.Utils;
-import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -17,6 +9,15 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.text.TextUtils;
+
+import lecho.lib.hellocharts.formatter.PieChartValueFormatter;
+import lecho.lib.hellocharts.model.ArcValue;
+import lecho.lib.hellocharts.model.PieChartData;
+import lecho.lib.hellocharts.model.SelectedValue;
+import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
+import lecho.lib.hellocharts.provider.PieChartDataProvider;
+import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.view.Chart;
 
 /**
  * Default renderer for PieChart. PieChart doesn't use viewport concept so it a little different than others chart
@@ -38,7 +39,6 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	private RectF orginCircleOval = new RectF();
 	private RectF drawCircleOval = new RectF();
 	private PointF arcVector = new PointF();
-	private float[] valuesBuff = new float[1];
 
 	private int touchAdditional;
 	private int rotation = DEFAULT_START_ROTATION;
@@ -58,7 +58,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	private boolean hasLabelsOutside;
 	private boolean hasLabels;
 	private boolean hasLabelsOnlyForSelected;
-	private ValueFormatter valueFormatter;
+	private PieChartValueFormatter valueFormatter;
 
 	public PieChartRenderer(Context context, Chart chart, PieChartDataProvider dataProvider) {
 		super(context, chart);
@@ -211,7 +211,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	/**
 	 * Draw all arcs for this PieChart, if mode == {@link #MODE_HIGHLIGHT} currently selected arc will be redrawn and
 	 * highlighted.
-	 * 
+	 *
 	 * @param canvas
 	 * @param mode
 	 */
@@ -273,8 +273,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void drawLabel(Canvas canvas, ArcValue arcValue) {
-		valuesBuff[0] = arcValue.getValue();
-		final int numChars = valueFormatter.formatValue(labelBuffer, valuesBuff, arcValue.getLabel());
+		final int numChars = valueFormatter.formatChartValue(labelBuffer, arcValue);
 
 		if (numChars == 0) {
 			// No need to draw empty label
@@ -388,10 +387,9 @@ public class PieChartRenderer extends AbstractChartRenderer {
 
 	/**
 	 * No margin for this chart. Margin will be calculated with CircleOval.
-	 * 
-	 * @see #calculateCircleOval()
-	 * 
+	 *
 	 * @return
+	 * @see #calculateCircleOval()
 	 */
 	private int calculateContentAreaMargin() {
 		return 0;

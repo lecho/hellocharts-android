@@ -3,14 +3,14 @@ package lecho.lib.hellocharts.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import lecho.lib.hellocharts.formatter.SimpleValueFormatter;
-import lecho.lib.hellocharts.formatter.ValueFormatter;
+import lecho.lib.hellocharts.formatter.ColumnChartValueFormatter;
+import lecho.lib.hellocharts.formatter.SimpleColumnChartValueFormatter;
 import lecho.lib.hellocharts.view.Chart;
 
 /**
  * Single column for ColumnChart. One column can be divided into multiple sub-columns(ColumnValues) especially for
  * stacked ColumnChart.
- *
+ * <p/>
  * Note: you can set X value for columns or sub-columns, columns are by default indexed from 0 to numOfColumns-1 and
  * column index is used as column X value, so first column has X value 0, second clumn has X value 1 etc.
  * If you want to display AxisValue for given column you should initialize AxisValue with X value of that column.
@@ -18,7 +18,7 @@ import lecho.lib.hellocharts.view.Chart;
 public class Column {
 	private boolean hasLabels = false;
 	private boolean hasLabelsOnlyForSelected = false;
-	private ValueFormatter formatter = new SimpleValueFormatter();
+	private ColumnChartValueFormatter formatter = new SimpleColumnChartValueFormatter();
 	// TODO: consider Collections.emptyList()
 	private List<SubcolumnValue> values = new ArrayList<SubcolumnValue>();
 
@@ -97,14 +97,12 @@ public class Column {
 		return this;
 	}
 
-	public ValueFormatter getFormatter() {
+	public ColumnChartValueFormatter getFormatter() {
 		return formatter;
 	}
 
-	public Column setFormatter(ValueFormatter formatter) {
-		if (null == formatter) {
-			this.formatter = new SimpleValueFormatter();
-		} else {
+	public Column setFormatter(ColumnChartValueFormatter formatter) {
+		if (null != formatter) {
 			this.formatter = formatter;
 		}
 		return this;

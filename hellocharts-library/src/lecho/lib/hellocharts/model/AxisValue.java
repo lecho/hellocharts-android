@@ -10,7 +10,7 @@ public class AxisValue {
 	private char[] label;
 
 	public AxisValue(float value) {
-		this.value = value;
+		setValue(value);
 	}
 
 	public AxisValue(float value, char[] label) {

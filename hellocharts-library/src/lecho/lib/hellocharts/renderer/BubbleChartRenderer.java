@@ -1,21 +1,22 @@
 package lecho.lib.hellocharts.renderer;
 
-import lecho.lib.hellocharts.ChartComputator;
-import lecho.lib.hellocharts.model.BubbleChartData;
-import lecho.lib.hellocharts.model.BubbleValue;
-import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
-import lecho.lib.hellocharts.formatter.ValueFormatter;
-import lecho.lib.hellocharts.model.ValueShape;
-import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.provider.BubbleChartDataProvider;
-import lecho.lib.hellocharts.util.Utils;
-import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
+
+import lecho.lib.hellocharts.ChartComputator;
+import lecho.lib.hellocharts.formatter.BubbleChartValueFormatter;
+import lecho.lib.hellocharts.model.BubbleChartData;
+import lecho.lib.hellocharts.model.BubbleValue;
+import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
+import lecho.lib.hellocharts.model.ValueShape;
+import lecho.lib.hellocharts.model.Viewport;
+import lecho.lib.hellocharts.provider.BubbleChartDataProvider;
+import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.view.Chart;
 
 public class BubbleChartRenderer extends AbstractChartRenderer {
 	private static final int DEFAULT_TOUCH_ADDITIONAL_DP = 4;
@@ -24,7 +25,9 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 
 	private BubbleChartDataProvider dataProvider;
 
-	/** Additional value added to bubble radius when drawing highlighted bubble, used to give tauch feedback. */
+	/**
+	 * Additional value added to bubble radius when drawing highlighted bubble, used to give tauch feedback.
+	 */
 	private int touchAdditional;
 
 	/**
@@ -51,7 +54,6 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	private float minRawRadius;
 	private PointF bubbleCenter = new PointF();
 	private Paint bubblePaint = new Paint();
-	private float[] valuesBuff = new float[3];
 
 	/**
 	 * Rect used for drawing bubbles with SHAPE_SQUARE.
@@ -60,7 +62,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 
 	private boolean hasLabels;
 	private boolean hasLabelsOnlyForSelected;
-	private ValueFormatter valueFormatter;
+	private BubbleChartValueFormatter valueFormatter;
 
 	public BubbleChartRenderer(Context context, Chart chart, BubbleChartDataProvider dataProvider) {
 		super(context, chart);
@@ -151,7 +153,6 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	 * 1:1 and bubbles have to be drawn as circles not ellipses I am unable to calculate correct margins based on chart
 	 * data only. I need to know chart dimension to remove extra empty spaces, that bad because viewport depends a
 	 * little on contentRect.
-	 * 
 	 */
 	public void removeMargins() {
 		final ChartComputator computator = chart.getChartComputator();
@@ -234,12 +235,6 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	/**
 	 * Calculate bubble radius and center x and y coordinates. Center x and x will be stored in point parameter, radius
 	 * will be returned as float value.
-	 * 
-	 * @param computator
-	 * @param data
-	 * @param bubbleValue
-	 * @param point
-	 * @return
 	 */
 	private float processBubble(BubbleValue bubbleValue, PointF point) {
 		final ChartComputator computator = chart.getChartComputator();
@@ -270,10 +265,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	private void drawLabel(Canvas canvas, BubbleValue bubbleValue, float rawX, float rawY) {
 		final ChartComputator computator = chart.getChartComputator();
 		final Rect contentRect = computator.getContentRect();
-		valuesBuff[0] = bubbleValue.getX();
-		valuesBuff[1] = bubbleValue.getY();
-		valuesBuff[2] = bubbleValue.getZ();
-		final int numChars = valueFormatter.formatValue(labelBuffer, valuesBuff, bubbleValue.getLabel());
+		final int numChars = valueFormatter.formatChartValue(labelBuffer, bubbleValue);
 
 		if (numChars == 0) {
 			// No need to draw empty label

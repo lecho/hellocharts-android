@@ -85,7 +85,6 @@ public class Axis {
 	/**
 	 * Creates auto-generated axis without name and with default formatter.
 	 *
-	 * @see lecho.lib.hellocharts.formatter.SimpleValueFormatter
 	 */
 	public Axis() {
 	}

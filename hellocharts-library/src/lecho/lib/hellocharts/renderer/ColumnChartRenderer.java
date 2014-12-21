@@ -1,13 +1,5 @@
 package lecho.lib.hellocharts.renderer;
 
-import lecho.lib.hellocharts.ChartComputator;
-import lecho.lib.hellocharts.model.Column;
-import lecho.lib.hellocharts.model.ColumnChartData;
-import lecho.lib.hellocharts.model.SubcolumnValue;
-import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
-import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
-import lecho.lib.hellocharts.util.Utils;
-import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -15,9 +7,17 @@ import android.graphics.Paint.Cap;
 import android.graphics.PointF;
 import android.graphics.RectF;
 
+import lecho.lib.hellocharts.ChartComputator;
+import lecho.lib.hellocharts.model.Column;
+import lecho.lib.hellocharts.model.ColumnChartData;
+import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
+import lecho.lib.hellocharts.model.SubcolumnValue;
+import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
+import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.view.Chart;
+
 /**
  * Magic renderer for ColumnChart.
- * 
  */
 public class ColumnChartRenderer extends AbstractChartRenderer {
 	public static final int DEFAULT_SUBCOLUMN_SPACING_DP = 1;
@@ -29,23 +29,30 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 
 	private ColumnChartDataProvider dataProvider;
 
-	/** Additional width for hightlighted column, used to give tauch feedback. */
+	/**
+	 * Additional width for hightlighted column, used to give tauch feedback.
+	 */
 	private int touchAdditionalWidth;
 
-	/** Spacing between sub-columns. */
+	/**
+	 * Spacing between sub-columns.
+	 */
 	private int subcolumnSpacing;
 
-	/** Paint used to draw every column. */
+	/**
+	 * Paint used to draw every column.
+	 */
 	private Paint columnPaint = new Paint();
 
-	/** Holds coordinates for currently processed column/sub-column. */
+	/**
+	 * Holds coordinates for currently processed column/sub-column.
+	 */
 	private RectF drawRect = new RectF();
 
-	/** Coordinated of user tauch. */
+	/**
+	 * Coordinated of user tauch.
+	 */
 	private PointF touchedPoint = new PointF();
-
-	/** Used to pass tauched value to tauch listener. */
-	private float[] valuesBuff = new float[1];
 
 	private float fillRatio;
 
@@ -219,19 +226,19 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 			final float rawY = computator.computeRawY(columnValue.getValue());
 			calculateRectToDraw(columnValue, subcolumnRawX, subcolumnRawX + subcolumnWidth, baseRawY, rawY);
 			switch (mode) {
-			case MODE_DRAW:
-				drawSubcolumn(canvas, column, columnValue, false);
-				break;
-			case MODE_HIGHLIGHT:
-				highlightSubcolumn(canvas, column, columnValue, valueIndex, false);
-				break;
-			case MODE_CHECK_TOUCH:
-				checkRectToDraw(columnIndex, valueIndex);
-				break;
-			default:
-				// There no else, every case should be handled or exception will
-				// be thrown
-				throw new IllegalStateException("Cannot process column in mode: " + mode);
+				case MODE_DRAW:
+					drawSubcolumn(canvas, column, columnValue, false);
+					break;
+				case MODE_HIGHLIGHT:
+					highlightSubcolumn(canvas, column, columnValue, valueIndex, false);
+					break;
+				case MODE_CHECK_TOUCH:
+					checkRectToDraw(columnIndex, valueIndex);
+					break;
+				default:
+					// There no else, every case should be handled or exception will
+					// be thrown
+					throw new IllegalStateException("Cannot process column in mode: " + mode);
 			}
 			subcolumnRawX += subcolumnWidth + subcolumnSpacing;
 			++valueIndex;
@@ -293,19 +300,19 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 			final float rawY = computator.computeRawY(subcolumnBaseValue + columnValue.getValue());
 			calculateRectToDraw(columnValue, rawX - halfColumnWidth, rawX + halfColumnWidth, rawBaseY, rawY);
 			switch (mode) {
-			case MODE_DRAW:
-				drawSubcolumn(canvas, column, columnValue, true);
-				break;
-			case MODE_HIGHLIGHT:
-				highlightSubcolumn(canvas, column, columnValue, valueIndex, true);
-				break;
-			case MODE_CHECK_TOUCH:
-				checkRectToDraw(columnIndex, valueIndex);
-				break;
-			default:
-				// There no else, every case should be handled or exception will
-				// be thrown
-				throw new IllegalStateException("Cannot process column in mode: " + mode);
+				case MODE_DRAW:
+					drawSubcolumn(canvas, column, columnValue, true);
+					break;
+				case MODE_HIGHLIGHT:
+					highlightSubcolumn(canvas, column, columnValue, valueIndex, true);
+					break;
+				case MODE_CHECK_TOUCH:
+					checkRectToDraw(columnIndex, valueIndex);
+					break;
+				default:
+					// There no else, every case should be handled or exception will
+					// be thrown
+					throw new IllegalStateException("Cannot process column in mode: " + mode);
 			}
 			++valueIndex;
 		}
@@ -319,7 +326,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void highlightSubcolumn(Canvas canvas, Column column, SubcolumnValue columnValue, int valueIndex,
-			boolean isStacked) {
+									boolean isStacked) {
 		if (selectedValue.getSecondIndex() == valueIndex) {
 			columnPaint.setColor(columnValue.getDarkenColor());
 			canvas.drawRect(drawRect.left - touchAdditionalWidth, drawRect.top, drawRect.right + touchAdditionalWidth,
@@ -361,8 +368,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 
 	private void drawLabel(Canvas canvas, Column column, SubcolumnValue columnValue, boolean isStacked, float offset) {
 		final ChartComputator computator = chart.getChartComputator();
-		valuesBuff[0] = columnValue.getValue();
-		final int numChars = column.getFormatter().formatValue(labelBuffer, valuesBuff, columnValue.getLabel());
+		final int numChars = column.getFormatter().formatChartValue(labelBuffer, columnValue);
 
 		if (numChars == 0) {
 			// No need to draw empty label
