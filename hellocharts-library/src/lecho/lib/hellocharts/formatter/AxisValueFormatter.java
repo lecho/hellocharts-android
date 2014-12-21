@@ -1,5 +1,7 @@
-package lecho.lib.hellocharts.model;
+package lecho.lib.hellocharts.formatter;
 
+
+import lecho.lib.hellocharts.model.AxisValue;
 
 public interface AxisValueFormatter {
 

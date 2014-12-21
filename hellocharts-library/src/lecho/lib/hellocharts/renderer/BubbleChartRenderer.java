@@ -4,7 +4,7 @@ import lecho.lib.hellocharts.ChartComputator;
 import lecho.lib.hellocharts.model.BubbleChartData;
 import lecho.lib.hellocharts.model.BubbleValue;
 import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
-import lecho.lib.hellocharts.model.ValueFormatter;
+import lecho.lib.hellocharts.formatter.ValueFormatter;
 import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.provider.BubbleChartDataProvider;

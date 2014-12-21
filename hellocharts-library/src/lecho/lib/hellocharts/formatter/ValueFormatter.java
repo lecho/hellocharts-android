@@ -1,4 +1,4 @@
-package lecho.lib.hellocharts.model;
+package lecho.lib.hellocharts.formatter;
 
 /**
  * Interface for all value formatters used for axes and value labels. Implementations of this interface should be fast,

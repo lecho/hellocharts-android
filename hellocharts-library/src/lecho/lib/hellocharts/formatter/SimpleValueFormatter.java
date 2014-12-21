@@ -1,4 +1,4 @@
-package lecho.lib.hellocharts.model;
+package lecho.lib.hellocharts.formatter;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;

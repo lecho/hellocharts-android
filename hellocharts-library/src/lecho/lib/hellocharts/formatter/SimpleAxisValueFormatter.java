@@ -1,8 +1,9 @@
-package lecho.lib.hellocharts.model;
+package lecho.lib.hellocharts.formatter;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
+import lecho.lib.hellocharts.model.AxisValue;
 import lecho.lib.hellocharts.util.Utils;
 
 public class SimpleAxisValueFormatter implements AxisValueFormatter {

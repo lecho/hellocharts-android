@@ -3,6 +3,8 @@ package lecho.lib.hellocharts.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import lecho.lib.hellocharts.formatter.SimpleValueFormatter;
+import lecho.lib.hellocharts.formatter.ValueFormatter;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.Chart;
 import android.graphics.PathEffect;
