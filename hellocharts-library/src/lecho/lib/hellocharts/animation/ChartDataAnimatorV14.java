@@ -1,6 +1,5 @@
 package lecho.lib.hellocharts.animation;
 
-import lecho.lib.hellocharts.DummyChartAnimationListener;
 import lecho.lib.hellocharts.view.Chart;
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;

@@ -1,4 +1,4 @@
-package lecho.lib.hellocharts;
+package lecho.lib.hellocharts.animation;
 
 import lecho.lib.hellocharts.animation.ChartAnimationListener;
 
