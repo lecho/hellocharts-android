@@ -1,6 +1,6 @@
 package lecho.lib.hellocharts.view;
 
-import lecho.lib.hellocharts.ChartComputator;
+import lecho.lib.hellocharts.computator.ChartComputator;
 import lecho.lib.hellocharts.listener.ViewportChangeListener;
 import lecho.lib.hellocharts.animation.ChartAnimationListener;
 import lecho.lib.hellocharts.gesture.ChartTouchHandler;

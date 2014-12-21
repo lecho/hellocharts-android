@@ -1,6 +1,6 @@
 package lecho.lib.hellocharts.renderer;
 
-import lecho.lib.hellocharts.ChartComputator;
+import lecho.lib.hellocharts.computator.ChartComputator;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.AxisValue;
 import lecho.lib.hellocharts.model.Viewport;

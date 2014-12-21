@@ -1,4 +1,4 @@
-package lecho.lib.hellocharts;
+package lecho.lib.hellocharts.computator;
 
 import lecho.lib.hellocharts.listener.DummyVieportChangeListener;
 import lecho.lib.hellocharts.listener.ViewportChangeListener;

@@ -1,6 +1,6 @@
 package lecho.lib.hellocharts.gesture;
 
-import lecho.lib.hellocharts.ChartComputator;
+import lecho.lib.hellocharts.computator.ChartComputator;
 import lecho.lib.hellocharts.gesture.ChartScroller.ScrollResult;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.renderer.ChartRenderer;

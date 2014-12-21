@@ -1,5 +1,6 @@
-package lecho.lib.hellocharts;
+package lecho.lib.hellocharts.computator;
 
+import lecho.lib.hellocharts.computator.ChartComputator;
 import lecho.lib.hellocharts.model.Viewport;
 
 /**

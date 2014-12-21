@@ -7,7 +7,7 @@ import android.graphics.Paint.Cap;
 import android.graphics.PointF;
 import android.graphics.RectF;
 
-import lecho.lib.hellocharts.ChartComputator;
+import lecho.lib.hellocharts.computator.ChartComputator;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;

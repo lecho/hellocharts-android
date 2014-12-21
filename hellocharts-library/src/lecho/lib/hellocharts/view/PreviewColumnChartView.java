@@ -1,7 +1,7 @@
 package lecho.lib.hellocharts.view;
 
 import lecho.lib.hellocharts.BuildConfig;
-import lecho.lib.hellocharts.PreviewChartComputator;
+import lecho.lib.hellocharts.computator.PreviewChartComputator;
 import lecho.lib.hellocharts.gesture.PreviewChartTouchHandler;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.renderer.PreviewColumnChartRenderer;
