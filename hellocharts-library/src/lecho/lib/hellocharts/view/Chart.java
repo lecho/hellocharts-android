@@ -134,9 +134,17 @@ public interface Chart {
 	 * Move/Srcoll viewport to position x,y(that position must be within maximum chart viewport). If possible viewport
 	 * will be centered at this point. Width and height of viewport will not be modified.
 	 * 
-	 * @see #setCurrentViewport(Viewport, boolean);
+	 * @see #setCurrentViewport(Viewport);
 	 */
-	public void moveTo(float x, float y, boolean isAnimated);
+	public void moveTo(float x, float y);
+
+	/**
+	 * Animate viewport to position x,y(that position must be within maximum chart viewport). If possible viewport
+	 * will be centered at this point. Width and height of viewport will not be modified.
+	 *
+	 * @see #setCurrentViewport(Viewport);
+	 */
+	public void moveToWithAnimation(float x, float y);
 
 	/**
 	 * Returns current zoom type for this chart.
@@ -176,11 +184,21 @@ public interface Chart {
 	 * @param y
 	 *            y within chart maximum viewport
 	 * @param zoomLevel
-	 *            value from 1 to maxZoom(default 20). 1 means chart has no zoom, 20 means chart has maximum zoom.
-	 * @param isAnimated
-	 *            set true if zoom should be animated.
+	 *            value from 1 to maxZoom(default 20). 1 means chart has no zoom.
 	 */
-	public void setZoomLevel(float x, float y, float zoomLevel, boolean isAnimated);
+	public void setZoomLevel(float x, float y, float zoomLevel);
+
+	/**
+	 * Programatically zoom chart to given point(viewport point) with animation. Call this method after chart data had been set.
+	 *
+	 * @param x
+	 *            x within chart maximum viewport
+	 * @param y
+	 *            y within chart maximum viewport
+	 * @param zoomLevel
+	 *            value from 1 to maxZoom(default 20). 1 means chart has no zoom.
+	 */
+	public void setZoomLevelWithAnimation(float x, float y, float zoomLevel);
 
 	/**
 	 * Return true if chart value can be touched.
@@ -211,18 +229,25 @@ public interface Chart {
 	public void setMaximumViewport(Viewport maxViewport);
 
 	/**
-	 * Returns current viewport. Don't modify it directly, use {@link #setCurrentViewport(Viewport, boolean)} instead.
+	 * Returns current viewport. Don't modify it directly, use {@link #setCurrentViewport(Viewport)} instead.
 	 * 
-	 * @see #setCurrentViewport(Viewport, boolean)
+	 * @see #setCurrentViewport(Viewport)
 	 */
 	public Viewport getCurrentViewport();
 
 	/**
-	 * Sets current viewport. If isAnimated is true chart will be animated during viewport changes.
-	 * 
+	 * Sets current viewport.
+	 *
 	 * Note. viewport have to be set after chartData has been set.
 	 */
-	public void setCurrentViewport(Viewport targetViewport, boolean isAnimated);
+	public void setCurrentViewport(Viewport targetViewport);
+
+	/**
+	 * Sets current viewport with animation.
+	 *
+	 * Note. viewport have to be set after chartData has been set.
+	 */
+	public void setCurrentViewportWithAnimation(Viewport targetViewport);
 
 	/**
 	 * Reset maximum viewport and current viewport. Values for both viewports will be auto-calculated using current

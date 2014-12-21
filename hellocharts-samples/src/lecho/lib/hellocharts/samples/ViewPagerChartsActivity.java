@@ -210,7 +210,7 @@ public class ViewPagerChartsActivity extends ActionBarActivity implements Action
 				Viewport tempViewport = new Viewport(previewLineChartView.getMaximumViewport());
 				float dx = tempViewport.width() / 6;
 				tempViewport.inset(dx, 0);
-				previewLineChartView.setCurrentViewport(tempViewport, false);
+				previewLineChartView.setCurrentViewport(tempViewport);
 				previewLineChartView.setZoomType(ZoomType.HORIZONTAL);
 
 				layout.addView(previewLineChartView);

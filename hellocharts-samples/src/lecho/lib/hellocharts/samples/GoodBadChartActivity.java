@@ -52,7 +52,7 @@ public class GoodBadChartActivity extends ActionBarActivity {
 			float dy = v.height() * 0.2f;
 			v.inset(0, -dy);
 			chart.setMaximumViewport(v);
-			chart.setCurrentViewport(v, false);
+			chart.setCurrentViewport(v);
 
 			return rootView;
 		}

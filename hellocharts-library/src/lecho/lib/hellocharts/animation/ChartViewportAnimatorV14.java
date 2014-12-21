@@ -51,7 +51,7 @@ public class ChartViewportAnimatorV14 implements ChartViewportAnimator, Animator
 		float diffBottom = (targetViewport.bottom - startViewport.bottom) * scale;
 		newViewport.set(startViewport.left + diffLeft, startViewport.top + diffTop, startViewport.right + diffRight,
 				startViewport.bottom + diffBottom);
-		chart.setCurrentViewport(newViewport, false);
+		chart.setCurrentViewport(newViewport);
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class ChartViewportAnimatorV14 implements ChartViewportAnimator, Animator
 
 	@Override
 	public void onAnimationEnd(Animator animation) {
-		chart.setCurrentViewport(targetViewport, false);
+		chart.setCurrentViewport(targetViewport);
 		animationListener.onAnimationFinished();
 	}
 

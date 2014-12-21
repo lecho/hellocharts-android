@@ -17,6 +17,7 @@ import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
 import lecho.lib.hellocharts.util.Utils;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.os.Build;
@@ -27,9 +28,8 @@ import android.view.View;
 
 /**
  * Abstract class for charts views.
- * 
+ *
  * @author Leszek Wach
- * 
  */
 public abstract class AbstractChartView extends View implements Chart {
 	protected ChartComputator chartComputator;
@@ -227,14 +227,24 @@ public abstract class AbstractChartView extends View implements Chart {
 		touchHandler.setScrollEnabled(isScrollEnabled);
 	}
 
-	public void moveTo(float x, float y, boolean isAnimated) {
+	@Override
+	public void moveTo(float x, float y) {
+			Viewport scrollViewport = computeScrollViewport(x, y);
+			setCurrentViewport(scrollViewport);
+	}
+
+	@Override
+	public void moveToWithAnimation(float x, float y) {
+		Viewport scrollViewport = computeScrollViewport(x, y);
+		setCurrentViewportWithAnimation(scrollViewport);
+	}
+
+	private Viewport computeScrollViewport(float x, float y){
 		Viewport maxViewport = getMaximumViewport();
+		Viewport currentViewport = getCurrentViewport();
+		Viewport scrollViewport = new Viewport(currentViewport);
 
 		if (maxViewport.contains(x, y)) {
-
-			Viewport currentViewport = getCurrentViewport();
-			Viewport scrollViewport = new Viewport(currentViewport);
-
 			final float width = currentViewport.width();
 			final float height = currentViewport.height();
 
@@ -248,9 +258,9 @@ public abstract class AbstractChartView extends View implements Chart {
 			top = Math.max(maxViewport.bottom + height, Math.min(top, maxViewport.top));
 
 			scrollViewport.set(left, top, left + height, top - height);
-
-			setCurrentViewport(scrollViewport, isAnimated);
 		}
+
+		return scrollViewport;
 	}
 
 	@Override
@@ -293,12 +303,22 @@ public abstract class AbstractChartView extends View implements Chart {
 	}
 
 	@Override
-	public void setZoomLevel(float x, float y, float zoomLevel, boolean isAnimated) {
+	public void setZoomLevel(float x, float y, float zoomLevel) {
+		Viewport zoomViewport = computeZoomViewport(x, y, zoomLevel);
+		setCurrentViewport(zoomViewport);
+	}
+
+	@Override
+	public void setZoomLevelWithAnimation(float x, float y, float zoomLevel) {
+		Viewport zoomViewport = computeZoomViewport(x, y, zoomLevel);
+		setCurrentViewportWithAnimation(zoomViewport);
+	}
+
+	private Viewport computeZoomViewport(float x, float y, float zoomLevel) {
 		final Viewport maxViewport = getMaximumViewport();
+		Viewport zoomViewport = new Viewport(getMaximumViewport());
 
 		if (maxViewport.contains(x, y)) {
-
-			Viewport zoomViewport = new Viewport(getMaximumViewport());
 
 			if (zoomLevel < 1) {
 				zoomLevel = 1;
@@ -344,8 +364,8 @@ public abstract class AbstractChartView extends View implements Chart {
 				zoomViewport.bottom = bottom;
 			}
 
-			setCurrentViewport(zoomViewport, isAnimated);
 		}
+		return zoomViewport;
 	}
 
 	@Override
@@ -360,12 +380,18 @@ public abstract class AbstractChartView extends View implements Chart {
 	}
 
 	@Override
-	public void setCurrentViewport(Viewport targetViewport, boolean isAnimated) {
-		if (isAnimated && null != targetViewport) {
+	public void setCurrentViewport(Viewport targetViewport) {
+		if (null != targetViewport) {
+			chartRenderer.setCurrentViewport(targetViewport);
+		}
+		ViewCompat.postInvalidateOnAnimation(this);
+	}
+
+	@Override
+	public void setCurrentViewportWithAnimation(Viewport targetViewport) {
+		if (null != targetViewport) {
 			viewportAnimator.cancelAnimation();
 			viewportAnimator.startAnimation(getCurrentViewport(), targetViewport);
-		} else {
-			chartRenderer.setCurrentViewport(targetViewport);
 		}
 		ViewCompat.postInvalidateOnAnimation(this);
 	}

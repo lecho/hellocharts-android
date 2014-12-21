@@ -145,7 +145,7 @@ public class TempoChartActivity extends ActionBarActivity {
 			Viewport v = chart.getMaximumViewport();
 			v.set(v.left, tempoRange, v.right, 0);
 			chart.setMaximumViewport(v);
-			chart.setCurrentViewport(v, false);
+			chart.setCurrentViewport(v);
 
 		}
 

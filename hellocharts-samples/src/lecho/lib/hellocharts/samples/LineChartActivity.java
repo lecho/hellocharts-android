@@ -201,7 +201,7 @@ public class LineChartActivity extends ActionBarActivity {
 			v.bottom = 0;
 			v.top = 100;
 			chart.setMaximumViewport(v);
-			chart.setCurrentViewport(v, false);
+			chart.setCurrentViewport(v);
 		}
 
 		private void generateData() {
@@ -294,7 +294,7 @@ public class LineChartActivity extends ActionBarActivity {
 				// You have to set max and current viewports separately.
 				chart.setMaximumViewport(v);
 				// I changing current viewport with animation in this case.
-				chart.setCurrentViewport(v, true);
+				chart.setCurrentViewportWithAnimation(v);
 			} else {
 				// If not cubic restore viewport to (0,100) range.
 				final Viewport v = new Viewport(chart.getMaximumViewport());
@@ -321,7 +321,7 @@ public class LineChartActivity extends ActionBarActivity {
 					}
 				});
 				// Set current viewpirt with animation;
-				chart.setCurrentViewport(v, true);
+				chart.setCurrentViewportWithAnimation(v);
 			}
 
 		}
