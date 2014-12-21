@@ -175,22 +175,22 @@ public abstract class Utils {
 		value *= POW10[digits];
 		long lval = Math.round(value);
 		int index = endIndex - 1;
-		int charCount = 0;
-		while (lval != 0 || charCount < (digits + 1)) {
+		int charsNumber = 0;
+		while (lval != 0 || charsNumber < (digits + 1)) {
 			int digit = (int) (lval % 10);
 			lval = lval / 10;
 			formattedValue[index--] = (char) (digit + '0');
-			charCount++;
-			if (charCount == digits) {
+			charsNumber++;
+			if (charsNumber == digits) {
 				formattedValue[index--] = separator;
-				charCount++;
+				charsNumber++;
 			}
 		}
 		if (negative) {
 			formattedValue[index--] = '-';
-			charCount++;
+			charsNumber++;
 		}
-		return charCount;
+		return charsNumber;
 	}
 
 	/**
