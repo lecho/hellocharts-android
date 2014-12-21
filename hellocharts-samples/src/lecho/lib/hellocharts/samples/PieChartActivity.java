@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lecho.lib.hellocharts.listener.PieChartOnValueSelectListener;
-import lecho.lib.hellocharts.model.ArcValue;
+import lecho.lib.hellocharts.model.SliceValue;
 import lecho.lib.hellocharts.model.PieChartData;
 import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.Chart;
@@ -159,19 +159,19 @@ public class PieChartActivity extends ActionBarActivity {
 		private void generateData() {
 			int numValues = 6;
 
-			List<ArcValue> values = new ArrayList<ArcValue>();
+			List<SliceValue> values = new ArrayList<SliceValue>();
 			for (int i = 0; i < numValues; ++i) {
-				ArcValue arcValue = new ArcValue((float) Math.random() * 30 + 15, Utils.pickColor());
+				SliceValue sliceValue = new SliceValue((float) Math.random() * 30 + 15, Utils.pickColor());
 
 				if (isExploaded) {
-					arcValue.setArcSpacing(24);
+					sliceValue.setSliceSpacing(24);
 				}
 
 				if (hasArcSeparated && i == 0) {
-					arcValue.setArcSpacing(32);
+					sliceValue.setSliceSpacing(32);
 				}
 
-				values.add(arcValue);
+				values.add(sliceValue);
 			}
 
 			data = new PieChartData(values);
@@ -279,7 +279,7 @@ public class PieChartActivity extends ActionBarActivity {
 		 * method(don't confuse with View.animate()).
 		 */
 		private void prepareDataAnimation() {
-			for (ArcValue value : data.getValues()) {
+			for (SliceValue value : data.getValues()) {
 				value.setTarget((float) Math.random() * 30 + 15);
 			}
 		}
@@ -287,7 +287,7 @@ public class PieChartActivity extends ActionBarActivity {
 		private class ValueTouchListener implements PieChartOnValueSelectListener {
 
 			@Override
-			public void onValueSelected(int arcIndex, ArcValue value) {
+			public void onValueSelected(int arcIndex, SliceValue value) {
 				Toast.makeText(getActivity(), "Selected: " + value, Toast.LENGTH_SHORT).show();
 			}
 

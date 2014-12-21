@@ -1,12 +1,12 @@
 package lecho.lib.hellocharts.listener;
 
 
-import lecho.lib.hellocharts.model.ArcValue;
+import lecho.lib.hellocharts.model.SliceValue;
 
 public class DummyPieChartOnValueSelectListener implements PieChartOnValueSelectListener {
 
 	@Override
-	public void onValueSelected(int arcIndex, ArcValue value) {
+	public void onValueSelected(int arcIndex, SliceValue value) {
 
 	}
 

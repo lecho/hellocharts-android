@@ -11,7 +11,7 @@ import android.graphics.RectF;
 import android.text.TextUtils;
 
 import lecho.lib.hellocharts.formatter.PieChartValueFormatter;
-import lecho.lib.hellocharts.model.ArcValue;
+import lecho.lib.hellocharts.model.SliceValue;
 import lecho.lib.hellocharts.model.PieChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
@@ -34,11 +34,11 @@ public class PieChartRenderer extends AbstractChartRenderer {
 
 	private PieChartDataProvider dataProvider;
 
-	private Paint arcPaint = new Paint();
+	private Paint slicePaint = new Paint();
 	private float maxSum;
 	private RectF orginCircleOval = new RectF();
 	private RectF drawCircleOval = new RectF();
-	private PointF arcVector = new PointF();
+	private PointF sliceVector = new PointF();
 
 	private int touchAdditional;
 	private int rotation = DEFAULT_START_ROTATION;
@@ -65,8 +65,8 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		this.dataProvider = dataProvider;
 		touchAdditional = Utils.dp2px(density, DEFAULT_TOUCH_ADDITIONAL_DP);
 
-		arcPaint.setAntiAlias(true);
-		arcPaint.setStyle(Paint.Style.FILL);
+		slicePaint.setAntiAlias(true);
+		slicePaint.setStyle(Paint.Style.FILL);
 
 		centerCirclePaint.setAntiAlias(true);
 		centerCirclePaint.setStyle(Paint.Style.FILL);
@@ -129,10 +129,10 @@ public class PieChartRenderer extends AbstractChartRenderer {
 
 	@Override
 	public void draw(Canvas canvas) {
-		drawArcs(canvas, MODE_DRAW);
+		drawSlices(canvas, MODE_DRAW);
 
 		if (isTouched()) {
-			drawArcs(canvas, MODE_HIGHLIGHT);
+			drawSlices(canvas, MODE_HIGHLIGHT);
 		}
 
 		if (hasCenterCircle) {
@@ -153,29 +153,29 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		final float centerY = orginCircleOval.centerY();
 		final float circleRadius = orginCircleOval.width() / 2f;
 
-		arcVector.set(touchX - centerX, touchY - centerY);
+		sliceVector.set(touchX - centerX, touchY - centerY);
 		// Check if touch is on circle area, if not return false;
-		if (arcVector.length() > circleRadius + touchAdditional) {
+		if (sliceVector.length() > circleRadius + touchAdditional) {
 			return false;
 		}
 		// Check if touch is not in center circle, if yes return false;
-		if (data.hasCenterCircle() && arcVector.length() < circleRadius * data.getCenterCircleScale()) {
+		if (data.hasCenterCircle() && sliceVector.length() < circleRadius * data.getCenterCircleScale()) {
 			return false;
 		}
 
 		// Get touchAngle and align touch 0 degrees with chart 0 degrees, that why I subtracting start angle, adding 360
 		// and modulo 360 translates i.e -20 degrees to 340 degrees.
 		final float touchAngle = (pointToAngle(touchX, touchY, centerX, centerY) - rotation + 360f) % 360f;
-		final float arcScale = 360f / maxSum;
+		final float sliceScale = 360f / maxSum;
 		float lastAngle = 0f; // No start angle here, see above
-		int arcIndex = 0;
-		for (ArcValue arcValue : data.getValues()) {
-			final float angle = Math.abs(arcValue.getValue()) * arcScale;
+		int sliceIndex = 0;
+		for (SliceValue sliceValue : data.getValues()) {
+			final float angle = Math.abs(sliceValue.getValue()) * sliceScale;
 			if (touchAngle >= lastAngle) {
-				selectedValue.set(arcIndex, arcIndex, SelectedValueType.NONE);
+				selectedValue.set(sliceIndex, sliceIndex, SelectedValueType.NONE);
 			}
 			lastAngle += angle;
-			++arcIndex;
+			++sliceIndex;
 		}
 		return isTouched();
 	}
@@ -209,71 +209,70 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	}
 
 	/**
-	 * Draw all arcs for this PieChart, if mode == {@link #MODE_HIGHLIGHT} currently selected arc will be redrawn and
+	 * Draw all slices for this PieChart, if mode == {@link #MODE_HIGHLIGHT} currently selected slices will be redrawn and
 	 * highlighted.
 	 *
 	 * @param canvas
 	 * @param mode
 	 */
-	private void drawArcs(Canvas canvas, int mode) {
+	private void drawSlices(Canvas canvas, int mode) {
 		final PieChartData data = dataProvider.getPieChartData();
-		final float arcScale = 360f / maxSum;
+		final float sliceScale = 360f / maxSum;
 		float lastAngle = rotation;
-		int arcIndex = 0;
-		for (ArcValue arcValue : data.getValues()) {
-			final float angle = Math.abs(arcValue.getValue()) * arcScale;
+		int sliceIndex = 0;
+		for (SliceValue sliceValue : data.getValues()) {
+			final float angle = Math.abs(sliceValue.getValue()) * sliceScale;
 			if (MODE_DRAW == mode) {
-				drawArc(canvas, arcValue, lastAngle, angle, mode);
+				drawSlice(canvas, sliceValue, lastAngle, angle, mode);
 			} else if (MODE_HIGHLIGHT == mode) {
-				highlightArc(canvas, arcValue, lastAngle, angle, arcIndex);
+				highlightSlice(canvas, sliceValue, lastAngle, angle, sliceIndex);
 			} else {
-				throw new IllegalStateException("Cannot process arc in mode: " + mode);
+				throw new IllegalStateException("Cannot process slice in mode: " + mode);
 			}
 			lastAngle += angle;
-			++arcIndex;
+			++sliceIndex;
 		}
 	}
 
 	/**
-	 * Method draws single arc from lastAngle to lastAngle+angle, if mode = {@link #MODE_HIGHLIGHT} arc will be darken
+	 * Method draws single slice from lastAngle to lastAngle+angle, if mode = {@link #MODE_HIGHLIGHT} slice will be darken
 	 * and will have bigger radius.
 	 */
-	private void drawArc(Canvas canvas, ArcValue arcValue, float lastAngle, float angle, int mode) {
-		arcVector.set((float) (Math.cos(Math.toRadians(lastAngle + angle / 2))),
+	private void drawSlice(Canvas canvas, SliceValue sliceValue, float lastAngle, float angle, int mode) {
+		sliceVector.set((float) (Math.cos(Math.toRadians(lastAngle + angle / 2))),
 				(float) (Math.sin(Math.toRadians(lastAngle + angle / 2))));
-		normalizeVector(arcVector);
+		normalizeVector(sliceVector);
 
 		drawCircleOval.set(orginCircleOval);
-		final int arcSpacing = Utils.dp2px(density, arcValue.getArcSpacing());
-		drawCircleOval.inset(arcSpacing, arcSpacing);
-		drawCircleOval.offset((float) (arcVector.x * arcSpacing), (float) (arcVector.y * arcSpacing));
+		final int sliceSpacing = Utils.dp2px(density, sliceValue.getSliceSpacing());
+		drawCircleOval.inset(sliceSpacing, sliceSpacing);
+		drawCircleOval.offset((float) (sliceVector.x * sliceSpacing), (float) (sliceVector.y * sliceSpacing));
 		if (MODE_HIGHLIGHT == mode) {
-			// Add additional touch feedback by setting bigger radius for that arc and darken color.
+			// Add additional touch feedback by setting bigger radius for that slice and darken color.
 			drawCircleOval.inset(-touchAdditional, -touchAdditional);
-			arcPaint.setColor(arcValue.getDarkenColor());
-			canvas.drawArc(drawCircleOval, lastAngle, angle, true, arcPaint);
+			slicePaint.setColor(sliceValue.getDarkenColor());
+			canvas.drawArc(drawCircleOval, lastAngle, angle, true, slicePaint);
 			if (hasLabels || hasLabelsOnlyForSelected) {
-				drawLabel(canvas, arcValue);
+				drawLabel(canvas, sliceValue);
 			}
 		} else {
-			arcPaint.setColor(arcValue.getColor());
-			canvas.drawArc(drawCircleOval, lastAngle, angle, true, arcPaint);
+			slicePaint.setColor(sliceValue.getColor());
+			canvas.drawArc(drawCircleOval, lastAngle, angle, true, slicePaint);
 			if (hasLabels) {
-				drawLabel(canvas, arcValue);
+				drawLabel(canvas, sliceValue);
 			}
 		}
 	}
 
-	private void highlightArc(Canvas canvas, ArcValue arcValue, float lastAngle, float angle, int arcIndex) {
-		if (selectedValue.getFirstIndex() != arcIndex) {
-			// Not that arc.
+	private void highlightSlice(Canvas canvas, SliceValue sliceValue, float lastAngle, float angle, int sliceIndex) {
+		if (selectedValue.getFirstIndex() != sliceIndex) {
 			return;
 		}
-		drawArc(canvas, arcValue, lastAngle, angle, MODE_HIGHLIGHT);
+		drawSlice(canvas, sliceValue, lastAngle, angle, MODE_HIGHLIGHT);
 	}
 
-	private void drawLabel(Canvas canvas, ArcValue arcValue) {
-		final int numChars = valueFormatter.formatChartValue(labelBuffer, arcValue);
+	private void drawLabel(Canvas canvas, SliceValue sliceValue) {
+		final int numChars = valueFormatter.formatChartValue(labelBuffer, sliceValue);
 
 		if (numChars == 0) {
 			// No need to draw empty label
@@ -298,8 +297,8 @@ public class PieChartRenderer extends AbstractChartRenderer {
 			}
 		}
 
-		final float rawX = labelRadius * arcVector.x + centerX;
-		final float rawY = labelRadius * arcVector.y + centerY;
+		final float rawX = labelRadius * sliceVector.x + centerX;
+		final float rawY = labelRadius * sliceVector.y + centerY;
 
 		float left;
 		float right;
@@ -333,7 +332,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 
 		labelBackgroundRect.set(left, top, right, bottom);
 		drawLabelTextAndBackground(canvas, labelBuffer, labelBuffer.length - numChars, numChars,
-				arcValue.getDarkenColor());
+				sliceValue.getDarkenColor());
 	}
 
 	private void normalizeVector(PointF point) {
@@ -375,13 +374,13 @@ public class PieChartRenderer extends AbstractChartRenderer {
 
 	/**
 	 * Viewport is not really important for PieChart, this kind of chart doesn't relay on viewport but uses pixels
-	 * coordinates instead. This method also calculates sum of all ArcValues.
+	 * coordinates instead. This method also calculates sum of all SliceValues.
 	 */
 	private void calculateMaxViewport() {
 		tempMaxViewport.set(0, MAX_WIDTH_HEIGHT, MAX_WIDTH_HEIGHT, 0);
 		maxSum = 0.0f;
-		for (ArcValue arcValue : dataProvider.getPieChartData().getValues()) {
-			maxSum += Math.abs(arcValue.getValue());
+		for (SliceValue sliceValue : dataProvider.getPieChartData().getValues()) {
+			maxSum += Math.abs(sliceValue.getValue());
 		}
 	}
 
@@ -413,24 +412,24 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	}
 
 	/**
-	 * Returns ArcValue that is under given angle, selectedValue (if not null) will be hold arc index.
+	 * Returns SliceValue that is under given angle, selectedValue (if not null) will be hold slice index.
 	 */
-	public ArcValue getValueForAngle(int angle, SelectedValue selectedValue) {
+	public SliceValue getValueForAngle(int angle, SelectedValue selectedValue) {
 		final PieChartData data = dataProvider.getPieChartData();
 		final float touchAngle = (angle - rotation + 360f) % 360f;
-		final float arcScale = 360f / maxSum;
+		final float sliceScale = 360f / maxSum;
 		float lastAngle = 0f;
-		int arcIndex = 0;
-		for (ArcValue arcValue : data.getValues()) {
-			final float tempAngle = Math.abs(arcValue.getValue()) * arcScale;
+		int sliceIndex = 0;
+		for (SliceValue sliceValue : data.getValues()) {
+			final float tempAngle = Math.abs(sliceValue.getValue()) * sliceScale;
 			if (touchAngle >= lastAngle) {
 				if (null != selectedValue) {
-					selectedValue.set(arcIndex, arcIndex, SelectedValueType.NONE);
+					selectedValue.set(sliceIndex, sliceIndex, SelectedValueType.NONE);
 				}
-				return arcValue;
+				return sliceValue;
 			}
 			lastAngle += tempAngle;
-			++arcIndex;
+			++sliceIndex;
 		}
 		return null;
 	}

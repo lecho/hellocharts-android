@@ -4,57 +4,57 @@ import lecho.lib.hellocharts.util.Utils;
 import lecho.lib.hellocharts.view.Chart;
 
 /**
- * Model representing single slice/arc on PieChart.
+ * Model representing single slice on PieChart.
  * 
  */
-public class ArcValue {
-	private static final int DEFAULT_ARC_SPACING_DP = 2;
+public class SliceValue {
+	private static final int DEFAULT_SLICE_SPACING_DP = 2;
 
-	/** Current value of this arc. */
+	/** Current value of this slice. */
 	private float value;
 
-	/** Origin value of this arc, used during value animation. */
+	/** Origin value of this slice, used during value animation. */
 	private float orginValue;
 
 	/** Difference between originValue and targetValue. */
 	private float diff;
 
-	/** Color of this arc. */
+	/** Color of this slice. */
 	private int color = Utils.DEFAULT_COLOR;
 
 	/** Darken color used to draw label background and give touch feedback. */
 	private int darkenColor = Utils.DEFAULT_DARKEN_COLOR;
 
-	/** Spacing between this arc and its neighbors. */
-	private int arcSpacing = DEFAULT_ARC_SPACING_DP;
+	/** Spacing between this slice and its neighbors. */
+	private int sliceSpacing = DEFAULT_SLICE_SPACING_DP;
 
-	/** Custom label for this arc, if not set number formatting will be used. */
+	/** Custom label for this slice, if not set number formatting will be used. */
 	private char[] label;
 
-	public ArcValue() {
+	public SliceValue() {
 		setValue(0);
 	}
 
-	public ArcValue(float value) {
+	public SliceValue(float value) {
 		setValue(value);
 	}
 
-	public ArcValue(float value, int color) {
-		setValue(value);
-		setColor(color);
-	}
-
-	public ArcValue(float value, int color, int arcSpacing) {
+	public SliceValue(float value, int color) {
 		setValue(value);
 		setColor(color);
-		this.arcSpacing = arcSpacing;
 	}
 
-	public ArcValue(ArcValue arcValue) {
-		setValue(arcValue.value);
-		setColor(arcValue.color);
-		this.arcSpacing = arcValue.arcSpacing;
-		this.label = arcValue.label;
+	public SliceValue(float value, int color, int sliceSpacing) {
+		setValue(value);
+		setColor(color);
+		this.sliceSpacing = sliceSpacing;
+	}
+
+	public SliceValue(SliceValue sliceValue) {
+		setValue(sliceValue.value);
+		setColor(sliceValue.color);
+		this.sliceSpacing = sliceValue.sliceSpacing;
+		this.label = sliceValue.label;
 	}
 
 	public void update(float scale) {
@@ -69,7 +69,7 @@ public class ArcValue {
 		return value;
 	}
 
-	public ArcValue setValue(float value) {
+	public SliceValue setValue(float value) {
 		this.value = value;
 		this.orginValue = value;
 		this.diff = 0;
@@ -82,7 +82,7 @@ public class ArcValue {
 	 * @param target
 	 * @return
 	 */
-	public ArcValue setTarget(float target) {
+	public SliceValue setTarget(float target) {
 		setValue(value);
 		this.diff = target - orginValue;
 		return this;
@@ -92,7 +92,7 @@ public class ArcValue {
 		return color;
 	}
 
-	public ArcValue setColor(int color) {
+	public SliceValue setColor(int color) {
 		this.color = color;
 		this.darkenColor = Utils.darkenColor(color);
 		return this;
@@ -102,12 +102,12 @@ public class ArcValue {
 		return darkenColor;
 	}
 
-	public int getArcSpacing() {
-		return arcSpacing;
+	public int getSliceSpacing() {
+		return sliceSpacing;
 	}
 
-	public ArcValue setArcSpacing(int arcSpacing) {
-		this.arcSpacing = arcSpacing;
+	public SliceValue setSliceSpacing(int sliceSpacing) {
+		this.sliceSpacing = sliceSpacing;
 		return this;
 	}
 
@@ -115,14 +115,14 @@ public class ArcValue {
 		return label;
 	}
 
-	public ArcValue setLabel(char[] label) {
+	public SliceValue setLabel(char[] label) {
 		this.label = label;
 		return this;
 	}
 
 	@Override
 	public String toString() {
-		return "ArcValue [value=" + value + "]";
+		return "SliceValue [value=" + value + "]";
 	}
 
 }

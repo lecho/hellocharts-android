@@ -1,8 +1,8 @@
 package lecho.lib.hellocharts.formatter;
 
-import lecho.lib.hellocharts.model.ArcValue;
+import lecho.lib.hellocharts.model.SliceValue;
 
 public interface PieChartValueFormatter {
 
-	public int formatChartValue(char[] formattedValue, ArcValue value);
+	public int formatChartValue(char[] formattedValue, SliceValue value);
 }

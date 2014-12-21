@@ -1,6 +1,5 @@
 package lecho.lib.hellocharts.formatter;
 
-import lecho.lib.hellocharts.model.ArcValue;
 import lecho.lib.hellocharts.model.BubbleValue;
 
 

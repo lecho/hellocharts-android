@@ -7,7 +7,7 @@ import lecho.lib.hellocharts.animation.PieChartRotationAnimatorV8;
 import lecho.lib.hellocharts.gesture.PieChartTouchHandler;
 import lecho.lib.hellocharts.listener.DummyPieChartOnValueSelectListener;
 import lecho.lib.hellocharts.listener.PieChartOnValueSelectListener;
-import lecho.lib.hellocharts.model.ArcValue;
+import lecho.lib.hellocharts.model.SliceValue;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.PieChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
@@ -93,8 +93,8 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 		SelectedValue selectedValue = chartRenderer.getSelectedValue();
 
 		if (selectedValue.isSet()) {
-			ArcValue arcValue = data.getValues().get(selectedValue.getFirstIndex());
-			onValueTouchListener.onValueSelected(selectedValue.getFirstIndex(), arcValue);
+			SliceValue sliceValue = data.getValues().get(selectedValue.getFirstIndex());
+			onValueTouchListener.onValueSelected(selectedValue.getFirstIndex(), sliceValue);
 		} else {
 			onValueTouchListener.onValueDeselected();
 		}
@@ -174,9 +174,9 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 	}
 
 	/**
-	 * Returns ArcValue that is under given angle, selectedValue (if not null) will be hold arc index.
+	 * Returns SliceValue that is under given angle, selectedValue (if not null) will be hold slice index.
 	 */
-	public ArcValue getValueForAngle(int angle, SelectedValue selectedValue) {
+	public SliceValue getValueForAngle(int angle, SelectedValue selectedValue) {
 		return pieChartRenderer.getValueForAngle(angle, selectedValue);
 	}
 

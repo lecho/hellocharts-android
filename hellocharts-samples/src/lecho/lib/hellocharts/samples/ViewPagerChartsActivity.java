@@ -5,7 +5,7 @@ import java.util.List;
 
 import lecho.lib.hellocharts.gesture.ContainerScrollType;
 import lecho.lib.hellocharts.gesture.ZoomType;
-import lecho.lib.hellocharts.model.ArcValue;
+import lecho.lib.hellocharts.model.SliceValue;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.BubbleChartData;
 import lecho.lib.hellocharts.model.BubbleValue;
@@ -317,9 +317,9 @@ public class ViewPagerChartsActivity extends ActionBarActivity implements Action
 		private PieChartData generatePieChartData() {
 			int numValues = 6;
 
-			List<ArcValue> values = new ArrayList<ArcValue>();
+			List<SliceValue> values = new ArrayList<SliceValue>();
 			for (int i = 0; i < numValues; ++i) {
-				values.add(new ArcValue((float) Math.random() * 30 + 15, Utils.pickColor()));
+				values.add(new SliceValue((float) Math.random() * 30 + 15, Utils.pickColor()));
 			}
 
 			PieChartData data = new PieChartData(values);

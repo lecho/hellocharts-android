@@ -38,7 +38,7 @@ public class PieChartData extends AbstractChartData {
 	private Typeface centerText2Typeface;
 	private String centerText2;
 
-	private List<ArcValue> values = new ArrayList<ArcValue>();
+	private List<SliceValue> values = new ArrayList<SliceValue>();
 
 	public PieChartData() {
 		setAxisXBottom(null);
@@ -47,7 +47,7 @@ public class PieChartData extends AbstractChartData {
 
 	;
 
-	public PieChartData(List<ArcValue> values) {
+	public PieChartData(List<SliceValue> values) {
 		setValues(values);
 		// Empty axes. Pie chart don't need axes.
 		setAxisXBottom(null);
@@ -75,21 +75,21 @@ public class PieChartData extends AbstractChartData {
 		this.centerText2Typeface = data.centerText2Typeface;
 		this.centerText2 = data.centerText2;
 
-		for (ArcValue arcValue : data.values) {
-			this.values.add(new ArcValue(arcValue));
+		for (SliceValue sliceValue : data.values) {
+			this.values.add(new SliceValue(sliceValue));
 		}
 	}
 
 	@Override
 	public void update(float scale) {
-		for (ArcValue value : values) {
+		for (SliceValue value : values) {
 			value.update(scale);
 		}
 	}
 
 	@Override
 	public void finish() {
-		for (ArcValue value : values) {
+		for (SliceValue value : values) {
 			value.finish();
 		}
 	}
@@ -110,13 +110,13 @@ public class PieChartData extends AbstractChartData {
 		super.setAxisYLeft(null);
 	}
 
-	public List<ArcValue> getValues() {
+	public List<SliceValue> getValues() {
 		return values;
 	}
 
-	public PieChartData setValues(List<ArcValue> values) {
+	public PieChartData setValues(List<SliceValue> values) {
 		if (null == values) {
-			this.values = new ArrayList<ArcValue>();
+			this.values = new ArrayList<SliceValue>();
 		} else {
 			this.values = values;
 		}
@@ -272,11 +272,11 @@ public class PieChartData extends AbstractChartData {
 	public static PieChartData generateDummyData() {
 		final int numValues = 4;
 		PieChartData data = new PieChartData();
-		List<ArcValue> values = new ArrayList<ArcValue>(numValues);
-		values.add(new ArcValue(40f));
-		values.add(new ArcValue(20f));
-		values.add(new ArcValue(30f));
-		values.add(new ArcValue(50f));
+		List<SliceValue> values = new ArrayList<SliceValue>(numValues);
+		values.add(new SliceValue(40f));
+		values.add(new SliceValue(20f));
+		values.add(new SliceValue(30f));
+		values.add(new SliceValue(50f));
 		data.setValues(values);
 		return data;
 	}
