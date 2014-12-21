@@ -45,8 +45,6 @@ public class PieChartData extends AbstractChartData {
 		setAxisYLeft(null);
 	}
 
-	;
-
 	public PieChartData(List<SliceValue> values) {
 		setValues(values);
 		// Empty axes. Pie chart don't need axes.
