@@ -1,6 +1,8 @@
 package lecho.lib.hellocharts.view;
 
 import lecho.lib.hellocharts.BuildConfig;
+import lecho.lib.hellocharts.listener.DummyLineChartOnValueSelectListener;
+import lecho.lib.hellocharts.listener.LineChartOnValueSelectListener;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
@@ -22,7 +24,7 @@ import android.util.Log;
 public class LineChartView extends AbstractChartView implements LineChartDataProvider {
 	private static final String TAG = "LineChartView";
 	protected LineChartData data;
-	protected LineChartOnValueTouchListener onValueTouchListener = new DummyOnValueTouchListener();
+	protected LineChartOnValueSelectListener onValueTouchListener = new DummyLineChartOnValueSelectListener();
 
 	public LineChartView(Context context) {
 		this(context, null, 0);
@@ -75,40 +77,19 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 		if (selectedValue.isSet()) {
 			PointValue point = data.getLines().get(selectedValue.getFirstIndex()).getValues()
 					.get(selectedValue.getSecondIndex());
-			onValueTouchListener.onValueTouched(selectedValue.getFirstIndex(), selectedValue.getSecondIndex(), point);
+			onValueTouchListener.onValueSelected(selectedValue.getFirstIndex(), selectedValue.getSecondIndex(), point);
 		} else {
 			onValueTouchListener.onValueDeselected();
 		}
 	}
 
-	public LineChartOnValueTouchListener getOnValueTouchListener() {
+	public LineChartOnValueSelectListener getOnValueTouchListener() {
 		return onValueTouchListener;
 	}
 
-	public void setOnValueTouchListener(LineChartOnValueTouchListener touchListener) {
-		if (null == touchListener) {
-			this.onValueTouchListener = new DummyOnValueTouchListener();
-		} else {
+	public void setOnValueTouchListener(LineChartOnValueSelectListener touchListener) {
+		if (null != touchListener) {
 			this.onValueTouchListener = touchListener;
 		}
-	}
-
-	public interface LineChartOnValueTouchListener {
-		public void onValueTouched(int selectedLine, int selectedValue, PointValue value);
-
-		public void onValueDeselected();
-
-	}
-
-	private static class DummyOnValueTouchListener implements LineChartOnValueTouchListener {
-
-		@Override
-		public void onValueTouched(int selectedLine, int selectedValue, PointValue value) {
-		}
-
-		@Override
-		public void onValueDeselected() {
-		}
-
 	}
 }

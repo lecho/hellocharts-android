@@ -5,6 +5,8 @@ import lecho.lib.hellocharts.animation.PieChartRotationAnimator;
 import lecho.lib.hellocharts.animation.PieChartRotationAnimatorV14;
 import lecho.lib.hellocharts.animation.PieChartRotationAnimatorV8;
 import lecho.lib.hellocharts.gesture.PieChartTouchHandler;
+import lecho.lib.hellocharts.listener.DummyPieChartOnValueSelectListener;
+import lecho.lib.hellocharts.listener.PieChartOnValueSelectListener;
 import lecho.lib.hellocharts.model.ArcValue;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.PieChartData;
@@ -32,7 +34,7 @@ import android.view.View;
 public class PieChartView extends AbstractChartView implements PieChartDataProvider {
 	private static final String TAG = "PieChartView";
 	protected PieChartData data;
-	protected PieChartOnValueTouchListener onValueTouchListener = new DummyOnValueTouchListener();
+	protected PieChartOnValueSelectListener onValueTouchListener = new DummyPieChartOnValueSelectListener();
 	protected PieChartRenderer pieChartRenderer;
 	protected PieChartRotationAnimator rotationAnimator;
 
@@ -92,20 +94,18 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 
 		if (selectedValue.isSet()) {
 			ArcValue arcValue = data.getValues().get(selectedValue.getFirstIndex());
-			onValueTouchListener.onValueTouched(selectedValue.getFirstIndex(), arcValue);
+			onValueTouchListener.onValueSelected(selectedValue.getFirstIndex(), arcValue);
 		} else {
 			onValueTouchListener.onValueDeselected();
 		}
 	}
 
-	public PieChartOnValueTouchListener getOnValueTouchListener() {
+	public PieChartOnValueSelectListener getOnValueTouchListener() {
 		return onValueTouchListener;
 	}
 
-	public void setOnValueTouchListener(PieChartOnValueTouchListener touchListener) {
-		if (null == touchListener) {
-			this.onValueTouchListener = new DummyOnValueTouchListener();
-		} else {
+	public void setOnValueTouchListener(PieChartOnValueSelectListener touchListener) {
+		if (null != touchListener) {
 			this.onValueTouchListener = touchListener;
 		}
 	}
@@ -194,23 +194,5 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 	public void setCircleFillRatio(float fillRatio) {
 		pieChartRenderer.setCircleFillRatio(fillRatio);
 		ViewCompat.postInvalidateOnAnimation(this);
-	}
-
-	public interface PieChartOnValueTouchListener {
-		public void onValueTouched(int selectedArc, ArcValue value);
-
-		public void onValueDeselected();
-
-	}
-
-	private static class DummyOnValueTouchListener implements PieChartOnValueTouchListener {
-
-		@Override
-		public void onValueTouched(int selectedArc, ArcValue value) {
-		}
-
-		@Override
-		public void onValueDeselected() {
-		}
 	}
 }

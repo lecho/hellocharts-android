@@ -1,19 +1,5 @@
 package lecho.lib.hellocharts.samples;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import lecho.lib.hellocharts.model.Axis;
-import lecho.lib.hellocharts.model.Column;
-import lecho.lib.hellocharts.model.ColumnChartData;
-import lecho.lib.hellocharts.model.SubcolumnValue;
-import lecho.lib.hellocharts.model.ComboLineColumnChartData;
-import lecho.lib.hellocharts.model.Line;
-import lecho.lib.hellocharts.model.LineChartData;
-import lecho.lib.hellocharts.model.PointValue;
-import lecho.lib.hellocharts.util.Utils;
-import lecho.lib.hellocharts.view.ComboLineColumnChartView;
-import lecho.lib.hellocharts.view.ComboLineColumnChartView.ComboLineColumnChartOnValueTouchListener;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -24,6 +10,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import lecho.lib.hellocharts.listener.ComboLineColumnChartOnValueSelectListener;
+import lecho.lib.hellocharts.model.Axis;
+import lecho.lib.hellocharts.model.Column;
+import lecho.lib.hellocharts.model.ColumnChartData;
+import lecho.lib.hellocharts.model.ComboLineColumnChartData;
+import lecho.lib.hellocharts.model.Line;
+import lecho.lib.hellocharts.model.LineChartData;
+import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.model.SubcolumnValue;
+import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.view.ComboLineColumnChartView;
 
 public class ComboLineColumnChartActivity extends ActionBarActivity {
 
@@ -275,7 +276,7 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 			}
 		}
 
-		private class ValueTouchListener implements ComboLineColumnChartOnValueTouchListener {
+		private class ValueTouchListener implements ComboLineColumnChartOnValueSelectListener {
 
 			@Override
 			public void onValueDeselected() {
@@ -284,15 +285,13 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 			}
 
 			@Override
-			public void onColumnValueTouched(int selectedLine, int selectedValue, SubcolumnValue value) {
+			public void onColumnValueSelected(int columnIndex, int subcolumnIndex, SubcolumnValue value) {
 				Toast.makeText(getActivity(), "Selected column: " + value, Toast.LENGTH_SHORT).show();
-
 			}
 
 			@Override
-			public void onPointValueTouched(int selectedLine, int selectedValue, PointValue value) {
+			public void onPointValueSelected(int lineIndex, int pointIndex, PointValue value) {
 				Toast.makeText(getActivity(), "Selected line point: " + value, Toast.LENGTH_SHORT).show();
-
 			}
 
 		}

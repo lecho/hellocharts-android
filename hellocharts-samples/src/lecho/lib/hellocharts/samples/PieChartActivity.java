@@ -1,14 +1,5 @@
 package lecho.lib.hellocharts.samples;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import lecho.lib.hellocharts.model.ArcValue;
-import lecho.lib.hellocharts.model.PieChartData;
-import lecho.lib.hellocharts.util.Utils;
-import lecho.lib.hellocharts.view.Chart;
-import lecho.lib.hellocharts.view.PieChartView;
-import lecho.lib.hellocharts.view.PieChartView.PieChartOnValueTouchListener;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -20,6 +11,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import lecho.lib.hellocharts.listener.PieChartOnValueSelectListener;
+import lecho.lib.hellocharts.model.ArcValue;
+import lecho.lib.hellocharts.model.PieChartData;
+import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.view.Chart;
+import lecho.lib.hellocharts.view.PieChartView;
 
 public class PieChartActivity extends ActionBarActivity {
 
@@ -283,12 +284,11 @@ public class PieChartActivity extends ActionBarActivity {
 			}
 		}
 
-		private class ValueTouchListener implements PieChartOnValueTouchListener {
+		private class ValueTouchListener implements PieChartOnValueSelectListener {
 
 			@Override
-			public void onValueTouched(int selectedArc, ArcValue value) {
+			public void onValueSelected(int arcIndex, ArcValue value) {
 				Toast.makeText(getActivity(), "Selected: " + value, Toast.LENGTH_SHORT).show();
-
 			}
 
 			@Override

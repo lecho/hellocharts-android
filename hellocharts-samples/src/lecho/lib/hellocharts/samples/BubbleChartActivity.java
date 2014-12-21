@@ -1,16 +1,5 @@
 package lecho.lib.hellocharts.samples;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import lecho.lib.hellocharts.gesture.ZoomType;
-import lecho.lib.hellocharts.model.Axis;
-import lecho.lib.hellocharts.model.BubbleChartData;
-import lecho.lib.hellocharts.model.BubbleValue;
-import lecho.lib.hellocharts.model.ValueShape;
-import lecho.lib.hellocharts.util.Utils;
-import lecho.lib.hellocharts.view.BubbleChartView;
-import lecho.lib.hellocharts.view.Chart;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -21,6 +10,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import lecho.lib.hellocharts.gesture.ZoomType;
+import lecho.lib.hellocharts.listener.BubbleChartOnValueSelectListener;
+import lecho.lib.hellocharts.model.Axis;
+import lecho.lib.hellocharts.model.BubbleChartData;
+import lecho.lib.hellocharts.model.BubbleValue;
+import lecho.lib.hellocharts.model.ValueShape;
+import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.view.BubbleChartView;
+import lecho.lib.hellocharts.view.Chart;
 
 public class BubbleChartActivity extends ActionBarActivity {
 
@@ -228,14 +230,14 @@ public class BubbleChartActivity extends ActionBarActivity {
 		}
 
 		private int getSign() {
-			int[] sign = new int[] { -1, 1 };
+			int[] sign = new int[]{-1, 1};
 			return sign[Math.round((float) Math.random())];
 		}
 
-		private class ValueTouchListener implements BubbleChartView.BubbleChartOnValueTouchListener {
+		private class ValueTouchListener implements BubbleChartOnValueSelectListener {
 
 			@Override
-			public void onValueTouched(int selectedBubble, BubbleValue value) {
+			public void onValueSelected(int bubbleIndex, BubbleValue value) {
 				Toast.makeText(getActivity(), "Selected: " + value, Toast.LENGTH_SHORT).show();
 			}
 

@@ -1,16 +1,5 @@
 package lecho.lib.hellocharts.samples;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import lecho.lib.hellocharts.gesture.ZoomType;
-import lecho.lib.hellocharts.model.Axis;
-import lecho.lib.hellocharts.model.Column;
-import lecho.lib.hellocharts.model.ColumnChartData;
-import lecho.lib.hellocharts.model.SubcolumnValue;
-import lecho.lib.hellocharts.util.Utils;
-import lecho.lib.hellocharts.view.Chart;
-import lecho.lib.hellocharts.view.ColumnChartView;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -21,6 +10,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import lecho.lib.hellocharts.gesture.ZoomType;
+import lecho.lib.hellocharts.listener.ColumnChartOnValueSelectListener;
+import lecho.lib.hellocharts.model.Axis;
+import lecho.lib.hellocharts.model.Column;
+import lecho.lib.hellocharts.model.ColumnChartData;
+import lecho.lib.hellocharts.model.SubcolumnValue;
+import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.view.Chart;
+import lecho.lib.hellocharts.view.ColumnChartView;
 
 public class ColumnChartActivity extends ActionBarActivity {
 
@@ -365,30 +367,30 @@ public class ColumnChartActivity extends ActionBarActivity {
 		}
 
 		private int getSign() {
-			int[] sign = new int[] { -1, 1 };
+			int[] sign = new int[]{-1, 1};
 			return sign[Math.round((float) Math.random())];
 		}
 
 		private void generateData() {
 			switch (dataType) {
-			case DEFAULT_DATA:
-				generateDefaultData();
-				break;
-			case SUBCOLUMNS_DATA:
-				generateSubcolumnsData();
-				break;
-			case STACKED_DATA:
-				generateStackedData();
-				break;
-			case NEGATIVE_SUBCOLUMNS_DATA:
-				generateNegativeSubcolumnsData();
-				break;
-			case NEGATIVE_STACKED_DATA:
-				generateNegativeStackedData();
-				break;
-			default:
-				generateDefaultData();
-				break;
+				case DEFAULT_DATA:
+					generateDefaultData();
+					break;
+				case SUBCOLUMNS_DATA:
+					generateSubcolumnsData();
+					break;
+				case STACKED_DATA:
+					generateStackedData();
+					break;
+				case NEGATIVE_SUBCOLUMNS_DATA:
+					generateNegativeSubcolumnsData();
+					break;
+				case NEGATIVE_STACKED_DATA:
+					generateNegativeStackedData();
+					break;
+				default:
+					generateDefaultData();
+					break;
 			}
 		}
 
@@ -438,12 +440,11 @@ public class ColumnChartActivity extends ActionBarActivity {
 			}
 		}
 
-		private class ValueTouchListener implements ColumnChartView.ColumnChartOnValueTouchListener {
+		private class ValueTouchListener implements ColumnChartOnValueSelectListener {
 
 			@Override
-			public void onValueTouched(int selectedLine, int selectedValue, SubcolumnValue value) {
+			public void onValueSelected(int columnIndex, int subcolumnIndex, SubcolumnValue value) {
 				Toast.makeText(getActivity(), "Selected: " + value, Toast.LENGTH_SHORT).show();
-
 			}
 
 			@Override

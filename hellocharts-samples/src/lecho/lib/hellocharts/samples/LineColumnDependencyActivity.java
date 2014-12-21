@@ -1,27 +1,29 @@
 package lecho.lib.hellocharts.samples;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import lecho.lib.hellocharts.gesture.ZoomType;
-import lecho.lib.hellocharts.model.Axis;
-import lecho.lib.hellocharts.model.AxisValue;
-import lecho.lib.hellocharts.model.Column;
-import lecho.lib.hellocharts.model.ColumnChartData;
-import lecho.lib.hellocharts.model.SubcolumnValue;
-import lecho.lib.hellocharts.model.Line;
-import lecho.lib.hellocharts.model.LineChartData;
-import lecho.lib.hellocharts.model.PointValue;
-import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.util.Utils;
-import lecho.lib.hellocharts.view.ColumnChartView;
-import lecho.lib.hellocharts.view.LineChartView;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import lecho.lib.hellocharts.gesture.ZoomType;
+import lecho.lib.hellocharts.listener.ColumnChartOnValueSelectListener;
+import lecho.lib.hellocharts.model.Axis;
+import lecho.lib.hellocharts.model.AxisValue;
+import lecho.lib.hellocharts.model.Column;
+import lecho.lib.hellocharts.model.ColumnChartData;
+import lecho.lib.hellocharts.model.Line;
+import lecho.lib.hellocharts.model.LineChartData;
+import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.model.SubcolumnValue;
+import lecho.lib.hellocharts.model.Viewport;
+import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.view.ColumnChartView;
+import lecho.lib.hellocharts.view.LineChartView;
 
 public class LineColumnDependencyActivity extends ActionBarActivity {
 
@@ -38,10 +40,10 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 	 * A placeholder fragment containing a simple view.
 	 */
 	public static class PlaceholderFragment extends Fragment {
-		public final static String[] months = new String[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
-				"Sep", "Oct", "Nov", "Dec", };
+		public final static String[] months = new String[]{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
+				"Sep", "Oct", "Nov", "Dec",};
 
-		public final static String[] days = new String[] { "Mon", "Tue", "Wen", "Thu", "Fri", "Sat", "Sun", };
+		public final static String[] days = new String[]{"Mon", "Tue", "Wen", "Thu", "Fri", "Sat", "Sun",};
 
 		private LineChartView chartTop;
 		private ColumnChartView chartBottom;
@@ -86,7 +88,7 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 					values.add(new SubcolumnValue((float) Math.random() * 50f + 5, Utils.pickColor()));
 				}
 
-                axisValues.add(new AxisValue(i, months[i].toCharArray()));
+				axisValues.add(new AxisValue(i, months[i].toCharArray()));
 
 				columns.add(new Column(values).setHasLabelsOnlyForSelected(true));
 			}
@@ -173,12 +175,11 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 			chartTop.startDataAnimation(300);
 		}
 
-		private class ValueTouchListener implements ColumnChartView.ColumnChartOnValueTouchListener {
+		private class ValueTouchListener implements ColumnChartOnValueSelectListener {
 
 			@Override
-			public void onValueTouched(int selectedLine, int selectedValue, SubcolumnValue value) {
+			public void onValueSelected(int columnIndex, int subcolumnIndex, SubcolumnValue value) {
 				generateLineData(value.getColor(), 100);
-
 			}
 
 			@Override

@@ -1,6 +1,8 @@
 package lecho.lib.hellocharts.view;
 
 import lecho.lib.hellocharts.BuildConfig;
+import lecho.lib.hellocharts.listener.BubbleChartOnValueSelectListener;
+import lecho.lib.hellocharts.listener.DummyBubbleChartOnValueSelectListener;
 import lecho.lib.hellocharts.model.BubbleChartData;
 import lecho.lib.hellocharts.model.BubbleValue;
 import lecho.lib.hellocharts.model.ChartData;
@@ -21,7 +23,7 @@ import android.util.Log;
 public class BubbleChartView extends AbstractChartView implements BubbleChartDataProvider {
 	private static final String TAG = "BubbleChartView";
 	protected BubbleChartData data;
-	protected BubbleChartOnValueTouchListener onValueTouchListener = new DummyOnValueTouchListener();
+	protected BubbleChartOnValueSelectListener onValueTouchListener = new DummyBubbleChartOnValueSelectListener();
 
 	protected BubbleChartRenderer bubbleChartRenderer;
 
@@ -75,20 +77,18 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
 
 		if (selectedValue.isSet()) {
 			BubbleValue value = data.getValues().get(selectedValue.getFirstIndex());
-			onValueTouchListener.onValueTouched(selectedValue.getFirstIndex(), value);
+			onValueTouchListener.onValueSelected(selectedValue.getFirstIndex(), value);
 		} else {
 			onValueTouchListener.onValueDeselected();
 		}
 	}
 
-	public BubbleChartOnValueTouchListener getOnValueTouchListener() {
+	public BubbleChartOnValueSelectListener getOnValueTouchListener() {
 		return onValueTouchListener;
 	}
 
-	public void setOnValueTouchListener(BubbleChartOnValueTouchListener touchListener) {
-		if (null == touchListener) {
-			this.onValueTouchListener = new DummyOnValueTouchListener();
-		} else {
+	public void setOnValueTouchListener(BubbleChartOnValueSelectListener touchListener) {
+		if (null != touchListener) {
 			this.onValueTouchListener = touchListener;
 		}
 	}
@@ -102,24 +102,5 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
 	public void removeMargins() {
 		bubbleChartRenderer.removeMargins();
 		ViewCompat.postInvalidateOnAnimation(this);
-	}
-
-	public interface BubbleChartOnValueTouchListener {
-		public void onValueTouched(int selectedBubble, BubbleValue value);
-
-		public void onValueDeselected();
-
-	}
-
-	private static class DummyOnValueTouchListener implements BubbleChartOnValueTouchListener {
-
-		@Override
-		public void onValueTouched(int selectedBubble, BubbleValue value) {
-		}
-
-		@Override
-		public void onValueDeselected() {
-		}
-
 	}
 }

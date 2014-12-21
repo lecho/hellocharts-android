@@ -1,35 +1,37 @@
 package lecho.lib.hellocharts.view;
 
-import lecho.lib.hellocharts.BuildConfig;
-import lecho.lib.hellocharts.model.ChartData;
-import lecho.lib.hellocharts.model.ColumnChartData;
-import lecho.lib.hellocharts.model.SubcolumnValue;
-import lecho.lib.hellocharts.model.ComboLineColumnChartData;
-import lecho.lib.hellocharts.model.LineChartData;
-import lecho.lib.hellocharts.model.PointValue;
-import lecho.lib.hellocharts.model.SelectedValue;
-import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
-import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
-import lecho.lib.hellocharts.provider.ComboLineColumnChartDataProvider;
-import lecho.lib.hellocharts.provider.LineChartDataProvider;
-import lecho.lib.hellocharts.renderer.ComboLineColumnChartRenderer;
 import android.content.Context;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 
+import lecho.lib.hellocharts.BuildConfig;
+import lecho.lib.hellocharts.listener.ComboLineColumnChartOnValueSelectListener;
+import lecho.lib.hellocharts.listener.DummyCompoLineColumnChartOnValueSelectListener;
+import lecho.lib.hellocharts.model.ChartData;
+import lecho.lib.hellocharts.model.ColumnChartData;
+import lecho.lib.hellocharts.model.ComboLineColumnChartData;
+import lecho.lib.hellocharts.model.LineChartData;
+import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.model.SelectedValue;
+import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
+import lecho.lib.hellocharts.model.SubcolumnValue;
+import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
+import lecho.lib.hellocharts.provider.ComboLineColumnChartDataProvider;
+import lecho.lib.hellocharts.provider.LineChartDataProvider;
+import lecho.lib.hellocharts.renderer.ComboLineColumnChartRenderer;
+
 /**
  * ComboChart, supports ColumnChart combined with LineChart. Lines are always drawn on top.
- * 
+ *
  * @author Leszek Wach
- * 
  */
 public class ComboLineColumnChartView extends AbstractChartView implements ComboLineColumnChartDataProvider {
 	private static final String TAG = "ComboLineColumnChartView";
 	protected ComboLineColumnChartData data;
 	protected ColumnChartDataProvider columnChartDataProvider = new ComboColumnChartDataProvider();
 	protected LineChartDataProvider lineChartDataProvider = new ComboLineChartDataProvider();
-	protected ComboLineColumnChartOnValueTouchListener onValueTouchListener = new DummyOnValueTouchListener();
+	protected ComboLineColumnChartOnValueSelectListener onValueTouchListener = new DummyCompoLineColumnChartOnValueSelectListener();
 
 	public ComboLineColumnChartView(Context context) {
 		this(context, null, 0);
@@ -85,14 +87,14 @@ public class ComboLineColumnChartView extends AbstractChartView implements Combo
 
 				SubcolumnValue value = data.getColumnChartData().getColumns().get(selectedValue.getFirstIndex())
 						.getValues().get(selectedValue.getSecondIndex());
-				onValueTouchListener.onColumnValueTouched(selectedValue.getFirstIndex(),
+				onValueTouchListener.onColumnValueSelected(selectedValue.getFirstIndex(),
 						selectedValue.getSecondIndex(), value);
 
 			} else if (SelectedValueType.LINE.equals(selectedValue.getType())) {
 
 				PointValue value = data.getLineChartData().getLines().get(selectedValue.getFirstIndex()).getValues()
 						.get(selectedValue.getSecondIndex());
-				onValueTouchListener.onPointValueTouched(selectedValue.getFirstIndex(), selectedValue.getSecondIndex(),
+				onValueTouchListener.onPointValueSelected(selectedValue.getFirstIndex(), selectedValue.getSecondIndex(),
 						value);
 
 			} else {
@@ -103,40 +105,13 @@ public class ComboLineColumnChartView extends AbstractChartView implements Combo
 		}
 	}
 
-	public ComboLineColumnChartOnValueTouchListener getOnValueTouchListener() {
+	public ComboLineColumnChartOnValueSelectListener getOnValueTouchListener() {
 		return onValueTouchListener;
 	}
 
-	public void setOnValueTouchListener(ComboLineColumnChartOnValueTouchListener touchListener) {
-		if (null == touchListener) {
-			this.onValueTouchListener = new DummyOnValueTouchListener();
-		} else {
+	public void setOnValueTouchListener(ComboLineColumnChartOnValueSelectListener touchListener) {
+		if (null != touchListener) {
 			this.onValueTouchListener = touchListener;
-		}
-	}
-
-	public interface ComboLineColumnChartOnValueTouchListener {
-		public void onColumnValueTouched(int selectedLine, int selectedValue, SubcolumnValue value);
-
-		public void onPointValueTouched(int selectedLine, int selectedValue, PointValue value);
-
-		public void onValueDeselected();
-	}
-
-	private static class DummyOnValueTouchListener implements ComboLineColumnChartOnValueTouchListener {
-
-		@Override
-		public void onValueDeselected() {
-		}
-
-		@Override
-		public void onColumnValueTouched(int selectedLine, int selectedValue, SubcolumnValue value) {
-
-		}
-
-		@Override
-		public void onPointValueTouched(int selectedLine, int selectedValue, PointValue value) {
-
 		}
 	}
 

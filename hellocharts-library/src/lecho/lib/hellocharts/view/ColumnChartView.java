@@ -1,26 +1,28 @@
 package lecho.lib.hellocharts.view;
 
-import lecho.lib.hellocharts.BuildConfig;
-import lecho.lib.hellocharts.model.ColumnChartData;
-import lecho.lib.hellocharts.model.SubcolumnValue;
-import lecho.lib.hellocharts.model.SelectedValue;
-import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
-import lecho.lib.hellocharts.renderer.ColumnChartRenderer;
 import android.content.Context;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 
+import lecho.lib.hellocharts.BuildConfig;
+import lecho.lib.hellocharts.listener.ColumnChartOnValueSelectListener;
+import lecho.lib.hellocharts.listener.DummyColumnChartOnValueSelectListener;
+import lecho.lib.hellocharts.model.ColumnChartData;
+import lecho.lib.hellocharts.model.SelectedValue;
+import lecho.lib.hellocharts.model.SubcolumnValue;
+import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
+import lecho.lib.hellocharts.renderer.ColumnChartRenderer;
+
 /**
  * ColumnChart/BarChart, supports subcolumns, stacked collumns and negative values.
- * 
+ *
  * @author Leszek Wach
- * 
  */
 public class ColumnChartView extends AbstractChartView implements ColumnChartDataProvider {
 	private static final String TAG = "ColumnChartView";
 	private ColumnChartData data;
-	private ColumnChartOnValueTouchListener onValueTouchListener = new DummyOnValueTouchListener();
+	private ColumnChartOnValueSelectListener onValueTouchListener = new DummyColumnChartOnValueSelectListener();
 
 	public ColumnChartView(Context context) {
 		this(context, null, 0);
@@ -73,42 +75,19 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 		if (selectedValue.isSet()) {
 			SubcolumnValue value = data.getColumns().get(selectedValue.getFirstIndex()).getValues()
 					.get(selectedValue.getSecondIndex());
-			onValueTouchListener.onValueTouched(selectedValue.getFirstIndex(), selectedValue.getSecondIndex(), value);
+			onValueTouchListener.onValueSelected(selectedValue.getFirstIndex(), selectedValue.getSecondIndex(), value);
 		} else {
 			onValueTouchListener.onValueDeselected();
 		}
 	}
 
-	public ColumnChartOnValueTouchListener getOnValueTouchListener() {
+	public ColumnChartOnValueSelectListener getOnValueTouchListener() {
 		return onValueTouchListener;
 	}
 
-	public void setOnValueTouchListener(ColumnChartOnValueTouchListener touchListener) {
-		if (null == touchListener) {
-			this.onValueTouchListener = new DummyOnValueTouchListener();
-		} else {
+	public void setOnValueTouchListener(ColumnChartOnValueSelectListener touchListener) {
+		if (null != touchListener) {
 			this.onValueTouchListener = touchListener;
 		}
 	}
-
-	public interface ColumnChartOnValueTouchListener {
-
-		public void onValueTouched(int selectedLine, int selectedValue, SubcolumnValue point);
-
-		public void onValueDeselected();
-
-	}
-
-	private static class DummyOnValueTouchListener implements ColumnChartOnValueTouchListener {
-
-		@Override
-		public void onValueTouched(int selectedLine, int selectedValue, SubcolumnValue value) {
-		}
-
-		@Override
-		public void onValueDeselected() {
-		}
-
-	}
-
 }
