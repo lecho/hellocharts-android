@@ -4,7 +4,7 @@ import lecho.lib.hellocharts.computator.ChartComputator;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -59,7 +59,7 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 		this.scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
 		this.chart = chart;
 
-		labelMargin = Utils.dp2px(density, DEFAULT_LABEL_MARGIN_DP);
+		labelMargin = ChartUtils.dp2px(density, DEFAULT_LABEL_MARGIN_DP);
 		labelOffset = labelMargin;
 
 		labelPaint.setAntiAlias(true);
@@ -89,7 +89,7 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 			labelPaint.setTypeface(typeface);
 		}
 
-		labelPaint.setTextSize(Utils.sp2px(scaledDensity, data.getValueLabelTextSize()));
+		labelPaint.setTextSize(ChartUtils.sp2px(scaledDensity, data.getValueLabelTextSize()));
 		labelPaint.getFontMetricsInt(fontMetrics);
 
 		this.isValueLabelBackgroundEnabled = data.isValueLabelBackgroundEnabled();

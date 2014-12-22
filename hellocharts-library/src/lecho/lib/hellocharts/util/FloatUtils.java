@@ -1,69 +1,7 @@
 package lecho.lib.hellocharts.util;
 
-import android.content.Context;
-import android.graphics.Color;
-import android.util.TypedValue;
-
-public abstract class Utils {
-
+public class FloatUtils {
 	public static final int POW10[] = {1, 10, 100, 1000, 10000, 100000, 1000000};
-	public static final int DEFAULT_COLOR = Color.parseColor("#DFDFDF");
-	public static final int DEFAULT_DARKEN_COLOR = Color.parseColor("#DDDDDD");
-	public static final int COLOR_BLUE = Color.parseColor("#33B5E5");
-	public static final int COLOR_VIOLET = Color.parseColor("#AA66CC");
-	public static final int COLOR_GREEN = Color.parseColor("#99CC00");
-	public static final int COLOR_ORANGE = Color.parseColor("#FFBB33");
-	public static final int COLOR_RED = Color.parseColor("#FF4444");
-	public static final int[] COLORS = new int[]{COLOR_BLUE, COLOR_VIOLET, COLOR_GREEN, COLOR_ORANGE, COLOR_RED};
-	private static final float SATURATION_DARKEN = 1.1f;
-	private static final float INTENSITY_DARKEN = 0.9f;
-	private static int COLOR_INDEX = 0;
-
-	public static final int pickColor() {
-		return COLORS[(int) Math.round(Math.random() * (COLORS.length - 1))];
-	}
-
-	public static final int nextColor() {
-		if (COLOR_INDEX >= COLORS.length) {
-			COLOR_INDEX = 0;
-		}
-		return COLORS[COLOR_INDEX++];
-	}
-
-	public static int dp2px(float density, int dp) {
-		if (dp == 0) {
-			return 1;
-		}
-		return (int) (dp * density + 0.5f);
-
-	}
-
-	public static int px2dp(float density, int px) {
-		return (int) Math.ceil(px / density);
-	}
-
-	public static int sp2px(float scaledDensity, int sp) {
-		return (int) (sp * scaledDensity + 0.5f);
-	}
-
-	public static int px2sp(float scaledDensity, int px) {
-		return (int) Math.ceil(px / scaledDensity);
-	}
-
-	public static int mm2px(Context context, int mm) {
-		return (int) (TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, mm, context.getResources()
-				.getDisplayMetrics()) + 0.5f);
-	}
-
-	public static int darkenColor(int color) {
-		float[] hsv = new float[3];
-		int alpha = Color.alpha(color);
-		Color.colorToHSV(color, hsv);
-		hsv[1] = Math.min(hsv[1] * SATURATION_DARKEN, 1.0f);
-		hsv[2] = hsv[2] * INTENSITY_DARKEN;
-		int tempColor = Color.HSVToColor(hsv);
-		return Color.argb(alpha, Color.red(tempColor), Color.green(tempColor), Color.blue(tempColor));
-	}
 
 	/**
 	 * Returns next bigger float value considering precision of the argument.
@@ -220,7 +158,7 @@ public abstract class Utils {
 		}
 
 		double rawInterval = range / steps;
-		double interval = Utils.roundToOneSignificantFigure(rawInterval);
+		double interval = roundToOneSignificantFigure(rawInterval);
 		double intervalMagnitude = Math.pow(10, (int) Math.log10(interval));
 		int intervalSigDigit = (int) (interval / intervalMagnitude);
 		if (intervalSigDigit > 5) {
@@ -229,7 +167,7 @@ public abstract class Utils {
 		}
 
 		double first = Math.ceil(start / interval) * interval;
-		double last = Utils.nextUp(Math.floor(stop / interval) * interval);
+		double last = nextUp(Math.floor(stop / interval) * interval);
 
 		double intervalValue;
 		int valueIndex;
@@ -255,5 +193,4 @@ public abstract class Utils {
 			outValues.decimals = 0;
 		}
 	}
-
 }

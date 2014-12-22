@@ -7,7 +7,7 @@ import java.util.List;
 
 import lecho.lib.hellocharts.formatter.LineChartValueFormatter;
 import lecho.lib.hellocharts.formatter.SimpleLineChartValueFormatter;
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
 
 /**
@@ -18,8 +18,8 @@ public class Line {
 	private static final int DEFAULT_LINE_STROKE_WIDTH_DP = 3;
 	private static final int DEFAULT_POINT_RADIUS_DP = 6;
 	private static final int DEFAULT_AREA_TRANSPARENCY = 64;
-	private int color = Utils.DEFAULT_COLOR;
-	private int darkenColor = Utils.DEFAULT_DARKEN_COLOR;
+	private int color = ChartUtils.DEFAULT_COLOR;
+	private int darkenColor = ChartUtils.DEFAULT_DARKEN_COLOR;
 	/** Transparency of area when line is filled. **/
 	private int areaTransparency = DEFAULT_AREA_TRANSPARENCY;
 	private int strokeWidth = DEFAULT_LINE_STROKE_WIDTH_DP;
@@ -94,7 +94,7 @@ public class Line {
 
 	public Line setColor(int color) {
 		this.color = color;
-		this.darkenColor = Utils.darkenColor(color);
+		this.darkenColor = ChartUtils.darkenColor(color);
 		return this;
 	}
 

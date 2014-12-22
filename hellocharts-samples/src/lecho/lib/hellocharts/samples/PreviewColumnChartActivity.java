@@ -10,7 +10,7 @@ import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.ColumnChartView;
 import lecho.lib.hellocharts.view.PreviewColumnChartView;
 import android.os.Bundle;
@@ -105,9 +105,9 @@ public class PreviewColumnChartActivity extends ActionBarActivity {
 				return true;
 			}
 			if (id == R.id.action_change_color) {
-				int color = Utils.pickColor();
+				int color = ChartUtils.pickColor();
 				while (color == previewChart.getPreviewColor()) {
-					color = Utils.pickColor();
+					color = ChartUtils.pickColor();
 				}
 				previewChart.setPreviewColor(color);
 				return true;
@@ -124,7 +124,7 @@ public class PreviewColumnChartActivity extends ActionBarActivity {
 
 				values = new ArrayList<SubcolumnValue>();
 				for (int j = 0; j < numSubcolumns; ++j) {
-					values.add(new SubcolumnValue((float) Math.random() * 50f + 5, Utils.pickColor()));
+					values.add(new SubcolumnValue((float) Math.random() * 50f + 5, ChartUtils.pickColor()));
 				}
 
 				columns.add(new Column(values));
@@ -139,7 +139,7 @@ public class PreviewColumnChartActivity extends ActionBarActivity {
 			previewData = new ColumnChartData(data);
 			for (Column column : previewData.getColumns()) {
 				for (SubcolumnValue value : column.getValues()) {
-					value.setColor(Utils.DEFAULT_DARKEN_COLOR);
+					value.setColor(ChartUtils.DEFAULT_DARKEN_COLOR);
 				}
 			}
 

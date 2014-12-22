@@ -1,6 +1,6 @@
 package lecho.lib.hellocharts.model;
 
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
 
 /**
@@ -20,10 +20,10 @@ public class SliceValue {
 	private float diff;
 
 	/** Color of this slice. */
-	private int color = Utils.DEFAULT_COLOR;
+	private int color = ChartUtils.DEFAULT_COLOR;
 
 	/** Darken color used to draw label background and give touch feedback. */
-	private int darkenColor = Utils.DEFAULT_DARKEN_COLOR;
+	private int darkenColor = ChartUtils.DEFAULT_DARKEN_COLOR;
 
 	/** Spacing between this slice and its neighbors. */
 	private int sliceSpacing = DEFAULT_SLICE_SPACING_DP;
@@ -94,7 +94,7 @@ public class SliceValue {
 
 	public SliceValue setColor(int color) {
 		this.color = color;
-		this.darkenColor = Utils.darkenColor(color);
+		this.darkenColor = ChartUtils.darkenColor(color);
 		return this;
 	}
 

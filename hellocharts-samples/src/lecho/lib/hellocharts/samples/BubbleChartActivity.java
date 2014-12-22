@@ -20,7 +20,7 @@ import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.BubbleChartData;
 import lecho.lib.hellocharts.model.BubbleValue;
 import lecho.lib.hellocharts.model.ValueShape;
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.BubbleChartView;
 import lecho.lib.hellocharts.view.Chart;
 
@@ -146,7 +146,7 @@ public class BubbleChartActivity extends ActionBarActivity {
 			List<BubbleValue> values = new ArrayList<BubbleValue>();
 			for (int i = 0; i < BUBBLES_NUM; ++i) {
 				BubbleValue value = new BubbleValue(i, (float) Math.random() * 100, (float) Math.random() * 1000);
-				value.setColor(Utils.pickColor());
+				value.setColor(ChartUtils.pickColor());
 				value.setShape(shape);
 				values.add(value);
 			}

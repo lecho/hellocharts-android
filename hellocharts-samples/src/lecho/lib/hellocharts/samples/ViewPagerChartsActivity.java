@@ -17,7 +17,7 @@ import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PieChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.BubbleChartView;
 import lecho.lib.hellocharts.view.ColumnChartView;
 import lecho.lib.hellocharts.view.LineChartView;
@@ -238,7 +238,7 @@ public class ViewPagerChartsActivity extends ActionBarActivity implements Action
 			}
 
 			Line line = new Line(values);
-			line.setColor(Utils.COLOR_GREEN);
+			line.setColor(ChartUtils.COLOR_GREEN);
 
 			List<Line> lines = new ArrayList<Line>();
 			lines.add(line);
@@ -260,7 +260,7 @@ public class ViewPagerChartsActivity extends ActionBarActivity implements Action
 
 				values = new ArrayList<SubcolumnValue>();
 				for (int j = 0; j < numSubcolumns; ++j) {
-					values.add(new SubcolumnValue((float) Math.random() * 50f + 5, Utils.pickColor()));
+					values.add(new SubcolumnValue((float) Math.random() * 50f + 5, ChartUtils.pickColor()));
 				}
 
 				columns.add(new Column(values));
@@ -280,7 +280,7 @@ public class ViewPagerChartsActivity extends ActionBarActivity implements Action
 			List<BubbleValue> values = new ArrayList<BubbleValue>();
 			for (int i = 0; i < numBubbles; ++i) {
 				BubbleValue value = new BubbleValue(i, (float) Math.random() * 100, (float) Math.random() * 1000);
-				value.setColor(Utils.pickColor());
+				value.setColor(ChartUtils.pickColor());
 				values.add(value);
 			}
 
@@ -300,7 +300,7 @@ public class ViewPagerChartsActivity extends ActionBarActivity implements Action
 			}
 
 			Line line = new Line(values);
-			line.setColor(Utils.DEFAULT_DARKEN_COLOR);
+			line.setColor(ChartUtils.DEFAULT_DARKEN_COLOR);
 			line.setHasPoints(false);// too many values so don't draw points.
 
 			List<Line> lines = new ArrayList<Line>();
@@ -319,7 +319,7 @@ public class ViewPagerChartsActivity extends ActionBarActivity implements Action
 
 			List<SliceValue> values = new ArrayList<SliceValue>();
 			for (int i = 0; i < numValues; ++i) {
-				values.add(new SliceValue((float) Math.random() * 30 + 15, Utils.pickColor()));
+				values.add(new SliceValue((float) Math.random() * 30 + 15, ChartUtils.pickColor()));
 			}
 
 			PieChartData data = new PieChartData(values);

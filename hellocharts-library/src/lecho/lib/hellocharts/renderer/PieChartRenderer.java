@@ -16,7 +16,7 @@ import lecho.lib.hellocharts.model.PieChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
 import lecho.lib.hellocharts.provider.PieChartDataProvider;
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
 
 /**
@@ -63,7 +63,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	public PieChartRenderer(Context context, Chart chart, PieChartDataProvider dataProvider) {
 		super(context, chart);
 		this.dataProvider = dataProvider;
-		touchAdditional = Utils.dp2px(density, DEFAULT_TOUCH_ADDITIONAL_DP);
+		touchAdditional = ChartUtils.dp2px(density, DEFAULT_TOUCH_ADDITIONAL_DP);
 
 		slicePaint.setAntiAlias(true);
 		slicePaint.setStyle(Paint.Style.FILL);
@@ -115,14 +115,14 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		if (null != data.getCenterText1Typeface()) {
 			centerCircleText1Paint.setTypeface(data.getCenterText1Typeface());
 		}
-		centerCircleText1Paint.setTextSize(Utils.sp2px(scaledDensity, data.getCenterText1FontSize()));
+		centerCircleText1Paint.setTextSize(ChartUtils.sp2px(scaledDensity, data.getCenterText1FontSize()));
 		centerCircleText1Paint.setColor(data.getCenterText1Color());
 		centerCircleText1Paint.getFontMetricsInt(centerCircleText1FontMetrics);
 
 		if (null != data.getCenterText2Typeface()) {
 			centerCircleText2Paint.setTypeface(data.getCenterText2Typeface());
 		}
-		centerCircleText2Paint.setTextSize(Utils.sp2px(scaledDensity, data.getCenterText2FontSize()));
+		centerCircleText2Paint.setTextSize(ChartUtils.sp2px(scaledDensity, data.getCenterText2FontSize()));
 		centerCircleText2Paint.setColor(data.getCenterText2Color());
 		centerCircleText2Paint.getFontMetricsInt(centerCircleText2FontMetrics);
 	}
@@ -244,7 +244,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		normalizeVector(sliceVector);
 
 		drawCircleOval.set(orginCircleOval);
-		final int sliceSpacing = Utils.dp2px(density, sliceValue.getSliceSpacing());
+		final int sliceSpacing = ChartUtils.dp2px(density, sliceValue.getSliceSpacing());
 		drawCircleOval.inset(sliceSpacing, sliceSpacing);
 		drawCircleOval.offset((float) (sliceVector.x * sliceSpacing), (float) (sliceVector.y * sliceSpacing));
 		if (MODE_HIGHLIGHT == mode) {

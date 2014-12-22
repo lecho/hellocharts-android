@@ -18,7 +18,7 @@ import java.util.List;
 import lecho.lib.hellocharts.listener.PieChartOnValueSelectListener;
 import lecho.lib.hellocharts.model.SliceValue;
 import lecho.lib.hellocharts.model.PieChartData;
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
 import lecho.lib.hellocharts.view.PieChartView;
 
@@ -161,7 +161,7 @@ public class PieChartActivity extends ActionBarActivity {
 
 			List<SliceValue> values = new ArrayList<SliceValue>();
 			for (int i = 0; i < numValues; ++i) {
-				SliceValue sliceValue = new SliceValue((float) Math.random() * 30 + 15, Utils.pickColor());
+				SliceValue sliceValue = new SliceValue((float) Math.random() * 30 + 15, ChartUtils.pickColor());
 
 				if (isExploaded) {
 					sliceValue.setSliceSpacing(24);
@@ -188,7 +188,7 @@ public class PieChartActivity extends ActionBarActivity {
 				data.setCenterText1Typeface(tf);
 
 				// Get font size from dimens.xml and convert it to sp(library uses sp values).
-				data.setCenterText1FontSize(Utils.px2sp(getResources().getDisplayMetrics().scaledDensity,
+				data.setCenterText1FontSize(ChartUtils.px2sp(getResources().getDisplayMetrics().scaledDensity,
 						(int) getResources().getDimension(R.dimen.pie_chart_text1_size)));
 			}
 
@@ -198,7 +198,7 @@ public class PieChartActivity extends ActionBarActivity {
 				Typeface tf = Typeface.createFromAsset(getActivity().getAssets(), "Roboto-Italic.ttf");
 
 				data.setCenterText2Typeface(tf);
-				data.setCenterText2FontSize(Utils.px2sp(getResources().getDisplayMetrics().scaledDensity,
+				data.setCenterText2FontSize(ChartUtils.px2sp(getResources().getDisplayMetrics().scaledDensity,
 						(int) getResources().getDimension(R.dimen.pie_chart_text2_size)));
 			}
 

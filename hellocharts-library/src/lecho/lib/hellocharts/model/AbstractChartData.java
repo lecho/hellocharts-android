@@ -1,6 +1,6 @@
 package lecho.lib.hellocharts.model;
 
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import android.graphics.Color;
 import android.graphics.Typeface;
 
@@ -32,7 +32,7 @@ public abstract class AbstractChartData implements ChartData {
 	 * will have background rectangle and that rectangle will be filled with this color. Helpful if you want all labels
 	 * to have the same background color.
 	 */
-	protected int valueLabelBackgroundColor = Utils.darkenColor(Utils.DEFAULT_DARKEN_COLOR);
+	protected int valueLabelBackgroundColor = ChartUtils.darkenColor(ChartUtils.DEFAULT_DARKEN_COLOR);
 
 	public AbstractChartData() {
 

@@ -20,7 +20,7 @@ import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.SubcolumnValue;
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
 import lecho.lib.hellocharts.view.ColumnChartView;
 
@@ -169,7 +169,7 @@ public class ColumnChartActivity extends ActionBarActivity {
 
 				values = new ArrayList<SubcolumnValue>();
 				for (int j = 0; j < numSubcolumns; ++j) {
-					values.add(new SubcolumnValue((float) Math.random() * 50f + 5, Utils.pickColor()));
+					values.add(new SubcolumnValue((float) Math.random() * 50f + 5, ChartUtils.pickColor()));
 				}
 
 				Column column = new Column(values);
@@ -211,7 +211,7 @@ public class ColumnChartActivity extends ActionBarActivity {
 
 				values = new ArrayList<SubcolumnValue>();
 				for (int j = 0; j < numSubcolumns; ++j) {
-					values.add(new SubcolumnValue((float) Math.random() * 50f + 5, Utils.pickColor()));
+					values.add(new SubcolumnValue((float) Math.random() * 50f + 5, ChartUtils.pickColor()));
 				}
 
 				Column column = new Column(values);
@@ -253,7 +253,7 @@ public class ColumnChartActivity extends ActionBarActivity {
 
 				values = new ArrayList<SubcolumnValue>();
 				for (int j = 0; j < numSubcolumns; ++j) {
-					values.add(new SubcolumnValue((float) Math.random() * 20f + 5, Utils.pickColor()));
+					values.add(new SubcolumnValue((float) Math.random() * 20f + 5, ChartUtils.pickColor()));
 				}
 
 				Column column = new Column(values);
@@ -295,7 +295,7 @@ public class ColumnChartActivity extends ActionBarActivity {
 				values = new ArrayList<SubcolumnValue>();
 				for (int j = 0; j < numSubcolumns; ++j) {
 					int sign = getSign();
-					values.add(new SubcolumnValue((float) Math.random() * 50f * sign + 5 * sign, Utils.pickColor()));
+					values.add(new SubcolumnValue((float) Math.random() * 50f * sign + 5 * sign, ChartUtils.pickColor()));
 				}
 
 				Column column = new Column(values);
@@ -335,7 +335,7 @@ public class ColumnChartActivity extends ActionBarActivity {
 				values = new ArrayList<SubcolumnValue>();
 				for (int j = 0; j < numSubcolumns; ++j) {
 					int sign = getSign();
-					values.add(new SubcolumnValue((float) Math.random() * 20f * sign + 5 * sign, Utils.pickColor()));
+					values.add(new SubcolumnValue((float) Math.random() * 20f * sign + 5 * sign, ChartUtils.pickColor()));
 				}
 
 				Column column = new Column(values);

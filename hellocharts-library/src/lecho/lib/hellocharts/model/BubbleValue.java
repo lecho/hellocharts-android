@@ -1,6 +1,6 @@
 package lecho.lib.hellocharts.model;
 
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
 
 /**
@@ -31,8 +31,8 @@ public class BubbleValue {
 
 	/** Difference between originX value and target X value. */
 	private float diffZ;
-	private int color = Utils.DEFAULT_COLOR;
-	private int darkenColor = Utils.DEFAULT_DARKEN_COLOR;
+	private int color = ChartUtils.DEFAULT_COLOR;
+	private int darkenColor = ChartUtils.DEFAULT_DARKEN_COLOR;
 	private ValueShape shape = ValueShape.CIRCLE;
 	private char[] label;
 
@@ -110,7 +110,7 @@ public class BubbleValue {
 
 	public BubbleValue setColor(int color) {
 		this.color = color;
-		this.darkenColor = Utils.darkenColor(color);
+		this.darkenColor = ChartUtils.darkenColor(color);
 		return this;
 	}
 

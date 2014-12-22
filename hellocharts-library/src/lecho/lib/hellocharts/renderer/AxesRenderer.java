@@ -1,12 +1,5 @@
 package lecho.lib.hellocharts.renderer;
 
-import lecho.lib.hellocharts.computator.ChartComputator;
-import lecho.lib.hellocharts.model.Axis;
-import lecho.lib.hellocharts.model.AxisValue;
-import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.util.AxisAutoValues;
-import lecho.lib.hellocharts.util.Utils;
-import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -16,14 +9,24 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.text.TextUtils;
 
+import lecho.lib.hellocharts.computator.ChartComputator;
+import lecho.lib.hellocharts.model.Axis;
+import lecho.lib.hellocharts.model.AxisValue;
+import lecho.lib.hellocharts.model.Viewport;
+import lecho.lib.hellocharts.util.AxisAutoValues;
+import lecho.lib.hellocharts.util.ChartUtils;
+import lecho.lib.hellocharts.util.FloatUtils;
+import lecho.lib.hellocharts.view.Chart;
+
 /**
  * Default axes renderer. Can draw maximum four axes - two horizontal(top/bottom) and two vertical(left/right).
- *
  */
 public class AxesRenderer {
 	private static final int DEFAULT_AXIS_MARGIN_DP = 2;
 
-	/** Axis positions indexes, used for indexing tabs that holds axes parameters, see below. */
+	/**
+	 * Axis positions indexes, used for indexing tabs that holds axes parameters, see below.
+	 */
 	private static final int TOP = 0;
 	private static final int LEFT = 1;
 	private static final int RIGHT = 2;
@@ -32,62 +35,90 @@ public class AxesRenderer {
 	/**
 	 * Used to measure label width. If label has mas 5 characters only 5 first characters of this array are used to
 	 * measure text width.
-	 **/
-	private static final char[] labelWidthChars = new char[] { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-			'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0' };
+	 */
+	private static final char[] labelWidthChars = new char[]{'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+			'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'};
 
 	private Chart chart;
 	private int axisMargin;
 
-	/** 4 text paints for every axis, not all have to be used, indexed with TOP, LEFT, RIGHT, BOTTOM. */
-	private Paint[] textPaintTab = new Paint[] { new Paint(), new Paint(), new Paint(), new Paint() };
+	/**
+	 * 4 text paints for every axis, not all have to be used, indexed with TOP, LEFT, RIGHT, BOTTOM.
+	 */
+	private Paint[] textPaintTab = new Paint[]{new Paint(), new Paint(), new Paint(), new Paint()};
 	private Paint linePaint;
 
-	/** Holds number of values that should be drown for each axis. */
+	/**
+	 * Holds number of values that should be drown for each axis.
+	 */
 	private int[] axisValuesToDrawNumTab = new int[4];
 
-	/** Holds raw values to draw for each axis. */
+	/**
+	 * Holds raw values to draw for each axis.
+	 */
 	private float[][] axisRawValuesTab = new float[4][0];
 
 	/**
 	 * Holds auto-generated values that should be drawn, i.e if axis is inside not all auto-generated values should be
 	 * drawn to avoid overdrawing. Used only for auto axes.
-	 **/
+	 */
 	private float[][] axisAutoValuesToDrawTab = new float[4][0];
 
-	/** Holds custom values that should be drawn, used only for custom axes. */
+	/**
+	 * Holds custom values that should be drawn, used only for custom axes.
+	 */
 	private AxisValue[][] axisValuesToDrawTab = new AxisValue[4][0];
 
-	/** Buffers for axes lines coordinates(to draw grid in the background). */
+	/**
+	 * Buffers for axes lines coordinates(to draw grid in the background).
+	 */
 	private float[][] axisLinesDrawBufferTab = new float[4][0];
 
-	/** Buffers for auto-generated values for each axis, used only if there are auto axes. */
-	private AxisAutoValues[] axisAutoValuesBufferTab = new AxisAutoValues[] { new AxisAutoValues(),
-			new AxisAutoValues(), new AxisAutoValues(), new AxisAutoValues() };
+	/**
+	 * Buffers for auto-generated values for each axis, used only if there are auto axes.
+	 */
+	private AxisAutoValues[] axisAutoValuesBufferTab = new AxisAutoValues[]{new AxisAutoValues(),
+			new AxisAutoValues(), new AxisAutoValues(), new AxisAutoValues()};
 
-	/** Holds fixed coordinates for each axis, for horizontal axes Y value is fixed, for vertical axes X value is fixed. */
+	/**
+	 * Holds fixed coordinates for each axis, for horizontal axes Y value is fixed, for vertical axes X value is fixed.
+	 */
 	private float[] axisFixedCoordinateTab = new float[4];
 
-	/** Holds baselines for axes names. */
+	/**
+	 * Holds baselines for axes names.
+	 */
 	private float[] axisNameBaselineTab = new float[4];
 
-	/** Holds fixed coordinate for axes separations lines, used only for horizontal axes where fixed value is Y. */
+	/**
+	 * Holds fixed coordinate for axes separations lines, used only for horizontal axes where fixed value is Y.
+	 */
 	private float[] axisSeparationLineTab = new float[4];
 
-	/** Label max width for each axis. */
+	/**
+	 * Label max width for each axis.
+	 */
 	private int[] axisLabelWidthTab = new int[4];
 
-	/** Label height for each axis. */
+	/**
+	 * Label height for each axis.
+	 */
 	private int[] axisLabelTextAscentTab = new int[4];
 
-	/** Label descent for each axis. **/
+	/**
+	 * Label descent for each axis. *
+	 */
 	private int[] axisLabelTextDescentTab = new int[4];
 
-	/** Font metrics for each axis. */
-	private FontMetricsInt[] fontMetricsTab = new FontMetricsInt[] { new FontMetricsInt(), new FontMetricsInt(),
-			new FontMetricsInt(), new FontMetricsInt() };
+	/**
+	 * Font metrics for each axis.
+	 */
+	private FontMetricsInt[] fontMetricsTab = new FontMetricsInt[]{new FontMetricsInt(), new FontMetricsInt(),
+			new FontMetricsInt(), new FontMetricsInt()};
 
-	/** Holds formated axis value label. */
+	/**
+	 * Holds formated axis value label.
+	 */
 	private char[] labelBuffer = new char[32];
 
 	private float density;
@@ -98,7 +129,7 @@ public class AxesRenderer {
 
 		density = context.getResources().getDisplayMetrics().density;
 		scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
-		axisMargin = Utils.dp2px(density, DEFAULT_AXIS_MARGIN_DP);
+		axisMargin = ChartUtils.dp2px(density, DEFAULT_AXIS_MARGIN_DP);
 
 		linePaint = new Paint();
 		linePaint.setAntiAlias(true);
@@ -194,7 +225,7 @@ public class AxesRenderer {
 		}
 
 		textPaintTab[position].setColor(axis.getTextColor());
-		textPaintTab[position].setTextSize(Utils.sp2px(scaledDensity, axis.getTextSize()));
+		textPaintTab[position].setTextSize(ChartUtils.sp2px(scaledDensity, axis.getTextSize()));
 		textPaintTab[position].getFontMetricsInt(fontMetricsTab[position]);
 
 		axisLabelTextAscentTab[position] = Math.abs(fontMetricsTab[position].ascent);
@@ -401,7 +432,7 @@ public class AxesRenderer {
 		final Viewport visibleViewport = computator.getVisibleViewport();
 		final Rect contentRect = computator.getContentRect();
 
-		Utils.computeAxisAutoValues(visibleViewport.left, visibleViewport.right, contentRect.width()
+		FloatUtils.computeAxisAutoValues(visibleViewport.left, visibleViewport.right, contentRect.width()
 				/ axisLabelWidthTab[position] / 2, axisAutoValuesBufferTab[position]);
 
 		if (axis.hasLines()
@@ -567,7 +598,7 @@ public class AxesRenderer {
 		final Viewport visibleViewport = computator.getVisibleViewport();
 		final Rect contentRect = computator.getContentRect();
 
-		Utils.computeAxisAutoValues(visibleViewport.bottom, visibleViewport.top, contentRect.height()
+		FloatUtils.computeAxisAutoValues(visibleViewport.bottom, visibleViewport.top, contentRect.height()
 				/ axisLabelTextAscentTab[position] / 2, axisAutoValuesBufferTab[position]);
 
 		if (axis.hasLines()

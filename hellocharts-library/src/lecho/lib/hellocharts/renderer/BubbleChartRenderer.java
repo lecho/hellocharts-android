@@ -15,7 +15,7 @@ import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
 import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.provider.BubbleChartDataProvider;
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
 
 public class BubbleChartRenderer extends AbstractChartRenderer {
@@ -68,7 +68,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		super(context, chart);
 		this.dataProvider = dataProvider;
 
-		touchAdditional = Utils.dp2px(density, DEFAULT_TOUCH_ADDITIONAL_DP);
+		touchAdditional = ChartUtils.dp2px(density, DEFAULT_TOUCH_ADDITIONAL_DP);
 
 		bubblePaint.setAntiAlias(true);
 		bubblePaint.setStyle(Paint.Style.FILL);
@@ -347,7 +347,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		// Prevent cutting of bubbles on the edges of chart area.
 		tempMaxViewport.inset(-maxRadius * bubbleScaleX, -maxRadius * bubbleScaleY);
 
-		minRawRadius = Utils.dp2px(density, dataProvider.getBubbleChartData().getMinBubbleRadius());
+		minRawRadius = ChartUtils.dp2px(density, dataProvider.getBubbleChartData().getMinBubbleRadius());
 	}
 
 	private int calculateContentAreaMargin() {

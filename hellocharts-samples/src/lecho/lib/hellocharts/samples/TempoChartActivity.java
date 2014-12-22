@@ -10,7 +10,7 @@ import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.formatter.SimpleAxisValueFormatter;
 import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.LineChartView;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -99,7 +99,7 @@ public class TempoChartActivity extends ActionBarActivity {
 			}
 
 			line = new Line(values);
-			line.setColor(Utils.COLOR_RED);
+			line.setColor(ChartUtils.COLOR_RED);
 			line.setHasPoints(false);
 			line.setStrokeWidth(3);
 			lines.add(line);
@@ -111,7 +111,7 @@ public class TempoChartActivity extends ActionBarActivity {
 			// value.
 			Axis distanceAxis = new Axis();
 			distanceAxis.setName("Distance");
-			distanceAxis.setTextColor(Utils.COLOR_ORANGE);
+			distanceAxis.setTextColor(ChartUtils.COLOR_ORANGE);
 			distanceAxis.setMaxLabelChars(4);
 			distanceAxis.setFormatter(new SimpleAxisValueFormatter().setAppendedText("km".toCharArray()));
 			distanceAxis.setHasLines(true);
@@ -128,7 +128,7 @@ public class TempoChartActivity extends ActionBarActivity {
 			}
 
 			Axis tempoAxis = new Axis(axisValues).setName("Tempo [min/km]").setHasLines(true).setMaxLabelChars(4)
-					.setTextColor(Utils.COLOR_RED);
+					.setTextColor(ChartUtils.COLOR_RED);
 			data.setAxisYLeft(tempoAxis);
 
 			// *** Same as in Speed/Height chart.

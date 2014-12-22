@@ -16,7 +16,7 @@ import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.renderer.AxesRenderer;
 import lecho.lib.hellocharts.renderer.ChartRenderer;
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -92,7 +92,7 @@ public abstract class AbstractChartView extends View implements Chart {
 			chartRenderer.drawUnclipped(canvas);
 			axesRenderer.drawInForeground(canvas);
 		} else {
-			canvas.drawColor(Utils.DEFAULT_COLOR);
+			canvas.drawColor(ChartUtils.DEFAULT_COLOR);
 		}
 	}
 

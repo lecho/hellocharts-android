@@ -21,7 +21,7 @@ import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.ColumnChartView;
 import lecho.lib.hellocharts.view.LineChartView;
 
@@ -85,7 +85,7 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 
 				values = new ArrayList<SubcolumnValue>();
 				for (int j = 0; j < numSubcolumns; ++j) {
-					values.add(new SubcolumnValue((float) Math.random() * 50f + 5, Utils.pickColor()));
+					values.add(new SubcolumnValue((float) Math.random() * 50f + 5, ChartUtils.pickColor()));
 				}
 
 				axisValues.add(new AxisValue(i, months[i].toCharArray()));
@@ -137,7 +137,7 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 			}
 
 			Line line = new Line(values);
-			line.setColor(Utils.COLOR_GREEN).setCubic(true);
+			line.setColor(ChartUtils.COLOR_GREEN).setCubic(true);
 
 			List<Line> lines = new ArrayList<Line>();
 			lines.add(line);
@@ -185,7 +185,7 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 			@Override
 			public void onValueDeselected() {
 
-				generateLineData(Utils.COLOR_GREEN, 0);
+				generateLineData(ChartUtils.COLOR_GREEN, 0);
 
 			}
 		}

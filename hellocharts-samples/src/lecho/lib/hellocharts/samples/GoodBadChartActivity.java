@@ -7,7 +7,7 @@ import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.LineChartView;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -78,7 +78,7 @@ public class GoodBadChartActivity extends ActionBarActivity {
 			values.add(new PointValue(2, 0).setLabel("".toCharArray()));
 
 			line = new Line(values);
-			line.setColor(Utils.COLOR_GREEN);
+			line.setColor(ChartUtils.COLOR_GREEN);
 			line.setAreaTransparency(255);
 			line.setFilled(true);
 			line.setPointRadius(1);
@@ -92,7 +92,7 @@ public class GoodBadChartActivity extends ActionBarActivity {
 			values.add(new PointValue(5, 0).setLabel("".toCharArray()));
 
 			line = new Line(values);
-			line.setColor(Utils.COLOR_GREEN);
+			line.setColor(ChartUtils.COLOR_GREEN);
 			line.setAreaTransparency(255);
 			line.setFilled(true);
 			line.setPointRadius(1);
@@ -106,7 +106,7 @@ public class GoodBadChartActivity extends ActionBarActivity {
 			values.add(new PointValue(3, 0).setLabel("".toCharArray()));
 
 			line = new Line(values);
-			line.setColor(Utils.COLOR_RED);
+			line.setColor(ChartUtils.COLOR_RED);
 			line.setAreaTransparency(255);
 			line.setFilled(true);
 			line.setPointRadius(1);

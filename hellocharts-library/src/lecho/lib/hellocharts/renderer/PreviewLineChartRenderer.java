@@ -3,7 +3,7 @@ package lecho.lib.hellocharts.renderer;
 import lecho.lib.hellocharts.computator.ChartComputator;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.provider.LineChartDataProvider;
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -25,7 +25,7 @@ public class PreviewLineChartRenderer extends LineChartRenderer {
 		super(context, chart, dataProvider);
 		previewPaint.setAntiAlias(true);
 		previewPaint.setColor(Color.LTGRAY);
-		previewPaint.setStrokeWidth(Utils.dp2px(density, DEFAULT_PREVIEW_STROKE_WIDTH_DP));
+		previewPaint.setStrokeWidth(ChartUtils.dp2px(density, DEFAULT_PREVIEW_STROKE_WIDTH_DP));
 	}
 
 	@Override

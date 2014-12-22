@@ -18,7 +18,7 @@ import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
 import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.provider.LineChartDataProvider;
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
 
 /**
@@ -59,17 +59,17 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		super(context, chart);
 		this.dataProvider = dataProvider;
 
-		touchTolleranceMargin = Utils.dp2px(density, DEFAULT_TOUCH_TOLLERANCE_MARGIN_DP);
+		touchTolleranceMargin = ChartUtils.dp2px(density, DEFAULT_TOUCH_TOLLERANCE_MARGIN_DP);
 
 		linePaint.setAntiAlias(true);
 		linePaint.setStyle(Paint.Style.STROKE);
 		linePaint.setStrokeCap(Cap.ROUND);
-		linePaint.setStrokeWidth(Utils.dp2px(density, DEFAULT_LINE_STROKE_WIDTH_DP));
+		linePaint.setStrokeWidth(ChartUtils.dp2px(density, DEFAULT_LINE_STROKE_WIDTH_DP));
 
 		pointPaint.setAntiAlias(true);
 		pointPaint.setStyle(Paint.Style.FILL);
 
-		checkPrecission = Utils.dp2px(density, 2);
+		checkPrecission = ChartUtils.dp2px(density, 2);
 
 	}
 
@@ -158,7 +158,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		final ChartComputator computator = chart.getChartComputator();
 		int lineIndex = 0;
 		for (Line line : data.getLines()) {
-			int pointRadius = Utils.dp2px(density, line.getPointRadius());
+			int pointRadius = ChartUtils.dp2px(density, line.getPointRadius());
 			int valueIndex = 0;
 			for (PointValue pointValue : line.getValues()) {
 				final float rawValueX = computator.computeRawX(pointValue.getX());
@@ -208,7 +208,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 				}
 			}
 		}
-		return Utils.dp2px(density, contentAreaMargin);
+		return ChartUtils.dp2px(density, contentAreaMargin);
 	}
 
 	/**
@@ -336,7 +336,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void prepareLinePaint(final Line line) {
-		linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
+		linePaint.setStrokeWidth(ChartUtils.dp2px(density, line.getStrokeWidth()));
 		linePaint.setColor(line.getColor());
 		PathEffect pathEffect = line.getPathEffect();
 		if (null != pathEffect) {
@@ -352,7 +352,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		pointPaint.setColor(line.getColor());
 		int valueIndex = 0;
 		for (PointValue pointValue : line.getValues()) {
-			int pointRadius = Utils.dp2px(density, line.getPointRadius());
+			int pointRadius = ChartUtils.dp2px(density, line.getPointRadius());
 			final float rawX = computator.computeRawX(pointValue.getX());
 			final float rawY = computator.computeRawY(pointValue.getY());
 			if (computator.isWithinContentRect(rawX, rawY, checkPrecission)) {
@@ -392,7 +392,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private void highlightPoint(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY, int lineIndex,
 								int valueIndex) {
 		if (selectedValue.getFirstIndex() == lineIndex && selectedValue.getSecondIndex() == valueIndex) {
-			int pointRadius = Utils.dp2px(density, line.getPointRadius());
+			int pointRadius = ChartUtils.dp2px(density, line.getPointRadius());
 			pointPaint.setColor(line.getDarkenColor());
 			drawPoint(canvas, line, pointValue, rawX, rawY, pointRadius + touchTolleranceMargin);
 			if (line.hasLabels() || line.hasLabelsOnlyForSelected()) {

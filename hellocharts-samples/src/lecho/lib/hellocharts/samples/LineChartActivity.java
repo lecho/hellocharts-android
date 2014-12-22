@@ -23,7 +23,7 @@ import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
 import lecho.lib.hellocharts.view.LineChartView;
 
@@ -217,7 +217,7 @@ public class LineChartActivity extends ActionBarActivity {
 				}
 
 				Line line = new Line(values);
-				line.setColor(Utils.COLORS[i]);
+				line.setColor(ChartUtils.COLORS[i]);
 				line.setShape(shape);
 				line.setCubic(isCubic);
 				line.setFilled(isFilled);

@@ -23,7 +23,7 @@ import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.SubcolumnValue;
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.ComboLineColumnChartView;
 
 public class ComboLineColumnChartActivity extends ActionBarActivity {
@@ -177,7 +177,7 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 				}
 
 				Line line = new Line(values);
-				line.setColor(Utils.COLORS[i]);
+				line.setColor(ChartUtils.COLORS[i]);
 				line.setCubic(isCubic);
 				line.setHasLabels(hasLabels);
 				line.setHasLines(hasLines);
@@ -201,7 +201,7 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
 
 				values = new ArrayList<SubcolumnValue>();
 				for (int j = 0; j < numSubcolumns; ++j) {
-					values.add(new SubcolumnValue((float) Math.random() * 50 + 5, Utils.COLOR_GREEN));
+					values.add(new SubcolumnValue((float) Math.random() * 50 + 5, ChartUtils.COLOR_GREEN));
 				}
 
 				columns.add(new Column(values));

@@ -4,7 +4,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 import lecho.lib.hellocharts.model.AxisValue;
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.FloatUtils;
 
 public class SimpleAxisValueFormatter implements AxisValueFormatter {
 	protected static final int DEFAULT_DIGITS_NUMBER = 0;
@@ -93,17 +93,17 @@ public class SimpleAxisValueFormatter implements AxisValueFormatter {
 	}
 
 	protected int formatFloatValue(char[] formattedValue, float value, int decimalDigits) {
-		return Utils.formatFloat(formattedValue, value, formattedValue.length - appendedText.length, decimalDigits, decimalSeparator);
+		return FloatUtils.formatFloat(formattedValue, value, formattedValue.length - appendedText.length, decimalDigits, decimalSeparator);
 	}
 
-	protected void appendText(char[] formattedValue){
+	protected void appendText(char[] formattedValue) {
 		if (appendedText.length > 0) {
 			System.arraycopy(appendedText, 0, formattedValue, formattedValue.length - appendedText.length,
 					appendedText.length);
 		}
 	}
 
-	protected void prependText(char[] formattedValue, int charsNumber){
+	protected void prependText(char[] formattedValue, int charsNumber) {
 		if (prependedText.length > 0) {
 			System.arraycopy(prependedText, 0, formattedValue, formattedValue.length - charsNumber - appendedText.length
 					- prependedText.length, prependedText.length);

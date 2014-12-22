@@ -3,8 +3,7 @@ package lecho.lib.hellocharts.formatter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
-import lecho.lib.hellocharts.model.AxisValue;
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.FloatUtils;
 
 public abstract class AbstractValueFormatter {
 	protected static final int DEFAULT_DIGITS_NUMBER = 0;
@@ -89,7 +88,7 @@ public abstract class AbstractValueFormatter {
 	}
 
 	protected int formatFloatValue(char[] formattedValue, float value) {
-		return Utils.formatFloat(formattedValue, value, formattedValue.length - appendedText.length, decimalDigitsNumber,
+		return FloatUtils.formatFloat(formattedValue, value, formattedValue.length - appendedText.length, decimalDigitsNumber,
 				decimalSeparator);
 	}
 

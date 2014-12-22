@@ -1,6 +1,6 @@
 package lecho.lib.hellocharts.model;
 
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
 
 /**
@@ -11,8 +11,8 @@ public class SubcolumnValue {
 	private float value;
 	private float orginValue;
 	private float diff;
-	private int color = Utils.DEFAULT_COLOR;
-	private int darkenColor = Utils.DEFAULT_DARKEN_COLOR;
+	private int color = ChartUtils.DEFAULT_COLOR;
+	private int darkenColor = ChartUtils.DEFAULT_DARKEN_COLOR;
 	private char[] label;
 
 	public SubcolumnValue() {
@@ -73,7 +73,7 @@ public class SubcolumnValue {
 
 	public SubcolumnValue setColor(int color) {
 		this.color = color;
-		this.darkenColor = Utils.darkenColor(color);
+		this.darkenColor = ChartUtils.darkenColor(color);
 		return this;
 	}
 

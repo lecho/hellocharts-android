@@ -10,7 +10,7 @@ import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.LineChartView;
 import lecho.lib.hellocharts.view.PreviewLineChartView;
 import android.os.Bundle;
@@ -105,9 +105,9 @@ public class PreviewLineChartActivity extends ActionBarActivity {
 				return true;
 			}
 			if (id == R.id.action_change_color) {
-				int color = Utils.pickColor();
+				int color = ChartUtils.pickColor();
 				while (color == previewChart.getPreviewColor()) {
-					color = Utils.pickColor();
+					color = ChartUtils.pickColor();
 				}
 				previewChart.setPreviewColor(color);
 				return true;
@@ -124,7 +124,7 @@ public class PreviewLineChartActivity extends ActionBarActivity {
 			}
 
 			Line line = new Line(values);
-			line.setColor(Utils.COLOR_GREEN);
+			line.setColor(ChartUtils.COLOR_GREEN);
 			line.setHasPoints(false);// too many values so don't draw points.
 
 			List<Line> lines = new ArrayList<Line>();
@@ -137,7 +137,7 @@ public class PreviewLineChartActivity extends ActionBarActivity {
 			// prepare preview data, is better to use separate deep copy for preview chart.
 			// Set color to grey to make preview area more visible.
 			previewData = new LineChartData(data);
-			previewData.getLines().get(0).setColor(Utils.DEFAULT_DARKEN_COLOR);
+			previewData.getLines().get(0).setColor(ChartUtils.DEFAULT_DARKEN_COLOR);
 
 		}
 
