@@ -17,10 +17,17 @@ public abstract class Utils {
 	public static final int[] COLORS = new int[] { COLOR_BLUE, COLOR_VIOLET, COLOR_GREEN, COLOR_ORANGE, COLOR_RED };
 	private static final float SATURATION_DARKEN = 1.1f;
 	private static final float INTENSITY_DARKEN = 0.9f;
+    private static int COLOR_INDEX = 0;
 
 	public static final int pickColor() {
 		return COLORS[(int) Math.round(Math.random() * (COLORS.length - 1))];
 	}
+
+    public static final int nextColor() {
+        if (COLOR_INDEX >= COLORS.length)
+            COLOR_INDEX = 0;
+        return COLORS[COLOR_INDEX++];
+    }
 
 	public static int dp2px(float density, int dp) {
 		if (dp == 0) {
@@ -186,6 +193,10 @@ public abstract class Utils {
 				charsNumber++;
 			}
 		}
+        if (formattedValue[index + 1] == separator) {
+            formattedValue[index--] = '0';
+            charCount++;
+        }
 		if (negative) {
 			formattedValue[index--] = '-';
 			charsNumber++;
