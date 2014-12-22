@@ -6,7 +6,7 @@ import android.util.TypedValue;
 
 public abstract class Utils {
 
-	public static final int POW10[] = { 1, 10, 100, 1000, 10000, 100000, 1000000 };
+	public static final int POW10[] = {1, 10, 100, 1000, 10000, 100000, 1000000};
 	public static final int DEFAULT_COLOR = Color.parseColor("#DFDFDF");
 	public static final int DEFAULT_DARKEN_COLOR = Color.parseColor("#DDDDDD");
 	public static final int COLOR_BLUE = Color.parseColor("#33B5E5");
@@ -14,20 +14,21 @@ public abstract class Utils {
 	public static final int COLOR_GREEN = Color.parseColor("#99CC00");
 	public static final int COLOR_ORANGE = Color.parseColor("#FFBB33");
 	public static final int COLOR_RED = Color.parseColor("#FF4444");
-	public static final int[] COLORS = new int[] { COLOR_BLUE, COLOR_VIOLET, COLOR_GREEN, COLOR_ORANGE, COLOR_RED };
+	public static final int[] COLORS = new int[]{COLOR_BLUE, COLOR_VIOLET, COLOR_GREEN, COLOR_ORANGE, COLOR_RED};
 	private static final float SATURATION_DARKEN = 1.1f;
 	private static final float INTENSITY_DARKEN = 0.9f;
-    private static int COLOR_INDEX = 0;
+	private static int COLOR_INDEX = 0;
 
 	public static final int pickColor() {
 		return COLORS[(int) Math.round(Math.random() * (COLORS.length - 1))];
 	}
 
-    public static final int nextColor() {
-        if (COLOR_INDEX >= COLORS.length)
-            COLOR_INDEX = 0;
-        return COLORS[COLOR_INDEX++];
-    }
+	public static final int nextColor() {
+		if (COLOR_INDEX >= COLORS.length) {
+			COLOR_INDEX = 0;
+		}
+		return COLORS[COLOR_INDEX++];
+	}
 
 	public static int dp2px(float density, int dp) {
 		if (dp == 0) {
@@ -66,7 +67,6 @@ public abstract class Utils {
 
 	/**
 	 * Returns next bigger float value considering precision of the argument.
-	 * 
 	 */
 	public static float nextUpF(float f) {
 		if (Float.isNaN(f) || f == Float.POSITIVE_INFINITY) {
@@ -79,7 +79,6 @@ public abstract class Utils {
 
 	/**
 	 * Returns next smaller float value considering precision of the argument.
-	 * 
 	 */
 	public static float nextDownF(float f) {
 		if (Float.isNaN(f) || f == Float.NEGATIVE_INFINITY) {
@@ -95,7 +94,6 @@ public abstract class Utils {
 
 	/**
 	 * Returns next bigger double value considering precision of the argument.
-	 * 
 	 */
 	public static double nextUp(double d) {
 		if (Double.isNaN(d) || d == Double.POSITIVE_INFINITY) {
@@ -108,7 +106,6 @@ public abstract class Utils {
 
 	/**
 	 * Returns next smaller float value considering precision of the argument.
-	 * 
 	 */
 	public static double nextDown(double d) {
 		if (Double.isNaN(d) || d == Double.NEGATIVE_INFINITY) {
@@ -157,9 +154,9 @@ public abstract class Utils {
 	/**
 	 * Formats a float value to the given number of decimals. Returns the length of the string. The string begins at
 	 * [endIndex] - [return value] and ends at [endIndex]. It's up to you to check indexes correctness.
-	 * 
+	 * <p/>
 	 * Parameter [endIndex] can be helpful when you want to append some text to formatted value.
-	 * 
+	 *
 	 * @return number of characters of formatted value
 	 */
 	public static int formatFloat(final char[] formattedValue, float value, int endIndex, int digits, char separator) {
@@ -193,10 +190,10 @@ public abstract class Utils {
 				charsNumber++;
 			}
 		}
-        if (formattedValue[index + 1] == separator) {
-            formattedValue[index--] = '0';
-            charCount++;
-        }
+		if (formattedValue[index + 1] == separator) {
+			formattedValue[index--] = '0';
+			charsNumber++;
+		}
 		if (negative) {
 			formattedValue[index--] = '-';
 			charsNumber++;
@@ -207,21 +204,17 @@ public abstract class Utils {
 	/**
 	 * Computes the set of axis labels to show given start and stop boundaries and an ideal number of stops between
 	 * these boundaries.
-	 * 
-	 * @param start
-	 *            The minimum extreme (e.g. the left edge) for the axis.
-	 * @param stop
-	 *            The maximum extreme (e.g. the right edge) for the axis.
-	 * @param steps
-	 *            The ideal number of stops to create. This should be based on available screen space; the more space
-	 *            there is, the more stops should be shown.
-	 * @param outValues
-	 *            The destination {@link AxisAutoValues} object to populate.
+	 *
+	 * @param start     The minimum extreme (e.g. the left edge) for the axis.
+	 * @param stop      The maximum extreme (e.g. the right edge) for the axis.
+	 * @param steps     The ideal number of stops to create. This should be based on available screen space; the more space
+	 *                  there is, the more stops should be shown.
+	 * @param outValues The destination {@link AxisAutoValues} object to populate.
 	 */
 	public static void computeAxisAutoValues(float start, float stop, int steps, AxisAutoValues outValues) {
 		double range = stop - start;
 		if (steps == 0 || range <= 0) {
-			outValues.values = new float[] {};
+			outValues.values = new float[]{};
 			outValues.valuesNumber = 0;
 			return;
 		}
