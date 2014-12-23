@@ -2,16 +2,57 @@ package lecho.lib.hellocharts.formatter;
 
 import lecho.lib.hellocharts.model.PointValue;
 
-public class SimpleLineChartValueFormatter extends AbstractValueFormatter implements LineChartValueFormatter {
+public class SimpleLineChartValueFormatter implements LineChartValueFormatter {
 
-    public SimpleLineChartValueFormatter(){};
+	private ValueFormatterHelper valueFormatterHelper = new ValueFormatterHelper();
 
-    public SimpleLineChartValueFormatter(int decimalDigitsNumber) {
-        setDecimalDigitsNumber(decimalDigitsNumber);
-    }
+	public SimpleLineChartValueFormatter() {
+		valueFormatterHelper.determineDecimalSeparator();
+	}
 
-    @Override
+	public SimpleLineChartValueFormatter(int decimalDigitsNumber) {
+		this();
+		valueFormatterHelper.setDecimalDigitsNumber(decimalDigitsNumber);
+	}
+
+	@Override
 	public int formatChartValue(char[] formattedValue, PointValue value) {
-		return super.formatFloatValueWithPrependedAndAppendedText(formattedValue, value.getY(), value.getLabel());
+		return valueFormatterHelper.formatFloatValueWithPrependedAndAppendedText(formattedValue, value.getY(), value.getLabel());
+	}
+
+	public int getDecimalDigitsNumber() {
+		return valueFormatterHelper.getDecimalDigitsNumber();
+	}
+
+	public SimpleLineChartValueFormatter setDecimalDigitsNumber(int decimalDigitsNumber) {
+		valueFormatterHelper.setDecimalDigitsNumber(decimalDigitsNumber);
+		return this;
+	}
+
+	public char[] getAppendedText() {
+		return valueFormatterHelper.getAppendedText();
+	}
+
+	public SimpleLineChartValueFormatter setAppendedText(char[] appendedText) {
+		valueFormatterHelper.setAppendedText(appendedText);
+		return this;
+	}
+
+	public char[] getPrependedText() {
+		return valueFormatterHelper.getPrependedText();
+	}
+
+	public SimpleLineChartValueFormatter setPrependedText(char[] prependedText) {
+		valueFormatterHelper.setPrependedText(prependedText);
+		return this;
+	}
+
+	public char getDecimalSeparator() {
+		return valueFormatterHelper.getDecimalSeparator();
+	}
+
+	public SimpleLineChartValueFormatter setDecimalSeparator(char decimalSeparator) {
+		valueFormatterHelper.setDecimalSeparator(decimalSeparator);
+		return this;
 	}
 }
