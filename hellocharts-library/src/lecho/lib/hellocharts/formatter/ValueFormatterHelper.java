@@ -24,9 +24,6 @@ public class ValueFormatterHelper {
 		return decimalDigitsNumber;
 	}
 
-	/**
-	 * Sets number of digits after comma, used only for manual axes, this value will not be used for auto-generated axes.
-	 */
 	public ValueFormatterHelper setDecimalDigitsNumber(int decimalDigitsNumber) {
 		this.decimalDigitsNumber = decimalDigitsNumber;
 		return this;
@@ -71,7 +68,9 @@ public class ValueFormatterHelper {
 	 * returns number of chars of formatted value. The formatted value starts at index [formattedValue.length -
 	 * charsNumber] and ends at index [formattedValue.length-1].
 	 * <p/>
-	 * If label is not null it will be used as formattedValue instead of float value.
+	 * Note: If label is not null it will be used as formattedValue instead of float value.
+	 * Note: Parameter defaultDigitsNumber is used only if you didn't change decimalDigintsNumber value using
+	 * method {@link #setDecimalDigitsNumber(int)}.
 	 */
 	public int formatFloatValueWithPrependedAndAppendedText(char[] formattedValue, float value, int defaultDigitsNumber, char[] label) {
 		if (null != label) {
@@ -89,20 +88,14 @@ public class ValueFormatterHelper {
 	}
 
 	/**
-	 * Formats float value. Result is stored in (output) formattedValue array. Method
-	 * returns number of chars of formatted value. The formatted value starts at index [formattedValue.length -
-	 * charsNumber] and ends at index [formattedValue.length-1].
-	 * <p/>
-	 * If label is not null it will be used as formattedValue instead of float value.
+	 * @see #formatFloatValueWithPrependedAndAppendedText(char[], float, int, char[])
 	 */
 	public int formatFloatValueWithPrependedAndAppendedText(char[] formattedValue, float value, char[] label) {
 		return formatFloatValueWithPrependedAndAppendedText(formattedValue, value, DEFAULT_DIGITS_NUMBER, label);
 	}
 
 	/**
-	 * Formats float value. Result is stored in (output) formattedValue array. Method
-	 * returns number of chars of formatted value. The formatted value starts at index [formattedValue.length -
-	 * charsNumber] and ends at index [formattedValue.length-1].
+	 * @see #formatFloatValueWithPrependedAndAppendedText(char[], float, int, char[])
 	 */
 	public int formatFloatValueWithPrependedAndAppendedText(char[] formattedValue, float value, int defaultDigitsNumber) {
 		return formatFloatValueWithPrependedAndAppendedText(formattedValue, value, defaultDigitsNumber, null);
