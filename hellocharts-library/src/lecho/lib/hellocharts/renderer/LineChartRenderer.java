@@ -338,10 +338,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private void prepareLinePaint(final Line line) {
 		linePaint.setStrokeWidth(ChartUtils.dp2px(density, line.getStrokeWidth()));
 		linePaint.setColor(line.getColor());
-		PathEffect pathEffect = line.getPathEffect();
-		if (null != pathEffect) {
-			linePaint.setPathEffect(pathEffect);
-		}
+		linePaint.setPathEffect(line.getPathEffect());
 	}
 
 	// TODO Drawing points can be done in the same loop as drawing lines but it
