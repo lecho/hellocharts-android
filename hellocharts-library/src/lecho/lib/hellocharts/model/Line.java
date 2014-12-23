@@ -1,5 +1,6 @@
 package lecho.lib.hellocharts.model;
 
+import android.graphics.Color;
 import android.graphics.PathEffect;
 
 import java.util.ArrayList;
@@ -34,6 +35,9 @@ public class Line {
 	private PathEffect pathEffect;
 	private LineChartValueFormatter formatter = new SimpleLineChartValueFormatter();
 	private List<PointValue> values = new ArrayList<PointValue>();
+
+	private int pointFillColor = Color.TRANSPARENT;
+	private int pointStrokeColor = Color.TRANSPARENT;
 
 	public Line() {
 
@@ -100,6 +104,28 @@ public class Line {
 
 	public int getDarkenColor() {
 		return darkenColor;
+	}
+
+	public int getPointFillColor() {
+		return pointFillColor == Color.TRANSPARENT ? color : pointFillColor;
+	}
+
+	public Line setPointFillColor(int color) {
+		this.pointFillColor = color;
+		return this;
+	}
+
+	public int getPointStrokeColor() {
+		return pointStrokeColor == Color.TRANSPARENT ? color : pointStrokeColor;
+	}
+
+	public Line setPointStrokeColor(int color) {
+		this.pointStrokeColor = color;
+		return this;
+	}
+
+	public boolean hasPointStrokeColor() {
+		return this.pointStrokeColor != Color.TRANSPARENT;
 	}
 
 	/**

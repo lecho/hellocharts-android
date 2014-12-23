@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Cap;
 import android.graphics.Path;
-import android.graphics.PathEffect;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
 
@@ -16,7 +15,6 @@ import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
-import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.provider.LineChartDataProvider;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
@@ -29,6 +27,7 @@ import lecho.lib.hellocharts.view.Chart;
 public class LineChartRenderer extends AbstractChartRenderer {
 	private static final float LINE_SMOOTHNES = 0.16f;
 	private static final int DEFAULT_LINE_STROKE_WIDTH_DP = 3;
+	private static final int DEFAULT_POINT_STROKE_WIDTH_DP = 2;
 	private static final int DEFAULT_TOUCH_TOLLERANCE_MARGIN_DP = 4;
 
 	private static final int MODE_DRAW = 0;
@@ -43,7 +42,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private int touchTolleranceMargin;
 	private Path path = new Path();
 	private Paint linePaint = new Paint();
-	private Paint pointPaint = new Paint();
+	private Paint pointFillPaint = new Paint();
+	private Paint pointStrokePaint = new Paint();
 
 	/**
 	 * Not hardware accelerated bitmap used to draw Path(smooth lines and filled area). Bitmap has size of contentRect
@@ -66,8 +66,12 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		linePaint.setStrokeCap(Cap.ROUND);
 		linePaint.setStrokeWidth(ChartUtils.dp2px(density, DEFAULT_LINE_STROKE_WIDTH_DP));
 
-		pointPaint.setAntiAlias(true);
-		pointPaint.setStyle(Paint.Style.FILL);
+		pointFillPaint.setAntiAlias(true);
+		pointFillPaint.setStyle(Paint.Style.FILL);
+
+		pointStrokePaint.setAntiAlias(true);
+		pointStrokePaint.setStyle(Paint.Style.STROKE);
+		pointStrokePaint.setStrokeWidth(ChartUtils.dp2px(density, DEFAULT_POINT_STROKE_WIDTH_DP));
 
 		checkPrecission = ChartUtils.dp2px(density, 2);
 
@@ -346,7 +350,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	// implementing point styles.
 	private void drawPoints(Canvas canvas, Line line, int lineIndex, int mode) {
 		final ChartComputator computator = chart.getChartComputator();
-		pointPaint.setColor(line.getColor());
+		pointFillPaint.setColor(line.getPointFillColor());
+		pointStrokePaint.setColor(line.getPointStrokeColor());
 		int valueIndex = 0;
 		for (PointValue pointValue : line.getValues()) {
 			int pointRadius = ChartUtils.dp2px(density, line.getPointRadius());
@@ -371,12 +376,21 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void drawPoint(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY, float pointRadius) {
-		if (ValueShape.SQUARE.equals(line.getShape())) {
-			canvas.drawRect(rawX - pointRadius, rawY - pointRadius, rawX + pointRadius, rawY + pointRadius, pointPaint);
-		} else if (ValueShape.CIRCLE.equals(line.getShape())) {
-			canvas.drawCircle(rawX, rawY, pointRadius, pointPaint);
-		} else {
-			throw new IllegalArgumentException("Invalid point shape: " + line.getShape());
+		switch (line.getShape()) {
+			case SQUARE:
+				canvas.drawRect(rawX - pointRadius, rawY - pointRadius, rawX + pointRadius, rawY + pointRadius, pointFillPaint);
+				if (line.hasPointStrokeColor()) {
+					canvas.drawRect(rawX - pointRadius, rawY - pointRadius, rawX + pointRadius, rawY + pointRadius, pointStrokePaint);
+				}
+				break;
+			case CIRCLE:
+				canvas.drawCircle(rawX, rawY, pointRadius, pointFillPaint);
+				if (line.hasPointStrokeColor()) {
+					canvas.drawCircle(rawX, rawY, pointRadius, pointStrokePaint);
+				}
+				break;
+			default:
+				throw new IllegalArgumentException("Invalid point shape: " + line.getShape());
 		}
 	}
 
@@ -390,7 +404,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 								int valueIndex) {
 		if (selectedValue.getFirstIndex() == lineIndex && selectedValue.getSecondIndex() == valueIndex) {
 			int pointRadius = ChartUtils.dp2px(density, line.getPointRadius());
-			pointPaint.setColor(line.getDarkenColor());
+			pointStrokePaint.setColor(line.getDarkenColor());
+			pointFillPaint.setColor(line.getDarkenColor());
 			drawPoint(canvas, line, pointValue, rawX, rawY, pointRadius + touchTolleranceMargin);
 			if (line.hasLabels() || line.hasLabelsOnlyForSelected()) {
 				drawLabel(canvas, line, pointValue, rawX, rawY, pointRadius + labelOffset);
