@@ -55,6 +55,14 @@ public abstract class AbstractChartView extends View implements Chart {
 		}
 	}
 
+    public void setMaxZoom(float maxZoom){
+        chartCalculator.setMaxZoom(maxZoom);
+    }
+
+    public float getMaxZoom(){
+        return chartCalculator.getMaxZoom();
+    }
+
 	@Override
 	protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
@@ -69,21 +77,24 @@ public abstract class AbstractChartView extends View implements Chart {
 		long time = System.nanoTime();
 		super.onDraw(canvas);
 		axesRenderer.draw(canvas);
+
 		int clipRestoreCount = canvas.save();
 		canvas.clipRect(chartCalculator.getContentRect());
 		chartRenderer.draw(canvas);
+
 		canvas.restoreToCount(clipRestoreCount);
 		chartRenderer.drawUnclipped(canvas);
+
 		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
 	}
 
-	@Override
+    @Override
 	public boolean onTouchEvent(MotionEvent event) {
 		super.onTouchEvent(event);
 		if (touchHandler.handleTouchEvent(event)) {
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
-		return true;
+        return true;
 	}
 
 	@Override

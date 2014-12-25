@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="9"
         android:targetSdkVersion="19" />
 
     <application
@@ -27,6 +27,7 @@
             android:label="@string/title_activity_column_chart" >
         </activity>
         <activity
+            android:screenOrientation="landscape"
             android:name=".LineChartActivity"
             android:label="@string/title_activity_line_chart" >
         </activity>

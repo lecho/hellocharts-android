@@ -6,7 +6,7 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 
 public class ChartCalculator {
-	protected static final float MAXIMUM_SCALE = 10f;
+	protected static float MAXIMUM_SCALE = 3000f;
 	/**
 	 * The current area (in pixels) for chart data, including mCoomonMargin. Labels are drawn outside this area.
 	 */
@@ -24,11 +24,27 @@ public class ChartCalculator {
 	protected float minViewportWidth;
 	protected float minViewportHeight;
 
+    protected float widthRelation = 0;
+    protected float heightRelation = 0;
+
 	/**
 	 * Warning! Viewport listener is disabled for all charts beside preview charts to avoid addidtional method calls
 	 * during animations.
 	 */
 	protected ViewportChangeListener viewportChangeListener = new DummyVieportChangeListener();
+
+    public void setMaxZoom(float maxZoom){
+        MAXIMUM_SCALE = maxZoom;
+    }
+
+    public float getMaxZoom(){
+        return MAXIMUM_SCALE;
+    }
+
+    protected void calculateWidthHeightRelation(){
+        widthRelation = contentRect.width() / currentViewport.width();
+        heightRelation = contentRect.height() / currentViewport.height();
+    }
 
 	/**
 	 * Calculates available width and height. Should be called when chart dimensions or chart data change.
@@ -37,6 +53,8 @@ public class ChartCalculator {
 			int paddingBottom) {
 		contentRectWithMargins.set(paddingLeft, paddingTop, width - paddingRight, height - paddingBottom);
 		contentRect.set(contentRectWithMargins);
+
+        calculateWidthHeightRelation();
 	}
 
 	public void setInternalMargin(int margin) {
@@ -44,6 +62,7 @@ public class ChartCalculator {
 		contentRect.top = contentRectWithMargins.top + margin;
 		contentRect.right = contentRectWithMargins.right - margin;
 		contentRect.bottom = contentRectWithMargins.bottom - margin;
+        calculateWidthHeightRelation();
 	}
 
 	public void setInternalMargin(int marginLeft, int marginTop, int marginRight, int marginBottom) {
@@ -51,6 +70,7 @@ public class ChartCalculator {
 		contentRect.top = contentRectWithMargins.top + marginTop;
 		contentRect.right = contentRectWithMargins.right - marginRight;
 		contentRect.bottom = contentRectWithMargins.bottom - marginBottom;
+        calculateWidthHeightRelation();
 	}
 
 	public void setAxesMargin(int axisXMarginTop, int axisXMarginBottom, int axisYMarginLeft, int axisYMarginRight) {
@@ -58,6 +78,7 @@ public class ChartCalculator {
 		contentRectWithMargins.left = contentRectWithMargins.left + axisYMarginLeft;
 		contentRect.left = contentRect.left + axisYMarginLeft;
 		contentRect.bottom = contentRect.bottom - axisXMarginBottom;
+        calculateWidthHeightRelation();
 	}
 
 	public void constrainViewport(float left, float top, float right, float bottom) {
@@ -88,6 +109,7 @@ public class ChartCalculator {
 		currentViewport.top = Math.min(maxViewport.top, top);
 		currentViewport.right = Math.min(maxViewport.right, right);
 		currentViewport.bottom = Math.max(maxViewport.bottom, bottom);
+        calculateWidthHeightRelation();
 	}
 
 	/**
@@ -108,33 +130,31 @@ public class ChartCalculator {
 	}
 
 	public float calculateRawX(float valueX) {
-		// TODO: (contentRect.width() / currentViewport.width()) can be recalculated only when viewport change.
-		final float pixelOffset = (valueX - currentViewport.left) * (contentRect.width() / currentViewport.width());
+		final float pixelOffset = (valueX - currentViewport.left) * widthRelation;
 		return contentRect.left + pixelOffset;
 	}
 
 	public float calculateRawY(float valueY) {
-		final float pixelOffset = (valueY - currentViewport.bottom) * (contentRect.height() / currentViewport.height());
+		final float pixelOffset = (valueY - currentViewport.bottom) * heightRelation;
 		return contentRect.bottom - pixelOffset;
 	}
 
 	public float calculateRelativeRawX(float valueX) {
-		// TODO: (contentRect.width() / currentViewport.width()) can be recalculated only when viewport change.
-		final float pixelOffset = (valueX - currentViewport.left) * (contentRect.width() / currentViewport.width());
+		final float pixelOffset = (valueX - currentViewport.left) * widthRelation;
 		return pixelOffset;
 	}
 
 	public float calculateRelativeRawY(float valueY) {
-		final float pixelOffset = (valueY - currentViewport.bottom) * (contentRect.height() / currentViewport.height());
+		final float pixelOffset = (valueY - currentViewport.bottom) * heightRelation;
 		return contentRect.height() - pixelOffset;
 	}
 
 	public float calculateRawDistanceX(float distance) {
-		return distance * (contentRect.width() / currentViewport.width());
+		return distance * widthRelation;
 	}
 
 	public float calculateRawDistanceY(float distance) {
-		return distance * (contentRect.height() / currentViewport.height());
+		return distance * heightRelation;
 	}
 
 	/**
@@ -158,8 +178,8 @@ public class ChartCalculator {
 	 * returned size will be twice as large horizontally and vertically.
 	 */
 	public void computeScrollSurfaceSize(Point out) {
-		out.set((int) (maxViewport.width() * contentRect.width() / currentViewport.width()),
-				(int) (maxViewport.height() * contentRect.height() / currentViewport.height()));
+		out.set((int) (maxViewport.width() * widthRelation),
+				(int) (maxViewport.height() * heightRelation));
 	}
 
 	public boolean isWithinContentRect(int x, int y) {

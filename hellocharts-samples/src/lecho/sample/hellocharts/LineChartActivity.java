@@ -2,13 +2,18 @@ package lecho.sample.hellocharts;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
+import lecho.lib.hellocharts.ViewportChangeListener;
+import lecho.lib.hellocharts.gesture.ChartZoomer;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
+import lecho.lib.hellocharts.view.PreviewLineChartView;
+
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -56,7 +61,13 @@ public class LineChartActivity extends ActionBarActivity {
 	 * A placeholder fragment containing a simple view.
 	 */
 	public static class PlaceholderFragment extends Fragment {
-		private static final int NUM_OF_VALUES = 5;
+		private static final int NUM_OF_VALUES = 500;
+        private static final int NUM_OF_SERIES = 8;
+        private static final int[] COLORS = {Color.RED, Color.BLACK, Color.YELLOW, Color.GREEN, Color.BLUE, Color.CYAN, Color.MAGENTA, Color.GRAY};
+        private static List<Line> linesList = new ArrayList<Line>();
+
+        private static PreviewLineChartView previewChart;
+        private static LineChartView chart;
 
 		public PlaceholderFragment() {
 		}
@@ -66,23 +77,45 @@ public class LineChartActivity extends ActionBarActivity {
 			View rootView = inflater.inflate(R.layout.fragment_line_chart, container, false);
 			LinearLayout layout = (LinearLayout) rootView.findViewById(R.id.layout);
 
-			final LineChartView chart = new LineChartView(getActivity());
+            chart = (LineChartView) rootView.findViewById(R.id.chart);
+            previewChart = (PreviewLineChartView) rootView.findViewById(R.id.chart_preview);
+			//chart = new LineChartView(getActivity());
+            //previewChart = new PreviewLineChartView(getActivity());
+
 			final LineChartData data = new LineChartData();
-			List<PointValue> s1 = Utils.generatePoints(NUM_OF_VALUES, 1.0f);
-			List<PointValue> s2 = Utils.generatePoints(NUM_OF_VALUES, 1.0f);
-			Line l1 = new Line(s1);
-			l1.setColor(Color.parseColor("#FFBB33"));
-			l1.setFilled(false);
-			l1.setHasLines(true);
-			l1.setSmooth(true);
-			Line l2 = new Line(s2);
-			l2.setColor(Color.parseColor("#99CC00")).setFilled(false).setHasLines(true).setSmooth(true)
-					.setHasLabels(true).setHasPoints(true);
-			List<Line> lines = new ArrayList<Line>();
-			lines.add(l2);
-			lines.add(l1);
-			data.setLines(lines);
-			Axis axisX = new Axis();
+
+            Random r = new Random();
+            for(int n = 0; n < NUM_OF_SERIES; ++n){
+                ArrayList<PointValue> points = new ArrayList<>();
+                for(int i = 0; i < NUM_OF_VALUES; ++i){
+                    PointValue p = new PointValue(i, r.nextBoolean() ? (n*20)+5 : (n*20)+10);
+                    //PointValue p = new PointValue(i, r.nextFloat() * 100f);
+                    points.add(p);
+                }
+                Line line = new Line(points);
+                //Line line = new Line(Utils.generatePoints(NUM_OF_VALUES, 1.0f));
+                line.setColor(COLORS[n]);
+                line.setFilled(false);
+                line.setHasLines(true);
+                line.setSmooth(false);
+                line.setHasPoints(false);
+                linesList.add(line);
+            }
+			data.setLines(linesList);
+
+            // Preview data
+            final LineChartData previewData = new LineChartData(linesList);
+            previewData.getLines().get(0).setColor(Color.GRAY);
+            previewChart.setLineChartData(previewData);
+            previewChart.setPreviewColor(Color.RED);
+            previewChart.setViewportChangeListener(new ViewportChangeListener() {
+                @Override
+                public void onViewportChanged(Viewport newViewport) {
+                    chart.setViewport(newViewport, false);
+                }
+            });
+
+            Axis axisX = new Axis();
 			axisX.setValues(Utils.generateAxis(0.0f, 100.0f, 1.0f));
 			axisX.setName("Axis X");
 			data.setAxisX(axisX);
@@ -91,23 +124,22 @@ public class LineChartActivity extends ActionBarActivity {
 			axisY.setValues(Utils.generateAxis(0.0f, 95.0f, 5.0f));
 			axisY.setName("Axis Y");
 			data.setAxisY(axisY);
-			// chart.setLineChartData(data);
-			chart.setOnValueTouchListener(new LineChartView.LineChartOnValueTouchListener() {
 
-				@Override
-				public void onValueTouched(int selectedLine, int selectedValue, PointValue point) {
-					// Toast.makeText(getActivity(),
-					// "" + selectedLine + " " + selectedValue + " " + point.getX() + " " + point.getY(),
-					// Toast.LENGTH_SHORT).show();
-					chart.setViewport(new Viewport(2, 45, 4, 20), true);
+			chart.setLineChartData(data);
+            chart.setMaxZoom(3000f);
+            chart.setZoomType(ChartZoomer.ZOOM_HORIZONTAL);
+            previewX(false);
 
-				}
-			});
-			// chart.setBackgroundColor(Color.WHITE);
-			// chart.setInteractive(false);
-			layout.addView(chart);
 			return rootView;
 		}
+
+        private void previewX(boolean animate) {
+            Viewport tempViewport = new Viewport(chart.getMaxViewport());
+            float dx = tempViewport.width() / 4;
+            tempViewport.inset(dx, 0);
+            previewChart.setViewport(tempViewport, animate);
+            previewChart.setZoomType(ChartZoomer.ZOOM_HORIZONTAL);
+        }
 	}
 
 }

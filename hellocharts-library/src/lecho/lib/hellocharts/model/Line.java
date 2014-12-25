@@ -3,6 +3,8 @@ package lecho.lib.hellocharts.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 import lecho.lib.hellocharts.util.Utils;
 
@@ -27,15 +29,23 @@ public class Line {
 	private ValueFormatter formatter = new NumberValueFormatter();
 	// TODO: consider Collections.emptyList()
 	private List<PointValue> points = new ArrayList<PointValue>();
+    private NavigableMap<Float, Float> pointsMap = new TreeMap<Float, Float>();
 
 	public Line(List<PointValue> points) {
 		setPoints(points);
 	}
 
+    public NavigableMap<Float, Float> getPointsMap(){
+        return pointsMap;
+    }
+
 	public void setPoints(List<PointValue> points) {
 		if (null == points) {
 			this.points = Collections.emptyList();
 		} else {
+            for(PointValue pointValue : points){
+                pointsMap.put(pointValue.getX(), pointValue.getY());
+            }
 			this.points = points;
 		}
 	}

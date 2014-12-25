@@ -5,8 +5,8 @@ public class PointValue {
 
 	private float x;
 	private float y;
-	private float orginX;
-	private float orginY;
+	private float originX;
+	private float originY;
 	private float diffX;
 	private float diffY;
 
@@ -15,13 +15,13 @@ public class PointValue {
 	}
 
 	public void update(float scale) {
-		x = orginX + diffX * scale;
-		y = orginY + diffY * scale;
+		x = originX + diffX * scale;
+		y = originY + diffY * scale;
 	}
 
 	public void finish(boolean isFinishedSuccess) {
 		if (isFinishedSuccess) {
-			set(orginX + diffX, orginY + diffY);
+			set(originX + diffX, originY + diffY);
 		} else {
 			set(x, y);
 		}
@@ -30,8 +30,8 @@ public class PointValue {
 	public PointValue set(float x, float y) {
 		this.x = x;
 		this.y = y;
-		this.orginX = x;
-		this.orginY = y;
+		this.originX = x;
+		this.originY = y;
 		this.diffX = 0;
 		this.diffY = 0;
 		return this;
@@ -39,8 +39,8 @@ public class PointValue {
 
 	public PointValue setTarget(float targetX, float targetY) {
 		set(x, y);
-		this.diffX = targetX - orginX;
-		this.diffY = targetY - orginY;
+		this.diffX = targetX - originX;
+		this.diffY = targetY - originY;
 		return this;
 	}
 
