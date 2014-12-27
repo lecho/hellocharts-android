@@ -81,6 +81,10 @@ public class PathCompat {
         bufferIndex = 0;
     }
 
+    public int getBufferIndex(){
+        return bufferIndex;
+    }
+
     /**
      * Draw line segment if there is any not drawn before.
      *

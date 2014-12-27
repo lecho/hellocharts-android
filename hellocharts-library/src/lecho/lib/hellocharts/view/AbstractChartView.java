@@ -85,7 +85,7 @@ public abstract class AbstractChartView extends View implements Chart {
 		canvas.restoreToCount(clipRestoreCount);
 		chartRenderer.drawUnclipped(canvas);
 
-		Log.v(TAG, "onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
+		Log.v(TAG, this.getClass().getSimpleName() + " - onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
 	}
 
     @Override
@@ -208,13 +208,12 @@ public abstract class AbstractChartView extends View implements Chart {
 	/**
 	 * Smoothly zooms the chart in or out according to value of zoomAmount.
 	 * 
-	 * @param zoomAmout
-	 *            positive value for zoom in, negative for zoom out.
+	 * @param zoomAmount positive value for zoom in, negative for zoom out.
 	 */
 	@Override
-	public void zoom(float x, float y, float zoomAmout) {
+	public void zoom(float x, float y, float zoomAmount) {
 		if (chartCalculator.getVisibleViewport().contains(x, y)) {
-			touchHandler.startZoom(x, y, zoomAmout);
+			touchHandler.startZoom(x, y, zoomAmount);
 			ViewCompat.postInvalidateOnAnimation(this);
 		}
 	}

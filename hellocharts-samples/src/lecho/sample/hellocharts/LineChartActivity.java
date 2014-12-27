@@ -11,6 +11,7 @@ import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.Viewport;
+import lecho.lib.hellocharts.renderer.LineChartRenderer;
 import lecho.lib.hellocharts.view.LineChartView;
 import lecho.lib.hellocharts.view.PreviewLineChartView;
 
@@ -61,8 +62,8 @@ public class LineChartActivity extends ActionBarActivity {
 	 * A placeholder fragment containing a simple view.
 	 */
 	public static class PlaceholderFragment extends Fragment {
-		private static final int NUM_OF_VALUES = 500;
-        private static final int NUM_OF_SERIES = 8;
+		private static final int NUM_OF_VALUES = 500000;
+        private static final int NUM_OF_SERIES = 1;
         private static final int[] COLORS = {Color.RED, Color.BLACK, Color.YELLOW, Color.GREEN, Color.BLUE, Color.CYAN, Color.MAGENTA, Color.GRAY};
         private static List<Line> linesList = new ArrayList<Line>();
 
@@ -88,8 +89,8 @@ public class LineChartActivity extends ActionBarActivity {
             for(int n = 0; n < NUM_OF_SERIES; ++n){
                 ArrayList<PointValue> points = new ArrayList<>();
                 for(int i = 0; i < NUM_OF_VALUES; ++i){
-                    PointValue p = new PointValue(i, r.nextBoolean() ? (n*20)+5 : (n*20)+10);
-                    //PointValue p = new PointValue(i, r.nextFloat() * 100f);
+                    //PointValue p = new PointValue(i, r.nextBoolean() ? (n*20)+5 : (n*20)+10);
+                    PointValue p = new PointValue(i, r.nextFloat() * 100f);
                     points.add(p);
                 }
                 Line line = new Line(points);
@@ -125,8 +126,11 @@ public class LineChartActivity extends ActionBarActivity {
 			axisY.setName("Axis Y");
 			data.setAxisY(axisY);
 
-			chart.setLineChartData(data);
+            ((LineChartRenderer)chart.getChartRenderer()).setUseFastRender(true);
+            ((LineChartRenderer)chart.getChartRenderer()).setDataGroupingSize(50000);
+            ((LineChartRenderer)previewChart.getChartRenderer()).setDataGroupingSize(50000);
             chart.setMaxZoom(3000f);
+			chart.setLineChartData(data);
             chart.setZoomType(ChartZoomer.ZOOM_HORIZONTAL);
             previewX(false);
 

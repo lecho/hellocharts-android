@@ -32,7 +32,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 
 	public LineChartView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		chartRenderer = new LineChartRenderer(context, this, this, true);
+		chartRenderer = new LineChartRenderer(context, this, this);
 		setLineChartData(generateDummyData());
 		// initAttributes();
 	}
