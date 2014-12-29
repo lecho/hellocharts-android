@@ -60,6 +60,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
      * Determine if we should use a fast rendering method or not
      */
     private boolean useFastRender = false;
+    private boolean drawPoints = true;
+
     /**
      * Size for the groups when grouping data. If the points in the screen are greater than
      *  dataGroupingSize, then we render the series averaging groups of size dataGroupingSize
@@ -98,6 +100,18 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
     public void setUseFastRender(boolean useFastRender) {
         this.useFastRender = useFastRender;
+    }
+
+    public boolean isUseFastRender() {
+        return useFastRender;
+    }
+
+    public boolean isDrawPoints() {
+        return drawPoints;
+    }
+
+    public void setDrawPoints(boolean drawPoints) {
+        this.drawPoints = drawPoints;
     }
 
     /**
@@ -343,6 +357,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 	@Override
 	public void drawUnclipped(Canvas canvas) {
+        if(!drawPoints) return;
+
 		final LineChartData data = dataProvider.getLineChartData();
 		int lineIndex = 0;
 		for (Line line : data.getLines()) {
@@ -359,6 +375,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 	@Override
 	public boolean checkTouch(float touchX, float touchY) {
+        final Viewport viewport = chart.getViewport();
 		oldSelectedValue.set(selectedValue);
 		selectedValue.clear();
 		final LineChartData data = dataProvider.getLineChartData();
@@ -367,7 +384,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		for (Line line : data.getLines()) {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
 			int valueIndex = 0;
-			for (PointValue pointValue : line.getPoints()) {
+			for (PointValue pointValue : groupedXYDatasets[lineIndex].subList(viewport.left, viewport.left + viewport.width())) {
 				final float rawValueX = calculator.calculateRawX(pointValue.getX());
 				final float rawValueY = calculator.calculateRawY(pointValue.getY());
 				if (isInArea(rawValueX, rawValueY, touchX, touchY, pointRadius + touchToleranceMargin)) {
@@ -517,29 +534,28 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	// may cause problems in the future with
 	// implementing point styles.
 	private void drawPoints(Canvas canvas, Line line, int lineIndex, int mode) {
+        if(this.getClass().getSimpleName().contains("Preview")) return;
+
 		final ChartCalculator calculator = chart.getChartCalculator();
         final Viewport viewport = chart.getViewport();
 		pointPaint.setColor(line.getColor());
 
         int valueIndex = 0;
-		for (PointValue pointValue : groupedXYDatasets[lineIndex]) {
+		for (PointValue pointValue : groupedXYDatasets[lineIndex].subList(viewport.left, viewport.left + viewport.width())) {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
 			final float rawX = calculator.calculateRawX(pointValue.getX());
 			final float rawY = calculator.calculateRawY(pointValue.getY());
 
-			if (calculator.isWithinContentRect((int) rawX, (int) rawY)) {
-				// Draw points only if they are within contentRect
-				if (MODE_DRAW == mode) {
-					drawPoint(canvas, line, rawX, rawY, pointRadius);
-					if (line.hasLabels()) {
-						drawLabel(canvas, calculator, line, pointValue, rawX, rawY, pointRadius + labelOffset);
-					}
-				} else if (MODE_HIGHLIGHT == mode) {
-					highlightPoint(canvas, calculator, line, pointValue, rawX, rawY, lineIndex, valueIndex);
-				} else {
-					throw new IllegalStateException("Cannot process points in mode: " + mode);
-				}
-			}
+            if (MODE_DRAW == mode) {
+                drawPoint(canvas, line, rawX, rawY, pointRadius);
+                if (line.hasLabels()) {
+                    drawLabel(canvas, calculator, line, pointValue, rawX, rawY, pointRadius + labelOffset);
+                }
+            } else if (MODE_HIGHLIGHT == mode) {
+                highlightPoint(canvas, calculator, line, pointValue, rawX, rawY, lineIndex, valueIndex);
+            } else {
+                throw new IllegalStateException("Cannot process points in mode: " + mode);
+            }
 			++valueIndex;
 		}
 	}

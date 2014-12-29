@@ -96,7 +96,7 @@ public class LineChartActivity extends ActionBarActivity {
                 line.setFilled(false);
                 line.setHasLines(true);
                 line.setSmooth(false);
-                line.setHasPoints(false);
+                line.setHasPoints(true);
                 line.setPointRadius(3);
                 linesList.add(line);
             }
@@ -128,9 +128,12 @@ public class LineChartActivity extends ActionBarActivity {
             ((LineChartRenderer)chart.getChartRenderer()).setUseFastRender(true);
             ((LineChartRenderer)chart.getChartRenderer()).setCompressorThreshold(5000);
             ((LineChartRenderer)chart.getChartRenderer()).setDataCompressor(new DownsamplingCompressor(500));
+
             ((LineChartRenderer)previewChart.getChartRenderer()).setCompressorThreshold(5000);
             ((LineChartRenderer)previewChart.getChartRenderer()).setDataCompressor(new DownsamplingCompressor(500));
-            chart.setValueTouchEnabled(false);
+            ((LineChartRenderer)previewChart.getChartRenderer()).setDrawPoints(false);
+
+            chart.setValueTouchEnabled(true);
             chart.setMaxZoom(3000f);
 			chart.setLineChartData(data);
             chart.setZoomType(ChartZoomer.ZOOM_HORIZONTAL);
