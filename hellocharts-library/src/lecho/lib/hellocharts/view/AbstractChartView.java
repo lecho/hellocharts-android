@@ -85,7 +85,7 @@ public abstract class AbstractChartView extends View implements Chart {
 		canvas.restoreToCount(clipRestoreCount);
 		chartRenderer.drawUnclipped(canvas);
 
-		Log.v(TAG, this.getClass().getSimpleName() + " - onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
+		//Log.v(TAG, this.getClass().getSimpleName() + " - onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
 	}
 
     @Override
@@ -165,7 +165,6 @@ public abstract class AbstractChartView extends View implements Chart {
 	@Override
 	public void setValueTouchEnabled(boolean isValueTouchEnabled) {
 		touchHandler.setValueTouchEnabled(isValueTouchEnabled);
-
 	}
 
 	@Override

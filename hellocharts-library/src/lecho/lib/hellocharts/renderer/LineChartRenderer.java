@@ -9,6 +9,8 @@ import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.PathCompat;
 import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.XYDataset;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -19,11 +21,9 @@ import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.Log;
-import android.view.View;
 
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -55,11 +55,6 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	 */
 	private Canvas secondCanvas = new Canvas();
 
-	/**
-	 * Simple Path implementation that uses drawLines() method which is way faster than using Path
-	 */
-    private PathCompat pathCompatArray[];
-
     /**
      * Determine if we should use a fast rendering method or not
      */
@@ -70,12 +65,16 @@ public class LineChartRenderer extends AbstractChartRenderer {
      *  reducing the number of points to draw.
      */
     private int dataGroupingSize = 0;
-    private float prevViewportWidth = 0;
+    private float prevViewportWidth = 0, prevViewportHeight = 0;
 
     /**
-     * Maps containing the grouped series when dataGroupingSize > 0
+     * Lists containing the grouped series when dataGroupingSize > 0
      */
-    private SortedMap<Float, Float> dataGroupMaps[];
+    protected XYDataset groupedXYDatasets[];
+    /**
+     * Simple Path implementation that uses drawLines() method which is way faster than using Path
+     */
+    protected PathCompat pathCompatArray[];
 
 	public LineChartRenderer(Context context, Chart chart, LineChartDataProvider dataProvider) {
         super(context, chart);
@@ -122,10 +121,10 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		}
 
         pathCompatArray = new PathCompat[dataProvider.getLineChartData().getLines().size()];
-        dataGroupMaps = new SortedMap[pathCompatArray.length];
+        groupedXYDatasets = new XYDataset[pathCompatArray.length];
 
-        Log.i(TAG, "pathCompatArray size: " + pathCompatArray.length);
-        prevViewportWidth = 0;      // Force to recreate the dataGroupMaps
+        Log.i(TAG, this.getClass().getSimpleName() + " pathCompatArray size: " + pathCompatArray.length);
+        prevViewportWidth = 0;      // Force to recreate the groupedXYDatasets
         for(int n = 0; n < pathCompatArray.length; ++n){
             int quantity = dataProvider.getLineChartData().getLines().get(n).getPoints().size();
 
@@ -137,35 +136,13 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 	@Override
 	public void draw(Canvas canvas) {
-		final LineChartData data = dataProvider.getLineChartData();
+        final LineChartData data = dataProvider.getLineChartData();
 		final ChartCalculator calculator = chart.getChartCalculator();
 		final Rect contentRect = calculator.getContentRect();
-        final Viewport viewport = chart.getViewport();
 		secondCanvas.drawColor(Color.TRANSPARENT, Mode.CLEAR);
 
-        // If there was a change in zoom, we have to rebuild the dataGroupMaps using data grouping
-        ExecutorService taskExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        if(dataGroupingSize > 0 && Math.abs(prevViewportWidth - viewport.width()) > 0.01){
-            Log.i(TAG, "Recreating dataGroupMaps");
-            prevViewportWidth = viewport.width();
-            for(int n = 0; n < dataGroupMaps.length; ++n){
-                taskExecutor.execute(new DataGrouper(data.getLines().get(n), dataGroupMaps, n));
-            }
-            taskExecutor.shutdown();
-            try { taskExecutor.awaitTermination(1000, TimeUnit.MILLISECONDS); } catch (InterruptedException e) { e.printStackTrace(); }
-        }
-
-
-        // Creating the path for each line in parallel reduces the execution time to half when handling
-        //  large data, when we start zooming and dataGroupMap iteration gets faster this almost has no advantage
-        //  saving just a few milliseconds, still worth it.
-        taskExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        for(int n = 0; n < pathCompatArray.length; ++n){
-            if(dataGroupingSize == 0) dataGroupMaps[n] = data.getLines().get(n).getPointsMap();
-            taskExecutor.execute(new PathDrawer(data.getLines().get(n), pathCompatArray[n], dataGroupMaps[n]));
-        }
-        taskExecutor.shutdown();
-        try { taskExecutor.awaitTermination(1000, TimeUnit.MILLISECONDS); } catch (InterruptedException e) { e.printStackTrace(); }
+        computeDataGrouping();
+        computePaths();
 
         // Set the paint for each processed line and draw it in the canvas!
         for(int n = 0; n < pathCompatArray.length; ++n){
@@ -178,10 +155,53 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		canvas.drawBitmap(secondBitmap, contentRect.left, contentRect.top, null);
 	}
 
+    /**
+     * Compute the data grouping if necessary (only when zoom changes) according to the value of
+     *  dataGroupingSize. This is a lossy compression of the data.
+     *  @return true if data grouping was applied, false if there was insufficient points to apply
+     *          data grouping or if zoom didn't change from the last time
+     */
+    protected boolean computeDataGrouping(){
+        final Viewport viewport = chart.getViewport();
+
+        // If there was a change in zoom, we have to rebuild the groupedXYDatasets using data grouping
+        ExecutorService taskExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        if(dataGroupingSize > 0 && (Math.abs(prevViewportWidth - viewport.width()) > 0.01 || Math.abs(prevViewportHeight - viewport.height()) > 0.01)){
+            Log.i(TAG, "Recreating groupedXYDatasets");
+            prevViewportWidth = viewport.width();
+            prevViewportHeight = viewport.height();
+            for(int n = 0; n < groupedXYDatasets.length; ++n){
+                taskExecutor.execute(new DataGrouper(dataProvider.getLineChartData().getLines().get(n), groupedXYDatasets, n));
+            }
+            taskExecutor.shutdown();
+            try { taskExecutor.awaitTermination(1000, TimeUnit.MILLISECONDS); } catch (InterruptedException e) { e.printStackTrace(); }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Compute the paths to draw. Here we create all the paths but we don't draw anything, we just
+     *  create them and make sure they are as short as possible removing details we can't see.
+     * This is a lossless compression of the data.
+     */
+    protected void computePaths(){
+        final LineChartData data = dataProvider.getLineChartData();
+        // Creating the path for each line in parallel reduces the execution time to half when handling
+        //  large data in multiple series
+        ExecutorService taskExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        for(int n = 0; n < pathCompatArray.length; ++n){
+            if(dataGroupingSize == 0) groupedXYDatasets[n] = data.getLines().get(n).getPoints();
+            taskExecutor.execute(new PathDrawer(data.getLines().get(n), pathCompatArray[n], groupedXYDatasets[n]));
+        }
+        taskExecutor.shutdown();
+        try { taskExecutor.awaitTermination(1000, TimeUnit.MILLISECONDS); } catch (InterruptedException e) { e.printStackTrace(); }
+    }
+
     private class PathDrawer implements Runnable {
         final Line line;
         final PathCompat pathCompat;
-        final SortedMap<Float, Float> dataGroupMap;
+        final XYDataset xyDataset;
 
         /**
          * Runnable that generates a {@link lecho.lib.hellocharts.util.PathCompat} to be renderer for
@@ -189,14 +209,14 @@ public class LineChartRenderer extends AbstractChartRenderer {
          *
          * @param line line from which generate the path
          * @param p {@link lecho.lib.hellocharts.util.PathCompat} where to store the generated path
-         * @param dataGroupMap {@link java.util.SortedMap} where the algorithm takes the original data
-         *                     generate the path. When using data grouping this map contains the grouped
-         *                     data.
+         * @param xyDataset {@link lecho.lib.hellocharts.util.XYDataset} where the algorithm takes the
+         *                      original data to generate the path. When using data grouping this contains
+         *                      the grouped data.
          */
-        public PathDrawer(final Line line, final PathCompat p, final SortedMap<Float, Float> dataGroupMap){
+        public PathDrawer(final Line line, final PathCompat p, final XYDataset xyDataset){
             this.line = line;
             pathCompat = p;
-            this.dataGroupMap = dataGroupMap;
+            this.xyDataset = xyDataset;
         }
 
         @Override
@@ -207,23 +227,19 @@ public class LineChartRenderer extends AbstractChartRenderer {
             int valueIndex = 0;
             float prevRawX = 0;
 
-            // Use fast renderer, so we use a map instead of the ArrayList and we create dataGroupMaps
+            // Use fast renderer, so we use a resultList instead of the ArrayList and we create groupedXYDatasets
             //  containing only the visible data, otherwise we use the normal rendering method iterating
             //  over the entire ArrayList. This is provided because LineChartPreview needs to render
             //  all the data and not just the visible part.
             if(useFastRender) {
-                // Get a subMap containing only the visible part of the data we need to render, on this
+                // Get a subList containing only the visible part of the data we need to render, on this
                 //  way we are significatively reducing the time spent in the loop when we are zooming and
                 //  a portion of the data is not shown.
-                // Access time is O(log(n)) compared to O(1) for the array list, but even with a small amount
-                //  of zoom the time to iterate drops rapidly outperforming ArrayList due to the fact
-                //  that we are creating a smaller map.
-                // Creating the subMap is extremely fast, it takes a worst case of 200uS on my Nexus 5.
-                final SortedMap<Float, Float> subMap = dataGroupMap.subMap(viewport.left, viewport.left + viewport.width());
+                final List<PointValue> subList = xyDataset.subList(viewport.left, viewport.left + viewport.width());
 
-                for (Map.Entry<Float, Float> entry : subMap.entrySet()) {
-                    float rawX = calculator.calculateRawX(entry.getKey());
-                    float rawY = calculator.calculateRawY(entry.getValue());
+                for (PointValue pointValue : subList) {
+                    float rawX = calculator.calculateRawX(pointValue.getX());
+                    float rawY = calculator.calculateRawY(pointValue.getY());
 
                     if (valueIndex == 0) {
                         prevRawX = rawX;
@@ -238,9 +254,9 @@ public class LineChartRenderer extends AbstractChartRenderer {
                     }
                 }
             }else {
-                for (Map.Entry<Float, Float> entry : dataGroupMap.entrySet()) {
-                    float rawX = calculator.calculateRawX(entry.getKey());
-                    float rawY = calculator.calculateRawY(entry.getValue());
+                for (PointValue pointValue : xyDataset) {
+                    float rawX = calculator.calculateRawX(pointValue.getX());
+                    float rawY = calculator.calculateRawY(pointValue.getY());
 
                     if (valueIndex == 0) {
                         prevRawX = rawX;
@@ -272,14 +288,14 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
     private class DataGrouper implements Runnable {
         private final Line line;
-        private final SortedMap<Float, Float>[] sortedMaps;
+        private final XYDataset[] xyDatasets;
         private final int index;
-        private final SortedMap<Float, Float> map = new TreeMap<>();
+        private final XYDataset resultList = new XYDataset();
         final Viewport viewport = chart.getViewport();
 
-        private DataGrouper(final Line line, final SortedMap<Float, Float>[] sortedMaps, final int index) {
+        private DataGrouper(final Line line, final XYDataset[] xyDatasets, final int index) {
             this.line = line;
-            this.sortedMaps = sortedMaps;
+            this.xyDatasets = xyDatasets;
             this.index = index;
         }
 
@@ -292,30 +308,32 @@ public class LineChartRenderer extends AbstractChartRenderer {
              */
             int count = 0;
             double sumY = 0, sumX = 0;
-            if(line.getPointsMap().subMap(viewport.left, viewport.left+viewport.width()).size() > dataGroupingSize) {
-                for (Map.Entry<Float, Float> entry : line.getPointsMap().entrySet()) {
+            if(line.getPoints().subList(viewport.left, viewport.left + viewport.width()).size() > dataGroupingSize) {
+                for (PointValue pointValue : line.getPoints()) {
                     // First point
                     if(count == 0){
-                        map.put(entry.getKey(), entry.getValue());
+                        resultList.add(pointValue);
                     }
                     if (count < dataGroupingSize) {
-                        sumX += entry.getKey();
-                        sumY += entry.getValue();
+                        sumX += pointValue.getX();
+                        sumY += pointValue.getY();
                         ++count;
                     // Average mid point and last point
                     } else {
-                        map.put((float) (sumX / count), (float) (sumY / count));
-                        map.put(entry.getKey(), entry.getValue());
+                        // Averaged mid point
+                        resultList.add(new PointValue((float) (sumX / count), (float) (sumY / count)));
+                        // Last point
+                        resultList.add(pointValue);
                         sumX = sumY = 0;
                         count = 0;
                     }
                 }
-                if (count > 0) map.put((float) (sumX / count), (float) (sumY / count));
-                sortedMaps[index] = map;
-                Log.i(TAG, "Map " + index + " recreated with " + sortedMaps[index].size() + " elements");
+                if (count > 0) resultList.add(new PointValue((float) (sumX / count), (float) (sumY / count)));
+                xyDatasets[index] = resultList;
+                Log.i(TAG, "GroupedList " + index + " recreated with " + xyDatasets[index].size() + " elements");
             } else{
-                Log.i(TAG, "Map " + index + " not enough data");
-                sortedMaps[index] = line.getPointsMap();
+                Log.i(TAG, "GroupedList " + index + " not enough data");
+                xyDatasets[index] = line.getPoints();
             }
         }
     }
@@ -367,7 +385,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		tempMaxViewport.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
 		LineChartData data = dataProvider.getLineChartData();
 
-		// TODO: Optimize.
+        // TODO: optimize?
 		for (Line line : data.getLines()) {
 			// Calculate max and min for viewport.
 			for (PointValue pointValue : line.getPoints()) {

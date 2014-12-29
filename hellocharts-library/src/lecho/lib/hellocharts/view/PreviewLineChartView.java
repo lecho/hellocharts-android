@@ -20,7 +20,7 @@ public class PreviewLineChartView extends LineChartView {
 		this(context, attrs, 0);
 	}
 
-	public PreviewLineChartView(Context context, AttributeSet attrs, int defStyle) {
+    public PreviewLineChartView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		chartCalculator = new PreviewChartCalculator();
 		previewChartRenderer = new PreviewLineChartRenderer(context, this, this);

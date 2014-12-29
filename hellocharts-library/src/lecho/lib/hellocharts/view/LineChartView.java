@@ -11,6 +11,8 @@ import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.renderer.LineChartRenderer;
+import lecho.lib.hellocharts.util.XYDataset;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
@@ -114,7 +116,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 	protected LineChartData generateDummyData() {
 		final int numValues = 4;
 		LineChartData data = new LineChartData();
-		List<PointValue> values = new ArrayList<PointValue>(numValues);
+		XYDataset values = new XYDataset(numValues);
 		values.add(new PointValue(1, 8));
 		values.add(new PointValue(2, 6));
 		values.add(new PointValue(3, 10));

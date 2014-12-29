@@ -12,6 +12,7 @@ import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.renderer.LineChartRenderer;
+import lecho.lib.hellocharts.util.XYDataset;
 import lecho.lib.hellocharts.view.LineChartView;
 import lecho.lib.hellocharts.view.PreviewLineChartView;
 
@@ -24,7 +25,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 public class LineChartActivity extends ActionBarActivity {
 
@@ -62,10 +62,10 @@ public class LineChartActivity extends ActionBarActivity {
 	 * A placeholder fragment containing a simple view.
 	 */
 	public static class PlaceholderFragment extends Fragment {
-		private static final int NUM_OF_VALUES = 500000;
-        private static final int NUM_OF_SERIES = 1;
+		private static final int NUM_OF_VALUES = 100000;
+        private static final int NUM_OF_SERIES = 5;
         private static final int[] COLORS = {Color.RED, Color.BLACK, Color.YELLOW, Color.GREEN, Color.BLUE, Color.CYAN, Color.MAGENTA, Color.GRAY};
-        private static List<Line> linesList = new ArrayList<Line>();
+        private static List<Line> linesList = new ArrayList<>();
 
         private static PreviewLineChartView previewChart;
         private static LineChartView chart;
@@ -76,25 +76,21 @@ public class LineChartActivity extends ActionBarActivity {
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_line_chart, container, false);
-			LinearLayout layout = (LinearLayout) rootView.findViewById(R.id.layout);
 
             chart = (LineChartView) rootView.findViewById(R.id.chart);
             previewChart = (PreviewLineChartView) rootView.findViewById(R.id.chart_preview);
-			//chart = new LineChartView(getActivity());
-            //previewChart = new PreviewLineChartView(getActivity());
 
 			final LineChartData data = new LineChartData();
 
             Random r = new Random();
             for(int n = 0; n < NUM_OF_SERIES; ++n){
-                ArrayList<PointValue> points = new ArrayList<>();
+                XYDataset points = new XYDataset();
                 for(int i = 0; i < NUM_OF_VALUES; ++i){
                     //PointValue p = new PointValue(i, r.nextBoolean() ? (n*20)+5 : (n*20)+10);
-                    PointValue p = new PointValue(i, r.nextFloat() * 100f);
+                    PointValue p = new PointValue(i*0.5f, r.nextFloat() * 100f);
                     points.add(p);
                 }
                 Line line = new Line(points);
-                //Line line = new Line(Utils.generatePoints(NUM_OF_VALUES, 1.0f));
                 line.setColor(COLORS[n]);
                 line.setFilled(false);
                 line.setHasLines(true);
@@ -127,8 +123,9 @@ public class LineChartActivity extends ActionBarActivity {
 			data.setAxisY(axisY);
 
             ((LineChartRenderer)chart.getChartRenderer()).setUseFastRender(true);
-            ((LineChartRenderer)chart.getChartRenderer()).setDataGroupingSize(50000);
-            ((LineChartRenderer)previewChart.getChartRenderer()).setDataGroupingSize(50000);
+            ((LineChartRenderer)chart.getChartRenderer()).setDataGroupingSize(10000);
+            ((LineChartRenderer)previewChart.getChartRenderer()).setDataGroupingSize(10000);
+            chart.setValueTouchEnabled(false);
             chart.setMaxZoom(3000f);
 			chart.setLineChartData(data);
             chart.setZoomType(ChartZoomer.ZOOM_HORIZONTAL);

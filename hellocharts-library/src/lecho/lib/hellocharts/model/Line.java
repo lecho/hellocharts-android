@@ -7,6 +7,7 @@ import java.util.NavigableMap;
 import java.util.TreeMap;
 
 import lecho.lib.hellocharts.util.Utils;
+import lecho.lib.hellocharts.util.XYDataset;
 
 public class Line {
 	public static final int SHAPE_CIRCLE = 1;
@@ -27,30 +28,21 @@ public class Line {
 	private boolean isFilled = false;
 	private int pointShape = SHAPE_CIRCLE;
 	private ValueFormatter formatter = new NumberValueFormatter();
-	// TODO: consider Collections.emptyList()
-	private List<PointValue> points = new ArrayList<PointValue>();
-    private NavigableMap<Float, Float> pointsMap = new TreeMap<Float, Float>();
+	private XYDataset points = new XYDataset();
 
-	public Line(List<PointValue> points) {
+	public Line(XYDataset points) {
 		setPoints(points);
 	}
 
-    public NavigableMap<Float, Float> getPointsMap(){
-        return pointsMap;
-    }
-
-	public void setPoints(List<PointValue> points) {
+	public void setPoints(XYDataset points) {
 		if (null == points) {
-			this.points = Collections.emptyList();
+			this.points = new XYDataset();
 		} else {
-            for(PointValue pointValue : points){
-                pointsMap.put(pointValue.getX(), pointValue.getY());
-            }
 			this.points = points;
 		}
 	}
 
-	public List<PointValue> getPoints() {
+	public XYDataset getPoints() {
 		return this.points;
 	}
 
