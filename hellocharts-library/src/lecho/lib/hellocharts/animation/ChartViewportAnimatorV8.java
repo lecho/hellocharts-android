@@ -15,7 +15,7 @@ public class ChartViewportAnimatorV8 implements ChartViewportAnimator {
 	private Viewport startViewport = new Viewport();
 	private Viewport targetViewport = new Viewport();
 	private Viewport newViewport = new Viewport();
-	final long duration;
+	private long duration;
 	final Handler handler;
 	final Interpolator interpolator = new AccelerateDecelerateInterpolator();
 	private ChartAnimationListener animationListener = new DummyChartAnimationListener();
@@ -52,6 +52,11 @@ public class ChartViewportAnimatorV8 implements ChartViewportAnimator {
 		this.chart = chart;
 		this.duration = duration;
 		this.handler = new Handler();
+	}
+
+	@Override
+	public void setDuration(long duration) {
+		this.duration = duration;
 	}
 
 	@Override
