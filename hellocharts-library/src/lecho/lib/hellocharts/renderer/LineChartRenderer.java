@@ -3,6 +3,8 @@ package lecho.lib.hellocharts.renderer;
 import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.LineChartDataProvider;
+import lecho.lib.hellocharts.compressor.DataCompressor;
+import lecho.lib.hellocharts.compressor.DownsamplingCompressor;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
@@ -22,7 +24,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.Log;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -76,6 +77,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
      */
     protected PathCompat pathCompatArray[];
 
+    private lecho.lib.hellocharts.compressor.DataCompressor dataCompressor;
+
 	public LineChartRenderer(Context context, Chart chart, LineChartDataProvider dataProvider) {
         super(context, chart);
         this.dataProvider = dataProvider;
@@ -89,6 +92,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
         pointPaint.setAntiAlias(true);
         pointPaint.setStyle(Paint.Style.FILL);
 
+        setDataCompressor(new DownsamplingCompressor(100));
         Log.i(TAG, Runtime.getRuntime().availableProcessors() + " available cores");
 	}
 
@@ -96,8 +100,25 @@ public class LineChartRenderer extends AbstractChartRenderer {
         this.useFastRender = useFastRender;
     }
 
-    public void setDataGroupingSize(int size){
-        dataGroupingSize = size;
+    /**
+     * Set the threshold for the compressor usage. If there is more than the specified points
+     *  to draw in the screen the compressor will be used, otherwise no compression will be
+     *  applied in order to speed up drawing
+     * @param value if there is more than this quantity of points to draw, a compression will be aplied
+     */
+    public void setCompressorThreshold(int value){
+        dataGroupingSize = value;
+        prevViewportWidth = 0;      // Force to recreate the groupedXYDatasets
+    }
+
+    /**
+     * Set the {@link lecho.lib.hellocharts.compressor.DataCompressor} to uso to compress the data
+     *  when necessary.
+     * @param dataCompressor compressor to use
+     */
+    public void setDataCompressor(lecho.lib.hellocharts.compressor.DataCompressor dataCompressor){
+        this.dataCompressor = dataCompressor;
+        prevViewportWidth = 0;      // Force to recreate the groupedXYDatasets
     }
 
 	@Override
@@ -171,7 +192,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
             prevViewportWidth = viewport.width();
             prevViewportHeight = viewport.height();
             for(int n = 0; n < groupedXYDatasets.length; ++n){
-                taskExecutor.execute(new DataGrouper(dataProvider.getLineChartData().getLines().get(n), groupedXYDatasets, n));
+                taskExecutor.execute(new DataCompressor(dataProvider.getLineChartData().getLines().get(n), groupedXYDatasets, n));
             }
             taskExecutor.shutdown();
             try { taskExecutor.awaitTermination(1000, TimeUnit.MILLISECONDS); } catch (InterruptedException e) { e.printStackTrace(); }
@@ -182,8 +203,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
     /**
      * Compute the paths to draw. Here we create all the paths but we don't draw anything, we just
-     *  create them and make sure they are as short as possible removing details we can't see.
-     * This is a lossless compression of the data.
+     *  create them in a buffer so then we can draw all at once
      */
     protected void computePaths(){
         final LineChartData data = dataProvider.getLineChartData();
@@ -196,6 +216,43 @@ public class LineChartRenderer extends AbstractChartRenderer {
         }
         taskExecutor.shutdown();
         try { taskExecutor.awaitTermination(1000, TimeUnit.MILLISECONDS); } catch (InterruptedException e) { e.printStackTrace(); }
+    }
+
+    private class DataCompressor implements Runnable {
+        private final Line line;
+        private final XYDataset[] xyDatasets;
+        private final int index;
+        private final XYDataset resultList = new XYDataset();
+        final Viewport viewport = chart.getViewport();
+
+        /**
+         * This groups up the data in order to reduce the number of points to draw providing
+         *  an approximation to the real data
+         * @param line line from which take the data to group up
+         * @param xyDatasets array containing XYDataset where to store the grouped data
+         * @param index index to use in the xyDatasets array
+         */
+        private DataCompressor(final Line line, final XYDataset[] xyDatasets, final int index) {
+            this.line = line;
+            this.xyDatasets = xyDatasets;
+            this.index = index;
+        }
+
+        @Override
+        public void run() {
+            /* Lossy data compression. If the size of the current viewport has more points than the
+             *  established dataGroupingSize we calculate an average for a group of points. The data
+             *  won't look the same, but instead will show the 'tendency'. On this way we decrease the
+             *  number of points to draw.
+             */
+            if(line.getPoints().subList(viewport.left, viewport.left + viewport.width()).size() > dataGroupingSize) {
+                xyDatasets[index] = dataCompressor.compress(line, chart);
+                Log.i(TAG, "GroupedList " + index + " recreated with " + xyDatasets[index].size() + " elements");
+            } else{
+                Log.i(TAG, "GroupedList " + index + " not enough data");
+                xyDatasets[index] = line.getPoints();
+            }
+        }
     }
 
     private class PathDrawer implements Runnable {
@@ -246,25 +303,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
                         pathCompat.moveTo(rawX, rawY);
                         ++valueIndex;
                     } else {
-                        // Lossless compression. Don't draw lines which are closer than 1 pixel, we just can't see them!
-                        if ((rawX - prevRawX) > 1.0f) {
-                            prevRawX = rawX;
-                            pathCompat.lineTo(rawX, rawY);
-                        }
-                    }
-                }
-            }else {
-                for (PointValue pointValue : xyDataset) {
-                    float rawX = calculator.calculateRawX(pointValue.getX());
-                    float rawY = calculator.calculateRawY(pointValue.getY());
-
-                    if (valueIndex == 0) {
-                        prevRawX = rawX;
-                        pathCompat.moveTo(rawX, rawY);
-                        ++valueIndex;
-                    } else {
-                        // Lossless compression. Don't draw lines which are closer than 1 pixel, we just can't see them!
-                        if ((rawX - prevRawX) > 1.0f) {
+                        if ((rawX - prevRawX) > 0.0f) {
                             prevRawX = rawX;
                             pathCompat.lineTo(rawX, rawY);
                         }
@@ -282,58 +321,22 @@ public class LineChartRenderer extends AbstractChartRenderer {
                         }
                     }*/
                 }
-            }
-        }
-    }
+            }else {
+                for (PointValue pointValue : xyDataset) {
+                    float rawX = calculator.calculateRawX(pointValue.getX());
+                    float rawY = calculator.calculateRawY(pointValue.getY());
 
-    private class DataGrouper implements Runnable {
-        private final Line line;
-        private final XYDataset[] xyDatasets;
-        private final int index;
-        private final XYDataset resultList = new XYDataset();
-        final Viewport viewport = chart.getViewport();
-
-        private DataGrouper(final Line line, final XYDataset[] xyDatasets, final int index) {
-            this.line = line;
-            this.xyDatasets = xyDatasets;
-            this.index = index;
-        }
-
-        @Override
-        public void run() {
-            /* Lossy data compression. If the size of the current viewport has more points than the
-             *  established dataGroupingSize we calculate an average for a group of points. The data
-             *  won't look the same, but instead will show the 'tendency'. On this way we decrease the
-             *  number of points to draw.
-             */
-            int count = 0;
-            double sumY = 0, sumX = 0;
-            if(line.getPoints().subList(viewport.left, viewport.left + viewport.width()).size() > dataGroupingSize) {
-                for (PointValue pointValue : line.getPoints()) {
-                    // First point
-                    if(count == 0){
-                        resultList.add(pointValue);
-                    }
-                    if (count < dataGroupingSize) {
-                        sumX += pointValue.getX();
-                        sumY += pointValue.getY();
-                        ++count;
-                    // Average mid point and last point
+                    if (valueIndex == 0) {
+                        prevRawX = rawX;
+                        pathCompat.moveTo(rawX, rawY);
+                        ++valueIndex;
                     } else {
-                        // Averaged mid point
-                        resultList.add(new PointValue((float) (sumX / count), (float) (sumY / count)));
-                        // Last point
-                        resultList.add(pointValue);
-                        sumX = sumY = 0;
-                        count = 0;
+                        if ((rawX - prevRawX) > 0.0f) {
+                            prevRawX = rawX;
+                            pathCompat.lineTo(rawX, rawY);
+                        }
                     }
                 }
-                if (count > 0) resultList.add(new PointValue((float) (sumX / count), (float) (sumY / count)));
-                xyDatasets[index] = resultList;
-                Log.i(TAG, "GroupedList " + index + " recreated with " + xyDatasets[index].size() + " elements");
-            } else{
-                Log.i(TAG, "GroupedList " + index + " not enough data");
-                xyDatasets[index] = line.getPoints();
             }
         }
     }
@@ -510,21 +513,24 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		path.reset();
 	}
 
-	// TODO Drawing points can be done in the same loop as drawing lines but it
+	// TODO: Drawing points can be done in the same loop as drawing lines but it
 	// may cause problems in the future with
 	// implementing point styles.
 	private void drawPoints(Canvas canvas, Line line, int lineIndex, int mode) {
 		final ChartCalculator calculator = chart.getChartCalculator();
+        final Viewport viewport = chart.getViewport();
 		pointPaint.setColor(line.getColor());
-		int valueIndex = 0;
-		for (PointValue pointValue : line.getPoints()) {
+
+        int valueIndex = 0;
+		for (PointValue pointValue : groupedXYDatasets[lineIndex]) {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
 			final float rawX = calculator.calculateRawX(pointValue.getX());
 			final float rawY = calculator.calculateRawY(pointValue.getY());
+
 			if (calculator.isWithinContentRect((int) rawX, (int) rawY)) {
 				// Draw points only if they are within contentRect
 				if (MODE_DRAW == mode) {
-					drawPoint(canvas, line, pointValue, rawX, rawY, pointRadius);
+					drawPoint(canvas, line, rawX, rawY, pointRadius);
 					if (line.hasLabels()) {
 						drawLabel(canvas, calculator, line, pointValue, rawX, rawY, pointRadius + labelOffset);
 					}
@@ -538,7 +544,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		}
 	}
 
-	private void drawPoint(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY, float pointRadius) {
+	private void drawPoint(Canvas canvas, Line line, float rawX, float rawY, float pointRadius) {
 		if (Line.SHAPE_SQUARE == line.getPointShape()) {
 			canvas.drawRect(rawX - pointRadius, rawY - pointRadius, rawX + pointRadius, rawY + pointRadius, pointPaint);
 		} else {
@@ -557,7 +563,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		if (selectedValue.firstIndex == lineIndex && selectedValue.secondIndex == valueIndex) {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
 			pointPaint.setColor(line.getDarkenColor());
-			drawPoint(canvas, line, pointValue, rawX, rawY, pointRadius + touchToleranceMargin);
+			drawPoint(canvas, line, rawX, rawY, pointRadius + touchToleranceMargin);
 			if (line.hasLabels() || line.hasLabelsOnlyForSelected()) {
 				drawLabel(canvas, calculator, line, pointValue, rawX, rawY, pointRadius + labelOffset);
 			}

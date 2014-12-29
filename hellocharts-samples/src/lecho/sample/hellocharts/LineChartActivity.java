@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import lecho.lib.hellocharts.ViewportChangeListener;
+import lecho.lib.hellocharts.compressor.DownsamplingCompressor;
 import lecho.lib.hellocharts.gesture.ChartZoomer;
 import lecho.lib.hellocharts.model.Axis;
 import lecho.lib.hellocharts.model.Line;
@@ -63,7 +64,7 @@ public class LineChartActivity extends ActionBarActivity {
 	 */
 	public static class PlaceholderFragment extends Fragment {
 		private static final int NUM_OF_VALUES = 100000;
-        private static final int NUM_OF_SERIES = 5;
+        private static final int NUM_OF_SERIES = 2;
         private static final int[] COLORS = {Color.RED, Color.BLACK, Color.YELLOW, Color.GREEN, Color.BLUE, Color.CYAN, Color.MAGENTA, Color.GRAY};
         private static List<Line> linesList = new ArrayList<>();
 
@@ -96,13 +97,15 @@ public class LineChartActivity extends ActionBarActivity {
                 line.setHasLines(true);
                 line.setSmooth(false);
                 line.setHasPoints(false);
+                line.setPointRadius(3);
                 linesList.add(line);
             }
 			data.setLines(linesList);
 
             // Preview data
             final LineChartData previewData = new LineChartData(linesList);
-            previewData.getLines().get(0).setColor(Color.GRAY);
+            previewData.getLines().get(0).setColor(Color.rgb(255,165,0));
+
             previewChart.setLineChartData(previewData);
             previewChart.setPreviewColor(Color.RED);
             previewChart.setViewportChangeListener(new ViewportChangeListener() {
@@ -123,8 +126,10 @@ public class LineChartActivity extends ActionBarActivity {
 			data.setAxisY(axisY);
 
             ((LineChartRenderer)chart.getChartRenderer()).setUseFastRender(true);
-            ((LineChartRenderer)chart.getChartRenderer()).setDataGroupingSize(10000);
-            ((LineChartRenderer)previewChart.getChartRenderer()).setDataGroupingSize(10000);
+            ((LineChartRenderer)chart.getChartRenderer()).setCompressorThreshold(5000);
+            ((LineChartRenderer)chart.getChartRenderer()).setDataCompressor(new DownsamplingCompressor(500));
+            ((LineChartRenderer)previewChart.getChartRenderer()).setCompressorThreshold(5000);
+            ((LineChartRenderer)previewChart.getChartRenderer()).setDataCompressor(new DownsamplingCompressor(500));
             chart.setValueTouchEnabled(false);
             chart.setMaxZoom(3000f);
 			chart.setLineChartData(data);
