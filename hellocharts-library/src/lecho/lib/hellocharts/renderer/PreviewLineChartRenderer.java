@@ -82,7 +82,7 @@ public class PreviewLineChartRenderer extends LineChartRenderer {
         }
 
         // Draw this amazing thing!
-        canvas.drawBitmap(chartBitmap, contentRect.left, contentRect.top, null);
+        canvas.drawBitmap(chartBitmap, 0, 0, null);
     }
 
     @Override

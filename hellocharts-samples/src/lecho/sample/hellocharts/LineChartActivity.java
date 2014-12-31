@@ -103,19 +103,6 @@ public class LineChartActivity extends ActionBarActivity {
             }
 			data.setLines(linesList);
 
-            // Preview data
-            final LineChartData previewData = new LineChartData(linesList);
-            previewData.getLines().get(0).setColor(Color.rgb(255,165,0));
-
-            previewChart.setLineChartData(previewData);
-            previewChart.setPreviewColor(Color.RED);
-            previewChart.setViewportChangeListener(new ViewportChangeListener() {
-                @Override
-                public void onViewportChanged(Viewport newViewport) {
-                    chart.setViewport(newViewport, false);
-                }
-            });
-
             Axis axisX = new Axis();
 			axisX.setValues(Utils.generateAxis(0.0f, 100.0f, 1.0f));
 			axisX.setName("Axis X");
@@ -125,6 +112,21 @@ public class LineChartActivity extends ActionBarActivity {
 			axisY.setValues(Utils.generateAxis(0.0f, 95.0f, 5.0f));
 			axisY.setName("Axis Y");
 			data.setAxisY(axisY);
+
+            // Preview data
+            final LineChartData previewData = new LineChartData(linesList);
+            previewData.getLines().get(0).setColor(Color.rgb(255,165,0));
+            previewData.setAxisX(axisX);
+            previewData.setAxisY(axisY);
+
+            previewChart.setLineChartData(previewData);
+            previewChart.setPreviewColor(Color.RED);
+            previewChart.setViewportChangeListener(new ViewportChangeListener() {
+                @Override
+                public void onViewportChanged(Viewport newViewport) {
+                    chart.setViewport(newViewport, false);
+                }
+            });
 
             ((LineChartRenderer)chart.getChartRenderer()).setUseFastRender(true);
             ((LineChartRenderer)chart.getChartRenderer()).setCompressorThreshold(5000);
