@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Cap;
 import android.graphics.Path;
-import android.graphics.PathEffect;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
 
@@ -219,20 +218,23 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
 		prepareLinePaint(line);
 
-		int valueIndex = 0;
+		float previousPointX = Float.NaN;
+		float previousPointY = Float.NaN;
 		for (PointValue pointValue : line.getValues()) {
 
-			final float rawX = computator.computeRawX(pointValue.getX());
-			final float rawY = computator.computeRawY(pointValue.getY());
+			final float currentPointX = computator.computeRawX(pointValue.getX());
+			final float currentPointY = computator.computeRawY(pointValue.getY());
 
-			if (valueIndex == 0) {
-				path.moveTo(rawX, rawY);
+			if (Float.isNaN(currentPointX) || Float.isNaN(currentPointY)) {
+				// Nothing to draw here
+			} else if (Float.isNaN(previousPointX) || Float.isNaN(previousPointY)) {
+				path.moveTo(currentPointX, currentPointY);
 			} else {
-				path.lineTo(rawX, rawY);
+				path.lineTo(currentPointX, currentPointY);
 			}
 
-			++valueIndex;
-
+			previousPointX = currentPointX;
+			previousPointY = currentPointY;
 		}
 
 		canvas.drawPath(path, linePaint);
