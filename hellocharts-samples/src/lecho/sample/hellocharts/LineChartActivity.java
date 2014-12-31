@@ -63,8 +63,8 @@ public class LineChartActivity extends ActionBarActivity {
 	 * A placeholder fragment containing a simple view.
 	 */
 	public static class PlaceholderFragment extends Fragment {
-		private static final int NUM_OF_VALUES = 100000;
-        private static final int NUM_OF_SERIES = 2;
+		private static final int NUM_OF_VALUES = 20000;
+        private static final int NUM_OF_SERIES = 8;
         private static final int[] COLORS = {Color.RED, Color.BLACK, Color.YELLOW, Color.GREEN, Color.BLUE, Color.CYAN, Color.MAGENTA, Color.GRAY};
         private static List<Line> linesList = new ArrayList<>();
 
@@ -89,14 +89,15 @@ public class LineChartActivity extends ActionBarActivity {
                 for(int i = 0; i < NUM_OF_VALUES; ++i){
                     //PointValue p = new PointValue(i, r.nextBoolean() ? (n*20)+5 : (n*20)+10);
                     PointValue p = new PointValue(i*0.5f, r.nextFloat() * 100f);
+                    //PointValue p = new PointValue(i+n, (float)Math.sin(i) * 80f);
                     points.add(p);
                 }
                 Line line = new Line(points);
                 line.setColor(COLORS[n]);
                 line.setFilled(false);
                 line.setHasLines(true);
-                line.setSmooth(false);
-                line.setHasPoints(true);
+                line.setSmooth(true);
+                line.setHasPoints(false);
                 line.setPointRadius(3);
                 linesList.add(line);
             }

@@ -3,7 +3,6 @@ package lecho.lib.hellocharts.renderer;
 import lecho.lib.hellocharts.Chart;
 import lecho.lib.hellocharts.ChartCalculator;
 import lecho.lib.hellocharts.LineChartDataProvider;
-import lecho.lib.hellocharts.compressor.DataCompressor;
 import lecho.lib.hellocharts.compressor.DownsamplingCompressor;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
@@ -31,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 public class LineChartRenderer extends AbstractChartRenderer {
     private static final String TAG = "LineChartRenderer";
-	private static final float LINE_SMOOTHNESS = 0.16f;
+	private static final float LINE_SMOOTHNESS = 0.3f;
 	private static final int DEFAULT_LINE_STROKE_WIDTH_DP = 3;
 	private static final int DEFAULT_TOUCH_TOLERANCE_MARGIN_DP = 4;
 
@@ -41,7 +40,6 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private LineChartDataProvider dataProvider;
 
 	private int touchToleranceMargin;
-	private Path path = new Path();
 	private Paint linePaint = new Paint();
 	private Paint pointPaint = new Paint();
 	private RectF labelRect = new RectF();
@@ -64,25 +62,28 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
     /**
      * Size for the groups when grouping data. If the points in the screen are greater than
-     *  dataGroupingSize, then we render the series averaging groups of size dataGroupingSize
+     *  compressorThreshold, then we render the series averaging groups of size compressorThreshold
      *  reducing the number of points to draw.
      */
-    private int dataGroupingSize = 0;
+    private int compressorThreshold = 0;
     private float prevViewportWidth = 0, prevViewportHeight = 0;
 
     /**
-     * Lists containing the grouped series when dataGroupingSize > 0
+     * Lists containing the grouped series when compressorThreshold > 0
      */
     protected XYDataset groupedXYDatasets[];
     /**
      * Simple Path implementation that uses drawLines() method which is way faster than using Path
      */
     protected PathCompat pathCompatArray[];
+    private Path path = new Path();
 
     private lecho.lib.hellocharts.compressor.DataCompressor dataCompressor;
+    private final Context context;
 
 	public LineChartRenderer(Context context, Chart chart, LineChartDataProvider dataProvider) {
         super(context, chart);
+        this.context = context;
         this.dataProvider = dataProvider;
 
         touchToleranceMargin = Utils.dp2px(density, DEFAULT_TOUCH_TOLERANCE_MARGIN_DP);
@@ -102,11 +103,11 @@ public class LineChartRenderer extends AbstractChartRenderer {
         this.useFastRender = useFastRender;
     }
 
-    public boolean isUseFastRender() {
+    public boolean isUsingFastRender() {
         return useFastRender;
     }
 
-    public boolean isDrawPoints() {
+    public boolean isDrawingPoints() {
         return drawPoints;
     }
 
@@ -118,10 +119,10 @@ public class LineChartRenderer extends AbstractChartRenderer {
      * Set the threshold for the compressor usage. If there is more than the specified points
      *  to draw in the screen the compressor will be used, otherwise no compression will be
      *  applied in order to speed up drawing
-     * @param value if there is more than this quantity of points to draw, a compression will be aplied
+     * @param value if there is more than this quantity of points to draw, a compression will be applied
      */
     public void setCompressorThreshold(int value){
-        dataGroupingSize = value;
+        compressorThreshold = value;
         prevViewportWidth = 0;      // Force to recreate the groupedXYDatasets
     }
 
@@ -157,16 +158,20 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
         pathCompatArray = new PathCompat[dataProvider.getLineChartData().getLines().size()];
         groupedXYDatasets = new XYDataset[pathCompatArray.length];
-
-        Log.i(TAG, this.getClass().getSimpleName() + " pathCompatArray size: " + pathCompatArray.length);
-        prevViewportWidth = 0;      // Force to recreate the groupedXYDatasets
-        for(int n = 0; n < pathCompatArray.length; ++n){
+        for(int n = 0; n < pathCompatArray.length; ++n) {
             int quantity = dataProvider.getLineChartData().getLines().get(n).getPoints().size();
 
-            // The buffer size for the current data is given by:
-            //  [Points Quantity]*2 + ((Points Quantity]-2)*2)
-            pathCompatArray[n] = new PathCompat(quantity*2 + (quantity-2)*2);
+            if(dataProvider.getLineChartData().getLines().get(n).isSmooth()){
+                // TODO: we are creating a really big buffer, we need to find a way to calculate the
+                //  necessary buffer size when using cubicTo()
+                pathCompatArray[n] = new PathCompat(quantity*50, 8);
+            }else {
+                // The buffer size for the current data is given by:
+                //  [Points Quantity]*2 + ((Points Quantity]-2)*2)
+                pathCompatArray[n] = new PathCompat(quantity * 2 + (quantity - 2) * 2, 8);
+            }
         }
+        prevViewportWidth = 0;      // Force to recreate the groupedXYDatasets
 	}
 
 	@Override
@@ -177,7 +182,9 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		secondCanvas.drawColor(Color.TRANSPARENT, Mode.CLEAR);
 
         computeDataGrouping();
+        long time = System.nanoTime();
         computePaths();
+        Log.i(TAG, "Path created in " + (System.nanoTime() - time)/1000000f + " ms");
 
         // Set the paint for each processed line and draw it in the canvas!
         for(int n = 0; n < pathCompatArray.length; ++n){
@@ -192,17 +199,17 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
     /**
      * Compute the data grouping if necessary (only when zoom changes) according to the value of
-     *  dataGroupingSize. This is a lossy compression of the data.
+     *  compressorThreshold. This is a lossy compression of the data.
      *  @return true if data grouping was applied, false if there was insufficient points to apply
      *          data grouping or if zoom didn't change from the last time
      */
     protected boolean computeDataGrouping(){
         final Viewport viewport = chart.getViewport();
+        Log.i(TAG, "compressorThreshold: " + compressorThreshold);
 
         // If there was a change in zoom, we have to rebuild the groupedXYDatasets using data grouping
         ExecutorService taskExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        if(dataGroupingSize > 0 && (Math.abs(prevViewportWidth - viewport.width()) > 0.01 || Math.abs(prevViewportHeight - viewport.height()) > 0.01)){
-            Log.i(TAG, "Recreating groupedXYDatasets");
+        if(compressorThreshold > 0 && (Math.abs(prevViewportWidth - viewport.width()) > 0.01 || Math.abs(prevViewportHeight - viewport.height()) > 0.01)){
             prevViewportWidth = viewport.width();
             prevViewportHeight = viewport.height();
             for(int n = 0; n < groupedXYDatasets.length; ++n){
@@ -225,7 +232,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
         //  large data in multiple series
         ExecutorService taskExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         for(int n = 0; n < pathCompatArray.length; ++n){
-            if(dataGroupingSize == 0) groupedXYDatasets[n] = data.getLines().get(n).getPoints();
+            if(compressorThreshold == 0) groupedXYDatasets[n] = data.getLines().get(n).getPoints();
             taskExecutor.execute(new PathDrawer(data.getLines().get(n), pathCompatArray[n], groupedXYDatasets[n]));
         }
         taskExecutor.shutdown();
@@ -236,7 +243,6 @@ public class LineChartRenderer extends AbstractChartRenderer {
         private final Line line;
         private final XYDataset[] xyDatasets;
         private final int index;
-        private final XYDataset resultList = new XYDataset();
         final Viewport viewport = chart.getViewport();
 
         /**
@@ -255,17 +261,16 @@ public class LineChartRenderer extends AbstractChartRenderer {
         @Override
         public void run() {
             /* Lossy data compression. If the size of the current viewport has more points than the
-             *  established dataGroupingSize we calculate an average for a group of points. The data
+             *  established compressorThreshold we calculate an average for a group of points. The data
              *  won't look the same, but instead will show the 'tendency'. On this way we decrease the
              *  number of points to draw.
              */
-            if(line.getPoints().subList(viewport.left, viewport.left + viewport.width()).size() > dataGroupingSize) {
+            if(line.getPoints().subList(viewport.left, viewport.left + viewport.width()).size() > compressorThreshold) {
                 xyDatasets[index] = dataCompressor.compress(line, chart);
-                Log.i(TAG, "GroupedList " + index + " recreated with " + xyDatasets[index].size() + " elements");
             } else{
-                Log.i(TAG, "GroupedList " + index + " not enough data");
                 xyDatasets[index] = line.getPoints();
             }
+            Log.i(TAG, "Compressed " + index + " to " + xyDatasets[index].size() + " points");
         }
     }
 
@@ -296,7 +301,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
             final Viewport viewport = chart.getViewport();
 
             int valueIndex = 0;
-            float prevRawX = 0;
+            final List<PointValue> dataToRender;
 
             // Use fast renderer, so we use a resultList instead of the ArrayList and we create groupedXYDatasets
             //  containing only the visible data, otherwise we use the normal rendering method iterating
@@ -306,50 +311,39 @@ public class LineChartRenderer extends AbstractChartRenderer {
                 // Get a subList containing only the visible part of the data we need to render, on this
                 //  way we are significatively reducing the time spent in the loop when we are zooming and
                 //  a portion of the data is not shown.
-                final List<PointValue> subList = xyDataset.subList(viewport.left, viewport.left + viewport.width());
-
-                for (PointValue pointValue : subList) {
-                    float rawX = calculator.calculateRawX(pointValue.getX());
-                    float rawY = calculator.calculateRawY(pointValue.getY());
-
-                    if (valueIndex == 0) {
-                        prevRawX = rawX;
-                        pathCompat.moveTo(rawX, rawY);
-                        ++valueIndex;
-                    } else {
-                        if ((rawX - prevRawX) > 0.0f) {
-                            prevRawX = rawX;
-                            pathCompat.lineTo(rawX, rawY);
-                        }
-                    }
-
-                    /*
-                    if (line.isFilled()) {
-                        // For filled line use path.
-                        rawX = calculator.calculateRelativeRawX(point.getX());
-                        rawY = calculator.calculateRelativeRawY(point.getY());
-                        if (valueIndex == 0) {
-                            path.moveTo(rawX, rawY);
-                        } else {
-                            path.lineTo(rawX, rawY);
-                        }
-                    }*/
-                }
+                dataToRender = xyDataset.subList(viewport.left, viewport.left + viewport.width());
             }else {
-                for (PointValue pointValue : xyDataset) {
-                    float rawX = calculator.calculateRawX(pointValue.getX());
-                    float rawY = calculator.calculateRawY(pointValue.getY());
+                dataToRender = xyDataset;
+            }
 
+            if(line.isSmooth()){
+                drawSmoothPath(dataToRender, pathCompat);
+                return;
+            }
+
+            for (PointValue pointValue : dataToRender) {
+                /*
+                // If line is filled we can't use PathCompat, we have to use the slower Path
+                //  or implement our custom algorithm to fill
+                if (line.isFilled()) {
+                    float rawX = calculator.calculateRelativeRawX(pointValue.getX());
+                    float rawY = calculator.calculateRelativeRawY(pointValue.getY());
                     if (valueIndex == 0) {
-                        prevRawX = rawX;
-                        pathCompat.moveTo(rawX, rawY);
-                        ++valueIndex;
+                        path.moveTo(rawX, rawY);
                     } else {
-                        if ((rawX - prevRawX) > 0.0f) {
-                            prevRawX = rawX;
-                            pathCompat.lineTo(rawX, rawY);
-                        }
+                        path.lineTo(rawX, rawY);
                     }
+                    continue;
+                }*/
+
+                float rawX = calculator.calculateRawX(pointValue.getX());
+                float rawY = calculator.calculateRawY(pointValue.getY());
+
+                if (valueIndex == 0) {
+                    pathCompat.moveTo(rawX, rawY);
+                    ++valueIndex;
+                } else {
+                    pathCompat.lineTo(rawX, rawY);
                 }
             }
         }
@@ -440,108 +434,106 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		return Utils.dp2px(density, contentAreaMargin);
 	}
 
-	/**
-	 * Draws Besier's curve. Uses path so drawing has to be done on secondCanvas to avoid problem with hardware
-	 * acceleration.
-	 */
-	private void drawSmoothPath(Canvas canvas, final Line line) {
-		final ChartCalculator calculator = chart.getChartCalculator();
-		linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
-		linePaint.setColor(line.getColor());
-		final int lineSize = line.getPoints().size();
-		float prepreviousPointX = Float.NaN;
-		float prepreviousPointY = Float.NaN;
-		float previousPointX = Float.NaN;
-		float previousPointY = Float.NaN;
-		float currentPointX = Float.NaN;
-		float currentPointY = Float.NaN;
-		float nextPointX = Float.NaN;
-		float nextPointY = Float.NaN;
-		for (int valueIndex = 0; valueIndex < lineSize; ++valueIndex) {
-			if (Float.isNaN(currentPointX)) {
-				PointValue linePoint = line.getPoints().get(valueIndex);
-				currentPointX = calculator.calculateRelativeRawX(linePoint.getX());
-				currentPointY = calculator.calculateRelativeRawY(linePoint.getY());
-			}
-			if (Float.isNaN(previousPointX)) {
-				if (valueIndex > 0) {
-					PointValue linePoint = line.getPoints().get(valueIndex - 1);
-					previousPointX = calculator.calculateRelativeRawX(linePoint.getX());
-					previousPointY = calculator.calculateRelativeRawY(linePoint.getY());
-				} else {
-					previousPointX = currentPointX;
-					previousPointY = currentPointY;
-				}
-			}
+    // Draws Besier's curve
+    private void drawSmoothPath(List<PointValue> dataset, PathCompat pathCompat) {
+        final ChartCalculator calculator = chart.getChartCalculator();
+        final int lineSize = dataset.size();
+        float prepreviousPointX = Float.NaN;
+        float prepreviousPointY = Float.NaN;
+        float previousPointX = Float.NaN;
+        float previousPointY = Float.NaN;
+        float currentPointX = Float.NaN;
+        float currentPointY = Float.NaN;
+        float nextPointX = Float.NaN;
+        float nextPointY = Float.NaN;
+        for (int valueIndex = 0; valueIndex < lineSize; ++valueIndex) {
+            if (Float.isNaN(currentPointX)) {
+                PointValue linePoint = dataset.get(valueIndex);
+                currentPointX = calculator.calculateRawX(linePoint.getX());
+                currentPointY = calculator.calculateRawY(linePoint.getY());
+            }
+            if (Float.isNaN(previousPointX)) {
+                if (valueIndex > 0) {
+                    PointValue linePoint = dataset.get(valueIndex - 1);
+                    previousPointX = calculator.calculateRawX(linePoint.getX());
+                    previousPointY = calculator.calculateRawY(linePoint.getY());
+                } else {
+                    previousPointX = currentPointX;
+                    previousPointY = currentPointY;
+                }
+            }
 
-			if (Float.isNaN(prepreviousPointX)) {
-				if (valueIndex > 1) {
-					PointValue linePoint = line.getPoints().get(valueIndex - 2);
-					prepreviousPointX = calculator.calculateRelativeRawX(linePoint.getX());
-					prepreviousPointY = calculator.calculateRelativeRawY(linePoint.getY());
-				} else {
-					prepreviousPointX = previousPointX;
-					prepreviousPointY = previousPointY;
-				}
-			}
+            if (Float.isNaN(prepreviousPointX)) {
+                if (valueIndex > 1) {
+                    PointValue linePoint = dataset.get(valueIndex - 2);
+                    prepreviousPointX = calculator.calculateRawX(linePoint.getX());
+                    prepreviousPointY = calculator.calculateRawY(linePoint.getY());
+                } else {
+                    prepreviousPointX = previousPointX;
+                    prepreviousPointY = previousPointY;
+                }
+            }
 
-			// nextPoint is always new one or it is equal currentPoint.
-			if (valueIndex < lineSize - 1) {
-				PointValue linePoint = line.getPoints().get(valueIndex + 1);
-				nextPointX = calculator.calculateRelativeRawX(linePoint.getX());
-				nextPointY = calculator.calculateRelativeRawY(linePoint.getY());
-			} else {
-				nextPointX = currentPointX;
-				nextPointY = currentPointY;
-			}
+            // nextPoint is always new one or it is equal currentPoint.
+            if (valueIndex < lineSize - 1) {
+                PointValue linePoint = dataset.get(valueIndex + 1);
+                nextPointX = calculator.calculateRawX(linePoint.getX());
+                nextPointY = calculator.calculateRawY(linePoint.getY());
+            } else {
+                nextPointX = currentPointX;
+                nextPointY = currentPointY;
+            }
 
-			// Calculate control points.
-			final float firstDiffX = (currentPointX - prepreviousPointX);
-			final float firstDiffY = (currentPointY - prepreviousPointY);
-			final float secondDiffX = (nextPointX - previousPointX);
-			final float secondDiffY = (nextPointY - previousPointY);
-			final float firstControlPointX = previousPointX + (LINE_SMOOTHNESS * firstDiffX);
-			final float firstControlPointY = previousPointY + (LINE_SMOOTHNESS * firstDiffY);
-			final float secondControlPointX = currentPointX - (LINE_SMOOTHNESS * secondDiffX);
-			final float secondControlPointY = currentPointY - (LINE_SMOOTHNESS * secondDiffY);
+            // Calculate control points.
+            final float firstDiffX = (currentPointX - prepreviousPointX);
+            final float firstDiffY = (currentPointY - prepreviousPointY);
+            final float secondDiffX = (nextPointX - previousPointX);
+            final float secondDiffY = (nextPointY - previousPointY);
+            final float firstControlPointX = previousPointX + (LINE_SMOOTHNESS * firstDiffX);
+            final float firstControlPointY = previousPointY + (LINE_SMOOTHNESS * firstDiffY);
+            final float secondControlPointX = currentPointX - (LINE_SMOOTHNESS * secondDiffX);
+            final float secondControlPointY = currentPointY - (LINE_SMOOTHNESS * secondDiffY);
 
-			if (valueIndex == 0) {
-				// Move to start point.
-				path.moveTo(currentPointX, currentPointY);
-			} else {
-				path.cubicTo(firstControlPointX, firstControlPointY, secondControlPointX, secondControlPointY,
-						currentPointX, currentPointY);
-			}
+            if (valueIndex == 0) {
+                // Move to start point.
+                pathCompat.moveTo(currentPointX, currentPointY);
+            } else {
+                pathCompat.cubicTo(firstControlPointX, firstControlPointY, secondControlPointX, secondControlPointY,
+                        currentPointX, currentPointY);
+            }
 
-			// Shift values by one back to prevent recalculation of values that have
-			// been already calculated.
-			prepreviousPointX = previousPointX;
-			prepreviousPointY = previousPointY;
-			previousPointX = currentPointX;
-			previousPointY = currentPointY;
-			currentPointX = nextPointX;
-			currentPointY = nextPointY;
-		}
+            // Shift values by one back to prevent recalculation of values that have
+            // been already calculated.
+            prepreviousPointX = previousPointX;
+            prepreviousPointY = previousPointY;
+            previousPointX = currentPointX;
+            previousPointY = currentPointY;
+            currentPointX = nextPointX;
+            currentPointY = nextPointY;
+        }
 
+        /*
 		secondCanvas.drawPath(path, linePaint);
 		if (line.isFilled()) {
 			drawArea(canvas, line.getAreaTransparency());
 		}
-		path.reset();
-	}
+		path.reset();*/
+    }
 
 	// TODO: Drawing points can be done in the same loop as drawing lines but it
 	// may cause problems in the future with
 	// implementing point styles.
 	private void drawPoints(Canvas canvas, Line line, int lineIndex, int mode) {
-        if(this.getClass().getSimpleName().contains("Preview")) return;
-
 		final ChartCalculator calculator = chart.getChartCalculator();
         final Viewport viewport = chart.getViewport();
-		pointPaint.setColor(line.getColor());
+        final List<PointValue> dataToRender = useFastRender ?
+                groupedXYDatasets[lineIndex].subList(viewport.left, viewport.left + viewport.width()) :
+                groupedXYDatasets[lineIndex];
 
+        pointPaint.setColor(line.getColor());
         int valueIndex = 0;
-		for (PointValue pointValue : groupedXYDatasets[lineIndex].subList(viewport.left, viewport.left + viewport.width())) {
+
+		for (PointValue pointValue : dataToRender) {
 			int pointRadius = Utils.dp2px(density, line.getPointRadius());
 			final float rawX = calculator.calculateRawX(pointValue.getX());
 			final float rawY = calculator.calculateRawY(pointValue.getY());

@@ -74,7 +74,7 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		long time = System.nanoTime();
+		//long time = System.nanoTime();
 		super.onDraw(canvas);
 		axesRenderer.draw(canvas);
 
