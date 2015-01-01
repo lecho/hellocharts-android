@@ -10,7 +10,7 @@ public class ChartZoomer {
 	public static final int ZOOM_HORIZONTAL_AND_VERTICAL = 1;
 	public static final int ZOOM_HORIZONTAL = 2;
 	public static final int ZOOM_VERTICAL = 3;
-	public static final float ZOOM_AMOUNT = 0.25f;
+	public static float ZOOM_AMOUNT = 0.25f;
 	private ZoomerCompat zoomer;
 	private int zoomType;
 	private PointF zoomFocalPoint = new PointF();// Used for double tap zoom
@@ -21,6 +21,10 @@ public class ChartZoomer {
 		zoomer = new ZoomerCompat(context);
 		this.zoomType = zoomType;
 	}
+
+    public void setZoomAmount(float zoomAmount){
+        ZOOM_AMOUNT = zoomAmount;
+    }
 
 	public boolean startZoom(MotionEvent e, ChartCalculator chartCalculator) {
 		zoomer.forceFinished(true);

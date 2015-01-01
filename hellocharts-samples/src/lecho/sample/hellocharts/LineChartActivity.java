@@ -135,6 +135,7 @@ public class LineChartActivity extends ActionBarActivity {
             ((LineChartRenderer)previewChart.getChartRenderer()).setCompressorThreshold(5000);
             ((LineChartRenderer)previewChart.getChartRenderer()).setDataCompressor(new DownsamplingCompressor(500));
             ((LineChartRenderer)previewChart.getChartRenderer()).setDrawPoints(false);
+            previewChart.setZoomAmount(0.8f);
 
             chart.setValueTouchEnabled(true);
             chart.setMaxZoom(3000f);

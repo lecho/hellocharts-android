@@ -76,14 +76,12 @@ public class LineChartRenderer extends AbstractChartRenderer {
      * Simple Path implementation that uses drawLines() method which is way faster than using Path
      */
     protected PathCompat pathCompatArray[];
-    private Path path = new Path();
+    protected Path paths[];
 
     private lecho.lib.hellocharts.compressor.DataCompressor dataCompressor;
-    private final Context context;
 
 	public LineChartRenderer(Context context, Chart chart, LineChartDataProvider dataProvider) {
         super(context, chart);
-        this.context = context;
         this.dataProvider = dataProvider;
 
         touchToleranceMargin = Utils.dp2px(density, DEFAULT_TOUCH_TOLERANCE_MARGIN_DP);
@@ -157,9 +155,11 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		}
 
         pathCompatArray = new PathCompat[dataProvider.getLineChartData().getLines().size()];
+        paths = new Path[pathCompatArray.length];
         groupedXYDatasets = new XYDataset[pathCompatArray.length];
         for(int n = 0; n < pathCompatArray.length; ++n) {
             int quantity = dataProvider.getLineChartData().getLines().get(n).getPoints().size();
+            paths[n] = new Path();
 
             if(dataProvider.getLineChartData().getLines().get(n).isSmooth()){
                 // TODO: we are creating a really big buffer, we need to find a way to calculate the
@@ -183,16 +183,21 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		secondCanvas.drawColor(Color.TRANSPARENT, Mode.CLEAR);
 
         computeDataGrouping();
-        long time = System.nanoTime();
         computePaths();
-        Log.i(TAG, "Path created in " + (System.nanoTime() - time)/1000000f + " ms");
 
         // Set the paint for each processed line and draw it in the canvas!
         for(int n = 0; n < pathCompatArray.length; ++n){
             Line line = data.getLines().get(n);
             linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
             linePaint.setColor(line.getColor());
-            pathCompatArray[n].drawPath(canvas, linePaint);
+
+            // If the line is filled, draw the area with Path, not PathCompat
+            if(line.isFilled()) {
+                drawArea(secondCanvas, paths[n], line.getAreaTransparency(), linePaint);
+                paths[n].reset();
+            } else {
+                pathCompatArray[n].drawPath(canvas, linePaint);
+            }
         }
 
 		canvas.drawBitmap(secondBitmap, contentRect.left, contentRect.top, null);
@@ -234,7 +239,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
         ExecutorService taskExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         for(int n = 0; n < pathCompatArray.length; ++n){
             if(compressorThreshold == 0) groupedXYDatasets[n] = data.getLines().get(n).getPoints();
-            taskExecutor.execute(new PathDrawer(data.getLines().get(n), pathCompatArray[n], groupedXYDatasets[n]));
+            taskExecutor.execute(new PathDrawer(data.getLines().get(n), pathCompatArray[n], paths[n], groupedXYDatasets[n]));
         }
         taskExecutor.shutdown();
         try { taskExecutor.awaitTermination(1000, TimeUnit.MILLISECONDS); } catch (InterruptedException e) { e.printStackTrace(); }
@@ -278,6 +283,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
     private class PathDrawer implements Runnable {
         final Line line;
         final PathCompat pathCompat;
+        final Path path;
         final XYDataset xyDataset;
 
         /**
@@ -285,14 +291,15 @@ public class LineChartRenderer extends AbstractChartRenderer {
          *  a {@link lecho.lib.hellocharts.model.Line}.
          *
          * @param line line from which generate the path
-         * @param p {@link lecho.lib.hellocharts.util.PathCompat} where to store the generated path
+         * @param pathCompat {@link lecho.lib.hellocharts.util.PathCompat} where to store the generated path
          * @param xyDataset {@link lecho.lib.hellocharts.util.XYDataset} where the algorithm takes the
          *                      original data to generate the path. When using data grouping this contains
          *                      the grouped data.
          */
-        public PathDrawer(final Line line, final PathCompat p, final XYDataset xyDataset){
+        public PathDrawer(final Line line, final PathCompat pathCompat, final Path path, final XYDataset xyDataset){
             this.line = line;
-            pathCompat = p;
+            this.pathCompat = pathCompat;
+            this.path = path;
             this.xyDataset = xyDataset;
         }
 
@@ -317,34 +324,23 @@ public class LineChartRenderer extends AbstractChartRenderer {
                 dataToRender = xyDataset;
             }
 
+            // Draw smooth line
             if(line.isSmooth()){
-                drawSmoothPath(dataToRender, pathCompat);
-                return;
-            }
+                drawSmoothPath(dataToRender, pathCompat, path, line);
 
-            for (PointValue pointValue : dataToRender) {
-                /*
-                // If line is filled we can't use PathCompat, we have to use the slower Path
-                //  or implement our custom algorithm to fill
-                if (line.isFilled()) {
-                    float rawX = calculator.calculateRelativeRawX(pointValue.getX());
-                    float rawY = calculator.calculateRelativeRawY(pointValue.getY());
+            } else {
+                for (PointValue pointValue : dataToRender) {
+                    float rawX = calculator.calculateRawX(pointValue.getX());
+                    float rawY = calculator.calculateRawY(pointValue.getY());
+
                     if (valueIndex == 0) {
-                        path.moveTo(rawX, rawY);
+                        if(!line.isFilled()) pathCompat.moveTo(rawX, rawY);
+                        else path.moveTo(rawX, rawY);
+                        ++valueIndex;
                     } else {
-                        path.lineTo(rawX, rawY);
+                        if(!line.isFilled()) pathCompat.lineTo(rawX, rawY);
+                        else path.lineTo(rawX, rawY);
                     }
-                    continue;
-                }*/
-
-                float rawX = calculator.calculateRawX(pointValue.getX());
-                float rawY = calculator.calculateRawY(pointValue.getY());
-
-                if (valueIndex == 0) {
-                    pathCompat.moveTo(rawX, rawY);
-                    ++valueIndex;
-                } else {
-                    pathCompat.lineTo(rawX, rawY);
                 }
             }
         }
@@ -435,8 +431,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		return Utils.dp2px(density, contentAreaMargin);
 	}
 
-    // Draws Besier's curve
-    private void drawSmoothPath(List<PointValue> dataset, PathCompat pathCompat) {
+    // Draws Besier's curve. It uses PathCompat if line is not filled, otherwise the slower Path is used
+    private void drawSmoothPath(List<PointValue> dataset, PathCompat pathCompat, Path path, Line line) {
         final ChartCalculator calculator = chart.getChartCalculator();
         final int lineSize = dataset.size();
         float prepreviousPointX = Float.NaN;
@@ -497,9 +493,12 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
             if (valueIndex == 0) {
                 // Move to start point.
-                pathCompat.moveTo(currentPointX, currentPointY);
+                if(line.isFilled()) path.moveTo(currentPointX, currentPointY);
+                else pathCompat.moveTo(currentPointX, currentPointY);
             } else {
-                pathCompat.cubicTo(firstControlPointX, firstControlPointY, secondControlPointX, secondControlPointY,
+                if(line.isFilled()) path.cubicTo(firstControlPointX, firstControlPointY, secondControlPointX, secondControlPointY,
+                        currentPointX, currentPointY);
+                else pathCompat.cubicTo(firstControlPointX, firstControlPointY, secondControlPointX, secondControlPointY,
                         currentPointX, currentPointY);
             }
 
@@ -512,13 +511,6 @@ public class LineChartRenderer extends AbstractChartRenderer {
             currentPointX = nextPointX;
             currentPointY = nextPointY;
         }
-
-        /*
-		secondCanvas.drawPath(path, linePaint);
-		if (line.isFilled()) {
-			drawArea(canvas, line.getAreaTransparency());
-		}
-		path.reset();*/
     }
 
 	// TODO: Drawing points can be done in the same loop as drawing lines but it
@@ -610,7 +602,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 				- labelMargin, labelPaint);
 	}
 
-	private void drawArea(Canvas canvas, int transparency) {
+	protected void drawArea(final Canvas canvas, final Path path, final int transparency, final Paint linePaint) {
 		final ChartCalculator calculator = chart.getChartCalculator();
 		final Rect contentRect = calculator.getContentRect();
 		path.lineTo(contentRect.width(), contentRect.height());
@@ -618,7 +610,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		path.close();
 		linePaint.setStyle(Paint.Style.FILL);
 		linePaint.setAlpha(transparency);
-		secondCanvas.drawPath(path, linePaint);
+        canvas.drawPath(path, linePaint);
 		linePaint.setStyle(Paint.Style.STROKE);
 	}
 

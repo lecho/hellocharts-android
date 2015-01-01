@@ -72,11 +72,18 @@ public class PreviewLineChartRenderer extends LineChartRenderer {
                 chartCanvas.setBitmap(chartBitmap);
 
                 // Set the paint for each processed line and draw it in the bitmap!
-                for (int n = 0; n < pathCompatArray.length; ++n) {
+                for(int n = 0; n < pathCompatArray.length; ++n){
                     Line line = data.getLines().get(n);
                     linePaint.setStrokeWidth(Utils.dp2px(density, line.getStrokeWidth()));
                     linePaint.setColor(line.getColor());
-                    pathCompatArray[n].drawPath(chartCanvas, linePaint);
+
+                    // If the line is filled, draw the area with Path, not PathCompat
+                    if(line.isFilled()) {
+                        drawArea(chartCanvas, paths[n], line.getAreaTransparency(), linePaint);
+                        paths[n].reset();
+                    } else {
+                        pathCompatArray[n].drawPath(chartCanvas, linePaint);
+                    }
                 }
             }
         }

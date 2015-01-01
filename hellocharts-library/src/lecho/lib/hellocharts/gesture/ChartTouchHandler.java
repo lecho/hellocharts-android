@@ -28,6 +28,10 @@ public class ChartTouchHandler {
 		chartZoomer = new ChartZoomer(context, ChartZoomer.ZOOM_HORIZONTAL_AND_VERTICAL);
 	}
 
+    public void setZoomAmount(float zoomAmount){
+        chartZoomer.setZoomAmount(zoomAmount);
+    }
+
 	/**
 	 * Using first approach of fling animation described here {@link http
 	 * ://developer.android.com/training/custom-views/making-interactive.html}. Consider use of second option with

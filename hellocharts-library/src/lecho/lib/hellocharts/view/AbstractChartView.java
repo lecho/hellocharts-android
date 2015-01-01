@@ -59,6 +59,10 @@ public abstract class AbstractChartView extends View implements Chart {
         ViewCompat.postInvalidateOnAnimation(this);
     }
 
+    public void setZoomAmount(float zoomAmount){
+        touchHandler.setZoomAmount(zoomAmount);
+    }
+
 	@Override
 	protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
@@ -70,7 +74,6 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		//long time = System.nanoTime();
 		super.onDraw(canvas);
 		axesRenderer.draw(canvas);
 
@@ -80,8 +83,6 @@ public abstract class AbstractChartView extends View implements Chart {
 
 		canvas.restoreToCount(clipRestoreCount);
 		chartRenderer.drawUnclipped(canvas);
-
-		//Log.v(TAG, this.getClass().getSimpleName() + " - onDraw [ms]: " + (System.nanoTime() - time) / 1000000f);
 	}
 
     @Override
