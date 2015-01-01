@@ -163,7 +163,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
             if(dataProvider.getLineChartData().getLines().get(n).isSmooth()){
                 // TODO: we are creating a really big buffer, we need to find a way to calculate the
-                //  necessary buffer size when using cubicTo()
+                //  necessary buffer size when using cubicTo(). This causes problems on devices with
+                //  low memory, they just can't allocate that much.
                 pathCompatArray[n] = new PathCompat(quantity*50, 8);
             }else {
                 // The buffer size for the current data is given by:

@@ -6,7 +6,7 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 
 public class ChartCalculator {
-	protected static float MAXIMUM_SCALE = 3000f;
+	protected static float MAXIMUM_SCALE = 20f;
 	/**
 	 * The current area (in pixels) for chart data, including mCoomonMargin. Labels are drawn outside this area.
 	 */
@@ -33,8 +33,14 @@ public class ChartCalculator {
 	 */
 	protected ViewportChangeListener viewportChangeListener = new DummyVieportChangeListener();
 
-    public void setMaxZoom(float maxZoom){
+    public void setMaxZoom(float maxZoom) {
+        if (maxZoom < 1) {
+            maxZoom = 1;
+        }
         MAXIMUM_SCALE = maxZoom;
+
+        computeMinimumWidthAndHeight();
+        setCurrentViewport(currentViewport);
     }
 
     public float getMaxZoom(){
@@ -217,6 +223,7 @@ public class ChartCalculator {
 
 	public void setMaxViewport(Viewport maxViewport) {
 		setMaxViewport(maxViewport.left, maxViewport.top, maxViewport.right, maxViewport.bottom);
+        computeMinimumWidthAndHeight();
 	}
 
 	public void setMaxViewport(float left, float top, float right, float bottom) {
@@ -248,5 +255,10 @@ public class ChartCalculator {
 			this.viewportChangeListener = viewportChangeListener;
 		}
 	}
+
+    private void computeMinimumWidthAndHeight() {
+        minViewportWidth = this.maxViewport.width() / MAXIMUM_SCALE;
+        minViewportHeight = this.maxViewport.height() / MAXIMUM_SCALE;
+    }
 
 }

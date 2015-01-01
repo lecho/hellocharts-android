@@ -96,7 +96,7 @@ public class LineChartActivity extends ActionBarActivity {
                 line.setColor(COLORS[n]);
                 line.setFilled(false);
                 line.setHasLines(true);
-                line.setSmooth(true);
+                line.setSmooth(false);
                 line.setHasPoints(false);
                 line.setPointRadius(3);
                 linesList.add(line);

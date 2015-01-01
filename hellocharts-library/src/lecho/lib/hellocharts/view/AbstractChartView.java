@@ -20,7 +20,6 @@ import android.graphics.Canvas;
 import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -57,10 +56,7 @@ public abstract class AbstractChartView extends View implements Chart {
 
     public void setMaxZoom(float maxZoom){
         chartCalculator.setMaxZoom(maxZoom);
-    }
-
-    public float getMaxZoom(){
-        return chartCalculator.getMaxZoom();
+        ViewCompat.postInvalidateOnAnimation(this);
     }
 
 	@Override
