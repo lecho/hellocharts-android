@@ -315,6 +315,10 @@ public class LineChartRenderer extends AbstractChartRenderer {
             //  containing only the visible data, otherwise we use the normal rendering method iterating
             //  over the entire ArrayList. This is provided because LineChartPreview needs to render
             //  all the data and not just the visible part.
+            if(xyDataset == null) {
+                Log.i(TAG, "NULL DATASET!!!!!");
+                return;
+            }
             if(useFastRender) {
                 // Get a subList containing only the visible part of the data we need to render, on this
                 //  way we are significatively reducing the time spent in the loop when we are zooming and

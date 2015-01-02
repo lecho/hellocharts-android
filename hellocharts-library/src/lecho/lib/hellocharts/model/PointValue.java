@@ -1,7 +1,9 @@
 package lecho.lib.hellocharts.model;
 
 
-public class PointValue {
+import lecho.lib.hellocharts.compressor.Point;
+
+public class PointValue implements Point {
 
 	private float x;
 	private float y;
