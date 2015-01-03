@@ -97,6 +97,13 @@ public class LineChartRenderer extends AbstractChartRenderer {
         Log.i(TAG, Runtime.getRuntime().availableProcessors() + " available cores");
 	}
 
+    /**
+     * When useFastRender is true, only the visible part of the chart is iterated to draw the canvas,
+     *  otherwise the whole dataset is iterated. When managing large dataset this option should be true,
+     *  but when handling small dataset this should be false because it may be difficult to visualize
+     *  the data
+     * @param useFastRender
+     */
     public void setUseFastRender(boolean useFastRender) {
         this.useFastRender = useFastRender;
     }
