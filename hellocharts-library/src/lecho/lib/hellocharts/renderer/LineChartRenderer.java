@@ -213,10 +213,13 @@ public class LineChartRenderer extends AbstractChartRenderer {
         final Viewport viewport = chart.getViewport();
 
         // If there was a change in zoom, we have to rebuild the groupedXYDatasets using data grouping
-        ExecutorService taskExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        if(compressorThreshold > 0 && (Math.abs(prevViewportWidth - viewport.width()) > 0.01 || Math.abs(prevViewportHeight - viewport.height()) > 0.01)){
+        if(compressorThreshold > 0 &&
+           (!Utils.almostEqualF(prevViewportWidth, viewport.width(), 15) || !Utils.almostEqualF(prevViewportHeight, viewport.height(), 15))
+                || prevViewportHeight == 0 || prevViewportWidth == 0){
             prevViewportWidth = viewport.width();
             prevViewportHeight = viewport.height();
+
+            ExecutorService taskExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
             for(int n = 0; n < groupedXYDatasets.length; ++n){
                 taskExecutor.execute(new DataCompressor(dataProvider.getLineChartData().getLines().get(n), groupedXYDatasets, n));
             }
@@ -275,7 +278,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
             } else{
                 xyDatasets[index] = line.getPoints();
             }
-            Log.i(TAG, "Compressed " + index + " to " + xyDatasets[index].size() + " points");
+            Log.i(TAG, "Compressed line " + index + " to " + xyDatasets[index].size() + " points");
         }
     }
 
