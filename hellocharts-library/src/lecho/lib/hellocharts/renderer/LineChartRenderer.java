@@ -211,7 +211,6 @@ public class LineChartRenderer extends AbstractChartRenderer {
      */
     protected boolean computeDataGrouping(){
         final Viewport viewport = chart.getViewport();
-        Log.i(TAG, "compressorThreshold: " + compressorThreshold);
 
         // If there was a change in zoom, we have to rebuild the groupedXYDatasets using data grouping
         ExecutorService taskExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
@@ -334,8 +333,14 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
             } else {
                 for (PointValue pointValue : dataToRender) {
-                    float rawX = calculator.calculateRawX(pointValue.getX());
-                    float rawY = calculator.calculateRawY(pointValue.getY());
+                    final float rawX, rawY;
+                    if(!line.isFilled()) {
+                        rawX = calculator.calculateRawX(pointValue.getX());
+                        rawY = calculator.calculateRawY(pointValue.getY());
+                    }else {
+                        rawX = calculator.calculateRelativeRawX(pointValue.getX());
+                        rawY = calculator.calculateRelativeRawY(pointValue.getY());
+                    }
 
                     if (valueIndex == 0) {
                         if(!line.isFilled()) pathCompat.moveTo(rawX, rawY);
@@ -535,15 +540,17 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			final float rawX = calculator.calculateRawX(pointValue.getX());
 			final float rawY = calculator.calculateRawY(pointValue.getY());
 
-            if (MODE_DRAW == mode) {
-                drawPoint(canvas, line, rawX, rawY, pointRadius);
-                if (line.hasLabels()) {
-                    drawLabel(canvas, calculator, line, pointValue, rawX, rawY, pointRadius + labelOffset);
+            if (calculator.isWithinContentRect((int)rawX, (int)rawY)) {
+                if (MODE_DRAW == mode) {
+                    drawPoint(canvas, line, rawX, rawY, pointRadius);
+                    if (line.hasLabels()) {
+                        drawLabel(canvas, calculator, line, pointValue, rawX, rawY, pointRadius + labelOffset);
+                    }
+                } else if (MODE_HIGHLIGHT == mode) {
+                    highlightPoint(canvas, calculator, line, pointValue, rawX, rawY, lineIndex, valueIndex);
+                } else {
+                    throw new IllegalStateException("Cannot process points in mode: " + mode);
                 }
-            } else if (MODE_HIGHLIGHT == mode) {
-                highlightPoint(canvas, calculator, line, pointValue, rawX, rawY, lineIndex, valueIndex);
-            } else {
-                throw new IllegalStateException("Cannot process points in mode: " + mode);
             }
 			++valueIndex;
 		}
@@ -609,9 +616,11 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	protected void drawArea(final Canvas canvas, final Path path, final int transparency, final Paint linePaint) {
 		final ChartCalculator calculator = chart.getChartCalculator();
 		final Rect contentRect = calculator.getContentRect();
+
 		path.lineTo(contentRect.width(), contentRect.height());
 		path.lineTo(0, contentRect.height());
 		path.close();
+
 		linePaint.setStyle(Paint.Style.FILL);
 		linePaint.setAlpha(transparency);
         canvas.drawPath(path, linePaint);
