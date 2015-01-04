@@ -22,7 +22,6 @@ import lecho.lib.hellocharts.view.Chart;
 
 /**
  * Renderer for line chart. Can draw lines, cubic lines, filled area chart and scattered chart.
- *
  */
 public class LineChartRenderer extends AbstractChartRenderer {
     private static final float LINE_SMOOTHNESS = 0.16f;
@@ -229,7 +228,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
         canvas.drawPath(path, linePaint);
 
         if (line.isFilled()) {
-            drawArea(canvas, line.getAreaTransparency());
+            drawArea(canvas, line);
         }
 
         path.reset();
@@ -317,7 +316,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
         canvas.drawPath(path, linePaint);
         if (line.isFilled()) {
-            drawArea(canvas, line.getAreaTransparency());
+            drawArea(canvas, line);
         }
         path.reset();
     }
@@ -431,18 +430,27 @@ public class LineChartRenderer extends AbstractChartRenderer {
         drawLabelTextAndBackground(canvas, labelBuffer, labelBuffer.length - numChars, numChars, line.getDarkenColor());
     }
 
-    private void drawArea(Canvas canvas, int transparency) {
+    private void drawArea(Canvas canvas, Line line) {
+        final int lineSize = line.getValues().size();
+        if (lineSize < 2) {
+            //No point to draw area for one point or empty line.
+            return;
+        }
+
         final ChartComputator computator = chart.getChartComputator();
         final Rect contentRect = computator.getContentRect();
+        final float baseRawValue = Math.min(contentRect.bottom, Math.max(computator.computeRawY(baseValue),
+                contentRect.top));
+        //That checks works only if the last point is the right most one.
+        final float left = Math.max(computator.computeRawX(line.getValues().get(0).getX()), contentRect.left);
+        final float right = Math.min(computator.computeRawX(line.getValues().get(lineSize -1).getX()), contentRect.right);
 
-        float baseRawValue = computator.computeRawY(baseValue);
-        baseRawValue = Math.min(contentRect.bottom, Math.max(baseRawValue, contentRect.top));
-
-        path.lineTo(contentRect.right, baseRawValue);
-        path.lineTo(contentRect.left, baseRawValue);
+        path.lineTo(right, baseRawValue);
+        path.lineTo(left, baseRawValue);
         path.close();
+
         linePaint.setStyle(Paint.Style.FILL);
-        linePaint.setAlpha(transparency);
+        linePaint.setAlpha(line.getAreaTransparency());
         canvas.drawPath(path, linePaint);
         linePaint.setStyle(Paint.Style.STROKE);
     }
