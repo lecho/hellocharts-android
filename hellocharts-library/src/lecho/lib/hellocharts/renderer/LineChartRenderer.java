@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Cap;
 import android.graphics.Path;
+import android.graphics.PathEffect;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
 
@@ -119,20 +120,13 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		}
 
 		for (Line line : data.getLines()) {
-			if (!line.hasLines()) {
-				continue;
-			}
-
-			if (line.getValues().size() > 0) {
-				prepareLinePaint(line);
-				final ChartComputator computator = chart.getChartComputator();
+			if (line.hasLines()) {
 				if (line.isCubic()) {
-					drawSmoothPath(drawCanvas, line, computator);
+					drawSmoothPath(drawCanvas, line);
 				} else {
-					drawPath(drawCanvas, line, computator);
+					drawPath(drawCanvas, line);
 				}
 			}
-			path.reset();
 		}
 
 		if (null != swBitmap) {
@@ -220,24 +214,25 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	/**
 	 * Draws lines, uses path for drawing filled area on secondCanvas. Line is drawn with canvas.drawLines() method.
 	 */
-	private void drawPath(Canvas canvas, final Line line, final ChartComputator computator) {
-		float previousPointX = Float.NaN;
-		float previousPointY = Float.NaN;
+	private void drawPath(Canvas canvas, final Line line) {
+		final ChartComputator computator = chart.getChartComputator();
+
+		prepareLinePaint(line);
+
+		int valueIndex = 0;
 		for (PointValue pointValue : line.getValues()) {
 
-			final float currentPointX = computator.computeRawX(pointValue.getX());
-			final float currentPointY = computator.computeRawY(pointValue.getY());
+			final float rawX = computator.computeRawX(pointValue.getX());
+			final float rawY = computator.computeRawY(pointValue.getY());
 
-			if (Float.isNaN(currentPointX) || Float.isNaN(currentPointY)) {
-				// Nothing to draw here
-			} else if (Float.isNaN(previousPointX) || Float.isNaN(previousPointY)) {
-				path.moveTo(currentPointX, currentPointY);
+			if (valueIndex == 0) {
+				path.moveTo(rawX, rawY);
 			} else {
-				path.lineTo(currentPointX, currentPointY);
+				path.lineTo(rawX, rawY);
 			}
 
-			previousPointX = currentPointX;
-			previousPointY = currentPointY;
+			++valueIndex;
+
 		}
 
 		canvas.drawPath(path, linePaint);
@@ -245,75 +240,92 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		if (line.isFilled()) {
 			drawArea(canvas, line.getAreaTransparency());
 		}
+
+		path.reset();
 	}
 
 	/**
-	 * Draws Bezier's curve. Uses path so drawing has to be done on secondCanvas to avoid problem with hardware
+	 * Draws Besier's curve. Uses path so drawing has to be done on secondCanvas to avoid problem with hardware
 	 * acceleration.
 	 */
-	private void drawSmoothPath(Canvas canvas, final Line line, final ChartComputator computator) {
-		final int lineSize = line.getValues().size();
+	private void drawSmoothPath(Canvas canvas, final Line line) {
+		final ChartComputator computator = chart.getChartComputator();
 
-		boolean isPrepreviousNaN = true;
+		prepareLinePaint(line);
+
+		final int lineSize = line.getValues().size();
 		float prepreviousPointX = Float.NaN;
 		float prepreviousPointY = Float.NaN;
-
-		boolean isPreviousNaN = true;
 		float previousPointX = Float.NaN;
 		float previousPointY = Float.NaN;
-
-		boolean isCurrentNaN = true;
 		float currentPointX = Float.NaN;
 		float currentPointY = Float.NaN;
-
-		PointValue point = line.getValues().get(0);
-		boolean isNextNaN = point == null || Float.isNaN(point.getX()) || Float.isNaN(point.getY());
-		float nextPointX = point == null ? Float.NaN : computator.computeRawX(point.getX());
-		float nextPointY = point == null ? Float.NaN : computator.computeRawY(point.getY());
-
+		float nextPointX = Float.NaN;
+		float nextPointY = Float.NaN;
 		for (int valueIndex = 0; valueIndex < lineSize; ++valueIndex) {
+			if (Float.isNaN(currentPointX)) {
+				PointValue linePoint = line.getValues().get(valueIndex);
+				currentPointX = computator.computeRawX(linePoint.getX());
+				currentPointY = computator.computeRawY(linePoint.getY());
+			}
+			if (Float.isNaN(previousPointX)) {
+				if (valueIndex > 0) {
+					PointValue linePoint = line.getValues().get(valueIndex - 1);
+					previousPointX = computator.computeRawX(linePoint.getX());
+					previousPointY = computator.computeRawY(linePoint.getY());
+				} else {
+					previousPointX = currentPointX;
+					previousPointY = currentPointY;
+				}
+			}
 
-			// PrePrevious point
-			isPrepreviousNaN = isPreviousNaN;
-			prepreviousPointX = previousPointX;
-			prepreviousPointY = previousPointY;
+			if (Float.isNaN(prepreviousPointX)) {
+				if (valueIndex > 1) {
+					PointValue linePoint = line.getValues().get(valueIndex - 2);
+					prepreviousPointX = computator.computeRawX(linePoint.getX());
+					prepreviousPointY = computator.computeRawY(linePoint.getY());
+				} else {
+					prepreviousPointX = previousPointX;
+					prepreviousPointY = previousPointY;
+				}
+			}
 
-			// Previous point
-			isPreviousNaN = isCurrentNaN;
-			previousPointX = currentPointX;
-			previousPointY = currentPointY;
+			// nextPoint is always new one or it is equal currentPoint.
+			if (valueIndex < lineSize - 1) {
+				PointValue linePoint = line.getValues().get(valueIndex + 1);
+				nextPointX = computator.computeRawX(linePoint.getX());
+				nextPointY = computator.computeRawY(linePoint.getY());
+			} else {
+				nextPointX = currentPointX;
+				nextPointY = currentPointY;
+			}
 
-			// Current point
-			isCurrentNaN = isNextNaN;
-			currentPointX = nextPointX;
-			currentPointY = nextPointY;
+			// Calculate control points.
+			final float firstDiffX = (currentPointX - prepreviousPointX);
+			final float firstDiffY = (currentPointY - prepreviousPointY);
+			final float secondDiffX = (nextPointX - previousPointX);
+			final float secondDiffY = (nextPointY - previousPointY);
+			final float firstControlPointX = previousPointX + (LINE_SMOOTHNES * firstDiffX);
+			final float firstControlPointY = previousPointY + (LINE_SMOOTHNES * firstDiffY);
+			final float secondControlPointX = currentPointX - (LINE_SMOOTHNES * secondDiffX);
+			final float secondControlPointY = currentPointY - (LINE_SMOOTHNES * secondDiffY);
 
-			// NextPoint is always new one or it is equal currentPoint.
-			point = valueIndex + 1 >= lineSize ? null : line.getValues().get(valueIndex + 1);
-			isNextNaN = point == null || Float.isNaN(point.getX()) || Float.isNaN(point.getY());
-			nextPointX = point == null ? Float.NaN : computator.computeRawX(point.getX());
-			nextPointY = point == null ? Float.NaN : computator.computeRawY(point.getY());
-
-			if (isCurrentNaN) {
-				// Nothing to draw here
-			} else if (isPreviousNaN) {
+			if (valueIndex == 0) {
 				// Move to start point.
 				path.moveTo(currentPointX, currentPointY);
 			} else {
-				// Calculate control points.
-				final float firstDiffX = isPrepreviousNaN ? 0 : currentPointX - prepreviousPointX;
-				final float firstDiffY = isPrepreviousNaN ? 0 : currentPointY - prepreviousPointY;
-				final float secondDiffX = isNextNaN ? currentPointX - previousPointX : nextPointX - previousPointX;
-				final float secondDiffY = isNextNaN ? currentPointY - previousPointY : nextPointY - previousPointY;
-				final float firstControlPointX = previousPointX + (LINE_SMOOTHNES * firstDiffX);
-				final float firstControlPointY = previousPointY + (LINE_SMOOTHNES * firstDiffY);
-				final float secondControlPointX = currentPointX - (LINE_SMOOTHNES * secondDiffX);
-				final float secondControlPointY = currentPointY - (LINE_SMOOTHNES * secondDiffY);
-
-				path.cubicTo(firstControlPointX, firstControlPointY,
-						secondControlPointX, secondControlPointY,
+				path.cubicTo(firstControlPointX, firstControlPointY, secondControlPointX, secondControlPointY,
 						currentPointX, currentPointY);
 			}
+
+			// Shift values by one back to prevent recalculation of values that have
+			// been already calculated.
+			prepreviousPointX = previousPointX;
+			prepreviousPointY = previousPointY;
+			previousPointX = currentPointX;
+			previousPointY = currentPointY;
+			currentPointX = nextPointX;
+			currentPointY = nextPointY;
 		}
 
 		canvas.drawPath(path, linePaint);

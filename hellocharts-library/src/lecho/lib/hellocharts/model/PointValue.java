@@ -55,14 +55,9 @@ public class PointValue {
 	 * @return
 	 */
 	public PointValue setTarget(float targetX, float targetY) {
-		// Can't animate to or from Float.NaN
-		if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(targetX) || Float.isNaN(targetY)) {
-			set(targetX, targetY);
-		} else {
-			set(x, y);
-			this.diffX = targetX - orginX;
-			this.diffY = targetY - orginY;
-		}
+		set(x, y);
+		this.diffX = targetX - orginX;
+		this.diffY = targetY - orginY;
 		return this;
 	}
 

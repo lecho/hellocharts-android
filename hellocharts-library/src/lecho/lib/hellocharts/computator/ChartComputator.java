@@ -167,9 +167,6 @@ public class ChartComputator {
 	 * 0 that means left most pixel of the screen.
 	 */
 	public float computeRawX(float valueX) {
-		if (Float.isNaN(valueX)) {
-			return Float.NaN;
-		}
 		// TODO: (contentRect.width() / currentViewport.width()) can be recalculated only when viewport change.
 		final float pixelOffset = (valueX - currentViewport.left) * (contentRect.width() / currentViewport.width());
 		return contentRect.left + pixelOffset;
@@ -180,9 +177,6 @@ public class ChartComputator {
 	 * 0 that means top most pixel of the screen.
 	 */
 	public float computeRawY(float valueY) {
-		if (Float.isNaN(valueY)) {
-			return Float.NaN;
-		}
 		final float pixelOffset = (valueY - currentViewport.bottom) * (contentRect.height() / currentViewport.height());
 		return contentRect.bottom - pixelOffset;
 	}
