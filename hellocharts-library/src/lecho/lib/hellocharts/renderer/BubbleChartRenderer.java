@@ -84,7 +84,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	}
 
 	@Override
-	public void initDataMeasuremetns() {
+	public void initDataMeasurements() {
 		chart.getChartComputator().setInternalMargin(calculateContentAreaMargin());
 		Rect contentRect = chart.getChartComputator().getContentRect();
 		if (contentRect.width() < contentRect.height()) {

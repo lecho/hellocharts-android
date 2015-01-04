@@ -78,7 +78,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	}
 
 	@Override
-	public void initDataMeasuremetns() {
+	public void initDataMeasurements() {
 		chart.getChartComputator().setInternalMargin(labelMargin);// Using label margin because I'm lazy:P
 	}
 

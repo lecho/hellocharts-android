@@ -35,9 +35,9 @@ public class ComboLineColumnChartRenderer extends AbstractChartRenderer {
 	}
 
 	@Override
-	public void initDataMeasuremetns() {
-		this.columnChartRenderer.initDataMeasuremetns();
-		this.lineChartRenderer.initDataMeasuremetns();
+	public void initDataMeasurements() {
+		this.columnChartRenderer.initDataMeasurements();
+		this.lineChartRenderer.initDataMeasurements();
 	}
 
 	@Override

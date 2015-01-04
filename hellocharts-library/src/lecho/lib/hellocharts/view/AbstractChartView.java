@@ -76,7 +76,7 @@ public abstract class AbstractChartView extends View implements Chart {
 		chartComputator.setContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(), getPaddingRight(),
 				getPaddingBottom());
 		axesRenderer.initAxesAttributes();
-		chartRenderer.initDataMeasuremetns();
+		chartRenderer.initDataMeasurements();
 	}
 
 	@Override
