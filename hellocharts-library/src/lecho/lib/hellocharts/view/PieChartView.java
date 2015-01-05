@@ -49,9 +49,8 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 	public PieChartView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		pieChartRenderer = new PieChartRenderer(context, this, this);
-		chartRenderer = pieChartRenderer;
 		touchHandler = new PieChartTouchHandler(context, this);
-		resetRendererAndTouchHandler();
+		setChartRenderer(pieChartRenderer);
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
 			this.rotationAnimator = new PieChartRotationAnimatorV8(this);
 		} else {

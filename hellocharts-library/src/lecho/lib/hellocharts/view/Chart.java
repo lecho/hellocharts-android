@@ -26,6 +26,8 @@ public interface Chart {
 
 	public ChartRenderer getChartRenderer();
 
+	public void setChartRenderer(ChartRenderer renderer);
+
 	public AxesRenderer getAxesRenderer();
 
 	public ChartComputator getChartComputator();
