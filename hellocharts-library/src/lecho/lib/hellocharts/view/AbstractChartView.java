@@ -181,6 +181,13 @@ public abstract class AbstractChartView extends View implements Chart {
 	}
 
 	@Override
+	public void setChartRenderer(ChartRenderer renderer) {
+		chartRenderer = renderer;
+		chartRenderer.initDataMeasurements();
+		ViewCompat.postInvalidateOnAnimation(this);
+	}
+
+	@Override
 	public AxesRenderer getAxesRenderer() {
 		return axesRenderer;
 	}
