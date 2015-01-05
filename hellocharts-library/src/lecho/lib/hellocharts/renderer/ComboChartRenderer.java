@@ -67,13 +67,23 @@ public class ComboChartRenderer extends AbstractChartRenderer {
 	}
 
 	public boolean checkTouch(float touchX, float touchY) {
-		selectedValue.clear();
-        for (int i = renderers.size()-1; i >= 0; i--) {
-            ChartRenderer renderer = renderers.get(i);
+	    selectedValue.clear();
+        int rendererIndex = renderers.size() - 1;
+        for (; rendererIndex >= 0; rendererIndex--) {
+            ChartRenderer renderer = renderers.get(rendererIndex);
             if (renderer.checkTouch(touchX, touchY)) {
+                selectedValue.set(renderer.getSelectedValue());
                 break;
             }
         }
+
+        //clear the rest of renderers if value was selected, if value was not selected this loop
+        // will not be executed.
+        for(rendererIndex--; rendererIndex >=0; rendererIndex--){
+            ChartRenderer renderer = renderers.get(rendererIndex);
+            renderer.clearTouch();
+        }
+
 		return isTouched();
 	}
 
