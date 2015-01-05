@@ -43,8 +43,7 @@ public class ComboLineColumnChartView extends AbstractChartView implements Combo
 
 	public ComboLineColumnChartView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		chartRenderer = new ComboLineColumnChartRenderer(context, this, columnChartDataProvider, lineChartDataProvider);
-		resetRendererAndTouchHandler();
+		setChartRenderer(new ComboLineColumnChartRenderer(context, this, columnChartDataProvider, lineChartDataProvider));
 		setComboLineColumnChartData(ComboLineColumnChartData.generateDummyData());
 	}
 

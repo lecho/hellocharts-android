@@ -36,9 +36,8 @@ public class PreviewColumnChartView extends ColumnChartView {
 		super(context, attrs, defStyle);
 		chartComputator = new PreviewChartComputator();
 		previewChartRenderer = new PreviewColumnChartRenderer(context, this, this);
-		chartRenderer = previewChartRenderer;
 		touchHandler = new PreviewChartTouchHandler(context, this);
-		resetRendererAndTouchHandler();
+		setChartRenderer(previewChartRenderer);
 		setColumnChartData(ColumnChartData.generateDummyData());
 	}
 
