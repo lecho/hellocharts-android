@@ -339,7 +339,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 
 	private void checkRectToDraw(int columnIndex, int valueIndex) {
 		if (drawRect.contains(touchedPoint.x, touchedPoint.y)) {
-			selectedValue.set(columnIndex, valueIndex, SelectedValueType.NONE);
+			selectedValue.set(columnIndex, valueIndex, SelectedValueType.COLUMN);
 		}
 	}
 
