@@ -74,8 +74,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
     @Override
     public void initDataMeasurements() {
         final ChartComputator computator = chart.getChartComputator();
-
-        computator.setInternalMargin(calculateContentAreaMargin());
+        final int contentAreaMargin = calculateContentAreaMargin();
+        computator.setInternalMargin(contentAreaMargin, contentAreaMargin, contentAreaMargin, contentAreaMargin);
 
         if (computator.getChartWidth() > 0 && computator.getChartHeight() > 0) {
             softwareBitmap = Bitmap.createBitmap(computator.getChartWidth(), computator.getChartHeight(),
@@ -339,7 +339,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
             final float rawX = computator.computeRawX(pointValue.getX());
             final float rawY = computator.computeRawY(pointValue.getY());
             if (computator.isWithinContentRect(rawX, rawY, checkPrecision)) {
-                // Draw points only if they are within contentRect, using contentRect instead of viewport to avoid some
+                // Draw points only if they are within contentRectMinusAllMargins, using contentRectMinusAllMargins instead of viewport to avoid some
                 // float rounding problems.
                 if (MODE_DRAW == mode) {
                     drawPoint(canvas, line, pointValue, rawX, rawY, pointRadius);
@@ -386,7 +386,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
     private void drawLabel(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY, float offset) {
         final ChartComputator computator = chart.getChartComputator();
-        final Rect contentRect = computator.getContentRect();
+        final Rect contentRect = computator.getContentRectMinusAllMargins();
         final int numChars = line.getFormatter().formatChartValue(labelBuffer, pointValue);
         if (numChars == 0) {
             // No need to draw empty label
@@ -438,7 +438,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
         }
 
         final ChartComputator computator = chart.getChartComputator();
-        final Rect contentRect = computator.getContentRect();
+        final Rect contentRect = computator.getContentRectMinusAllMargins();
         final float baseRawValue = Math.min(contentRect.bottom, Math.max(computator.computeRawY(baseValue),
                 contentRect.top));
         //That checks works only if the last point is the right most one.

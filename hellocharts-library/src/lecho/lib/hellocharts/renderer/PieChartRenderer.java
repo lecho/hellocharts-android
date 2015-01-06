@@ -92,7 +92,9 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	 */
 	@Override
 	public void initDataMeasurements() {
-		chart.getChartComputator().setInternalMargin(calculateContentAreaMargin());
+        final int contentAreaMargin = calculateContentAreaMargin();
+		chart.getChartComputator().setInternalMargin(contentAreaMargin, contentAreaMargin,
+                contentAreaMargin, contentAreaMargin);
 		calculateCircleOval();
 	}
 
@@ -359,7 +361,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	 * Calculates rectangle(square) that will constraint chart circle.
 	 */
 	private void calculateCircleOval() {
-		Rect contentRect = chart.getChartComputator().getContentRect();
+		Rect contentRect = chart.getChartComputator().getContentRectMinusAllMargins();
 		final float circleRadius = Math.min(contentRect.width() / 2f, contentRect.height() / 2f);
 		final float centerX = contentRect.centerX();
 		final float centerY = contentRect.centerY();

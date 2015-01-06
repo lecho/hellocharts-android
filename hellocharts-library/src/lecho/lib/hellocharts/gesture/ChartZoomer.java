@@ -65,10 +65,10 @@ public class ChartZoomer {
 			return false;
 		}
 
-		float left = viewportFocus.x - (focusX - computator.getContentRect().left)
-				* (newWidth / computator.getContentRect().width());
-		float top = viewportFocus.y + (focusY - computator.getContentRect().top)
-				* (newHeight / computator.getContentRect().height());
+		float left = viewportFocus.x - (focusX - computator.getContentRectMinusAllMargins().left)
+				* (newWidth / computator.getContentRectMinusAllMargins().width());
+		float top = viewportFocus.y + (focusY - computator.getContentRectMinusAllMargins().top)
+				* (newHeight / computator.getContentRectMinusAllMargins().height());
 		float right = left + newWidth;
 		float bottom = top - newHeight;
 		setCurrentViewport(computator, left, top, right, bottom);

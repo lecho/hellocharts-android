@@ -37,7 +37,7 @@ public class ChartScroller {
 		final Viewport maxViewport = computator.getMaximumViewport();
 		final Viewport visibleViewport = computator.getVisibleViewport();
 		final Viewport currentViewport = computator.getCurrentViewport();
-		final Rect contentRect = computator.getContentRect();
+		final Rect contentRect = computator.getContentRectMinusAllMargins();
 
 		final boolean canScrollLeft = currentViewport.left > maxViewport.left;
 		final boolean canScrollRight = currentViewport.right < maxViewport.right;
@@ -110,7 +110,7 @@ public class ChartScroller {
 		scroller.abortAnimation();
 
 		scroller.fling(startX, startY, velocityX, velocityY, 0, surfaceSizeBuffer.x
-				- computator.getContentRect().width(), 0, surfaceSizeBuffer.y - computator.getContentRect().height());
+				- computator.getContentRectMinusAllMargins().width(), 0, surfaceSizeBuffer.y - computator.getContentRectMinusAllMargins().height());
 		return true;
 	}
 

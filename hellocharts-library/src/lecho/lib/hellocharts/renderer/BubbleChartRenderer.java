@@ -85,8 +85,10 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 
 	@Override
 	public void initDataMeasurements() {
-		chart.getChartComputator().setInternalMargin(calculateContentAreaMargin());
-		Rect contentRect = chart.getChartComputator().getContentRect();
+        final ChartComputator computator = chart.getChartComputator();
+        final int contentAreaMargin = calculateContentAreaMargin();
+		computator.setInternalMargin(contentAreaMargin, contentAreaMargin, contentAreaMargin, contentAreaMargin);
+		Rect contentRect = computator.getContentRectMinusAllMargins();
 		if (contentRect.width() < contentRect.height()) {
 			isBubbleScaledByX = true;
 		} else {
@@ -152,11 +154,11 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	 * called after layout had been drawn*. Because most often chart is drawn as rectangle with proportions other than
 	 * 1:1 and bubbles have to be drawn as circles not ellipses I am unable to calculate correct margins based on chart
 	 * data only. I need to know chart dimension to remove extra empty spaces, that bad because viewport depends a
-	 * little on contentRect.
+	 * little on contentRectMinusAllMargins.
 	 */
 	public void removeMargins() {
 		final ChartComputator computator = chart.getChartComputator();
-		final Rect contentRect = computator.getContentRect();
+		final Rect contentRect = computator.getContentRectMinusAllMargins();
 		if (contentRect.height() == 0 || contentRect.width() == 0) {
 			// View probably not yet measured, skip removing margins.
 			return;
@@ -264,7 +266,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 
 	private void drawLabel(Canvas canvas, BubbleValue bubbleValue, float rawX, float rawY) {
 		final ChartComputator computator = chart.getChartComputator();
-		final Rect contentRect = computator.getContentRect();
+		final Rect contentRect = computator.getContentRectMinusAllMargins();
 		final int numChars = valueFormatter.formatChartValue(labelBuffer, bubbleValue);
 
 		if (numChars == 0) {
