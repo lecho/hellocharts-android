@@ -1,5 +1,7 @@
 package lecho.lib.hellocharts.model;
 
+import java.util.Arrays;
+
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
 
@@ -14,7 +16,7 @@ public class SliceValue {
 	private float value;
 
 	/** Origin value of this slice, used during value animation. */
-	private float orginValue;
+	private float originValue;
 
 	/** Difference between originValue and targetValue. */
 	private float diff;
@@ -58,11 +60,11 @@ public class SliceValue {
 	}
 
 	public void update(float scale) {
-		value = orginValue + diff * scale;
+		value = originValue + diff * scale;
 	}
 
 	public void finish() {
-		setValue(orginValue + diff);
+		setValue(originValue + diff);
 	}
 
 	public float getValue() {
@@ -71,7 +73,7 @@ public class SliceValue {
 
 	public SliceValue setValue(float value) {
 		this.value = value;
-		this.orginValue = value;
+		this.originValue = value;
 		this.diff = 0;
 		return this;
 	}
@@ -84,7 +86,7 @@ public class SliceValue {
 	 */
 	public SliceValue setTarget(float target) {
 		setValue(value);
-		this.diff = target - orginValue;
+		this.diff = target - originValue;
 		return this;
 	}
 
@@ -125,4 +127,33 @@ public class SliceValue {
 		return "SliceValue [value=" + value + "]";
 	}
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SliceValue that = (SliceValue) o;
+
+        if (color != that.color) return false;
+        if (darkenColor != that.darkenColor) return false;
+        if (Float.compare(that.diff, diff) != 0) return false;
+        if (Float.compare(that.originValue, originValue) != 0) return false;
+        if (sliceSpacing != that.sliceSpacing) return false;
+        if (Float.compare(that.value, value) != 0) return false;
+        if (!Arrays.equals(label, that.label)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (value != +0.0f ? Float.floatToIntBits(value) : 0);
+        result = 31 * result + (originValue != +0.0f ? Float.floatToIntBits(originValue) : 0);
+        result = 31 * result + (diff != +0.0f ? Float.floatToIntBits(diff) : 0);
+        result = 31 * result + color;
+        result = 31 * result + darkenColor;
+        result = 31 * result + sliceSpacing;
+        result = 31 * result + (label != null ? Arrays.hashCode(label) : 0);
+        return result;
+    }
 }

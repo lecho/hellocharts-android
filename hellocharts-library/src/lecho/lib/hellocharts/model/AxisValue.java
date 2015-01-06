@@ -1,5 +1,7 @@
 package lecho.lib.hellocharts.model;
 
+import java.util.Arrays;
+
 /**
  * Single axis value, use it to manually set axis labels position. You can use label attribute to display text instead
  * of number but value formatter implementation have to handle it.
@@ -45,4 +47,24 @@ public class AxisValue {
 		this.label = label;
 		return this;
 	}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AxisValue axisValue = (AxisValue) o;
+
+        if (Float.compare(axisValue.value, value) != 0) return false;
+        if (!Arrays.equals(label, axisValue.label)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (value != +0.0f ? Float.floatToIntBits(value) : 0);
+        result = 31 * result + (label != null ? Arrays.hashCode(label) : 0);
+        return result;
+    }
 }

@@ -1,5 +1,7 @@
 package lecho.lib.hellocharts.model;
 
+import java.util.Arrays;
+
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
 
@@ -17,11 +19,11 @@ public class BubbleValue {
 	private float z;
 
 	/** Origin X value, used during value animation. */
-	private float orginX;
+	private float originX;
 	/** Origin Y value, used during value animation. */
-	private float orginY;
+	private float originY;
 	/** Origin Z value, used during value animation. */
-	private float orginZ;
+	private float originZ;
 
 	/** Difference between originX value and target X value. */
 	private float diffX;
@@ -56,22 +58,22 @@ public class BubbleValue {
 	}
 
 	public void update(float scale) {
-		x = orginX + diffX * scale;
-		y = orginY + diffY * scale;
-		z = orginZ + diffZ * scale;
+		x = originX + diffX * scale;
+		y = originY + diffY * scale;
+		z = originZ + diffZ * scale;
 	}
 
 	public void finish() {
-		set(orginX + diffX, orginY + diffY, orginZ + diffZ);
+		set(originX + diffX, originY + diffY, originZ + diffZ);
 	}
 
 	public BubbleValue set(float x, float y, float z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.orginX = x;
-		this.orginY = y;
-		this.orginZ = z;
+		this.originX = x;
+		this.originY = y;
+		this.originZ = z;
 		this.diffX = 0;
 		this.diffY = 0;
 		this.diffZ = 0;
@@ -80,15 +82,13 @@ public class BubbleValue {
 
 	/**
 	 * Set target values that should be reached when data animation finish then call {@link Chart#startDataAnimation()}
-	 * 
-	 * @param target
-	 * @return
+     *
 	 */
 	public BubbleValue setTarget(float targetX, float targetY, float targetZ) {
 		set(x, y, z);
-		this.diffX = targetX - orginX;
-		this.diffY = targetY - orginY;
-		this.diffZ = targetZ - orginZ;
+		this.diffX = targetX - originX;
+		this.diffY = targetY - originY;
+		this.diffZ = targetZ - originZ;
 		return this;
 	}
 
@@ -141,4 +141,45 @@ public class BubbleValue {
 		return "BubbleValue [x=" + x + ", y=" + y + ", z=" + z + "]";
 	}
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        BubbleValue that = (BubbleValue) o;
+
+        if (color != that.color) return false;
+        if (darkenColor != that.darkenColor) return false;
+        if (Float.compare(that.diffX, diffX) != 0) return false;
+        if (Float.compare(that.diffY, diffY) != 0) return false;
+        if (Float.compare(that.diffZ, diffZ) != 0) return false;
+        if (Float.compare(that.originX, originX) != 0) return false;
+        if (Float.compare(that.originY, originY) != 0) return false;
+        if (Float.compare(that.originZ, originZ) != 0) return false;
+        if (Float.compare(that.x, x) != 0) return false;
+        if (Float.compare(that.y, y) != 0) return false;
+        if (Float.compare(that.z, z) != 0) return false;
+        if (!Arrays.equals(label, that.label)) return false;
+        if (shape != that.shape) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (x != +0.0f ? Float.floatToIntBits(x) : 0);
+        result = 31 * result + (y != +0.0f ? Float.floatToIntBits(y) : 0);
+        result = 31 * result + (z != +0.0f ? Float.floatToIntBits(z) : 0);
+        result = 31 * result + (originX != +0.0f ? Float.floatToIntBits(originX) : 0);
+        result = 31 * result + (originY != +0.0f ? Float.floatToIntBits(originY) : 0);
+        result = 31 * result + (originZ != +0.0f ? Float.floatToIntBits(originZ) : 0);
+        result = 31 * result + (diffX != +0.0f ? Float.floatToIntBits(diffX) : 0);
+        result = 31 * result + (diffY != +0.0f ? Float.floatToIntBits(diffY) : 0);
+        result = 31 * result + (diffZ != +0.0f ? Float.floatToIntBits(diffZ) : 0);
+        result = 31 * result + color;
+        result = 31 * result + darkenColor;
+        result = 31 * result + (shape != null ? shape.hashCode() : 0);
+        result = 31 * result + (label != null ? Arrays.hashCode(label) : 0);
+        return result;
+    }
 }
