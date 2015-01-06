@@ -74,8 +74,9 @@ public class LineChartRenderer extends AbstractChartRenderer {
     @Override
     public void initDataMeasurements() {
         final ChartComputator computator = chart.getChartComputator();
-        final int contentAreaMargin = calculateContentAreaMargin();
-        computator.setInternalMargin(contentAreaMargin, contentAreaMargin, contentAreaMargin, contentAreaMargin);
+        final int contentAreaMargin = calculateContentRectMargin();
+        computator.insetContentRectWithAllMargins(contentAreaMargin, contentAreaMargin,
+                contentAreaMargin, contentAreaMargin);
 
         if (computator.getChartWidth() > 0 && computator.getChartHeight() > 0) {
             softwareBitmap = Bitmap.createBitmap(computator.getChartWidth(), computator.getChartHeight(),
@@ -187,7 +188,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
         }
     }
 
-    private int calculateContentAreaMargin() {
+    private int calculateContentRectMargin() {
         int contentAreaMargin = 0;
         final LineChartData data = dataProvider.getLineChartData();
         for (Line line : data.getLines()) {

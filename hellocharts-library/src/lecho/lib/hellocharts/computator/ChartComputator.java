@@ -13,7 +13,6 @@ import android.graphics.Rect;
  * implementations may initialize renderer before computator and therefore computator can be null during renderer
  * creation. So if you are implementing some renderer or custom touch handler don't keep computator as private member,
  * Instead use {@link Chart#getChartComputator()} when you need it to make suer it is properly initialized.
- * 
  */
 public class ChartComputator {
 
@@ -54,8 +53,8 @@ public class ChartComputator {
 	 * Calculates available width and height. Should be called when chart dimensions change. ContentRect is relative to
 	 * chart view not the device's screen.
 	 */
-	public void setContentArea(int width, int height, int paddingLeft, int paddingTop, int paddingRight,
-			int paddingBottom) {
+	public void setContentRect(int width, int height, int paddingLeft, int paddingTop, int paddingRight,
+                               int paddingBottom) {
 		chartWidth = width;
 		chartHeight = height;
 		maxContentRect.set(paddingLeft, paddingTop, width - paddingRight, height - paddingBottom);
@@ -63,22 +62,16 @@ public class ChartComputator {
 		contentRectMinusAllMargins.set(maxContentRect);
 	}
 
-	/**
-	 * Set internal chart margin i.e. spaces between chart data and axes labels. Don't confuse with view margins.
-	 */
-	public void setInternalMargin(int marginLeft, int marginTop, int marginRight, int marginBottom) {
-		contentRectMinusAllMargins.left = contentRectMinusAxesMargins.left + marginLeft;
-		contentRectMinusAllMargins.top = contentRectMinusAxesMargins.top + marginTop;
-		contentRectMinusAllMargins.right = contentRectMinusAxesMargins.right - marginRight;
-		contentRectMinusAllMargins.bottom = contentRectMinusAxesMargins.bottom - marginBottom;
-	}
-
-    public void insetContentArea(int deltaLeft, int deltaTop, int deltaRight, int deltaBottom){
+    public void insetContentRectWithAxesMargins(int deltaLeft, int deltaTop, int deltaRight, int deltaBottom){
         contentRectMinusAxesMargins.left = contentRectMinusAxesMargins.left + deltaLeft;
         contentRectMinusAxesMargins.top = contentRectMinusAxesMargins.top + deltaTop;
         contentRectMinusAxesMargins.right = contentRectMinusAxesMargins.right - deltaRight;
         contentRectMinusAxesMargins.bottom = contentRectMinusAxesMargins.bottom - deltaBottom;
 
+        insetContentRectWithAllMargins(deltaLeft, deltaTop, deltaRight, deltaBottom);
+    }
+
+    public void insetContentRectWithAllMargins(int deltaLeft, int deltaTop, int deltaRight, int deltaBottom){
         contentRectMinusAllMargins.left = contentRectMinusAllMargins.left + deltaLeft;
         contentRectMinusAllMargins.top = contentRectMinusAllMargins.top + deltaTop;
         contentRectMinusAllMargins.right = contentRectMinusAllMargins.right - deltaRight;
@@ -213,7 +206,7 @@ public class ChartComputator {
 	/**
 	 * Returns content rectangle in pixels.
 	 * 
-	 * @see #setContentArea(int, int, int, int, int, int)
+	 * @see #setContentRect(int, int, int, int, int, int)
 	 */
 	public Rect getContentRectMinusAllMargins() {
 		return contentRectMinusAllMargins;
@@ -223,7 +216,7 @@ public class ChartComputator {
 	 * Returns content rectangle with chart internal margins, for example for LineChart contentRectMinusAxesMargins is bigger
 	 * than contentRectMinusAllMargins by point radius, thanks to that points are not cut on edges.
 	 * 
-	 * @see #setContentArea(int, int, int, int, int, int)
+	 * @see #setContentRect(int, int, int, int, int, int)
 	 */
 	public Rect getContentRectMinusAxesMargins() {
 		return contentRectMinusAxesMargins;
@@ -241,11 +234,7 @@ public class ChartComputator {
 	/**
 	 * Set new values for curent viewport, that will change what part of chart is visible. Current viewport must be
 	 * equal or smaller than maximum viewport.
-	 * 
-	 * @param left
-	 * @param top
-	 * @param right
-	 * @param bottom
+	 *
 	 */
 	public void setCurrentViewport(float left, float top, float right, float bottom) {
 		constrainViewport(left, top, right, bottom);
@@ -263,8 +252,7 @@ public class ChartComputator {
 
 	/**
 	 * Returns maximum viewport - values ranges extremes.
-	 * 
-	 * @return
+	 *
 	 */
 	public Viewport getMaximumViewport() {
 		return maxViewport;
@@ -282,11 +270,7 @@ public class ChartComputator {
 
 	/**
 	 * Set new values for maximum viewport, that will change what part of chart is visible.
-	 * 
-	 * @param left
-	 * @param top
-	 * @param right
-	 * @param bottom
+	 *
 	 */
 	public void setMaxViewport(float left, float top, float right, float bottom) {
 		this.maxViewport.set(left, top, right, bottom);

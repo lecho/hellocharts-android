@@ -92,8 +92,8 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	 */
 	@Override
 	public void initDataMeasurements() {
-        final int contentAreaMargin = calculateContentAreaMargin();
-		chart.getChartComputator().setInternalMargin(contentAreaMargin, contentAreaMargin,
+        final int contentAreaMargin = calculateContentRectMargin();
+		chart.getChartComputator().insetContentRectWithAllMargins(contentAreaMargin, contentAreaMargin,
                 contentAreaMargin, contentAreaMargin);
 		calculateCircleOval();
 	}
@@ -392,7 +392,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	 * @return
 	 * @see #calculateCircleOval()
 	 */
-	private int calculateContentAreaMargin() {
+	private int calculateContentRectMargin() {
 		return 0;
 	}
 
