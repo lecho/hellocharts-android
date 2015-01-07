@@ -80,8 +80,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	@Override
 	public void initDataMeasurements() {
         //Using labelMargin because I'm lazy
-		chart.getChartComputator().insetContentRectWithAllMargins(labelMargin, labelMargin,
-                labelMargin, labelMargin);
+		chart.getChartComputator().setInternalMargin(labelMargin, labelMargin, labelMargin, labelMargin);
 	}
 
 	@Override

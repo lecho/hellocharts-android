@@ -149,7 +149,7 @@ public class AxesRenderer {
 		int axisYLeftWidth = initAxisAttributes(chart.getChartData().getAxisYLeft(), LEFT);
 		int axisYRightWidth = initAxisAttributes(chart.getChartData().getAxisYRight(), RIGHT);
 
-		chart.getChartComputator().insetContentRectWithAxesMargins(axisYLeftWidth, axisXTopHeight, axisYRightWidth,
+		chart.getChartComputator().insetContentArea(axisYLeftWidth, axisXTopHeight, axisYRightWidth,
                 axisXBottomHeight);
 	}
 

@@ -87,8 +87,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	public void initDataMeasurements() {
         final ChartComputator computator = chart.getChartComputator();
         final int contentAreaMargin = calculateContentAreaMargin();
-		computator.insetContentRectWithAllMargins(contentAreaMargin, contentAreaMargin,
-                contentAreaMargin, contentAreaMargin);
+		computator.setInternalMargin(contentAreaMargin, contentAreaMargin, contentAreaMargin, contentAreaMargin);
 		Rect contentRect = computator.getContentRectMinusAllMargins();
 		if (contentRect.width() < contentRect.height()) {
 			isBubbleScaledByX = true;
