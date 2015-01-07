@@ -13,29 +13,6 @@ public interface ChartRenderer {
 	public void onChartDataChanged();
 	public void onChartViewportChanged();
 
-//	/**
-//	 * Initialize maximum viewport, called when chart data changed.Usually you will have to do some calculation in
-//	 * implementation of that method. If isViewportCalculationEnabled is false this method should do nothing.
-//	 */
-//	public void initMaxViewport();
-//
-//	/**
-//	 * Initialize currentViewport, usually set it equals to maxViewport. If isViewportCalculationEnabled is false this
-//	 * method should do nothing.
-//	 */
-//	public void initCurrentViewport();
-//
-//	/**
-//	 * Initialize measurements i.e. circle area for PieChart.
-//	 */
-//	public void initDataMeasurements();
-//
-//	/**
-//	 * Initialize common data attributes label font size, font color etc. Should be called before viewports
-//	 * initializations.
-//	 */
-//	public void initDataAttributes();
-
 	/**
 	 * Draw chart data.
 	 */

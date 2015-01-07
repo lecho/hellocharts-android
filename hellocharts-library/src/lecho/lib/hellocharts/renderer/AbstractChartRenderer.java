@@ -73,7 +73,6 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 
 	@Override
 	public void onChartDataChanged() {
-		chart.getChartComputator().resetContentRect();
 		final ChartData data = chart.getChartData();
 
 		Typeface typeface = chart.getChartData().getValueLabelTypeface();

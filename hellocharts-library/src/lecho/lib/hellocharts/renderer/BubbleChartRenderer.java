@@ -79,17 +79,18 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	@Override
 	public void onChartSizeChanged(){
 		final ChartComputator computator = chart.getChartComputator();
-		computator.insetContentRectWithAllMargins(labelMargin, labelMargin,
-				labelMargin, labelMargin);
+		Rect contentRect = computator.getContentRectMinusAllMargins();
+		if (contentRect.width() < contentRect.height()) {
+			isBubbleScaledByX = true;
+		} else {
+			isBubbleScaledByX = false;
+		}
 	}
 
 	@Override
 	public void onChartDataChanged(){
 		super.onChartDataChanged();
 		final ChartComputator computator = chart.getChartComputator();
-		final int contentAreaMargin = calculateContentAreaMargin();
-		computator.insetContentRectWithAllMargins(contentAreaMargin, contentAreaMargin,
-				contentAreaMargin, contentAreaMargin);
 		Rect contentRect = computator.getContentRectMinusAllMargins();
 		if (contentRect.width() < contentRect.height()) {
 			isBubbleScaledByX = true;
@@ -359,7 +360,4 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		minRawRadius = ChartUtils.dp2px(density, dataProvider.getBubbleChartData().getMinBubbleRadius());
 	}
 
-	private int calculateContentAreaMargin() {
-		return 0;
-	}
 }

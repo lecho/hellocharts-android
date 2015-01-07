@@ -76,7 +76,7 @@ public abstract class AbstractChartView extends View implements Chart {
 		chartComputator.setContentRect(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(), getPaddingRight(),
                 getPaddingBottom());
 		axesRenderer.initAxesAttributes();
-		chartRenderer.initDataMeasurements();
+		chartRenderer.onChartSizeChanged();
 	}
 
 	@Override
@@ -149,16 +149,14 @@ public abstract class AbstractChartView extends View implements Chart {
 	@Override
 	public void animationDataUpdate(float scale) {
 		getChartData().update(scale);
-		chartRenderer.initMaxViewport();
-		chartRenderer.initCurrentViewport();
+		chartRenderer.onChartViewportChanged();
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
 	@Override
 	public void animationDataFinished() {
 		getChartData().finish();
-		chartRenderer.initMaxViewport();
-		chartRenderer.initCurrentViewport();
+		chartRenderer.onChartViewportChanged();
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
