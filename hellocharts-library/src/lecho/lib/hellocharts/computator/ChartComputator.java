@@ -56,6 +56,11 @@ public class ChartComputator {
 		contentRectMinusAllMargins.set(maxContentRect);
 	}
 
+	public void resetContentRect(){
+		contentRectMinusAxesMargins.set(maxContentRect);
+		contentRectMinusAllMargins.set(maxContentRect);
+	}
+
 	public void insetContentRectWithAxesMargins(int deltaLeft, int deltaTop, int deltaRight, int deltaBottom) {
 		contentRectMinusAxesMargins.left = contentRectMinusAxesMargins.left + deltaLeft;
 		contentRectMinusAxesMargins.top = contentRectMinusAxesMargins.top + deltaTop;
