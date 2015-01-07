@@ -11,6 +11,7 @@ import lecho.lib.hellocharts.computator.ChartComputator;
 import lecho.lib.hellocharts.formatter.BubbleChartValueFormatter;
 import lecho.lib.hellocharts.model.BubbleChartData;
 import lecho.lib.hellocharts.model.BubbleValue;
+import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
 import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.model.Viewport;
@@ -76,36 +77,41 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	}
 
 	@Override
-	public void initMaxViewport() {
-		if (isViewportCalculationEnabled) {
-			calculateMaxViewport();
-			chart.getChartComputator().setMaxViewport(tempMaxViewport);
-		}
+	public void onChartSizeChanged(){
+		final ChartComputator computator = chart.getChartComputator();
+		computator.insetContentRectWithAllMargins(labelMargin, labelMargin,
+				labelMargin, labelMargin);
 	}
 
 	@Override
-	public void initDataMeasurements() {
-        final ChartComputator computator = chart.getChartComputator();
-        final int contentAreaMargin = calculateContentAreaMargin();
+	public void onChartDataChanged(){
+		super.onChartDataChanged();
+		final ChartComputator computator = chart.getChartComputator();
+		final int contentAreaMargin = calculateContentAreaMargin();
 		computator.insetContentRectWithAllMargins(contentAreaMargin, contentAreaMargin,
-                contentAreaMargin, contentAreaMargin);
+				contentAreaMargin, contentAreaMargin);
 		Rect contentRect = computator.getContentRectMinusAllMargins();
 		if (contentRect.width() < contentRect.height()) {
 			isBubbleScaledByX = true;
 		} else {
 			isBubbleScaledByX = false;
 		}
-	}
-
-	@Override
-	public void initDataAttributes() {
-		super.initDataAttributes();
-
 		BubbleChartData data = dataProvider.getBubbleChartData();
-
 		this.hasLabels = data.hasLabels();
 		this.hasLabelsOnlyForSelected = data.hasLabelsOnlyForSelected();
 		this.valueFormatter = data.getFormatter();
+
+		onChartViewportChanged();
+	}
+
+	@Override
+	public void onChartViewportChanged(){
+		if (isViewportCalculationEnabled) {
+			ChartComputator computator = chart.getChartComputator();
+			calculateMaxViewport();
+			computator.setMaxViewport(tempMaxViewport);
+			computator.setCurrentViewport(computator.getMaximumViewport());
+		}
 	}
 
 	@Override

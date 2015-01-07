@@ -1,6 +1,7 @@
 package lecho.lib.hellocharts.renderer;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
@@ -10,6 +11,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.text.TextUtils;
 
+import lecho.lib.hellocharts.computator.ChartComputator;
 import lecho.lib.hellocharts.formatter.PieChartValueFormatter;
 import lecho.lib.hellocharts.model.SliceValue;
 import lecho.lib.hellocharts.model.PieChartData;
@@ -79,54 +81,55 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	}
 
 	@Override
-	public void initMaxViewport() {
-		if (isViewportCalculationEnabled) {
-			calculateMaxViewport();
-			chart.getChartComputator().setMaxViewport(tempMaxViewport);
-		}
-	}
-
-	/**
-	 * Most important thing here is {@link #calculateCircleOval()} call. Because {@link #initDataMeasurements()} is
-	 * usually called from onSizeChanged it is good place to calculate max PieChart circle size.
-	 */
-	@Override
-	public void initDataMeasurements() {
-        final int contentAreaMargin = calculateContentRectMargin();
-		chart.getChartComputator().insetContentRectWithAllMargins(contentAreaMargin, contentAreaMargin,
-                contentAreaMargin, contentAreaMargin);
+	public void onChartSizeChanged(){
+		final ChartComputator computator = chart.getChartComputator();
+		final int contentAreaMargin = calculateContentRectMargin();
+		computator.insetContentRectWithAllMargins(contentAreaMargin, contentAreaMargin,
+				contentAreaMargin, contentAreaMargin);
 		calculateCircleOval();
+
 	}
 
 	@Override
-	public void initDataAttributes() {
-		super.initDataAttributes();
-
+	public void onChartDataChanged(){
+		super.onChartDataChanged();
+		final ChartComputator computator = chart.getChartComputator();
+		final int contentAreaMargin = calculateContentRectMargin();
+		computator.insetContentRectWithAllMargins(contentAreaMargin, contentAreaMargin,
+				contentAreaMargin, contentAreaMargin);
 		final PieChartData data = dataProvider.getPieChartData();
 
 		hasLabelsOutside = data.hasLabelsOutside();
 		hasLabels = data.hasLabels();
 		hasLabelsOnlyForSelected = data.hasLabelsOnlyForSelected();
 		valueFormatter = data.getFormatter();
-
 		hasCenterCircle = data.hasCenterCircle();
 		centerCircleScale = data.getCenterCircleScale();
-
 		centerCirclePaint.setColor(data.getCenterCircleColor());
-
 		if (null != data.getCenterText1Typeface()) {
 			centerCircleText1Paint.setTypeface(data.getCenterText1Typeface());
 		}
 		centerCircleText1Paint.setTextSize(ChartUtils.sp2px(scaledDensity, data.getCenterText1FontSize()));
 		centerCircleText1Paint.setColor(data.getCenterText1Color());
 		centerCircleText1Paint.getFontMetricsInt(centerCircleText1FontMetrics);
-
 		if (null != data.getCenterText2Typeface()) {
 			centerCircleText2Paint.setTypeface(data.getCenterText2Typeface());
 		}
 		centerCircleText2Paint.setTextSize(ChartUtils.sp2px(scaledDensity, data.getCenterText2FontSize()));
 		centerCircleText2Paint.setColor(data.getCenterText2Color());
 		centerCircleText2Paint.getFontMetricsInt(centerCircleText2FontMetrics);
+
+		onChartViewportChanged();
+	}
+
+	@Override
+	public void onChartViewportChanged(){
+		if (isViewportCalculationEnabled) {
+			ChartComputator computator = chart.getChartComputator();
+			calculateMaxViewport();
+			computator.setMaxViewport(tempMaxViewport);
+			computator.setCurrentViewport(computator.getMaximumViewport());
+		}
 	}
 
 	@Override

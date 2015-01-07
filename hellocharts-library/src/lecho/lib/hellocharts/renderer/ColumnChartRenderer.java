@@ -70,28 +70,33 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	}
 
 	@Override
-	public void initMaxViewport() {
-		if (isViewportCalculationEnabled) {
-			calculateMaxViewport();
-			chart.getChartComputator().setMaxViewport(tempMaxViewport);
-		}
+	public void onChartSizeChanged(){
+		final ChartComputator computator = chart.getChartComputator();
+		computator.insetContentRectWithAllMargins(labelMargin, labelMargin,
+				labelMargin, labelMargin);
 	}
 
 	@Override
-	public void initDataMeasurements() {
-        //Using labelMargin because I'm lazy
-		chart.getChartComputator().insetContentRectWithAllMargins(labelMargin, labelMargin,
-                labelMargin, labelMargin);
-	}
-
-	@Override
-	public void initDataAttributes() {
-		super.initDataAttributes();
+	public void onChartDataChanged(){
+		super.onChartDataChanged();
+		final ChartComputator computator = chart.getChartComputator();
+		computator.insetContentRectWithAllMargins(labelMargin, labelMargin,
+				labelMargin, labelMargin);
 
 		ColumnChartData data = dataProvider.getColumnChartData();
 		fillRatio = data.getFillRatio();
 		baseValue = data.getBaseValue();
+		onChartViewportChanged();
+	}
 
+	@Override
+	public void onChartViewportChanged(){
+		if (isViewportCalculationEnabled) {
+			ChartComputator computator = chart.getChartComputator();
+			calculateMaxViewport();
+			computator.setMaxViewport(tempMaxViewport);
+			computator.setCurrentViewport(computator.getMaximumViewport());
+		}
 	}
 
 	public void draw(Canvas canvas) {

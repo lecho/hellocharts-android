@@ -1,6 +1,5 @@
 package lecho.lib.hellocharts.renderer;
 
-import lecho.lib.hellocharts.computator.ChartComputator;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.Viewport;
@@ -51,7 +50,7 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 	protected int labelMargin;
 
 	protected boolean isValueLabelBackgroundEnabled;
-	protected boolean isValueLabelBackgrountAuto;
+	protected boolean isValueLabelBackgroundAuto;
 	protected int valueLabelBackgroundColor;
 
 	public AbstractChartRenderer(Context context, Chart chart) {
@@ -73,15 +72,8 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 	}
 
 	@Override
-	public void initCurrentViewport() {
-		if (isViewportCalculationEnabled) {
-			ChartComputator computator = chart.getChartComputator();
-			computator.setCurrentViewport(computator.getMaximumViewport());
-		}
-	}
-
-	@Override
-	public void initDataAttributes() {
+	public void onChartDataChanged() {
+		chart.getChartComputator().resetContentRect();
 		final ChartData data = chart.getChartData();
 
 		Typeface typeface = chart.getChartData().getValueLabelTypeface();
@@ -93,7 +85,7 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 		labelPaint.getFontMetricsInt(fontMetrics);
 
 		this.isValueLabelBackgroundEnabled = data.isValueLabelBackgroundEnabled();
-		this.isValueLabelBackgrountAuto = data.isValueLabelBackgroundAuto();
+		this.isValueLabelBackgroundAuto = data.isValueLabelBackgroundAuto();
 		this.valueLabelBackgroundColor = data.getValueLabelBackgroundColor();
 		this.labelBackgroundPaint.setColor(valueLabelBackgroundColor);
 
@@ -112,7 +104,7 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 
 		if (isValueLabelBackgroundEnabled) {
 
-			if (isValueLabelBackgrountAuto) {
+			if (isValueLabelBackgroundAuto) {
 				labelBackgroundPaint.setColor(autoBackgroundColor);
 			}
 
@@ -140,9 +132,7 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 
 	@Override
 	public void setMaxViewport(Viewport maxViewport) {
-		if (null == maxViewport) {
-			initMaxViewport();
-		} else {
+		if (null != maxViewport) {
 			this.tempMaxViewport.set(maxViewport);
 			chart.getChartComputator().setMaxViewport(maxViewport);
 		}
@@ -155,9 +145,7 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 
 	@Override
 	public void setCurrentViewport(Viewport viewport) {
-		if (null == viewport) {
-			initCurrentViewport();
-		} else {
+		if (null != viewport){
 			chart.getChartComputator().setCurrentViewport(viewport);
 		}
 	}

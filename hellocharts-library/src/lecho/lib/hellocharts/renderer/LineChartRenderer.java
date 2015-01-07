@@ -63,38 +63,42 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
     }
 
-    @Override
-    public void initMaxViewport() {
-        if (isViewportCalculationEnabled) {
-            calculateMaxViewport();
-            chart.getChartComputator().setMaxViewport(tempMaxViewport);
-        }
-    }
+	@Override
+	public void onChartSizeChanged(){
+		final ChartComputator computator = chart.getChartComputator();
+		final int contentAreaMargin = calculateContentRectMargin();
+		computator.insetContentRectWithAllMargins(contentAreaMargin, contentAreaMargin,
+				contentAreaMargin, contentAreaMargin);
 
-    @Override
-    public void initDataMeasurements() {
-        final ChartComputator computator = chart.getChartComputator();
-        final int contentAreaMargin = calculateContentRectMargin();
-        computator.insetContentRectWithAllMargins(contentAreaMargin, contentAreaMargin,
-                contentAreaMargin, contentAreaMargin);
+		if (computator.getChartWidth() > 0 && computator.getChartHeight() > 0) {
+			softwareBitmap = Bitmap.createBitmap(computator.getChartWidth(), computator.getChartHeight(),
+					Bitmap.Config.ARGB_8888);
+			softwareCanvas.setBitmap(softwareBitmap);
+		}
 
-        if (computator.getChartWidth() > 0 && computator.getChartHeight() > 0) {
-            softwareBitmap = Bitmap.createBitmap(computator.getChartWidth(), computator.getChartHeight(),
-                    Bitmap.Config.ARGB_8888);
-            softwareCanvas.setBitmap(softwareBitmap);
-        }
-    }
+	}
 
-    @Override
-    public void initDataAttributes() {
-        super.initDataAttributes();
+	@Override
+	public void onChartDataChanged(){
+		super.onChartDataChanged();
+		final ChartComputator computator = chart.getChartComputator();
+		final int contentAreaMargin = calculateContentRectMargin();
+		computator.insetContentRectWithAllMargins(contentAreaMargin, contentAreaMargin,
+				contentAreaMargin, contentAreaMargin);
 
-        LineChartData data = dataProvider.getLineChartData();
+		baseValue = dataProvider.getLineChartData().getBaseValue();
+		onChartViewportChanged();
+	}
 
-        // Set base value for this chart - default is 0.
-        baseValue = data.getBaseValue();
-
-    }
+	@Override
+	public void onChartViewportChanged(){
+		if (isViewportCalculationEnabled) {
+			ChartComputator computator = chart.getChartComputator();
+			calculateMaxViewport();
+			computator.setMaxViewport(tempMaxViewport);
+			computator.setCurrentViewport(computator.getMaximumViewport());
+		}
+	}
 
     @Override
     public void draw(Canvas canvas) {
