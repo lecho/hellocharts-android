@@ -38,7 +38,7 @@ public interface ChartRenderer {
 	public void draw(Canvas canvas);
 
 	/**
-	 * Draw chart data that should not be clipped to contentRectMinusAllMargins area.
+	 * Draw chart data that should not be clipped to contentRect area.
 	 */
 	public void drawUnclipped(Canvas canvas);
 

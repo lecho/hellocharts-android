@@ -86,7 +86,7 @@ public abstract class AbstractChartView extends View implements Chart {
 		if (isEnabled()) {
 			axesRenderer.drawInBackground(canvas);
 			int clipRestoreCount = canvas.save();
-			canvas.clipRect(chartComputator.getContentRectMinusAllMargins());
+			canvas.clipRect(chartComputator.getContentRect());
 			chartRenderer.draw(canvas);
 			canvas.restoreToCount(clipRestoreCount);
 			chartRenderer.drawUnclipped(canvas);

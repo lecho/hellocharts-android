@@ -79,8 +79,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 
 	@Override
 	public void initDataMeasurements() {
-        //Using labelMargin because I'm lazy
-		chart.getChartComputator().setInternalMargin(labelMargin, labelMargin, labelMargin, labelMargin);
+		chart.getChartComputator().setInternalMargin(labelMargin);// Using label margin because I'm lazy:P
 	}
 
 	@Override
@@ -347,7 +346,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	private float calculateColumnWidth() {
 		final ChartComputator computator = chart.getChartComputator();
 		// columnWidht should be at least 2 px
-		float columnWidth = fillRatio * computator.getContentRectMinusAllMargins().width() / computator.getVisibleViewport().width();
+		float columnWidth = fillRatio * computator.getContentRect().width() / computator.getVisibleViewport().width();
 		if (columnWidth < 2) {
 			columnWidth = 2;
 		}
@@ -395,7 +394,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 			// For not stacked draw label at the top for positive and at the bottom for negative values
 			if (columnValue.getValue() >= baseValue) {
 				top = drawRect.top - offset - labelHeight - labelMargin * 2;
-				if (top < computator.getContentRectMinusAllMargins().top) {
+				if (top < computator.getContentRect().top) {
 					top = drawRect.top + offset;
 					bottom = drawRect.top + offset + labelHeight + labelMargin * 2;
 				} else {
@@ -403,7 +402,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 				}
 			} else {
 				bottom = drawRect.bottom + offset + labelHeight + labelMargin * 2;
-				if (bottom > computator.getContentRectMinusAllMargins().bottom) {
+				if (bottom > computator.getContentRect().bottom) {
 					top = drawRect.bottom - offset - labelHeight - labelMargin * 2;
 					bottom = drawRect.bottom - offset;
 				} else {
