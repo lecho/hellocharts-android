@@ -39,9 +39,9 @@ public interface ChartRenderer {
 	 */
 	public void clearTouch();
 
-	public void setMaxViewport(Viewport maxViewport);
+	public void setMaximumViewport(Viewport maxViewport);
 
-	public Viewport getMaxViewport();
+	public Viewport getMaximumViewport();
 
 	public void setCurrentViewport(Viewport viewport);
 

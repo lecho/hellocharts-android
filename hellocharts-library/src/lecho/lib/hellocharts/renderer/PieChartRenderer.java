@@ -17,6 +17,7 @@ import lecho.lib.hellocharts.model.SliceValue;
 import lecho.lib.hellocharts.model.PieChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
+import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.provider.PieChartDataProvider;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
@@ -61,6 +62,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	private boolean hasLabels;
 	private boolean hasLabelsOnlyForSelected;
 	private PieChartValueFormatter valueFormatter;
+	private Viewport tempMaximumViewport = new Viewport();
 
 	public PieChartRenderer(Context context, Chart chart, PieChartDataProvider dataProvider) {
 		super(context, chart);
@@ -127,7 +129,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		if (isViewportCalculationEnabled) {
 			ChartComputator computator = chart.getChartComputator();
 			calculateMaxViewport();
-			computator.setMaxViewport(tempMaxViewport);
+			computator.setMaxViewport(tempMaximumViewport);
 			computator.setCurrentViewport(computator.getMaximumViewport());
 		}
 	}
@@ -382,7 +384,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	 * coordinates instead. This method also calculates sum of all SliceValues.
 	 */
 	private void calculateMaxViewport() {
-		tempMaxViewport.set(0, MAX_WIDTH_HEIGHT, MAX_WIDTH_HEIGHT, 0);
+		tempMaximumViewport.set(0, MAX_WIDTH_HEIGHT, MAX_WIDTH_HEIGHT, 0);
 		maxSum = 0.0f;
 		for (SliceValue sliceValue : dataProvider.getPieChartData().getValues()) {
 			maxSum += Math.abs(sliceValue.getValue());

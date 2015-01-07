@@ -7,10 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lecho.lib.hellocharts.computator.ChartComputator;
-import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
 import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
-import lecho.lib.hellocharts.provider.LineChartDataProvider;
 import lecho.lib.hellocharts.view.Chart;
 
 public class ComboChartRenderer extends AbstractChartRenderer {
@@ -49,9 +46,9 @@ public class ComboChartRenderer extends AbstractChartRenderer {
 			for (ChartRenderer renderer : renderers) {
 				renderer.onChartViewportChanged();
 				if(rendererIndex == 0) {
-					unionViewport.set(renderer.getMaxViewport());
+					unionViewport.set(renderer.getMaximumViewport());
 				}else{
-					unionViewport.union(renderer.getMaxViewport());
+					unionViewport.union(renderer.getMaximumViewport());
 				}
 				++rendererIndex;
 			}

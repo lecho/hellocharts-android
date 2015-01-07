@@ -74,7 +74,7 @@ public abstract class AbstractChartView extends View implements Chart {
 	protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
 		chartComputator.setContentRect(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(), getPaddingRight(),
-                getPaddingBottom());
+				getPaddingBottom());
 		axesRenderer.initAxesAttributes();
 		chartRenderer.onChartSizeChanged();
 	}
@@ -368,13 +368,13 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	@Override
 	public void setMaximumViewport(Viewport maxViewport) {
-		chartRenderer.setMaxViewport(maxViewport);
+		chartRenderer.setMaximumViewport(maxViewport);
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
 	@Override
 	public Viewport getMaximumViewport() {
-		return chartRenderer.getMaxViewport();
+		return chartRenderer.getMaximumViewport();
 	}
 
 	@Override
@@ -401,7 +401,7 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	@Override
 	public void resetViewports() {
-		chartRenderer.setMaxViewport(null);
+		chartRenderer.setMaximumViewport(null);
 		chartRenderer.setCurrentViewport(null);
 	}
 

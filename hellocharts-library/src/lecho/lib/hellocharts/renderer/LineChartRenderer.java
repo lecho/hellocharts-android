@@ -16,6 +16,7 @@ import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
 import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
 import lecho.lib.hellocharts.model.ValueShape;
+import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.provider.LineChartDataProvider;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
@@ -44,6 +45,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
     private Bitmap softwareBitmap;
     private Canvas softwareCanvas = new Canvas();
+	private Viewport tempMaximumViewport = new Viewport();
 
     public LineChartRenderer(Context context, Chart chart, LineChartDataProvider dataProvider) {
         super(context, chart);
@@ -95,7 +97,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		if (isViewportCalculationEnabled) {
 			ChartComputator computator = chart.getChartComputator();
 			calculateMaxViewport();
-			computator.setMaxViewport(tempMaxViewport);
+			computator.setMaxViewport(tempMaximumViewport);
 			computator.setCurrentViewport(computator.getMaximumViewport());
 		}
 	}
@@ -169,23 +171,23 @@ public class LineChartRenderer extends AbstractChartRenderer {
     }
 
     private void calculateMaxViewport() {
-        tempMaxViewport.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
+		tempMaximumViewport.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
         LineChartData data = dataProvider.getLineChartData();
 
         for (Line line : data.getLines()) {
             // Calculate max and min for viewport.
             for (PointValue pointValue : line.getValues()) {
-                if (pointValue.getX() < tempMaxViewport.left) {
-                    tempMaxViewport.left = pointValue.getX();
+                if (pointValue.getX() < tempMaximumViewport.left) {
+					tempMaximumViewport.left = pointValue.getX();
                 }
-                if (pointValue.getX() > tempMaxViewport.right) {
-                    tempMaxViewport.right = pointValue.getX();
+                if (pointValue.getX() > tempMaximumViewport.right) {
+					tempMaximumViewport.right = pointValue.getX();
                 }
-                if (pointValue.getY() < tempMaxViewport.bottom) {
-                    tempMaxViewport.bottom = pointValue.getY();
+                if (pointValue.getY() < tempMaximumViewport.bottom) {
+					tempMaximumViewport.bottom = pointValue.getY();
                 }
-                if (pointValue.getY() > tempMaxViewport.top) {
-                    tempMaxViewport.top = pointValue.getY();
+                if (pointValue.getY() > tempMaximumViewport.top) {
+					tempMaximumViewport.top = pointValue.getY();
                 }
 
             }

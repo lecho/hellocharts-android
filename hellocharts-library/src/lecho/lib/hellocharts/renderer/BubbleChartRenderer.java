@@ -64,6 +64,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	private boolean hasLabels;
 	private boolean hasLabelsOnlyForSelected;
 	private BubbleChartValueFormatter valueFormatter;
+	private Viewport tempMaximumViewport = new Viewport();
 
 	public BubbleChartRenderer(Context context, Chart chart, BubbleChartDataProvider dataProvider) {
 		super(context, chart);
@@ -110,7 +111,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		if (isViewportCalculationEnabled) {
 			ChartComputator computator = chart.getChartComputator();
 			calculateMaxViewport();
-			computator.setMaxViewport(tempMaxViewport);
+			computator.setMaxViewport(tempMaximumViewport);
 			computator.setCurrentViewport(computator.getMaximumViewport());
 		}
 	}
@@ -173,8 +174,8 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		}
 		final float pxX = computator.computeRawDistanceX(maxRadius * bubbleScaleX);
 		final float pxY = computator.calculateRawDistanceY(maxRadius * bubbleScaleY);
-		final float scaleX = tempMaxViewport.width() / contentRect.width();
-		final float scaleY = tempMaxViewport.height() / contentRect.height();
+		final float scaleX = computator.getMaximumViewport().width() / contentRect.width();
+		final float scaleY = computator.getMaximumViewport().height() / contentRect.height();
 		float dx = 0;
 		float dy = 0;
 		if (isBubbleScaledByX) {
@@ -314,37 +315,37 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 
 	private void calculateMaxViewport() {
 		float maxZ = Float.MIN_VALUE;
-		tempMaxViewport.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
+		tempMaximumViewport.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
 		BubbleChartData data = dataProvider.getBubbleChartData();
 		// TODO: Optimize.
 		for (BubbleValue bubbleValue : data.getValues()) {
 			if (Math.abs(bubbleValue.getZ()) > maxZ) {
 				maxZ = Math.abs(bubbleValue.getZ());
 			}
-			if (bubbleValue.getX() < tempMaxViewport.left) {
-				tempMaxViewport.left = bubbleValue.getX();
+			if (bubbleValue.getX() < tempMaximumViewport.left) {
+				tempMaximumViewport.left = bubbleValue.getX();
 			}
-			if (bubbleValue.getX() > tempMaxViewport.right) {
-				tempMaxViewport.right = bubbleValue.getX();
+			if (bubbleValue.getX() > tempMaximumViewport.right) {
+				tempMaximumViewport.right = bubbleValue.getX();
 			}
-			if (bubbleValue.getY() < tempMaxViewport.bottom) {
-				tempMaxViewport.bottom = bubbleValue.getY();
+			if (bubbleValue.getY() < tempMaximumViewport.bottom) {
+				tempMaximumViewport.bottom = bubbleValue.getY();
 			}
-			if (bubbleValue.getY() > tempMaxViewport.top) {
-				tempMaxViewport.top = bubbleValue.getY();
+			if (bubbleValue.getY() > tempMaximumViewport.top) {
+				tempMaximumViewport.top = bubbleValue.getY();
 			}
 		}
 
 		maxRadius = (float) Math.sqrt(maxZ / Math.PI);
 
 		// Number 4 is determined by trials and errors method, no magic behind it:).
-		bubbleScaleX = tempMaxViewport.width() / (maxRadius * 4);
+		bubbleScaleX = tempMaximumViewport.width() / (maxRadius * 4);
 		if (bubbleScaleX == 0) {
 			// case for 0 viewport width.
 			bubbleScaleX = 1;
 		}
 
-		bubbleScaleY = tempMaxViewport.height() / (maxRadius * 4);
+		bubbleScaleY = tempMaximumViewport.height() / (maxRadius * 4);
 		if (bubbleScaleY == 0) {
 			// case for 0 viewport height.
 			bubbleScaleY = 1;
@@ -355,7 +356,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		bubbleScaleY *= data.getBubbleScale();
 
 		// Prevent cutting of bubbles on the edges of chart area.
-		tempMaxViewport.inset(-maxRadius * bubbleScaleX, -maxRadius * bubbleScaleY);
+		tempMaximumViewport.inset(-maxRadius * bubbleScaleX, -maxRadius * bubbleScaleY);
 
 		minRawRadius = ChartUtils.dp2px(density, dataProvider.getBubbleChartData().getMinBubbleRadius());
 	}

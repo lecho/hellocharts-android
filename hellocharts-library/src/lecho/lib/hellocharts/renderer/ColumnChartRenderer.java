@@ -12,6 +12,7 @@ import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
 import lecho.lib.hellocharts.model.SubcolumnValue;
+import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
@@ -58,6 +59,8 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 
 	private float baseValue;
 
+	private Viewport tempMaximumViewport = new Viewport();
+
 	public ColumnChartRenderer(Context context, Chart chart, ColumnChartDataProvider dataProvider) {
 		super(context, chart);
 		this.dataProvider = dataProvider;
@@ -94,7 +97,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 		if (isViewportCalculationEnabled) {
 			ChartComputator computator = chart.getChartComputator();
 			calculateMaxViewport();
-			computator.setMaxViewport(tempMaxViewport);
+			computator.setMaxViewport(tempMaximumViewport);
 			computator.setCurrentViewport(computator.getMaximumViewport());
 		}
 	}
@@ -135,7 +138,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 		// Column chart always has X values from 0 to numColumns-1, to add some margin on the left and right I added
 		// extra 0.5 to the each side, that margins will be negative scaled according to number of columns, so for more
 		// columns there will be less margin.
-		tempMaxViewport.set(-0.5f, baseValue, data.getColumns().size() - 0.5f, baseValue);
+		tempMaximumViewport.set(-0.5f, baseValue, data.getColumns().size() - 0.5f, baseValue);
 		if (data.isStacked()) {
 			calculateMaxViewportForStacked(data);
 		} else {
@@ -146,11 +149,11 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	private void calculateMaxViewportForSubcolumns(ColumnChartData data) {
 		for (Column column : data.getColumns()) {
 			for (SubcolumnValue columnValue : column.getValues()) {
-				if (columnValue.getValue() >= baseValue && columnValue.getValue() > tempMaxViewport.top) {
-					tempMaxViewport.top = columnValue.getValue();
+				if (columnValue.getValue() >= baseValue && columnValue.getValue() > tempMaximumViewport.top) {
+					tempMaximumViewport.top = columnValue.getValue();
 				}
-				if (columnValue.getValue() < baseValue && columnValue.getValue() < tempMaxViewport.bottom) {
-					tempMaxViewport.bottom = columnValue.getValue();
+				if (columnValue.getValue() < baseValue && columnValue.getValue() < tempMaximumViewport.bottom) {
+					tempMaximumViewport.bottom = columnValue.getValue();
 				}
 			}
 		}
@@ -167,11 +170,11 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 					sumNegative += columnValue.getValue();
 				}
 			}
-			if (sumPositive > tempMaxViewport.top) {
-				tempMaxViewport.top = sumPositive;
+			if (sumPositive > tempMaximumViewport.top) {
+				tempMaximumViewport.top = sumPositive;
 			}
-			if (sumNegative < tempMaxViewport.bottom) {
-				tempMaxViewport.bottom = sumNegative;
+			if (sumNegative < tempMaximumViewport.bottom) {
+				tempMaximumViewport.bottom = sumNegative;
 			}
 		}
 	}
