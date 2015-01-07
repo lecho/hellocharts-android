@@ -282,10 +282,12 @@ public abstract class AbstractChartView extends View implements Chart {
 		touchHandler.setZoomType(zoomType);
 	}
 
+	@Override
 	public float getMaxZoom() {
 		return chartComputator.getMaxZoom();
 	}
 
+	@Override
 	public void setMaxZoom(float maxZoom) {
 		chartComputator.setMaxZoom(maxZoom);
 		ViewCompat.postInvalidateOnAnimation(this);
@@ -446,6 +448,13 @@ public abstract class AbstractChartView extends View implements Chart {
 	public void setContainerScrollEnabled(boolean isContainerScrollEnabled, ContainerScrollType containerScrollType) {
 		this.isContainerScrollEnabled = isContainerScrollEnabled;
 		this.containerScrollType = containerScrollType;
+	}
+
+	protected void onChartDataChange(){
+		chartComputator.resetContentRect();
+		axesRenderer.initAxesAttributes();
+		chartRenderer.onChartDataChanged();
+		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
 }

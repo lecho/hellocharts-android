@@ -52,11 +52,7 @@ public class LineChartView extends AbstractChartView implements LineChartDataPro
 			this.data = data;
 		}
 
-		chartComputator.resetContentRect();
-		axesRenderer.initAxesAttributes();
-		chartRenderer.onChartDataChanged();
-
-		ViewCompat.postInvalidateOnAnimation(LineChartView.this);
+		super.onChartDataChange();
 	}
 
 	@Override
