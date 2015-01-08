@@ -90,6 +90,8 @@ public class AxesRenderer {
 	 */
 	private float[] axisNameBaselineTab = new float[4];
 
+	private float[] axisLabelBaselineTab = new float[4];
+
 	/**
 	 * Holds fixed coordinate for axes separations lines, used only for horizontal axes where fixed value is Y.
 	 */
@@ -141,7 +143,14 @@ public class AxesRenderer {
 		}
 	}
 
-	public void initAxesAttributes() {
+	public void onChartSizeChanged(){
+		initAxisAttributes(chart.getChartData().getAxisXTop(), TOP);
+		initAxisAttributes(chart.getChartData().getAxisXBottom(), BOTTOM);
+		initAxisAttributes(chart.getChartData().getAxisYLeft(), LEFT);
+		initAxisAttributes(chart.getChartData().getAxisYRight(), RIGHT);
+	}
+
+	public void onChartDataChanged(){
 		initAxisAttributes(chart.getChartData().getAxisXTop(), TOP);
 		initAxisAttributes(chart.getChartData().getAxisXBottom(), BOTTOM);
 		initAxisAttributes(chart.getChartData().getAxisYLeft(), LEFT);

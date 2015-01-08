@@ -64,11 +64,7 @@ public class ComboLineColumnChartView extends AbstractChartView implements Combo
 			this.data = data;
 		}
 
-		chartComputator.resetContentRect();
-		axesRenderer.initAxesAttributes();
-		chartRenderer.onChartDataChanged();
-
-		ViewCompat.postInvalidateOnAnimation(ComboLineColumnChartView.this);
+		super.onChartDataChange();
 	}
 
 	@Override
