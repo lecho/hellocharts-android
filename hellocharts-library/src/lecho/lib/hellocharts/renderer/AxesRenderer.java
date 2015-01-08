@@ -143,14 +143,7 @@ public class AxesRenderer {
 		}
 	}
 
-	public void onChartSizeChanged(){
-		initAxisAttributes(chart.getChartData().getAxisXTop(), TOP);
-		initAxisAttributes(chart.getChartData().getAxisXBottom(), BOTTOM);
-		initAxisAttributes(chart.getChartData().getAxisYLeft(), LEFT);
-		initAxisAttributes(chart.getChartData().getAxisYRight(), RIGHT);
-	}
-
-	public void onChartDataChanged(){
+	public void onChartDataOrSizeChanged(){
 		initAxisAttributes(chart.getChartData().getAxisXTop(), TOP);
 		initAxisAttributes(chart.getChartData().getAxisXBottom(), BOTTOM);
 		initAxisAttributes(chart.getChartData().getAxisYLeft(), LEFT);
@@ -223,6 +216,7 @@ public class AxesRenderer {
 			return;
 		}
 
+		final ChartComputator computator = chart.getChartComputator();
 		Typeface typeface = axis.getTypeface();
 		if (null != typeface) {
 			textPaintTab[position].setTypeface(typeface);
@@ -257,6 +251,41 @@ public class AxesRenderer {
 			}
 
 			axisMargin = width;
+			insetContentRectWithAxesMargins(axisMargin, position);
+
+			if (LEFT == position) {
+
+				if (axis.isInside()) {
+					textPaintTab[position].setTextAlign(Align.LEFT);
+					axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().left + axisMargin;
+					axisNameBaselineTab[position] = computator.getContentRectMinusAxesMargins().left - axisMargin
+							- axisLabelTextDescentTab[position];
+				} else {
+					textPaintTab[position].setTextAlign(Align.RIGHT);
+					axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().left - axisMargin;
+					axisNameBaselineTab[position] = axisFixedCoordinateTab[position] - axisLabelWidthTab[position]
+							- axisMargin - axisLabelTextDescentTab[position];
+				}
+
+				axisSeparationLineTab[position] = computator.getContentRectMinusAllMargins().left;
+
+			} else if (RIGHT == position) {
+
+				if (axis.isInside()) {
+					textPaintTab[position].setTextAlign(Align.RIGHT);
+					axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().right - axisMargin;
+					axisNameBaselineTab[position] = computator.getContentRectMinusAxesMargins().right + axisMargin
+							+ axisLabelTextAscentTab[position];
+				} else {
+					textPaintTab[position].setTextAlign(Align.LEFT);
+					axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().right + axisMargin;
+					axisNameBaselineTab[position] = axisFixedCoordinateTab[position] + axisLabelWidthTab[position]
+							+ axisMargin + axisLabelTextAscentTab[position];
+				}
+
+				axisSeparationLineTab[position] = computator.getContentRectMinusAllMargins().right;
+
+			}
 
 		} else if (TOP == position || BOTTOM == position) {
 
@@ -277,103 +306,139 @@ public class AxesRenderer {
 			}
 
 			axisMargin = height;
+			insetContentRectWithAxesMargins(axisMargin, position);
+
+			if (BOTTOM == position) {
+				textPaintTab[position].setTextAlign(Align.CENTER);
+
+				if (axis.isInside()) {
+					axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().bottom - axisMargin
+							- axisLabelTextDescentTab[position];
+					axisNameBaselineTab[position] = computator.getContentRectMinusAxesMargins().bottom
+							+ axisLabelTextAscentTab[position] + axisMargin;
+				} else {
+					axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().bottom
+							+ axisLabelTextAscentTab[position] + axisMargin;
+					axisNameBaselineTab[position] = axisFixedCoordinateTab[position] + axisMargin
+							+ axisLabelTextAscentTab[position] + axisLabelTextDescentTab[position];
+				}
+
+				axisSeparationLineTab[position] = computator.getContentRectMinusAllMargins().bottom;
+
+			} else if (TOP == position) {
+				textPaintTab[position].setTextAlign(Align.CENTER);
+
+				if (axis.isInside()) {
+					axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().top + axisMargin
+							+ axisLabelTextAscentTab[position];
+					axisNameBaselineTab[position] = computator.getContentRectMinusAxesMargins().top - axisMargin
+							- axisLabelTextDescentTab[position];
+				} else {
+					axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().top - axisMargin
+							- axisLabelTextDescentTab[position];
+					axisNameBaselineTab[position] = axisFixedCoordinateTab[position] - axisMargin
+							- axisLabelTextAscentTab[position] - axisLabelTextDescentTab[position];
+				}
+
+				axisSeparationLineTab[position] = computator.getContentRectMinusAllMargins().top;
+
+			}
 
 		} else {
 			throw new IllegalArgumentException("Invalid axis position: " + position);
 		}
 
-		insetContentRectWithAxesMargins(axisMargin, position);
 	}
 
 	private void insetContentRectWithAxesMargins(int axisMargin, int position){
 		switch (position){
 			case LEFT:
-				chart.getChartComputator().insetContentRectWithAxesMargins(axisMargin, 0, 0, 0);
+				chart.getChartComputator().insetContentRect(axisMargin, 0, 0, 0);
 				break;
 			case TOP:
-				chart.getChartComputator().insetContentRectWithAxesMargins(0, axisMargin, 0, 0);
+				chart.getChartComputator().insetContentRect(0, axisMargin, 0, 0);
 				break;
 			case RIGHT:
-				chart.getChartComputator().insetContentRectWithAxesMargins(0, 0, axisMargin, 0);
+				chart.getChartComputator().insetContentRect(0, 0, axisMargin, 0);
 				break;
 			case BOTTOM:
-				chart.getChartComputator().insetContentRectWithAxesMargins(0, 0, 0, axisMargin);
+				chart.getChartComputator().insetContentRect(0, 0, 0, axisMargin);
 				break;
 		}
 	}
 
 	private void prepareAxis(Axis axis, int position) {
-		final ChartComputator computator = chart.getChartComputator();
-
-		if (BOTTOM == position) {
-			textPaintTab[position].setTextAlign(Align.CENTER);
-
-			if (axis.isInside()) {
-				axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().bottom - axisMargin
-						- axisLabelTextDescentTab[position];
-				axisNameBaselineTab[position] = computator.getContentRectMinusAxesMargins().bottom
-						+ axisLabelTextAscentTab[position] + axisMargin;
-			} else {
-				axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().bottom
-						+ axisLabelTextAscentTab[position] + axisMargin;
-				axisNameBaselineTab[position] = axisFixedCoordinateTab[position] + axisMargin
-						+ axisLabelTextAscentTab[position] + axisLabelTextDescentTab[position];
-			}
-
-			axisSeparationLineTab[position] = computator.getContentRectMinusAllMargins().bottom;
-
-		} else if (TOP == position) {
-			textPaintTab[position].setTextAlign(Align.CENTER);
-
-			if (axis.isInside()) {
-				axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().top + axisMargin
-						+ axisLabelTextAscentTab[position];
-				axisNameBaselineTab[position] = computator.getContentRectMinusAxesMargins().top - axisMargin
-						- axisLabelTextDescentTab[position];
-			} else {
-				axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().top - axisMargin
-						- axisLabelTextDescentTab[position];
-				axisNameBaselineTab[position] = axisFixedCoordinateTab[position] - axisMargin
-						- axisLabelTextAscentTab[position] - axisLabelTextDescentTab[position];
-			}
-
-			axisSeparationLineTab[position] = computator.getContentRectMinusAllMargins().top;
-
-		} else if (LEFT == position) {
-
-			if (axis.isInside()) {
-				textPaintTab[position].setTextAlign(Align.LEFT);
-				axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().left + axisMargin;
-				axisNameBaselineTab[position] = computator.getContentRectMinusAxesMargins().left - axisMargin
-						- axisLabelTextDescentTab[position];
-			} else {
-				textPaintTab[position].setTextAlign(Align.RIGHT);
-				axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().left - axisMargin;
-				axisNameBaselineTab[position] = axisFixedCoordinateTab[position] - axisLabelWidthTab[position]
-						- axisMargin - axisLabelTextDescentTab[position];
-			}
-
-			axisSeparationLineTab[position] = computator.getContentRectMinusAllMargins().left;
-
-		} else if (RIGHT == position) {
-
-			if (axis.isInside()) {
-				textPaintTab[position].setTextAlign(Align.RIGHT);
-				axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().right - axisMargin;
-				axisNameBaselineTab[position] = computator.getContentRectMinusAxesMargins().right + axisMargin
-						+ axisLabelTextAscentTab[position];
-			} else {
-				textPaintTab[position].setTextAlign(Align.LEFT);
-				axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().right + axisMargin;
-				axisNameBaselineTab[position] = axisFixedCoordinateTab[position] + axisLabelWidthTab[position]
-						+ axisMargin + axisLabelTextAscentTab[position];
-			}
-
-			axisSeparationLineTab[position] = computator.getContentRectMinusAllMargins().right;
-
-		} else {
-			throw new IllegalArgumentException("Invalid position for horizontal axis: " + position);
-		}
+////		final ChartComputator computator = chart.getChartComputator();
+//
+//		if (BOTTOM == position) {
+//			textPaintTab[position].setTextAlign(Align.CENTER);
+//
+////			if (axis.isInside()) {
+////				axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().bottom - axisMargin
+////						- axisLabelTextDescentTab[position];
+////				axisNameBaselineTab[position] = computator.getContentRectMinusAxesMargins().bottom
+////						+ axisLabelTextAscentTab[position] + axisMargin;
+////			} else {
+////				axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().bottom
+////						+ axisLabelTextAscentTab[position] + axisMargin;
+////				axisNameBaselineTab[position] = axisFixedCoordinateTab[position] + axisMargin
+////						+ axisLabelTextAscentTab[position] + axisLabelTextDescentTab[position];
+////			}
+////
+////			axisSeparationLineTab[position] = computator.getContentRectMinusAllMargins().bottom;
+//
+//		} else if (TOP == position) {
+//			textPaintTab[position].setTextAlign(Align.CENTER);
+//
+////			if (axis.isInside()) {
+////				axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().top + axisMargin
+////						+ axisLabelTextAscentTab[position];
+////				axisNameBaselineTab[position] = computator.getContentRectMinusAxesMargins().top - axisMargin
+////						- axisLabelTextDescentTab[position];
+////			} else {
+////				axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().top - axisMargin
+////						- axisLabelTextDescentTab[position];
+////				axisNameBaselineTab[position] = axisFixedCoordinateTab[position] - axisMargin
+////						- axisLabelTextAscentTab[position] - axisLabelTextDescentTab[position];
+////			}
+////
+////			axisSeparationLineTab[position] = computator.getContentRectMinusAllMargins().top;
+//
+//		} else if (LEFT == position) {
+//
+//			if (axis.isInside()) {
+//				textPaintTab[position].setTextAlign(Align.LEFT);
+////				axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().left + axisMargin;
+////				axisNameBaselineTab[position] = computator.getContentRectMinusAxesMargins().left - axisMargin
+////						- axisLabelTextDescentTab[position];
+//			} else {
+//				textPaintTab[position].setTextAlign(Align.RIGHT);
+////				axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().left - axisMargin;
+////				axisNameBaselineTab[position] = axisFixedCoordinateTab[position] - axisLabelWidthTab[position]
+////						- axisMargin - axisLabelTextDescentTab[position];
+//			}
+//
+////			axisSeparationLineTab[position] = computator.getContentRectMinusAllMargins().left;
+//
+//		} else if (RIGHT == position) {
+//
+//			if (axis.isInside()) {
+//				textPaintTab[position].setTextAlign(Align.RIGHT);
+////				axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().right - axisMargin;
+////				axisNameBaselineTab[position] = computator.getContentRectMinusAxesMargins().right + axisMargin
+////						+ axisLabelTextAscentTab[position];
+//			} else {
+//				textPaintTab[position].setTextAlign(Align.LEFT);
+////				axisFixedCoordinateTab[position] = computator.getContentRectMinusAxesMargins().right + axisMargin;
+////				axisNameBaselineTab[position] = axisFixedCoordinateTab[position] + axisLabelWidthTab[position]
+////						+ axisMargin + axisLabelTextAscentTab[position];
+//			}
+//
+////			axisSeparationLineTab[position] = computator.getContentRectMinusAllMargins().right;
+//
+//		} else {
+//			throw new IllegalArgumentException("Invalid position for horizontal axis: " + position);
+//		}
 
 		if (TOP == position || BOTTOM == position) {
 			if (axis.isAutoGenerated()) {

@@ -1,7 +1,6 @@
 package lecho.lib.hellocharts.renderer;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
@@ -39,7 +38,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 
 	private Paint slicePaint = new Paint();
 	private float maxSum;
-	private RectF orginCircleOval = new RectF();
+	private RectF originCircleOval = new RectF();
 	private RectF drawCircleOval = new RectF();
 	private PointF sliceVector = new PointF();
 
@@ -83,24 +82,12 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	}
 
 	@Override
-	public void onChartSizeChanged(){
-		final ChartComputator computator = chart.getChartComputator();
-		final int contentAreaMargin = calculateContentRectMargin();
-		computator.insetContentRectWithAllMargins(contentAreaMargin, contentAreaMargin,
-				contentAreaMargin, contentAreaMargin);
+	public void onChartDataOrSizeChanged(){
+		super.onChartDataOrSizeChanged();
 		calculateCircleOval();
+		onChartViewportChanged();
 
-	}
-
-	@Override
-	public void onChartDataChanged(){
-		super.onChartDataChanged();
-		final ChartComputator computator = chart.getChartComputator();
-		final int contentAreaMargin = calculateContentRectMargin();
-		computator.insetContentRectWithAllMargins(contentAreaMargin, contentAreaMargin,
-				contentAreaMargin, contentAreaMargin);
 		final PieChartData data = dataProvider.getPieChartData();
-
 		hasLabelsOutside = data.hasLabelsOutside();
 		hasLabels = data.hasLabels();
 		hasLabelsOnlyForSelected = data.hasLabelsOnlyForSelected();
@@ -120,8 +107,6 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		centerCircleText2Paint.setTextSize(ChartUtils.sp2px(scaledDensity, data.getCenterText2FontSize()));
 		centerCircleText2Paint.setColor(data.getCenterText2Color());
 		centerCircleText2Paint.getFontMetricsInt(centerCircleText2FontMetrics);
-
-		onChartViewportChanged();
 	}
 
 	@Override
@@ -156,9 +141,9 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	public boolean checkTouch(float touchX, float touchY) {
 		selectedValue.clear();
 		final PieChartData data = dataProvider.getPieChartData();
-		final float centerX = orginCircleOval.centerX();
-		final float centerY = orginCircleOval.centerY();
-		final float circleRadius = orginCircleOval.width() / 2f;
+		final float centerX = originCircleOval.centerX();
+		final float centerY = originCircleOval.centerY();
+		final float circleRadius = originCircleOval.width() / 2f;
 
 		sliceVector.set(touchX - centerX, touchY - centerY);
 		// Check if touch is on circle area, if not return false;
@@ -192,10 +177,10 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	 */
 	private void drawCenterCircle(Canvas canvas) {
 		final PieChartData data = dataProvider.getPieChartData();
-		final float circleRadius = orginCircleOval.width() / 2f;
+		final float circleRadius = originCircleOval.width() / 2f;
 		final float centerRadius = circleRadius * data.getCenterCircleScale();
-		final float centerX = orginCircleOval.centerX();
-		final float centerY = orginCircleOval.centerY();
+		final float centerX = originCircleOval.centerX();
+		final float centerY = originCircleOval.centerY();
 
 		canvas.drawCircle(centerX, centerY, centerRadius, centerCirclePaint);
 
@@ -250,7 +235,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 				(float) (Math.sin(Math.toRadians(lastAngle + angle / 2))));
 		normalizeVector(sliceVector);
 
-		drawCircleOval.set(orginCircleOval);
+		drawCircleOval.set(originCircleOval);
 		final int sliceSpacing = ChartUtils.dp2px(density, sliceValue.getSliceSpacing());
 		drawCircleOval.inset(sliceSpacing, sliceSpacing);
 		drawCircleOval.offset((float) (sliceVector.x * sliceSpacing), (float) (sliceVector.y * sliceSpacing));
@@ -289,9 +274,9 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		final float labelWidth = labelPaint.measureText(labelBuffer, labelBuffer.length - numChars, numChars);
 		final int labelHeight = Math.abs(fontMetrics.ascent);
 
-		final float centerX = orginCircleOval.centerX();
-		final float centerY = orginCircleOval.centerY();
-		final float circleRadius = orginCircleOval.width() / 2f;
+		final float centerX = originCircleOval.centerX();
+		final float centerY = originCircleOval.centerY();
+		final float circleRadius = originCircleOval.width() / 2f;
 		final float labelRadius;
 
 		if (hasLabelsOutside) {
@@ -374,9 +359,9 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		final float top = centerY - circleRadius + touchAdditional;
 		final float right = centerX + circleRadius - touchAdditional;
 		final float bottom = centerY + circleRadius - touchAdditional;
-		orginCircleOval.set(left, top, right, bottom);
-		final float inest = 0.5f * orginCircleOval.width() * (1.0f - circleFillRatio);
-		orginCircleOval.inset(inest, inest);
+		originCircleOval.set(left, top, right, bottom);
+		final float inest = 0.5f * originCircleOval.width() * (1.0f - circleFillRatio);
+		originCircleOval.inset(inest, inest);
 	}
 
 	/**
@@ -391,22 +376,12 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		}
 	}
 
-	/**
-	 * No margin for this chart. Margin will be calculated with CircleOval.
-	 *
-	 * @return
-	 * @see #calculateCircleOval()
-	 */
-	private int calculateContentRectMargin() {
-		return 0;
-	}
-
 	public RectF getCircleOval() {
-		return orginCircleOval;
+		return originCircleOval;
 	}
 
 	public void setCircleOval(RectF orginCircleOval) {
-		this.orginCircleOval = orginCircleOval;
+		this.originCircleOval = orginCircleOval;
 	}
 
 	public int getChartRotation() {

@@ -61,16 +61,19 @@ public class ChartComputator {
 		contentRectMinusAllMargins.set(maxContentRect);
 	}
 
-	public void insetContentRectWithAxesMargins(int deltaLeft, int deltaTop, int deltaRight, int deltaBottom) {
+	public void insetContentRect(int deltaLeft, int deltaTop, int deltaRight, int deltaBottom) {
 		contentRectMinusAxesMargins.left = contentRectMinusAxesMargins.left + deltaLeft;
 		contentRectMinusAxesMargins.top = contentRectMinusAxesMargins.top + deltaTop;
 		contentRectMinusAxesMargins.right = contentRectMinusAxesMargins.right - deltaRight;
 		contentRectMinusAxesMargins.bottom = contentRectMinusAxesMargins.bottom - deltaBottom;
 
-		insetContentRectWithAllMargins(deltaLeft, deltaTop, deltaRight, deltaBottom);
+		contentRectMinusAllMargins.left = contentRectMinusAllMargins.left + deltaLeft;
+		contentRectMinusAllMargins.top = contentRectMinusAllMargins.top + deltaTop;
+		contentRectMinusAllMargins.right = contentRectMinusAllMargins.right - deltaRight;
+		contentRectMinusAllMargins.bottom = contentRectMinusAllMargins.bottom - deltaBottom;
 	}
 
-	public void insetContentRectWithAllMargins(int deltaLeft, int deltaTop, int deltaRight, int deltaBottom) {
+	public void insetContentRectByInternalMargins(int deltaLeft, int deltaTop, int deltaRight, int deltaBottom) {
 		contentRectMinusAllMargins.left = contentRectMinusAllMargins.left + deltaLeft;
 		contentRectMinusAllMargins.top = contentRectMinusAllMargins.top + deltaTop;
 		contentRectMinusAllMargins.right = contentRectMinusAllMargins.right - deltaRight;

@@ -66,27 +66,17 @@ public class LineChartRenderer extends AbstractChartRenderer {
     }
 
 	@Override
-	public void onChartSizeChanged(){
+	public void onChartDataOrSizeChanged(){
+		super.onChartDataOrSizeChanged();
 		final ChartComputator computator = chart.getChartComputator();
-		final int contentAreaMargin = calculateContentRectMargin();
-		computator.insetContentRectWithAllMargins(contentAreaMargin, contentAreaMargin,
-				contentAreaMargin, contentAreaMargin);
-
+		final int internalMargin = calculateContentRectInternalMargin();
+		computator.insetContentRectByInternalMargins(internalMargin, internalMargin,
+				internalMargin, internalMargin);
 		if (computator.getChartWidth() > 0 && computator.getChartHeight() > 0) {
 			softwareBitmap = Bitmap.createBitmap(computator.getChartWidth(), computator.getChartHeight(),
 					Bitmap.Config.ARGB_8888);
 			softwareCanvas.setBitmap(softwareBitmap);
 		}
-
-	}
-
-	@Override
-	public void onChartDataChanged(){
-		super.onChartDataChanged();
-		final ChartComputator computator = chart.getChartComputator();
-		final int contentAreaMargin = calculateContentRectMargin();
-		computator.insetContentRectWithAllMargins(contentAreaMargin, contentAreaMargin,
-				contentAreaMargin, contentAreaMargin);
 
 		baseValue = dataProvider.getLineChartData().getBaseValue();
 		onChartViewportChanged();
@@ -194,7 +184,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
         }
     }
 
-    private int calculateContentRectMargin() {
+    private int calculateContentRectInternalMargin() {
         int contentAreaMargin = 0;
         final LineChartData data = dataProvider.getLineChartData();
         for (Line line : data.getLines()) {

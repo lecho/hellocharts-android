@@ -78,7 +78,8 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	}
 
 	@Override
-	public void onChartSizeChanged(){
+	public void onChartDataOrSizeChanged(){
+		super.onChartDataOrSizeChanged();
 		final ChartComputator computator = chart.getChartComputator();
 		Rect contentRect = computator.getContentRectMinusAllMargins();
 		if (contentRect.width() < contentRect.height()) {
@@ -86,18 +87,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 		} else {
 			isBubbleScaledByX = false;
 		}
-	}
 
-	@Override
-	public void onChartDataChanged(){
-		super.onChartDataChanged();
-		final ChartComputator computator = chart.getChartComputator();
-		Rect contentRect = computator.getContentRectMinusAllMargins();
-		if (contentRect.width() < contentRect.height()) {
-			isBubbleScaledByX = true;
-		} else {
-			isBubbleScaledByX = false;
-		}
 		BubbleChartData data = dataProvider.getBubbleChartData();
 		this.hasLabels = data.hasLabels();
 		this.hasLabelsOnlyForSelected = data.hasLabelsOnlyForSelected();
