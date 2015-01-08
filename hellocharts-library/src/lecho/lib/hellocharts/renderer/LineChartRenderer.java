@@ -119,7 +119,6 @@ public class LineChartRenderer extends AbstractChartRenderer {
         if (null != softwareBitmap) {
             canvas.drawBitmap(softwareBitmap, 0, 0, null);
         }
-
     }
 
     @Override
