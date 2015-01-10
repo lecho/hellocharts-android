@@ -301,25 +301,25 @@ public class AxesRenderer {
 		Axis axis = chart.getChartData().getAxisYLeft();
 		if (null != axis) {
 			prepareAxisToDraw(axis, LEFT);
-			drawAxisVerticalLines(canvas, axis, LEFT);
+			drawAxisLines(canvas, axis, LEFT);
 		}
 
 		axis = chart.getChartData().getAxisYRight();
 		if (null != axis) {
 			prepareAxisToDraw(axis, RIGHT);
-			drawAxisVerticalLines(canvas, axis, RIGHT);
+			drawAxisLines(canvas, axis, RIGHT);
 		}
 
 		axis = chart.getChartData().getAxisXBottom();
 		if (null != axis) {
 			prepareAxisToDraw(axis, BOTTOM);
-			drawAxisHorizontalLines(canvas, axis, BOTTOM);
+			drawAxisLines(canvas, axis, BOTTOM);
 		}
 
 		axis = chart.getChartData().getAxisXTop();
 		if (null != axis) {
 			prepareAxisToDraw(axis, TOP);
-			drawAxisHorizontalLines(canvas, axis, TOP);
+			drawAxisLines(canvas, axis, TOP);
 		}
 	}
 
@@ -350,10 +350,7 @@ public class AxesRenderer {
 			} else {
 				prepareAxisVerticalCustom(axis, position);
 			}
-		} else {
-			throw new IllegalArgumentException("Invalid position for horizontal axis: " + position);
 		}
-
 	}
 
 	/**
@@ -451,26 +448,51 @@ public class AxesRenderer {
 		valuesToDrawNumTab[position] = valueToDrawIndex;
 	}
 
-	private void drawAxisHorizontalLines(Canvas canvas, Axis axis, int position) {
-		final Rect contentRectMargins = chart.getChartComputator().getContentRectMinusAxesMargins();
+	private void drawAxisLines(Canvas canvas, Axis axis, int position) {
+		final Rect contentRectMargins = computator.getContentRectMinusAxesMargins();
+		float separationX1, separationY1, separationX2, separationY2;
+		separationX1 = separationY1 = separationX2 = separationY2 = 0;
+		float lineX1, lineY1, lineX2, lineY2;
+		lineX1 = lineY1 = lineX2 = lineY2 = 0;
+		boolean isLineLeftToRight = true;
+		if (LEFT == position || RIGHT == position) {
+			separationX1 = separationX2 =separationLineTab[position];
+			separationY1 = contentRectMargins.bottom;
+			separationY2 = contentRectMargins.top;
+
+			lineX1 = contentRectMargins.left;
+			lineX2 = contentRectMargins.right;
+			isLineLeftToRight = true;
+		} else if (TOP == position || BOTTOM == position) {
+			separationX1 = contentRectMargins.left;
+			separationX2 = contentRectMargins.right;
+			separationY1 = separationY2 = separationLineTab[position];
+
+			lineY1 = contentRectMargins.top;
+			lineY2 = contentRectMargins.bottom;
+			isLineLeftToRight = false;
+		}
 		// Draw separation line with the same color as axis text.
 		if (axis.hasSeparationLine()) {
-			canvas.drawLine(contentRectMargins.left, separationLineTab[position], contentRectMargins.right,
-					separationLineTab[position], textPaintTab[position]);
-		}
-		if (!axis.hasLines()) {
-			return;
+			canvas.drawLine(separationX1, separationY1, separationX2, separationY2, textPaintTab[position]);
 		}
 
-		int valueToDrawIndex = 0;
-		for (; valueToDrawIndex < valuesToDrawNumTab[position]; ++valueToDrawIndex) {
-			linesDrawBufferTab[position][valueToDrawIndex * 4 + 0] = rawValuesTab[position][valueToDrawIndex];
-			linesDrawBufferTab[position][valueToDrawIndex * 4 + 1] = contentRectMargins.top;
-			linesDrawBufferTab[position][valueToDrawIndex * 4 + 2] = rawValuesTab[position][valueToDrawIndex];
-			linesDrawBufferTab[position][valueToDrawIndex * 4 + 3] = contentRectMargins.bottom;
+		if (axis.hasLines()) {
+			int valueToDrawIndex = 0;
+			for (; valueToDrawIndex < valuesToDrawNumTab[position]; ++valueToDrawIndex) {
+				if(isLineLeftToRight){
+					lineY1 = lineY2 = rawValuesTab[position][valueToDrawIndex];
+				}else{
+					lineX1 = lineX2 = rawValuesTab[position][valueToDrawIndex];
+				}
+				linesDrawBufferTab[position][valueToDrawIndex * 4 + 0] = lineX1;
+				linesDrawBufferTab[position][valueToDrawIndex * 4 + 1] = lineY1;
+				linesDrawBufferTab[position][valueToDrawIndex * 4 + 2] = lineX2;
+				linesDrawBufferTab[position][valueToDrawIndex * 4 + 3] = lineY2;
+			}
+			linePaint.setColor(axis.getLineColor());
+			canvas.drawLines(linesDrawBufferTab[position], 0, valueToDrawIndex * 4, linePaint);
 		}
-		linePaint.setColor(axis.getLineColor());
-		canvas.drawLines(linesDrawBufferTab[position], 0, valueToDrawIndex * 4, linePaint);
 	}
 
 	private void drawAxisHorizontalLabels(Canvas canvas, Axis axis, int position) {
@@ -485,7 +507,7 @@ public class AxesRenderer {
 				charsNumber = axis.getFormatter().formatValueForManualAxis(labelBuffer, axisValue);
 			}
 
-			if(axis.hasTiltedLabels()) {
+			if (axis.hasTiltedLabels()) {
 				canvas.save();
 				canvas.translate(tiltedLabelXTranslation[position], tiltedLabelYTranslation[position]);
 				canvas.rotate(-45, rawValuesTab[position][valueToDrawIndex], labelBaselineTab[position]);
@@ -493,7 +515,7 @@ public class AxesRenderer {
 						rawValuesTab[position][valueToDrawIndex], labelBaselineTab[position],
 						textPaintTab[position]);
 				canvas.restore();
-			}else{
+			} else {
 				canvas.drawText(labelBuffer, labelBuffer.length - charsNumber, charsNumber,
 						rawValuesTab[position][valueToDrawIndex], labelBaselineTab[position],
 						textPaintTab[position]);
@@ -593,28 +615,6 @@ public class AxesRenderer {
 		valuesToDrawNumTab[position] = stopsToDrawIndex;
 	}
 
-	private void drawAxisVerticalLines(Canvas canvas, Axis axis, int position) {
-		final Rect contentRectMargins = chart.getChartComputator().getContentRectMinusAxesMargins();
-		// Draw separation line with the same color as axis text.
-		if (axis.hasSeparationLine()) {
-			canvas.drawLine(separationLineTab[position], contentRectMargins.bottom,
-					separationLineTab[position], contentRectMargins.top, textPaintTab[position]);
-		}
-		if (!axis.hasLines()) {
-			return;
-		}
-
-		int stopsToDrawIndex = 0;
-		for (; stopsToDrawIndex < valuesToDrawNumTab[position]; ++stopsToDrawIndex) {
-			linesDrawBufferTab[position][stopsToDrawIndex * 4 + 0] = contentRectMargins.left;
-			linesDrawBufferTab[position][stopsToDrawIndex * 4 + 1] = rawValuesTab[position][stopsToDrawIndex];
-			linesDrawBufferTab[position][stopsToDrawIndex * 4 + 2] = contentRectMargins.right;
-			linesDrawBufferTab[position][stopsToDrawIndex * 4 + 3] = rawValuesTab[position][stopsToDrawIndex];
-		}
-		linePaint.setColor(axis.getLineColor());
-		canvas.drawLines(linesDrawBufferTab[position], 0, stopsToDrawIndex * 4, linePaint);
-	}
-
 	private void drawAxisVerticalLabels(Canvas canvas, Axis axis, int position) {
 		for (int valueToDrawIndex = 0; valueToDrawIndex < valuesToDrawNumTab[position]; ++valueToDrawIndex) {
 			int charsNumber = 0;
@@ -627,7 +627,7 @@ public class AxesRenderer {
 				charsNumber = axis.getFormatter().formatValueForManualAxis(labelBuffer, axisValue);
 			}
 
-			if(axis.hasTiltedLabels()) {
+			if (axis.hasTiltedLabels()) {
 				canvas.save();
 				canvas.translate(tiltedLabelXTranslation[position], tiltedLabelYTranslation[position]);
 				canvas.rotate(-45, labelBaselineTab[position], rawValuesTab[position][valueToDrawIndex]);
@@ -635,7 +635,7 @@ public class AxesRenderer {
 						labelBaselineTab[position], rawValuesTab[position][valueToDrawIndex],
 						textPaintTab[position]);
 				canvas.restore();
-			}else{
+			} else {
 				canvas.drawText(labelBuffer, labelBuffer.length - charsNumber, charsNumber,
 						labelBaselineTab[position], rawValuesTab[position][valueToDrawIndex],
 						textPaintTab[position]);
