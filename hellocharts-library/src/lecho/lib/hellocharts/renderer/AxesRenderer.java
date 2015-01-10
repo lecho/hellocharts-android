@@ -55,42 +55,45 @@ public class AxesRenderer {
 	/**
 	 * Holds number of values that should be drown for each axis.
 	 */
-	private int[] axisValuesToDrawNumTab = new int[4];
+	private int[] valuesToDrawNumTab = new int[4];
 
 	/**
 	 * Holds raw values to draw for each axis.
 	 */
-	private float[][] axisRawValuesTab = new float[4][0];
+	private float[][] rawValuesTab = new float[4][0];
 
 	/**
 	 * Holds auto-generated values that should be drawn, i.e if axis is inside not all auto-generated values should be
 	 * drawn to avoid overdrawing. Used only for auto axes.
 	 */
-	private float[][] axisAutoValuesToDrawTab = new float[4][0];
+	private float[][] autoValuesToDrawTab = new float[4][0];
 
 	/**
 	 * Holds custom values that should be drawn, used only for custom axes.
 	 */
-	private AxisValue[][] axisValuesToDrawTab = new AxisValue[4][0];
+	private AxisValue[][] valuesToDrawTab = new AxisValue[4][0];
 
 	/**
 	 * Buffers for axes lines coordinates(to draw grid in the background).
 	 */
-	private float[][] axisLinesDrawBufferTab = new float[4][0];
+	private float[][] linesDrawBufferTab = new float[4][0];
 
 	/**
 	 * Buffers for auto-generated values for each axis, used only if there are auto axes.
 	 */
-	private AxisAutoValues[] axisAutoValuesBufferTab = new AxisAutoValues[]{new AxisAutoValues(),
+	private AxisAutoValues[] autoValuesBufferTab = new AxisAutoValues[]{new AxisAutoValues(),
 			new AxisAutoValues(), new AxisAutoValues(), new AxisAutoValues()};
 
-	private float[] axisNameBaselineTab = new float[4];
-	private float[] axisLabelBaselineTab = new float[4];
-	private float[] axisSeparationLineTab = new float[4];
-	private int[] axisLabelWidthTab = new int[4];
-	private int[] axisLabelTextAscentTab = new int[4];
-	private int[] axisLabelTextDescentTab = new int[4];
-	private int[] axisDimensionTab = new int[4];
+	private float[] nameBaselineTab = new float[4];
+	private float[] labelBaselineTab = new float[4];
+	private float[] separationLineTab = new float[4];
+	private int[] labelWidthTab = new int[4];
+	private int[] labelTextAscentTab = new int[4];
+	private int[] labelTextDescentTab = new int[4];
+	private int[] labelDimensionForMarginsTab = new int[4];
+	private int[] labelDimensionForStepsTab = new int[4];
+	private int[] tiltedLabelXTranslation = new int[4];
+	private int[] tiltedLabelYTranslation = new int[4];
 	private FontMetricsInt[] fontMetricsTab = new FontMetricsInt[]{new FontMetricsInt(), new FontMetricsInt(),
 			new FontMetricsInt(), new FontMetricsInt()};
 
@@ -138,54 +141,81 @@ public class AxesRenderer {
 		textPaintTab[position].setTextSize(ChartUtils.sp2px(scaledDensity, axis.getTextSize()));
 		textPaintTab[position].getFontMetricsInt(fontMetricsTab[position]);
 
-		axisLabelTextAscentTab[position] = Math.abs(fontMetricsTab[position].ascent);
-		axisLabelTextDescentTab[position] = Math.abs(fontMetricsTab[position].descent);
-		axisLabelWidthTab[position] = (int) textPaintTab[position].measureText(labelWidthChars, 0,
+		labelTextAscentTab[position] = Math.abs(fontMetricsTab[position].ascent);
+		labelTextDescentTab[position] = Math.abs(fontMetricsTab[position].descent);
+		labelWidthTab[position] = (int) textPaintTab[position].measureText(labelWidthChars, 0,
 				axis.getMaxLabelChars());
 
-		axisDimensionTab[position] = (int)Math.sqrt(Math.pow(axisLabelWidthTab[position], 2)/2);
-		//TODO
-		if (LEFT == position || RIGHT == position) {
-
-		} else if (TOP == position || BOTTOM == position) {
-
+		if (axis.hasTiltedLabels()) {
+			initAxisDimensionForTiltedLabels(position);
+			intiTiltedLabelsTranslation(axis, position);
 		} else {
-			throw new IllegalArgumentException("Invalid axis position: " + position);
+			initAxisDimension(position);
 		}
+	}
+
+	private void initAxisDimensionForTiltedLabels(int position) {
+		int pythagoreanFromLabelWidth = (int) Math.sqrt(Math.pow(labelWidthTab[position], 2) / 2);
+		int pythagoreanFromAscent = (int) Math.sqrt(Math.pow(labelTextAscentTab[position], 2) / 2);
+		labelDimensionForMarginsTab[position] = pythagoreanFromAscent + pythagoreanFromLabelWidth;
+		labelDimensionForStepsTab[position] = labelDimensionForMarginsTab[position];
+	}
+
+	private void initAxisDimension(int position) {
+		if (LEFT == position || RIGHT == position) {
+			labelDimensionForMarginsTab[position] = labelWidthTab[position];
+			labelDimensionForStepsTab[position] = labelTextAscentTab[position];
+		} else if (TOP == position || BOTTOM == position) {
+			labelDimensionForMarginsTab[position] = labelTextAscentTab[position] +
+					labelTextDescentTab[position];
+			labelDimensionForStepsTab[position] = labelWidthTab[position];
+		}
+	}
+
+	private void intiTiltedLabelsTranslation(Axis axis, int position) {
+		int pythagoreanFromLabelWidth = (int) Math.sqrt(Math.pow(labelWidthTab[position], 2) / 2);
+		int pythagoreanFromAscent = (int) Math.sqrt(Math.pow(labelTextAscentTab[position], 2) / 2);
+		int dx = 0;
+		int dy = 0;
+		if (axis.isInside()) {
+			if (LEFT == position) {
+				dx = pythagoreanFromAscent;
+			} else if (RIGHT == position) {
+				dy = -pythagoreanFromLabelWidth / 2;
+			} else if (TOP == position) {
+				dy = (pythagoreanFromAscent + pythagoreanFromLabelWidth / 2) - labelTextAscentTab[position];
+			} else if (BOTTOM == position) {
+				dy = -pythagoreanFromLabelWidth / 2;
+			}
+		} else {
+			if (LEFT == position) {
+				dy = -pythagoreanFromLabelWidth / 2;
+			} else if (RIGHT == position) {
+				dx = pythagoreanFromAscent;
+			} else if (TOP == position) {
+				dy = -pythagoreanFromLabelWidth / 2;
+			} else if (BOTTOM == position) {
+				dy = (pythagoreanFromAscent + pythagoreanFromLabelWidth / 2) - labelTextAscentTab[position];
+			}
+		}
+		tiltedLabelXTranslation[position] = dx;
+		tiltedLabelYTranslation[position] = dy;
 	}
 
 	private void initAxisMargin(Axis axis, int position) {
 		int margin = 0;
-		if (LEFT == position || RIGHT == position) {
-			// If auto-generated or has manual values add height for value labels.
-			int width = 0;
-			if ((axis.isAutoGenerated() || !axis.getValues().isEmpty()) && !axis.isInside()) {
-				//width += axisLabelWidthTab[position];
-				width += axisDimensionTab[position];
-				width += axisMargin;
-			}
-			margin = width + getAxisNameMargin(axis, position);
-		} else if (TOP == position || BOTTOM == position) {
-			// If auto-generated or has manual values add height for value labels.
-			int height = 0;
-			if ((axis.isAutoGenerated() || !axis.getValues().isEmpty()) && !axis.isInside()) {
-				//height += axisLabelTextAscentTab[position];
-				//height += axisLabelTextDescentTab[position];
-				height += axisDimensionTab[position];
-				height += axisMargin;
-			}
-			margin = height + getAxisNameMargin(axis, position);
-		} else {
-			throw new IllegalArgumentException("Invalid axis position: " + position);
+		if (!axis.isInside() && (axis.isAutoGenerated() || !axis.getValues().isEmpty())) {
+			margin += axisMargin + labelDimensionForMarginsTab[position];
 		}
+		margin += getAxisNameMargin(axis, position);
 		insetContentRectWithAxesMargins(margin, position);
 	}
 
 	private int getAxisNameMargin(Axis axis, int position) {
 		int margin = 0;
 		if (!TextUtils.isEmpty(axis.getName())) {
-			margin += axisLabelTextAscentTab[position];
-			margin += axisLabelTextDescentTab[position];
+			margin += labelTextAscentTab[position];
+			margin += labelTextDescentTab[position];
 			margin += axisMargin;
 		}
 		return margin;
@@ -211,52 +241,52 @@ public class AxesRenderer {
 	private void initAxisMeasurements(Axis axis, int position) {
 		if (LEFT == position) {
 			if (axis.isInside()) {
-				axisLabelBaselineTab[position] = computator.getContentRectMinusAxesMargins().left + axisMargin;
-				axisNameBaselineTab[position] = computator.getContentRectMinusAxesMargins().left - axisMargin
-						- axisLabelTextDescentTab[position];
+				labelBaselineTab[position] = computator.getContentRectMinusAxesMargins().left + axisMargin;
+				nameBaselineTab[position] = computator.getContentRectMinusAxesMargins().left - axisMargin
+						- labelTextDescentTab[position];
 			} else {
-				axisLabelBaselineTab[position] = computator.getContentRectMinusAxesMargins().left - axisMargin;
-				axisNameBaselineTab[position] = axisLabelBaselineTab[position] - axisLabelWidthTab[position]
-						- axisMargin - axisLabelTextDescentTab[position];
+				labelBaselineTab[position] = computator.getContentRectMinusAxesMargins().left - axisMargin;
+				nameBaselineTab[position] = labelBaselineTab[position] - axisMargin
+						- labelTextDescentTab[position] - labelDimensionForMarginsTab[position];
 			}
-			axisSeparationLineTab[position] = computator.getContentRectMinusAllMargins().left;
+			separationLineTab[position] = computator.getContentRectMinusAllMargins().left;
 		} else if (RIGHT == position) {
 			if (axis.isInside()) {
-				axisLabelBaselineTab[position] = computator.getContentRectMinusAxesMargins().right - axisMargin;
-				axisNameBaselineTab[position] = computator.getContentRectMinusAxesMargins().right + axisMargin
-						+ axisLabelTextAscentTab[position];
+				labelBaselineTab[position] = computator.getContentRectMinusAxesMargins().right - axisMargin;
+				nameBaselineTab[position] = computator.getContentRectMinusAxesMargins().right + axisMargin
+						+ labelTextAscentTab[position];
 			} else {
-				axisLabelBaselineTab[position] = computator.getContentRectMinusAxesMargins().right + axisMargin;
-				axisNameBaselineTab[position] = axisLabelBaselineTab[position] + axisMargin +
-						axisLabelWidthTab[position] + axisLabelTextAscentTab[position];
+				labelBaselineTab[position] = computator.getContentRectMinusAxesMargins().right + axisMargin;
+				nameBaselineTab[position] = labelBaselineTab[position] + axisMargin
+						+ labelTextAscentTab[position] + labelDimensionForMarginsTab[position];
 			}
-			axisSeparationLineTab[position] = computator.getContentRectMinusAllMargins().right;
+			separationLineTab[position] = computator.getContentRectMinusAllMargins().right;
 		} else if (BOTTOM == position) {
 			if (axis.isInside()) {
-				axisLabelBaselineTab[position] = computator.getContentRectMinusAxesMargins().bottom - axisMargin
-						- axisLabelTextDescentTab[position];
-				axisNameBaselineTab[position] = computator.getContentRectMinusAxesMargins().bottom
-						+ axisLabelTextAscentTab[position] + axisMargin;
+				labelBaselineTab[position] = computator.getContentRectMinusAxesMargins().bottom - axisMargin
+						- labelTextDescentTab[position];
+				nameBaselineTab[position] = computator.getContentRectMinusAxesMargins().bottom + axisMargin
+						+ labelTextAscentTab[position];
 			} else {
-				axisLabelBaselineTab[position] = computator.getContentRectMinusAxesMargins().bottom + axisMargin
-						+ axisLabelTextAscentTab[position];
-				axisNameBaselineTab[position] = axisLabelBaselineTab[position] + axisMargin
-						+ axisLabelTextAscentTab[position] + axisLabelTextDescentTab[position];
+				labelBaselineTab[position] = computator.getContentRectMinusAxesMargins().bottom + axisMargin
+						+ labelTextAscentTab[position];
+				nameBaselineTab[position] = labelBaselineTab[position] + axisMargin
+						+ labelTextDescentTab[position] + labelDimensionForMarginsTab[position];
 			}
-			axisSeparationLineTab[position] = computator.getContentRectMinusAllMargins().bottom;
+			separationLineTab[position] = computator.getContentRectMinusAllMargins().bottom;
 		} else if (TOP == position) {
 			if (axis.isInside()) {
-				axisLabelBaselineTab[position] = computator.getContentRectMinusAxesMargins().top + axisMargin
-						+ axisLabelTextAscentTab[position];
-				axisNameBaselineTab[position] = computator.getContentRectMinusAxesMargins().top - axisMargin
-						- axisLabelTextDescentTab[position];
+				labelBaselineTab[position] = computator.getContentRectMinusAxesMargins().top + axisMargin
+						+ labelTextAscentTab[position];
+				nameBaselineTab[position] = computator.getContentRectMinusAxesMargins().top - axisMargin
+						- labelTextDescentTab[position];
 			} else {
-				axisLabelBaselineTab[position] = computator.getContentRectMinusAxesMargins().top - axisMargin
-						- axisLabelTextDescentTab[position];
-				axisNameBaselineTab[position] = axisLabelBaselineTab[position] - axisMargin
-						- axisLabelTextAscentTab[position] - axisLabelTextDescentTab[position];
+				labelBaselineTab[position] = computator.getContentRectMinusAxesMargins().top - axisMargin
+						- labelTextDescentTab[position];
+				nameBaselineTab[position] = labelBaselineTab[position] - axisMargin
+						- labelTextDescentTab[position] - labelDimensionForMarginsTab[position];
 			}
-			axisSeparationLineTab[position] = computator.getContentRectMinusAllMargins().top;
+			separationLineTab[position] = computator.getContentRectMinusAllMargins().top;
 		} else {
 			throw new IllegalArgumentException("Invalid axis position: " + position);
 		}
@@ -360,17 +390,17 @@ public class AxesRenderer {
 		final Viewport visibleViewport = computator.getVisibleViewport();
 		final Rect contentRect = computator.getContentRectMinusAllMargins();
 		float scale = maxViewport.width() / visibleViewport.width();
-		int module = (int) Math.ceil((axis.getValues().size() * axisDimensionTab[position])
+		int module = (int) Math.ceil((axis.getValues().size() * labelDimensionForStepsTab[position])
 				/ (contentRect.width() * scale));
 		if (module < 1) {
 			module = 1;
 		}
-		if (axis.hasLines() && axisLinesDrawBufferTab[position].length < axis.getValues().size() * 4) {
-			axisLinesDrawBufferTab[position] = new float[axis.getValues().size() * 4];
+		if (axis.hasLines() && linesDrawBufferTab[position].length < axis.getValues().size() * 4) {
+			linesDrawBufferTab[position] = new float[axis.getValues().size() * 4];
 		}
-		if (axisRawValuesTab[position].length < axis.getValues().size()) {
-			axisRawValuesTab[position] = new float[axis.getValues().size()];
-			axisValuesToDrawTab[position] = new AxisValue[axis.getValues().size()];
+		if (rawValuesTab[position].length < axis.getValues().size()) {
+			rawValuesTab[position] = new float[axis.getValues().size()];
+			valuesToDrawTab[position] = new AxisValue[axis.getValues().size()];
 		}
 
 		int valueIndex = 0;
@@ -383,8 +413,8 @@ public class AxesRenderer {
 				if (0 == valueIndex % module) {
 					final float rawX = computator.computeRawX(axisValue.getValue());
 					if (checkRawX(contentRect, rawX, axis.isInside(), position)) {
-						axisRawValuesTab[position][valueToDrawIndex] = rawX;
-						axisValuesToDrawTab[position][valueToDrawIndex] = axisValue;
+						rawValuesTab[position][valueToDrawIndex] = rawX;
+						valuesToDrawTab[position][valueToDrawIndex] = axisValue;
 						++valueToDrawIndex;
 					}
 				}
@@ -392,82 +422,89 @@ public class AxesRenderer {
 				++valueIndex;
 			}
 		}
-		axisValuesToDrawNumTab[position] = valueToDrawIndex;
+		valuesToDrawNumTab[position] = valueToDrawIndex;
 	}
 
 	private void prepareAxisHorizontalAuto(Axis axis, int position) {
 		final Viewport visibleViewport = computator.getVisibleViewport();
 		final Rect contentRect = computator.getContentRectMinusAllMargins();
 		FloatUtils.computeAxisAutoValues(visibleViewport.left, visibleViewport.right, contentRect.width()
-				/ axisDimensionTab[position] / 2, axisAutoValuesBufferTab[position]);
+				/ labelDimensionForStepsTab[position] / 2, autoValuesBufferTab[position]);
 		if (axis.hasLines()
-				&& axisLinesDrawBufferTab[position].length < axisAutoValuesBufferTab[position].valuesNumber * 4) {
-			axisLinesDrawBufferTab[position] = new float[axisAutoValuesBufferTab[position].valuesNumber * 4];
+				&& linesDrawBufferTab[position].length < autoValuesBufferTab[position].valuesNumber * 4) {
+			linesDrawBufferTab[position] = new float[autoValuesBufferTab[position].valuesNumber * 4];
 		}
-		if (axisRawValuesTab[position].length < axisAutoValuesBufferTab[position].valuesNumber) {
-			axisRawValuesTab[position] = new float[axisAutoValuesBufferTab[position].valuesNumber];
-			axisAutoValuesToDrawTab[position] = new float[axisAutoValuesBufferTab[position].valuesNumber];
+		if (rawValuesTab[position].length < autoValuesBufferTab[position].valuesNumber) {
+			rawValuesTab[position] = new float[autoValuesBufferTab[position].valuesNumber];
+			autoValuesToDrawTab[position] = new float[autoValuesBufferTab[position].valuesNumber];
 		}
 
 		int valueToDrawIndex = 0;
-		for (int i = 0; i < axisAutoValuesBufferTab[position].valuesNumber; ++i) {
-			final float rawX = computator.computeRawX(axisAutoValuesBufferTab[position].values[i]);
+		for (int i = 0; i < autoValuesBufferTab[position].valuesNumber; ++i) {
+			final float rawX = computator.computeRawX(autoValuesBufferTab[position].values[i]);
 			if (checkRawX(contentRect, rawX, axis.isInside(), position)) {
-				axisRawValuesTab[position][valueToDrawIndex] = rawX;
-				axisAutoValuesToDrawTab[position][valueToDrawIndex] = axisAutoValuesBufferTab[position].values[i];
+				rawValuesTab[position][valueToDrawIndex] = rawX;
+				autoValuesToDrawTab[position][valueToDrawIndex] = autoValuesBufferTab[position].values[i];
 				++valueToDrawIndex;
 			}
 		}
-		axisValuesToDrawNumTab[position] = valueToDrawIndex;
+		valuesToDrawNumTab[position] = valueToDrawIndex;
 	}
 
 	private void drawAxisHorizontalLines(Canvas canvas, Axis axis, int position) {
 		final Rect contentRectMargins = chart.getChartComputator().getContentRectMinusAxesMargins();
 		// Draw separation line with the same color as axis text.
 		if (axis.hasSeparationLine()) {
-			canvas.drawLine(contentRectMargins.left, axisSeparationLineTab[position], contentRectMargins.right,
-					axisSeparationLineTab[position], textPaintTab[position]);
+			canvas.drawLine(contentRectMargins.left, separationLineTab[position], contentRectMargins.right,
+					separationLineTab[position], textPaintTab[position]);
 		}
 		if (!axis.hasLines()) {
 			return;
 		}
 
 		int valueToDrawIndex = 0;
-		for (; valueToDrawIndex < axisValuesToDrawNumTab[position]; ++valueToDrawIndex) {
-			axisLinesDrawBufferTab[position][valueToDrawIndex * 4 + 0] = axisRawValuesTab[position][valueToDrawIndex];
-			axisLinesDrawBufferTab[position][valueToDrawIndex * 4 + 1] = contentRectMargins.top;
-			axisLinesDrawBufferTab[position][valueToDrawIndex * 4 + 2] = axisRawValuesTab[position][valueToDrawIndex];
-			axisLinesDrawBufferTab[position][valueToDrawIndex * 4 + 3] = contentRectMargins.bottom;
+		for (; valueToDrawIndex < valuesToDrawNumTab[position]; ++valueToDrawIndex) {
+			linesDrawBufferTab[position][valueToDrawIndex * 4 + 0] = rawValuesTab[position][valueToDrawIndex];
+			linesDrawBufferTab[position][valueToDrawIndex * 4 + 1] = contentRectMargins.top;
+			linesDrawBufferTab[position][valueToDrawIndex * 4 + 2] = rawValuesTab[position][valueToDrawIndex];
+			linesDrawBufferTab[position][valueToDrawIndex * 4 + 3] = contentRectMargins.bottom;
 		}
 		linePaint.setColor(axis.getLineColor());
-		canvas.drawLines(axisLinesDrawBufferTab[position], 0, valueToDrawIndex * 4, linePaint);
+		canvas.drawLines(linesDrawBufferTab[position], 0, valueToDrawIndex * 4, linePaint);
 	}
 
 	private void drawAxisHorizontalLabels(Canvas canvas, Axis axis, int position) {
-		for (int valueToDrawIndex = 0; valueToDrawIndex < axisValuesToDrawNumTab[position]; ++valueToDrawIndex) {
+		for (int valueToDrawIndex = 0; valueToDrawIndex < valuesToDrawNumTab[position]; ++valueToDrawIndex) {
 			int charsNumber = 0;
 			if (axis.isAutoGenerated()) {
-				final float value = axisAutoValuesToDrawTab[position][valueToDrawIndex];
+				final float value = autoValuesToDrawTab[position][valueToDrawIndex];
 				charsNumber = axis.getFormatter().formatValueForAutoGeneratedAxis(labelBuffer, value,
-						axisAutoValuesBufferTab[position].decimals);
+						autoValuesBufferTab[position].decimals);
 			} else {
-				AxisValue axisValue = axisValuesToDrawTab[position][valueToDrawIndex];
+				AxisValue axisValue = valuesToDrawTab[position][valueToDrawIndex];
 				charsNumber = axis.getFormatter().formatValueForManualAxis(labelBuffer, axisValue);
 			}
-			canvas.save();
-			canvas.rotate(-45 ,axisRawValuesTab[position][valueToDrawIndex], axisLabelBaselineTab[position]);
-			canvas.drawText(labelBuffer, labelBuffer.length - charsNumber, charsNumber,
-					axisRawValuesTab[position][valueToDrawIndex], axisLabelBaselineTab[position],
-					textPaintTab[position]);
-			canvas.restore();
 
+			if(axis.hasTiltedLabels()) {
+				canvas.save();
+				canvas.translate(tiltedLabelXTranslation[position], tiltedLabelYTranslation[position]);
+				canvas.rotate(-45, rawValuesTab[position][valueToDrawIndex], labelBaselineTab[position]);
+				canvas.drawText(labelBuffer, labelBuffer.length - charsNumber, charsNumber,
+						rawValuesTab[position][valueToDrawIndex], labelBaselineTab[position],
+						textPaintTab[position]);
+				canvas.restore();
+			}else{
+				canvas.drawText(labelBuffer, labelBuffer.length - charsNumber, charsNumber,
+						rawValuesTab[position][valueToDrawIndex], labelBaselineTab[position],
+						textPaintTab[position]);
+			}
 		}
 
 		// Drawing axis name
 		final Rect contentRectMargins = chart.getChartComputator().getContentRectMinusAxesMargins();
 		if (!TextUtils.isEmpty(axis.getName())) {
 			textPaintTab[position].setTextAlign(Align.CENTER);
-			canvas.drawText(axis.getName(), contentRectMargins.centerX(), axisNameBaselineTab[position],
+			canvas.drawText(axis.getName(), contentRectMargins.centerX(), nameBaselineTab[position],
 					textPaintTab[position]);
 		}
 	}
@@ -478,7 +515,7 @@ public class AxesRenderer {
 	 */
 	private boolean checkRawX(Rect rect, float rawX, boolean axisInside, int position) {
 		if (axisInside) {
-			float margin = axisLabelWidthTab[position] / 2;
+			float margin = labelWidthTab[position] / 2;
 			if (rawX >= rect.left + margin && rawX <= rect.right - margin) {
 				return true;
 			} else {
@@ -495,17 +532,17 @@ public class AxesRenderer {
 		final Viewport visibleViewport = computator.getVisibleViewport();
 		final Rect contentRect = computator.getContentRectMinusAllMargins();
 		float scale = maxViewport.height() / visibleViewport.height();
-		int module = (int) Math.ceil((axis.getValues().size() * axisDimensionTab[position] * 2)
+		int module = (int) Math.ceil((axis.getValues().size() * labelDimensionForStepsTab[position] * 2)
 				/ (contentRect.height() * scale));
 		if (module < 1) {
 			module = 1;
 		}
-		if (axis.hasLines() && axisLinesDrawBufferTab[position].length < axis.getValues().size() * 4) {
-			axisLinesDrawBufferTab[position] = new float[axis.getValues().size() * 4];
+		if (axis.hasLines() && linesDrawBufferTab[position].length < axis.getValues().size() * 4) {
+			linesDrawBufferTab[position] = new float[axis.getValues().size() * 4];
 		}
-		if (axisRawValuesTab[position].length < axis.getValues().size()) {
-			axisRawValuesTab[position] = new float[axis.getValues().size()];
-			axisValuesToDrawTab[position] = new AxisValue[axis.getValues().size()];
+		if (rawValuesTab[position].length < axis.getValues().size()) {
+			rawValuesTab[position] = new float[axis.getValues().size()];
+			valuesToDrawTab[position] = new AxisValue[axis.getValues().size()];
 		}
 
 		int valueIndex = 0;
@@ -518,8 +555,8 @@ public class AxesRenderer {
 				if (0 == valueIndex % module) {
 					final float rawY = computator.computeRawY(value);
 					if (checkRawY(contentRect, rawY, axis.isInside(), position)) {
-						axisRawValuesTab[position][valueToDrawIndex] = rawY;
-						axisValuesToDrawTab[position][valueToDrawIndex] = axisValue;
+						rawValuesTab[position][valueToDrawIndex] = rawY;
+						valuesToDrawTab[position][valueToDrawIndex] = axisValue;
 						++valueToDrawIndex;
 					}
 				}
@@ -527,71 +564,82 @@ public class AxesRenderer {
 				++valueIndex;
 			}
 		}
-		axisValuesToDrawNumTab[position] = valueToDrawIndex;
+		valuesToDrawNumTab[position] = valueToDrawIndex;
 	}
 
 	private void prepareAxisVerticalAuto(Axis axis, int position) {
 		final Viewport visibleViewport = computator.getVisibleViewport();
 		final Rect contentRect = computator.getContentRectMinusAllMargins();
 		FloatUtils.computeAxisAutoValues(visibleViewport.bottom, visibleViewport.top, contentRect.height()
-				/ axisDimensionTab[position] / 2, axisAutoValuesBufferTab[position]);
+				/ labelDimensionForStepsTab[position] / 2, autoValuesBufferTab[position]);
 		if (axis.hasLines()
-				&& axisLinesDrawBufferTab[position].length < axisAutoValuesBufferTab[position].valuesNumber * 4) {
-			axisLinesDrawBufferTab[position] = new float[axisAutoValuesBufferTab[position].valuesNumber * 4];
+				&& linesDrawBufferTab[position].length < autoValuesBufferTab[position].valuesNumber * 4) {
+			linesDrawBufferTab[position] = new float[autoValuesBufferTab[position].valuesNumber * 4];
 		}
-		if (axisRawValuesTab[position].length < axisAutoValuesBufferTab[position].valuesNumber) {
-			axisRawValuesTab[position] = new float[axisAutoValuesBufferTab[position].valuesNumber];
-			axisAutoValuesToDrawTab[position] = new float[axisAutoValuesBufferTab[position].valuesNumber];
+		if (rawValuesTab[position].length < autoValuesBufferTab[position].valuesNumber) {
+			rawValuesTab[position] = new float[autoValuesBufferTab[position].valuesNumber];
+			autoValuesToDrawTab[position] = new float[autoValuesBufferTab[position].valuesNumber];
 		}
 
 		int stopsToDrawIndex = 0;
-		for (int i = 0; i < axisAutoValuesBufferTab[position].valuesNumber; i++) {
-			final float rawY = computator.computeRawY(axisAutoValuesBufferTab[position].values[i]);
+		for (int i = 0; i < autoValuesBufferTab[position].valuesNumber; i++) {
+			final float rawY = computator.computeRawY(autoValuesBufferTab[position].values[i]);
 			if (checkRawY(contentRect, rawY, axis.isInside(), position)) {
-				axisRawValuesTab[position][stopsToDrawIndex] = rawY;
-				axisAutoValuesToDrawTab[position][stopsToDrawIndex] = axisAutoValuesBufferTab[position].values[i];
+				rawValuesTab[position][stopsToDrawIndex] = rawY;
+				autoValuesToDrawTab[position][stopsToDrawIndex] = autoValuesBufferTab[position].values[i];
 				++stopsToDrawIndex;
 			}
 		}
-		axisValuesToDrawNumTab[position] = stopsToDrawIndex;
+		valuesToDrawNumTab[position] = stopsToDrawIndex;
 	}
 
 	private void drawAxisVerticalLines(Canvas canvas, Axis axis, int position) {
 		final Rect contentRectMargins = chart.getChartComputator().getContentRectMinusAxesMargins();
 		// Draw separation line with the same color as axis text.
 		if (axis.hasSeparationLine()) {
-			canvas.drawLine(axisSeparationLineTab[position], contentRectMargins.bottom,
-					axisSeparationLineTab[position], contentRectMargins.top, textPaintTab[position]);
+			canvas.drawLine(separationLineTab[position], contentRectMargins.bottom,
+					separationLineTab[position], contentRectMargins.top, textPaintTab[position]);
 		}
 		if (!axis.hasLines()) {
 			return;
 		}
 
 		int stopsToDrawIndex = 0;
-		for (; stopsToDrawIndex < axisValuesToDrawNumTab[position]; ++stopsToDrawIndex) {
-			axisLinesDrawBufferTab[position][stopsToDrawIndex * 4 + 0] = contentRectMargins.left;
-			axisLinesDrawBufferTab[position][stopsToDrawIndex * 4 + 1] = axisRawValuesTab[position][stopsToDrawIndex];
-			axisLinesDrawBufferTab[position][stopsToDrawIndex * 4 + 2] = contentRectMargins.right;
-			axisLinesDrawBufferTab[position][stopsToDrawIndex * 4 + 3] = axisRawValuesTab[position][stopsToDrawIndex];
+		for (; stopsToDrawIndex < valuesToDrawNumTab[position]; ++stopsToDrawIndex) {
+			linesDrawBufferTab[position][stopsToDrawIndex * 4 + 0] = contentRectMargins.left;
+			linesDrawBufferTab[position][stopsToDrawIndex * 4 + 1] = rawValuesTab[position][stopsToDrawIndex];
+			linesDrawBufferTab[position][stopsToDrawIndex * 4 + 2] = contentRectMargins.right;
+			linesDrawBufferTab[position][stopsToDrawIndex * 4 + 3] = rawValuesTab[position][stopsToDrawIndex];
 		}
 		linePaint.setColor(axis.getLineColor());
-		canvas.drawLines(axisLinesDrawBufferTab[position], 0, stopsToDrawIndex * 4, linePaint);
+		canvas.drawLines(linesDrawBufferTab[position], 0, stopsToDrawIndex * 4, linePaint);
 	}
 
 	private void drawAxisVerticalLabels(Canvas canvas, Axis axis, int position) {
-		for (int stopsToDrawIndex = 0; stopsToDrawIndex < axisValuesToDrawNumTab[position]; ++stopsToDrawIndex) {
+		for (int valueToDrawIndex = 0; valueToDrawIndex < valuesToDrawNumTab[position]; ++valueToDrawIndex) {
 			int charsNumber = 0;
 			if (axis.isAutoGenerated()) {
-				final float value = axisAutoValuesToDrawTab[position][stopsToDrawIndex];
+				final float value = autoValuesToDrawTab[position][valueToDrawIndex];
 				charsNumber = axis.getFormatter().formatValueForAutoGeneratedAxis(labelBuffer, value,
-						axisAutoValuesBufferTab[position].decimals);
+						autoValuesBufferTab[position].decimals);
 			} else {
-				AxisValue axisValue = axisValuesToDrawTab[position][stopsToDrawIndex];
+				AxisValue axisValue = valuesToDrawTab[position][valueToDrawIndex];
 				charsNumber = axis.getFormatter().formatValueForManualAxis(labelBuffer, axisValue);
 			}
-			canvas.drawText(labelBuffer, labelBuffer.length - charsNumber, charsNumber, axisLabelBaselineTab[position],
-					axisRawValuesTab[position][stopsToDrawIndex], textPaintTab[position]);
 
+			if(axis.hasTiltedLabels()) {
+				canvas.save();
+				canvas.translate(tiltedLabelXTranslation[position], tiltedLabelYTranslation[position]);
+				canvas.rotate(-45, labelBaselineTab[position], rawValuesTab[position][valueToDrawIndex]);
+				canvas.drawText(labelBuffer, labelBuffer.length - charsNumber, charsNumber,
+						labelBaselineTab[position], rawValuesTab[position][valueToDrawIndex],
+						textPaintTab[position]);
+				canvas.restore();
+			}else{
+				canvas.drawText(labelBuffer, labelBuffer.length - charsNumber, charsNumber,
+						labelBaselineTab[position], rawValuesTab[position][valueToDrawIndex],
+						textPaintTab[position]);
+			}
 		}
 
 		// drawing axis name
@@ -600,7 +648,7 @@ public class AxesRenderer {
 			textPaintTab[position].setTextAlign(Align.CENTER);
 			canvas.save();
 			canvas.rotate(-90, contentRectMargins.centerY(), contentRectMargins.centerY());
-			canvas.drawText(axis.getName(), contentRectMargins.centerY(), axisNameBaselineTab[position],
+			canvas.drawText(axis.getName(), contentRectMargins.centerY(), nameBaselineTab[position],
 					textPaintTab[position]);
 			canvas.restore();
 		}
@@ -612,8 +660,8 @@ public class AxesRenderer {
 	 */
 	private boolean checkRawY(Rect rect, float rawY, boolean axisInside, int position) {
 		if (axisInside) {
-			float marginBottom = axisLabelTextAscentTab[BOTTOM] + axisMargin;
-			float marginTop = axisLabelTextAscentTab[TOP] + axisMargin;
+			float marginBottom = labelTextAscentTab[BOTTOM] + axisMargin;
+			float marginTop = labelTextAscentTab[TOP] + axisMargin;
 			if (rawY <= rect.bottom - marginBottom && rawY >= rect.top + marginTop) {
 				return true;
 			} else {

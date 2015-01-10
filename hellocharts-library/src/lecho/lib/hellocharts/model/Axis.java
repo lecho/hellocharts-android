@@ -20,7 +20,7 @@ import lecho.lib.hellocharts.util.ChartUtils;
  */
 public class Axis {
 	public static final int DEFAULT_TEXT_SIZE_SP = 12;
-	public static final int DEFAULT_MAX_AXIS_LABEL_CHARS = 4;
+	public static final int DEFAULT_MAX_AXIS_LABEL_CHARS = 3;
 
 	/**
 	 * Axis values, each value will be used to calculate its label position.
@@ -81,6 +81,8 @@ public class Axis {
 	 * If true draws a line between the labels and the graph *
 	 */
 	private boolean hasSeparationLine = true;
+
+	private boolean hasTiltedLabels = false;
 
 	/**
 	 * Creates auto-generated axis without name and with default formatter.
@@ -248,6 +250,14 @@ public class Axis {
 
 	public boolean hasSeparationLine() {
 		return hasSeparationLine;
+	}
+
+	public boolean hasTiltedLabels() {
+		return hasTiltedLabels;
+	}
+
+	public void setHasTiltedLabels(boolean hasTiltedLabels) {
+		this.hasTiltedLabels = hasTiltedLabels;
 	}
 
 	/**
