@@ -256,8 +256,9 @@ public class Axis {
 		return hasTiltedLabels;
 	}
 
-	public void setHasTiltedLabels(boolean hasTiltedLabels) {
+	public Axis setHasTiltedLabels(boolean hasTiltedLabels) {
 		this.hasTiltedLabels = hasTiltedLabels;
+		return this;
 	}
 
 	/**
