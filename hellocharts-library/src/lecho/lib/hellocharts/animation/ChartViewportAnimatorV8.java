@@ -1,24 +1,32 @@
 package lecho.lib.hellocharts.animation;
 
-import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.view.Chart;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 
+import lecho.lib.hellocharts.model.Viewport;
+import lecho.lib.hellocharts.view.Chart;
+
 public class ChartViewportAnimatorV8 implements ChartViewportAnimator {
 
+	final Chart chart;
+	final Handler handler;
+	final Interpolator interpolator = new AccelerateDecelerateInterpolator();
 	long start;
 	boolean isAnimationStarted = false;
-	final Chart chart;
 	private Viewport startViewport = new Viewport();
 	private Viewport targetViewport = new Viewport();
 	private Viewport newViewport = new Viewport();
 	private long duration;
-	final Handler handler;
-	final Interpolator interpolator = new AccelerateDecelerateInterpolator();
 	private ChartAnimationListener animationListener = new DummyChartAnimationListener();
+
+	public ChartViewportAnimatorV8(Chart chart) {
+		this.chart = chart;
+		this.duration = FAST_ANIMATION_DURATION;
+		this.handler = new Handler();
+	}
+
 	private final Runnable runnable = new Runnable() {
 
 		@Override
@@ -44,25 +52,22 @@ public class ChartViewportAnimatorV8 implements ChartViewportAnimator {
 		}
 	};
 
-	public ChartViewportAnimatorV8(Chart chart) {
-		this(chart, FAST_ANIMATION_DURATION);
-	}
-
-	public ChartViewportAnimatorV8(Chart chart, long duration) {
-		this.chart = chart;
-		this.duration = duration;
-		this.handler = new Handler();
-	}
-
-	@Override
-	public void setDuration(long duration) {
-		this.duration = duration;
-	}
-
 	@Override
 	public void startAnimation(Viewport startViewport, Viewport targetViewport) {
 		this.startViewport.set(startViewport);
 		this.targetViewport.set(targetViewport);
+		duration = FAST_ANIMATION_DURATION;
+		isAnimationStarted = true;
+		animationListener.onAnimationStarted();
+		start = SystemClock.uptimeMillis();
+		handler.post(runnable);
+	}
+
+	@Override
+	public void startAnimation(Viewport startViewport, Viewport targetViewport, long duration) {
+		this.startViewport.set(startViewport);
+		this.targetViewport.set(targetViewport);
+		this.duration = duration;
 		isAnimationStarted = true;
 		animationListener.onAnimationStarted();
 		start = SystemClock.uptimeMillis();
@@ -90,4 +95,6 @@ public class ChartViewportAnimatorV8 implements ChartViewportAnimator {
 			this.animationListener = animationListener;
 		}
 	}
+
+
 }

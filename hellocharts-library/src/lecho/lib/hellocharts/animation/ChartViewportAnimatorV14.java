@@ -18,26 +18,26 @@ public class ChartViewportAnimatorV14 implements ChartViewportAnimator, Animator
 	private ChartAnimationListener animationListener = new DummyChartAnimationListener();
 
 	public ChartViewportAnimatorV14(Chart chart) {
-		this(chart, FAST_ANIMATION_DURATION);
-	}
-
-	public ChartViewportAnimatorV14(Chart chart, long duration) {
 		this.chart = chart;
 		animator = ValueAnimator.ofFloat(0.0f, 1.0f);
-		animator.setDuration(duration);
 		animator.addListener(this);
 		animator.addUpdateListener(this);
-	}
-
-	@Override
-	public void setDuration(long duration) {
-		animator.setDuration(duration);
+		animator.setDuration(FAST_ANIMATION_DURATION);
 	}
 
 	@Override
 	public void startAnimation(Viewport startViewport, Viewport targetViewport) {
 		this.startViewport.set(startViewport);
 		this.targetViewport.set(targetViewport);
+		animator.setDuration(FAST_ANIMATION_DURATION);
+		animator.start();
+	}
+
+	@Override
+	public void startAnimation(Viewport startViewport, Viewport targetViewport, long duration) {
+		this.startViewport.set(startViewport);
+		this.targetViewport.set(targetViewport);
+		animator.setDuration(duration);
 		animator.start();
 	}
 
