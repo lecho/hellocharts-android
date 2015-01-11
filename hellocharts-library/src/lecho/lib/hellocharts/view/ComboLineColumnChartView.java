@@ -44,6 +44,7 @@ public class ComboLineColumnChartView extends AbstractChartView implements Combo
 	public ComboLineColumnChartView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		chartRenderer = new ComboLineColumnChartRenderer(context, this, columnChartDataProvider, lineChartDataProvider);
+		resetRendererAndTouchHandler();
 		setComboLineColumnChartData(ComboLineColumnChartData.generateDummyData());
 	}
 
@@ -64,12 +65,7 @@ public class ComboLineColumnChartView extends AbstractChartView implements Combo
 			this.data = data;
 		}
 
-		axesRenderer.initAxesAttributes();
-		chartRenderer.initDataAttributes();
-		chartRenderer.initMaxViewport();
-		chartRenderer.initCurrentViewport();
-
-		ViewCompat.postInvalidateOnAnimation(ComboLineColumnChartView.this);
+		super.onChartDataChange();
 	}
 
 	@Override

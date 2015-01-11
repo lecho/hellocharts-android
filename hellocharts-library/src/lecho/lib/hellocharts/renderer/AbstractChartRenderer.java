@@ -1,11 +1,5 @@
 package lecho.lib.hellocharts.renderer;
 
-import lecho.lib.hellocharts.computator.ChartComputator;
-import lecho.lib.hellocharts.model.ChartData;
-import lecho.lib.hellocharts.model.SelectedValue;
-import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.util.ChartUtils;
-import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -15,49 +9,55 @@ import android.graphics.Paint.FontMetricsInt;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 
+import lecho.lib.hellocharts.computator.ChartComputator;
+import lecho.lib.hellocharts.model.ChartData;
+import lecho.lib.hellocharts.model.SelectedValue;
+import lecho.lib.hellocharts.model.Viewport;
+import lecho.lib.hellocharts.util.ChartUtils;
+import lecho.lib.hellocharts.view.Chart;
+
 /**
  * Abstract renderer implementation, every chart renderer extends this class(although it is not required it helps).
- * 
  */
 public abstract class AbstractChartRenderer implements ChartRenderer {
 	public int DEFAULT_LABEL_MARGIN_DP = 4;
 	protected Chart chart;
-
-	/** Paint for value labels. */
+	protected ChartComputator computator;
+	/**
+	 * Paint for value labels.
+	 */
 	protected Paint labelPaint = new Paint();
-
-	/** Paint for labels background. */
+	/**
+	 * Paint for labels background.
+	 */
 	protected Paint labelBackgroundPaint = new Paint();
-
-	/** Holds coordinates for label background rect. */
+	/**
+	 * Holds coordinates for label background rect.
+	 */
 	protected RectF labelBackgroundRect = new RectF();
-
-	/** Font metrics for label paint, used to determine text height. */
+	/**
+	 * Font metrics for label paint, used to determine text height.
+	 */
 	protected FontMetricsInt fontMetrics = new FontMetricsInt();
-
-	/** Temporary max viewport used during maximum viewport calculations. */
-	protected Viewport tempMaxViewport = new Viewport();
-
-	/** If true maximum and current viewport will be calculated when chart data change or during data animations. */
+	/**
+	 * If true maximum and current viewport will be calculated when chart data change or during data animations.
+	 */
 	protected boolean isViewportCalculationEnabled = true;
-
 	protected float density;
 	protected float scaledDensity;
-
 	protected SelectedValue selectedValue = new SelectedValue();
-
 	protected char[] labelBuffer = new char[32];
 	protected int labelOffset;
 	protected int labelMargin;
-
 	protected boolean isValueLabelBackgroundEnabled;
-	protected boolean isValueLabelBackgrountAuto;
+	protected boolean isValueLabelBackgroundAuto;
 	protected int valueLabelBackgroundColor;
 
 	public AbstractChartRenderer(Context context, Chart chart) {
 		this.density = context.getResources().getDisplayMetrics().density;
 		this.scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
 		this.chart = chart;
+		this.computator = chart.getChartComputator();
 
 		labelMargin = ChartUtils.dp2px(density, DEFAULT_LABEL_MARGIN_DP);
 		labelOffset = labelMargin;
@@ -73,15 +73,12 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 	}
 
 	@Override
-	public void initCurrentViewport() {
-		if (isViewportCalculationEnabled) {
-			ChartComputator computator = chart.getChartComputator();
-			computator.setCurrentViewport(computator.getMaximumViewport());
-		}
+	public void resetRenderer(){
+		this.computator = chart.getChartComputator();
 	}
 
 	@Override
-	public void initDataAttributes() {
+	public void onChartDataChanged() {
 		final ChartData data = chart.getChartData();
 
 		Typeface typeface = chart.getChartData().getValueLabelTypeface();
@@ -93,7 +90,7 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 		labelPaint.getFontMetricsInt(fontMetrics);
 
 		this.isValueLabelBackgroundEnabled = data.isValueLabelBackgroundEnabled();
-		this.isValueLabelBackgrountAuto = data.isValueLabelBackgroundAuto();
+		this.isValueLabelBackgroundAuto = data.isValueLabelBackgroundAuto();
 		this.valueLabelBackgroundColor = data.getValueLabelBackgroundColor();
 		this.labelBackgroundPaint.setColor(valueLabelBackgroundColor);
 
@@ -106,13 +103,13 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 	 * Draws label text and label background if isValueLabelBackgroundEnabled is true.
 	 */
 	protected void drawLabelTextAndBackground(Canvas canvas, char[] labelBuffer, int startIndex, int numChars,
-			int autoBackgroundColor) {
+											  int autoBackgroundColor) {
 		final float textX;
 		final float textY;
 
 		if (isValueLabelBackgroundEnabled) {
 
-			if (isValueLabelBackgrountAuto) {
+			if (isValueLabelBackgroundAuto) {
 				labelBackgroundPaint.setColor(autoBackgroundColor);
 			}
 
@@ -139,32 +136,27 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 	}
 
 	@Override
-	public void setMaxViewport(Viewport maxViewport) {
-		if (null == maxViewport) {
-			initMaxViewport();
-		} else {
-			this.tempMaxViewport.set(maxViewport);
-			chart.getChartComputator().setMaxViewport(maxViewport);
-		}
+	public Viewport getMaximumViewport() {
+		return computator.getMaximumViewport();
 	}
 
 	@Override
-	public Viewport getMaxViewport() {
-		return tempMaxViewport;
-	}
-
-	@Override
-	public void setCurrentViewport(Viewport viewport) {
-		if (null == viewport) {
-			initCurrentViewport();
-		} else {
-			chart.getChartComputator().setCurrentViewport(viewport);
+	public void setMaximumViewport(Viewport maxViewport) {
+		if (null != maxViewport) {
+			computator.setMaxViewport(maxViewport);
 		}
 	}
 
 	@Override
 	public Viewport getCurrentViewport() {
-		return chart.getChartComputator().getCurrentViewport();
+		return computator.getCurrentViewport();
+	}
+
+	@Override
+	public void setCurrentViewport(Viewport viewport) {
+		if (null != viewport) {
+			computator.setCurrentViewport(viewport);
+		}
 	}
 
 	@Override

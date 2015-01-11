@@ -12,6 +12,7 @@ import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
 import lecho.lib.hellocharts.model.SubcolumnValue;
+import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.Chart;
@@ -58,6 +59,8 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 
 	private float baseValue;
 
+	private Viewport tempMaximumViewport = new Viewport();
+
 	public ColumnChartRenderer(Context context, Chart chart, ColumnChartDataProvider dataProvider) {
 		super(context, chart);
 		this.dataProvider = dataProvider;
@@ -70,26 +73,26 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	}
 
 	@Override
-	public void initMaxViewport() {
-		if (isViewportCalculationEnabled) {
-			calculateMaxViewport();
-			chart.getChartComputator().setMaxViewport(tempMaxViewport);
-		}
+	public void onChartSizeChanged() {
 	}
 
 	@Override
-	public void initDataMeasurements() {
-		chart.getChartComputator().setInternalMargin(labelMargin);// Using label margin because I'm lazy:P
-	}
-
-	@Override
-	public void initDataAttributes() {
-		super.initDataAttributes();
-
+	public void onChartDataChanged() {
+		super.onChartDataChanged();
 		ColumnChartData data = dataProvider.getColumnChartData();
 		fillRatio = data.getFillRatio();
 		baseValue = data.getBaseValue();
 
+		onChartViewportChanged();
+	}
+
+	@Override
+	public void onChartViewportChanged() {
+		if (isViewportCalculationEnabled) {
+			calculateMaxViewport();
+			computator.setMaxViewport(tempMaximumViewport);
+			computator.setCurrentViewport(computator.getMaximumViewport());
+		}
 	}
 
 	public void draw(Canvas canvas) {
@@ -128,7 +131,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 		// Column chart always has X values from 0 to numColumns-1, to add some margin on the left and right I added
 		// extra 0.5 to the each side, that margins will be negative scaled according to number of columns, so for more
 		// columns there will be less margin.
-		tempMaxViewport.set(-0.5f, baseValue, data.getColumns().size() - 0.5f, baseValue);
+		tempMaximumViewport.set(-0.5f, baseValue, data.getColumns().size() - 0.5f, baseValue);
 		if (data.isStacked()) {
 			calculateMaxViewportForStacked(data);
 		} else {
@@ -139,11 +142,11 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	private void calculateMaxViewportForSubcolumns(ColumnChartData data) {
 		for (Column column : data.getColumns()) {
 			for (SubcolumnValue columnValue : column.getValues()) {
-				if (columnValue.getValue() >= baseValue && columnValue.getValue() > tempMaxViewport.top) {
-					tempMaxViewport.top = columnValue.getValue();
+				if (columnValue.getValue() >= baseValue && columnValue.getValue() > tempMaximumViewport.top) {
+					tempMaximumViewport.top = columnValue.getValue();
 				}
-				if (columnValue.getValue() < baseValue && columnValue.getValue() < tempMaxViewport.bottom) {
-					tempMaxViewport.bottom = columnValue.getValue();
+				if (columnValue.getValue() < baseValue && columnValue.getValue() < tempMaximumViewport.bottom) {
+					tempMaximumViewport.bottom = columnValue.getValue();
 				}
 			}
 		}
@@ -160,11 +163,11 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 					sumNegative += columnValue.getValue();
 				}
 			}
-			if (sumPositive > tempMaxViewport.top) {
-				tempMaxViewport.top = sumPositive;
+			if (sumPositive > tempMaximumViewport.top) {
+				tempMaximumViewport.top = sumPositive;
 			}
-			if (sumNegative < tempMaxViewport.bottom) {
-				tempMaxViewport.bottom = sumNegative;
+			if (sumNegative < tempMaximumViewport.bottom) {
+				tempMaximumViewport.bottom = sumNegative;
 			}
 		}
 	}
@@ -200,9 +203,8 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 		}
 	}
 
-	private void processColumnForSubcolumns(Canvas canvas, Column column, float columnWidth, int columnIndex, int mode) {
-		final ChartComputator computator = chart.getChartComputator();
-
+	private void processColumnForSubcolumns(Canvas canvas, Column column, float columnWidth, int columnIndex,
+											int mode) {
 		// For n subcolumns there will be n-1 spacing and there will be one
 		// subcolumn for every columnValue
 		float subcolumnWidth = (columnWidth - (subcolumnSpacing * (column.getValues().size() - 1)))
@@ -278,7 +280,6 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void processColumnForStacked(Canvas canvas, Column column, float columnWidth, int columnIndex, int mode) {
-		final ChartComputator computator = chart.getChartComputator();
 		final float rawX = computator.computeRawX(columnIndex);
 		final float halfColumnWidth = columnWidth / 2;
 		float mostPositiveValue = baseValue;
@@ -344,9 +345,9 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	}
 
 	private float calculateColumnWidth() {
-		final ChartComputator computator = chart.getChartComputator();
 		// columnWidht should be at least 2 px
-		float columnWidth = fillRatio * computator.getContentRect().width() / computator.getVisibleViewport().width();
+		float columnWidth = fillRatio * computator.getContentRectMinusAllMargins().width() / computator
+				.getVisibleViewport().width();
 		if (columnWidth < 2) {
 			columnWidth = 2;
 		}
@@ -367,7 +368,6 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void drawLabel(Canvas canvas, Column column, SubcolumnValue columnValue, boolean isStacked, float offset) {
-		final ChartComputator computator = chart.getChartComputator();
 		final int numChars = column.getFormatter().formatChartValue(labelBuffer, columnValue);
 
 		if (numChars == 0) {
@@ -394,7 +394,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 			// For not stacked draw label at the top for positive and at the bottom for negative values
 			if (columnValue.getValue() >= baseValue) {
 				top = drawRect.top - offset - labelHeight - labelMargin * 2;
-				if (top < computator.getContentRect().top) {
+				if (top < computator.getContentRectMinusAllMargins().top) {
 					top = drawRect.top + offset;
 					bottom = drawRect.top + offset + labelHeight + labelMargin * 2;
 				} else {
@@ -402,7 +402,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 				}
 			} else {
 				bottom = drawRect.bottom + offset + labelHeight + labelMargin * 2;
-				if (bottom > computator.getContentRect().bottom) {
+				if (bottom > computator.getContentRectMinusAllMargins().bottom) {
 					top = drawRect.bottom - offset - labelHeight - labelMargin * 2;
 					bottom = drawRect.bottom - offset;
 				} else {

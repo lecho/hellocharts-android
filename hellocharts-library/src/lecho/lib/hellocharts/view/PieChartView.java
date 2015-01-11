@@ -51,6 +51,7 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 		pieChartRenderer = new PieChartRenderer(context, this, this);
 		chartRenderer = pieChartRenderer;
 		touchHandler = new PieChartTouchHandler(context, this);
+		resetRendererAndTouchHandler();
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
 			this.rotationAnimator = new PieChartRotationAnimatorV8(this);
 		} else {
@@ -70,12 +71,8 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
 		} else {
 			this.data = data;
 		}
-		axesRenderer.initAxesAttributes();
-		chartRenderer.initDataAttributes();
-		chartRenderer.initMaxViewport();
-		chartRenderer.initCurrentViewport();
 
-		ViewCompat.postInvalidateOnAnimation(PieChartView.this);
+		super.onChartDataChange();
 	}
 
 	@Override

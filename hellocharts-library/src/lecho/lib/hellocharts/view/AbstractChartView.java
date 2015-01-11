@@ -73,10 +73,10 @@ public abstract class AbstractChartView extends View implements Chart {
 	@Override
 	protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
-		chartComputator.setContentArea(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(), getPaddingRight(),
+		chartComputator.setContentRect(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(), getPaddingRight(),
 				getPaddingBottom());
-		axesRenderer.initAxesAttributes();
-		chartRenderer.initDataMeasurements();
+		chartRenderer.onChartSizeChanged();
+		axesRenderer.onChartSizeChanged();
 	}
 
 	@Override
@@ -86,7 +86,7 @@ public abstract class AbstractChartView extends View implements Chart {
 		if (isEnabled()) {
 			axesRenderer.drawInBackground(canvas);
 			int clipRestoreCount = canvas.save();
-			canvas.clipRect(chartComputator.getContentRect());
+			canvas.clipRect(chartComputator.getContentRectMinusAllMargins());
 			chartRenderer.draw(canvas);
 			canvas.restoreToCount(clipRestoreCount);
 			chartRenderer.drawUnclipped(canvas);
@@ -149,16 +149,14 @@ public abstract class AbstractChartView extends View implements Chart {
 	@Override
 	public void animationDataUpdate(float scale) {
 		getChartData().update(scale);
-		chartRenderer.initMaxViewport();
-		chartRenderer.initCurrentViewport();
+		chartRenderer.onChartViewportChanged();
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
 	@Override
 	public void animationDataFinished() {
 		getChartData().finish();
-		chartRenderer.initMaxViewport();
-		chartRenderer.initCurrentViewport();
+		chartRenderer.onChartViewportChanged();
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
@@ -284,10 +282,12 @@ public abstract class AbstractChartView extends View implements Chart {
 		touchHandler.setZoomType(zoomType);
 	}
 
+	@Override
 	public float getMaxZoom() {
 		return chartComputator.getMaxZoom();
 	}
 
+	@Override
 	public void setMaxZoom(float maxZoom) {
 		chartComputator.setMaxZoom(maxZoom);
 		ViewCompat.postInvalidateOnAnimation(this);
@@ -370,13 +370,13 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	@Override
 	public void setMaximumViewport(Viewport maxViewport) {
-		chartRenderer.setMaxViewport(maxViewport);
+		chartRenderer.setMaximumViewport(maxViewport);
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
 	@Override
 	public Viewport getMaximumViewport() {
-		return chartRenderer.getMaxViewport();
+		return chartRenderer.getMaximumViewport();
 	}
 
 	@Override
@@ -403,7 +403,7 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	@Override
 	public void resetViewports() {
-		chartRenderer.setMaxViewport(null);
+		chartRenderer.setMaximumViewport(null);
 		chartRenderer.setCurrentViewport(null);
 	}
 
@@ -448,6 +448,23 @@ public abstract class AbstractChartView extends View implements Chart {
 	public void setContainerScrollEnabled(boolean isContainerScrollEnabled, ContainerScrollType containerScrollType) {
 		this.isContainerScrollEnabled = isContainerScrollEnabled;
 		this.containerScrollType = containerScrollType;
+	}
+
+	protected void onChartDataChange(){
+		chartComputator.resetContentRect();
+		chartRenderer.onChartDataChanged();
+		axesRenderer.onChartDataChanged();
+		ViewCompat.postInvalidateOnAnimation(this);
+	}
+
+	/**
+	 * You should call this method in derived classes, most likely from constructor if you changed chart/axis renderer,
+	 * touch handler or chart computator
+	 */
+	protected void resetRendererAndTouchHandler(){
+		this.chartRenderer.resetRenderer();
+		this.axesRenderer.resetRenderer();
+		this.touchHandler.resetTouchHandler();
 	}
 
 }

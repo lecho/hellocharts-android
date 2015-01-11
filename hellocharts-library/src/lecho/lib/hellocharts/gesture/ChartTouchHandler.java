@@ -1,19 +1,19 @@
 package lecho.lib.hellocharts.gesture;
 
-import lecho.lib.hellocharts.computator.ChartComputator;
-import lecho.lib.hellocharts.gesture.ChartScroller.ScrollResult;
-import lecho.lib.hellocharts.model.SelectedValue;
-import lecho.lib.hellocharts.renderer.ChartRenderer;
-import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.ViewParent;
 
+import lecho.lib.hellocharts.computator.ChartComputator;
+import lecho.lib.hellocharts.gesture.ChartScroller.ScrollResult;
+import lecho.lib.hellocharts.model.SelectedValue;
+import lecho.lib.hellocharts.renderer.ChartRenderer;
+import lecho.lib.hellocharts.view.Chart;
+
 /**
  * Default touch handler for most charts. Handles value touch, scroll, fling and zoom.
- * 
  */
 public class ChartTouchHandler {
 	protected GestureDetector gestureDetector;
@@ -21,6 +21,8 @@ public class ChartTouchHandler {
 	protected ChartScroller chartScroller;
 	protected ChartZoomer chartZoomer;
 	protected Chart chart;
+	protected ChartComputator computator;
+	protected ChartRenderer renderer;
 
 	protected boolean isZoomEnabled = true;
 	protected boolean isScrollEnabled = true;
@@ -48,24 +50,24 @@ public class ChartTouchHandler {
 
 	public ChartTouchHandler(Context context, Chart chart) {
 		this.chart = chart;
+		this.computator = chart.getChartComputator();
+		this.renderer = chart.getChartRenderer();
 		gestureDetector = new GestureDetector(context, new ChartGestureListener());
 		scaleGestureDetector = new ScaleGestureDetector(context, new ChartScaleGestureListener());
 		chartScroller = new ChartScroller(context);
 		chartZoomer = new ChartZoomer(context, ZoomType.HORIZONTAL_AND_VERTICAL);
 	}
 
+	public void resetTouchHandler() {
+		this.computator = chart.getChartComputator();
+		this.renderer = chart.getChartRenderer();
+	}
+
 	/**
 	 * Computes scroll and zoom using {@link ChartScroller} and {@link ChartZoomer}. This method returns true if
 	 * scroll/zoom was computed and chart needs to be invalidated.
-	 * 
-	 * Using first approach of fling animation described here {@link http
-	 * ://developer.android.com/training/custom-views/making-interactive.html}. Consider use of second option with
-	 * ValueAnimator.
-	 * 
 	 */
 	public boolean computeScroll() {
-		final ChartComputator computator = chart.getChartComputator();
-
 		boolean needInvalidate = false;
 		if (isScrollEnabled && chartScroller.computeScrollOffset(computator)) {
 			needInvalidate = true;
@@ -77,7 +79,8 @@ public class ChartTouchHandler {
 	}
 
 	/**
-	 * Handle chart touch event(gestures, clicks). Return true if gesture was handled and chart needs to be invalidated.
+	 * Handle chart touch event(gestures, clicks). Return true if gesture was handled and chart needs to be
+	 * invalidated.
 	 */
 	public boolean handleTouchEvent(MotionEvent event) {
 		boolean needInvalidate = false;
@@ -102,11 +105,14 @@ public class ChartTouchHandler {
 	}
 
 	/**
-	 * Handle chart touch event(gestures, clicks). Return true if gesture was handled and chart needs to be invalidated.
-	 * If viewParent and containerScrollType are not null chart can be scrolled and scaled within horizontal or vertical
+	 * Handle chart touch event(gestures, clicks). Return true if gesture was handled and chart needs to be
+	 * invalidated.
+	 * If viewParent and containerScrollType are not null chart can be scrolled and scaled within horizontal or
+	 * vertical
 	 * scroll container like ViewPager.
 	 */
-	public boolean handleTouchEvent(MotionEvent event, ViewParent viewParent, ContainerScrollType containerScrollType) {
+	public boolean handleTouchEvent(MotionEvent event, ViewParent viewParent,
+									ContainerScrollType containerScrollType) {
 		this.viewParent = viewParent;
 		this.containerScrollType = containerScrollType;
 
@@ -124,8 +130,9 @@ public class ChartTouchHandler {
 	}
 
 	/**
-	 * Allow parent view to intercept touch events if chart cannot be scroll horizontally or vertically according to the
-	 * current value of {@link containerScrollType}.
+	 * Allow parent view to intercept touch events if chart cannot be scroll horizontally or vertically according to
+	 * the
+	 * current value of {@link #containerScrollType}.
 	 */
 	private void allowParentInterceptTouchEvent(ScrollResult scrollResult) {
 		if (null != viewParent) {
@@ -140,66 +147,65 @@ public class ChartTouchHandler {
 	}
 
 	private boolean computeTouch(MotionEvent event) {
-		final ChartRenderer renderer = chart.getChartRenderer();
-
 		boolean needInvalidate = false;
 		switch (event.getAction()) {
-		case MotionEvent.ACTION_DOWN:
-			boolean wasTouched = renderer.isTouched();
-			boolean isTouched = checkTouch(renderer, event.getX(), event.getY());
-			if (wasTouched != isTouched) {
-				needInvalidate = true;
+			case MotionEvent.ACTION_DOWN:
+				boolean wasTouched = renderer.isTouched();
+				boolean isTouched = checkTouch(event.getX(), event.getY());
+				if (wasTouched != isTouched) {
+					needInvalidate = true;
 
-				if (isValueSelectionEnabled) {
-					selectionModeOldValue.clear();
-					if (wasTouched && !renderer.isTouched()) {
-						chart.callTouchListener();
-					}
-				}
-			}
-			break;
-		case MotionEvent.ACTION_UP:
-			if (renderer.isTouched()) {
-				if (checkTouch(renderer, event.getX(), event.getY())) {
 					if (isValueSelectionEnabled) {
-						// For selection mode call listener only if selected value changed, that means that should be
-						// first(selection) click on given value.
-						if (!selectionModeOldValue.equals(selectedValue)) {
-							selectionModeOldValue.set(selectedValue);
+						selectionModeOldValue.clear();
+						if (wasTouched && !renderer.isTouched()) {
 							chart.callTouchListener();
 						}
+					}
+				}
+				break;
+			case MotionEvent.ACTION_UP:
+				if (renderer.isTouched()) {
+					if (checkTouch(event.getX(), event.getY())) {
+						if (isValueSelectionEnabled) {
+							// For selection mode call listener only if selected value changed,
+							// that means that should be
+							// first(selection) click on given value.
+							if (!selectionModeOldValue.equals(selectedValue)) {
+								selectionModeOldValue.set(selectedValue);
+								chart.callTouchListener();
+							}
+						} else {
+							chart.callTouchListener();
+							renderer.clearTouch();
+						}
 					} else {
-						chart.callTouchListener();
 						renderer.clearTouch();
 					}
-				} else {
-					renderer.clearTouch();
+					needInvalidate = true;
 				}
-				needInvalidate = true;
-			}
-			break;
-		case MotionEvent.ACTION_MOVE:
-			// If value was touched and now touch point is outside of value area - clear touch and invalidate, user
-			// probably moved finger away from given chart value.
-			if (renderer.isTouched()) {
-				if (!checkTouch(renderer, event.getX(), event.getY())) {
+				break;
+			case MotionEvent.ACTION_MOVE:
+				// If value was touched and now touch point is outside of value area - clear touch and invalidate, user
+				// probably moved finger away from given chart value.
+				if (renderer.isTouched()) {
+					if (!checkTouch(event.getX(), event.getY())) {
+						renderer.clearTouch();
+						needInvalidate = true;
+					}
+				}
+
+				break;
+			case MotionEvent.ACTION_CANCEL:
+				if (renderer.isTouched()) {
 					renderer.clearTouch();
 					needInvalidate = true;
 				}
-			}
-
-			break;
-		case MotionEvent.ACTION_CANCEL:
-			if (renderer.isTouched()) {
-				renderer.clearTouch();
-				needInvalidate = true;
-			}
-			break;
+				break;
 		}
 		return needInvalidate;
 	}
 
-	private boolean checkTouch(ChartRenderer renderer, float touchX, float touchY) {
+	private boolean checkTouch(float touchX, float touchY) {
 		oldSelectedValue.set(selectedValue);
 		selectedValue.clear();
 
@@ -215,13 +221,13 @@ public class ChartTouchHandler {
 		}
 	}
 
+	public boolean isZoomEnabled() {
+		return isZoomEnabled;
+	}
+
 	public void setZoomEnabled(boolean isZoomEnabled) {
 		this.isZoomEnabled = isZoomEnabled;
 
-	}
-
-	public boolean isZoomEnabled() {
-		return isZoomEnabled;
 	}
 
 	public boolean isScrollEnabled() {
@@ -232,12 +238,12 @@ public class ChartTouchHandler {
 		this.isScrollEnabled = isScrollEnabled;
 	}
 
-	public void setZoomType(ZoomType zoomType) {
-		chartZoomer.setZoomType(zoomType);
-	}
-
 	public ZoomType getZoomType() {
 		return chartZoomer.getZoomType();
+	}
+
+	public void setZoomType(ZoomType zoomType) {
+		chartZoomer.setZoomType(zoomType);
 	}
 
 	public boolean isValueTouchEnabled() {
@@ -265,7 +271,7 @@ public class ChartTouchHandler {
 				if (Float.isInfinite(scale)) {
 					scale = 1;
 				}
-				return chartZoomer.scale(chart.getChartComputator(), detector.getFocusX(), detector.getFocusY(), scale);
+				return chartZoomer.scale(computator, detector.getFocusX(), detector.getFocusY(), scale);
 			}
 
 			return false;
@@ -282,7 +288,7 @@ public class ChartTouchHandler {
 
 				disallowParentInterceptTouchEvent();
 
-				return chartScroller.startScroll(chart.getChartComputator());
+				return chartScroller.startScroll(computator);
 			}
 
 			return false;
@@ -292,7 +298,7 @@ public class ChartTouchHandler {
 		@Override
 		public boolean onDoubleTap(MotionEvent e) {
 			if (isZoomEnabled) {
-				return chartZoomer.startZoom(e, chart.getChartComputator());
+				return chartZoomer.startZoom(e, computator);
 			}
 
 			return false;
@@ -302,7 +308,7 @@ public class ChartTouchHandler {
 		public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 			if (isScrollEnabled) {
 				boolean canScroll = chartScroller
-						.scroll(chart.getChartComputator(), distanceX, distanceY, scrollResult);
+						.scroll(computator, distanceX, distanceY, scrollResult);
 
 				allowParentInterceptTouchEvent(scrollResult);
 
@@ -316,7 +322,7 @@ public class ChartTouchHandler {
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 			if (isScrollEnabled) {
-				return chartScroller.fling((int) -velocityX, (int) -velocityY, chart.getChartComputator());
+				return chartScroller.fling((int) -velocityX, (int) -velocityY, computator);
 			}
 
 			return false;

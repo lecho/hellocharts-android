@@ -39,6 +39,7 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
 		super(context, attrs, defStyle);
 		bubbleChartRenderer = new BubbleChartRenderer(context, this, this);
 		chartRenderer = bubbleChartRenderer;
+		resetRendererAndTouchHandler();
 		setBubbleChartData(BubbleChartData.generateDummyData());
 	}
 
@@ -53,12 +54,8 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
 		} else {
 			this.data = data;
 		}
-		axesRenderer.initAxesAttributes();
-		chartRenderer.initDataAttributes();
-		chartRenderer.initMaxViewport();
-		chartRenderer.initCurrentViewport();
 
-		ViewCompat.postInvalidateOnAnimation(BubbleChartView.this);
+		super.onChartDataChange();
 	}
 
 	@Override

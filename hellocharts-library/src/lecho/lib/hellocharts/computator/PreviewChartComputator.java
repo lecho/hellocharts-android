@@ -10,13 +10,13 @@ import lecho.lib.hellocharts.model.Viewport;
 public class PreviewChartComputator extends ChartComputator {
 
 	public float computeRawX(float valueX) {
-		final float pixelOffset = (valueX - maxViewport.left) * (contentRect.width() / maxViewport.width());
-		return contentRect.left + pixelOffset;
+		final float pixelOffset = (valueX - maxViewport.left) * (contentRectMinusAllMargins.width() / maxViewport.width());
+		return contentRectMinusAllMargins.left + pixelOffset;
 	}
 
 	public float computeRawY(float valueY) {
-		final float pixelOffset = (valueY - maxViewport.bottom) * (contentRect.height() / maxViewport.height());
-		return contentRect.bottom - pixelOffset;
+		final float pixelOffset = (valueY - maxViewport.bottom) * (contentRectMinusAllMargins.height() / maxViewport.height());
+		return contentRectMinusAllMargins.bottom - pixelOffset;
 	}
 
 	public Viewport getVisibleViewport() {

@@ -2,6 +2,9 @@ package lecho.lib.hellocharts.renderer;
 
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.Viewport;
+import lecho.lib.hellocharts.view.Chart;
+
+import android.content.Context;
 import android.graphics.Canvas;
 
 /**
@@ -9,28 +12,10 @@ import android.graphics.Canvas;
  */
 public interface ChartRenderer {
 
-	/**
-	 * Initialize maximum viewport, called when chart data changed.Usually you will have to do some calculation in
-	 * implementation of that method. If isViewportCalculationEnabled is false this method should do nothing.
-	 */
-	public void initMaxViewport();
-
-	/**
-	 * Initialize currentViewport, usually set it equals to maxViewport. If isViewportCalculationEnabled is false this
-	 * method should do nothing.
-	 */
-	public void initCurrentViewport();
-
-	/**
-	 * Initialize measurements i.e. circle area for PieChart.
-	 */
-	public void initDataMeasurements();
-
-	/**
-	 * Initialize common data attributes label font size, font color etc. Should be called before viewports
-	 * initializations.
-	 */
-	public void initDataAttributes();
+	public void onChartSizeChanged();
+	public void onChartDataChanged();
+	public void onChartViewportChanged();
+	public void resetRenderer();
 
 	/**
 	 * Draw chart data.
@@ -58,9 +43,9 @@ public interface ChartRenderer {
 	 */
 	public void clearTouch();
 
-	public void setMaxViewport(Viewport maxViewport);
+	public void setMaximumViewport(Viewport maxViewport);
 
-	public Viewport getMaxViewport();
+	public Viewport getMaximumViewport();
 
 	public void setCurrentViewport(Viewport viewport);
 

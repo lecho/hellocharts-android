@@ -1,14 +1,14 @@
 package lecho.lib.hellocharts.gesture;
 
-import lecho.lib.hellocharts.computator.ChartComputator;
-import lecho.lib.hellocharts.model.Viewport;
 import android.content.Context;
 import android.graphics.PointF;
 import android.view.MotionEvent;
 
+import lecho.lib.hellocharts.computator.ChartComputator;
+import lecho.lib.hellocharts.model.Viewport;
+
 /**
  * Encapsulates zooming functionality.
- * 
  */
 public class ChartZoomer {
 	public static final float ZOOM_AMOUNT = 0.25f;
@@ -65,10 +65,10 @@ public class ChartZoomer {
 			return false;
 		}
 
-		float left = viewportFocus.x - (focusX - computator.getContentRect().left)
-				* (newWidth / computator.getContentRect().width());
-		float top = viewportFocus.y + (focusY - computator.getContentRect().top)
-				* (newHeight / computator.getContentRect().height());
+		float left = viewportFocus.x - (focusX - computator.getContentRectMinusAllMargins().left)
+				* (newWidth / computator.getContentRectMinusAllMargins().width());
+		float top = viewportFocus.y + (focusY - computator.getContentRectMinusAllMargins().top)
+				* (newHeight / computator.getContentRectMinusAllMargins().height());
 		float right = left + newWidth;
 		float bottom = top - newHeight;
 		setCurrentViewport(computator, left, top, right, bottom);
