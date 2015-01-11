@@ -30,6 +30,11 @@ public class ChartViewportAnimatorV14 implements ChartViewportAnimator, Animator
 	}
 
 	@Override
+	public void setDuration(long duration) {
+		animator.setDuration(duration);
+	}
+
+	@Override
 	public void startAnimation(Viewport startViewport, Viewport targetViewport) {
 		this.startViewport.set(startViewport);
 		this.targetViewport.set(targetViewport);

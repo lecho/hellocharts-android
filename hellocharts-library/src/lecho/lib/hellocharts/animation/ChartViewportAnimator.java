@@ -6,6 +6,8 @@ public interface ChartViewportAnimator {
 
 	public static final int FAST_ANIMATION_DURATION = 300;
 
+	public void setDuration(long duration);
+
 	public void startAnimation(Viewport startViewport, Viewport targetViewport);
 
 	public void cancelAnimation();
