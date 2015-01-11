@@ -73,14 +73,11 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	}
 
 	@Override
-	public void onChartSizeChanged(){
-		final ChartComputator computator = chart.getChartComputator();
-		computator.insetContentRectByInternalMargins(labelMargin, labelMargin,
-				labelMargin, labelMargin);
+	public void onChartSizeChanged() {
 	}
 
 	@Override
-	public void onChartDataChanged(){
+	public void onChartDataChanged() {
 		super.onChartDataChanged();
 		ColumnChartData data = dataProvider.getColumnChartData();
 		fillRatio = data.getFillRatio();
@@ -90,9 +87,8 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	}
 
 	@Override
-	public void onChartViewportChanged(){
+	public void onChartViewportChanged() {
 		if (isViewportCalculationEnabled) {
-			ChartComputator computator = chart.getChartComputator();
 			calculateMaxViewport();
 			computator.setMaxViewport(tempMaximumViewport);
 			computator.setCurrentViewport(computator.getMaximumViewport());
@@ -207,9 +203,8 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 		}
 	}
 
-	private void processColumnForSubcolumns(Canvas canvas, Column column, float columnWidth, int columnIndex, int mode) {
-		final ChartComputator computator = chart.getChartComputator();
-
+	private void processColumnForSubcolumns(Canvas canvas, Column column, float columnWidth, int columnIndex,
+											int mode) {
 		// For n subcolumns there will be n-1 spacing and there will be one
 		// subcolumn for every columnValue
 		float subcolumnWidth = (columnWidth - (subcolumnSpacing * (column.getValues().size() - 1)))
@@ -285,7 +280,6 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void processColumnForStacked(Canvas canvas, Column column, float columnWidth, int columnIndex, int mode) {
-		final ChartComputator computator = chart.getChartComputator();
 		final float rawX = computator.computeRawX(columnIndex);
 		final float halfColumnWidth = columnWidth / 2;
 		float mostPositiveValue = baseValue;
@@ -351,9 +345,9 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	}
 
 	private float calculateColumnWidth() {
-		final ChartComputator computator = chart.getChartComputator();
 		// columnWidht should be at least 2 px
-		float columnWidth = fillRatio * computator.getContentRectMinusAllMargins().width() / computator.getVisibleViewport().width();
+		float columnWidth = fillRatio * computator.getContentRectMinusAllMargins().width() / computator
+				.getVisibleViewport().width();
 		if (columnWidth < 2) {
 			columnWidth = 2;
 		}
@@ -374,7 +368,6 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void drawLabel(Canvas canvas, Column column, SubcolumnValue columnValue, boolean isStacked, float offset) {
-		final ChartComputator computator = chart.getChartComputator();
 		final int numChars = column.getFormatter().formatChartValue(labelBuffer, columnValue);
 
 		if (numChars == 0) {

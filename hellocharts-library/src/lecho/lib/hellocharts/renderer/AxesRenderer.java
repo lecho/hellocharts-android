@@ -127,6 +127,10 @@ public class AxesRenderer {
 		initAxis(chart.getChartData().getAxisYRight(), RIGHT);
 	}
 
+	public void resetRenderer(){
+		this.computator = chart.getChartComputator();
+	}
+
 	/**
 	 * Initialize attributes and measurement for axes(left, right, top, bottom);
 	 */

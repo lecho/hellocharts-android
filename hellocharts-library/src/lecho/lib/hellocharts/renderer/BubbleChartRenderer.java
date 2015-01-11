@@ -102,7 +102,6 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	@Override
 	public void onChartViewportChanged(){
 		if (isViewportCalculationEnabled) {
-			ChartComputator computator = chart.getChartComputator();
 			calculateMaxViewport();
 			computator.setMaxViewport(tempMaximumViewport);
 			computator.setCurrentViewport(computator.getMaximumViewport());
@@ -159,7 +158,6 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	 * little on contentRectMinusAllMargins.
 	 */
 	public void removeMargins() {
-		final ChartComputator computator = chart.getChartComputator();
 		final Rect contentRect = computator.getContentRectMinusAllMargins();
 		if (contentRect.height() == 0 || contentRect.width() == 0) {
 			// View probably not yet measured, skip removing margins.
@@ -241,8 +239,6 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	 * will be returned as float value.
 	 */
 	private float processBubble(BubbleValue bubbleValue, PointF point) {
-		final ChartComputator computator = chart.getChartComputator();
-
 		final float rawX = computator.computeRawX(bubbleValue.getX());
 		final float rawY = computator.computeRawY(bubbleValue.getY());
 		float radius = (float) Math.sqrt(Math.abs(bubbleValue.getZ()) / Math.PI);
@@ -267,7 +263,6 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	}
 
 	private void drawLabel(Canvas canvas, BubbleValue bubbleValue, float rawX, float rawY) {
-		final ChartComputator computator = chart.getChartComputator();
 		final Rect contentRect = computator.getContentRectMinusAllMargins();
 		final int numChars = valueFormatter.formatChartValue(labelBuffer, bubbleValue);
 

@@ -35,6 +35,7 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
 	public ColumnChartView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		chartRenderer = new ColumnChartRenderer(context, this, this);
+		resetRendererAndTouchHandler();
 		setColumnChartData(ColumnChartData.generateDummyData());
 	}
 

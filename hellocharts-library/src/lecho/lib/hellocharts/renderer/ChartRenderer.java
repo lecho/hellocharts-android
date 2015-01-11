@@ -2,6 +2,9 @@ package lecho.lib.hellocharts.renderer;
 
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.Viewport;
+import lecho.lib.hellocharts.view.Chart;
+
+import android.content.Context;
 import android.graphics.Canvas;
 
 /**
@@ -12,6 +15,7 @@ public interface ChartRenderer {
 	public void onChartSizeChanged();
 	public void onChartDataChanged();
 	public void onChartViewportChanged();
+	public void resetRenderer();
 
 	/**
 	 * Draw chart data.

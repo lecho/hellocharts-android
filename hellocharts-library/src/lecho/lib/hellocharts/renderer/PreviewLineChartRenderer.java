@@ -1,14 +1,14 @@
 package lecho.lib.hellocharts.renderer;
 
-import lecho.lib.hellocharts.computator.ChartComputator;
-import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.provider.LineChartDataProvider;
-import lecho.lib.hellocharts.util.ChartUtils;
-import lecho.lib.hellocharts.view.Chart;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+
+import lecho.lib.hellocharts.model.Viewport;
+import lecho.lib.hellocharts.provider.LineChartDataProvider;
+import lecho.lib.hellocharts.util.ChartUtils;
+import lecho.lib.hellocharts.view.Chart;
 
 /**
  * Renderer for preview chart based on LineChart. In addition to drawing chart data it also draw current viewport as
@@ -31,7 +31,6 @@ public class PreviewLineChartRenderer extends LineChartRenderer {
 	@Override
 	public void drawUnclipped(Canvas canvas) {
 		super.drawUnclipped(canvas);
-		final ChartComputator computator = chart.getChartComputator();
 		final Viewport currentViewport = computator.getCurrentViewport();
 		final float left = computator.computeRawX(currentViewport.left);
 		final float top = computator.computeRawY(currentViewport.top);
@@ -45,11 +44,11 @@ public class PreviewLineChartRenderer extends LineChartRenderer {
 		canvas.drawRect(left, top, right, bottom, previewPaint);
 	}
 
-	public void setPreviewColor(int color) {
-		previewPaint.setColor(color);
-	}
-
 	public int getPreviewColor() {
 		return previewPaint.getColor();
+	}
+
+	public void setPreviewColor(int color) {
+		previewPaint.setColor(color);
 	}
 }

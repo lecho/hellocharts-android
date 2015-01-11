@@ -457,4 +457,14 @@ public abstract class AbstractChartView extends View implements Chart {
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 
+	/**
+	 * You should call this method in derived classes, most likely from constructor if you changed chart/axis renderer,
+	 * touch handler or chart computator
+	 */
+	protected void resetRendererAndTouchHandler(){
+		this.chartRenderer.resetRenderer();
+		this.axesRenderer.resetRenderer();
+		this.touchHandler.resetTouchHandler();
+	}
+
 }

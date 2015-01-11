@@ -31,7 +31,7 @@ public class PreviewChartTouchHandler extends ChartTouchHandler {
 				if (Float.isInfinite(scale)) {
 					scale = 1;
 				}
-				return chartZoomer.scale(chart.getChartComputator(), detector.getFocusX(), detector.getFocusY(), scale);
+				return chartZoomer.scale(computator, detector.getFocusX(), detector.getFocusY(), scale);
 			}
 
 			return false;

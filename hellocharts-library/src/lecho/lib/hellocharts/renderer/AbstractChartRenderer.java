@@ -9,6 +9,7 @@ import android.graphics.Paint.FontMetricsInt;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 
+import lecho.lib.hellocharts.computator.ChartComputator;
 import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.Viewport;
@@ -21,6 +22,7 @@ import lecho.lib.hellocharts.view.Chart;
 public abstract class AbstractChartRenderer implements ChartRenderer {
 	public int DEFAULT_LABEL_MARGIN_DP = 4;
 	protected Chart chart;
+	protected ChartComputator computator;
 	/**
 	 * Paint for value labels.
 	 */
@@ -55,6 +57,7 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 		this.density = context.getResources().getDisplayMetrics().density;
 		this.scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
 		this.chart = chart;
+		this.computator = chart.getChartComputator();
 
 		labelMargin = ChartUtils.dp2px(density, DEFAULT_LABEL_MARGIN_DP);
 		labelOffset = labelMargin;
@@ -67,6 +70,11 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 
 		labelBackgroundPaint.setAntiAlias(true);
 		labelBackgroundPaint.setStyle(Paint.Style.FILL);
+	}
+
+	@Override
+	public void resetRenderer(){
+		this.computator = chart.getChartComputator();
 	}
 
 	@Override
@@ -129,25 +137,25 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 
 	@Override
 	public Viewport getMaximumViewport() {
-		return chart.getChartComputator().getMaximumViewport();
+		return computator.getMaximumViewport();
 	}
 
 	@Override
 	public void setMaximumViewport(Viewport maxViewport) {
 		if (null != maxViewport) {
-			chart.getChartComputator().setMaxViewport(maxViewport);
+			computator.setMaxViewport(maxViewport);
 		}
 	}
 
 	@Override
 	public Viewport getCurrentViewport() {
-		return chart.getChartComputator().getCurrentViewport();
+		return computator.getCurrentViewport();
 	}
 
 	@Override
 	public void setCurrentViewport(Viewport viewport) {
 		if (null != viewport) {
-			chart.getChartComputator().setCurrentViewport(viewport);
+			computator.setCurrentViewport(viewport);
 		}
 	}
 

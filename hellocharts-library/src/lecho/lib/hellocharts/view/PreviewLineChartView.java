@@ -37,6 +37,7 @@ public class PreviewLineChartView extends LineChartView {
 		previewChartRenderer = new PreviewLineChartRenderer(context, this, this);
 		chartRenderer = previewChartRenderer;
 		touchHandler = new PreviewChartTouchHandler(context, this);
+		resetRendererAndTouchHandler();
 		setLineChartData(LineChartData.generateDummyData());
 	}
 
