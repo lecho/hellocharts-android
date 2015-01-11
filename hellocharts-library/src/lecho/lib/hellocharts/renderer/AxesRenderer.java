@@ -112,7 +112,15 @@ public class AxesRenderer {
 		}
 	}
 
-	public void onChartDataOrSizeChanged() {
+	public void onChartSizeChanged(){
+		onChartDataOrSizeChanged();
+	}
+
+	public void onChartDataChanged(){
+		onChartDataOrSizeChanged();
+	}
+
+	private void onChartDataOrSizeChanged() {
 		initAxis(chart.getChartData().getAxisXTop(), TOP);
 		initAxis(chart.getChartData().getAxisXBottom(), BOTTOM);
 		initAxis(chart.getChartData().getAxisYLeft(), LEFT);

@@ -73,12 +73,15 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 	}
 
 	@Override
-	public void onChartDataOrSizeChanged(){
-		super.onChartDataOrSizeChanged();
+	public void onChartSizeChanged(){
 		final ChartComputator computator = chart.getChartComputator();
 		computator.insetContentRectByInternalMargins(labelMargin, labelMargin,
 				labelMargin, labelMargin);
+	}
 
+	@Override
+	public void onChartDataChanged(){
+		super.onChartDataChanged();
 		ColumnChartData data = dataProvider.getColumnChartData();
 		fillRatio = data.getFillRatio();
 		baseValue = data.getBaseValue();

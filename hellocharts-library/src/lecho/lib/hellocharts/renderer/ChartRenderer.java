@@ -9,7 +9,8 @@ import android.graphics.Canvas;
  */
 public interface ChartRenderer {
 
-	public void onChartDataOrSizeChanged();
+	public void onChartSizeChanged();
+	public void onChartDataChanged();
 	public void onChartViewportChanged();
 
 	/**

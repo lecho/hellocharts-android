@@ -75,8 +75,8 @@ public abstract class AbstractChartView extends View implements Chart {
 		super.onSizeChanged(width, height, oldWidth, oldHeight);
 		chartComputator.setContentRect(getWidth(), getHeight(), getPaddingLeft(), getPaddingTop(), getPaddingRight(),
 				getPaddingBottom());
-		chartRenderer.onChartDataOrSizeChanged();
-		axesRenderer.onChartDataOrSizeChanged();
+		chartRenderer.onChartSizeChanged();
+		axesRenderer.onChartSizeChanged();
 	}
 
 	@Override
@@ -452,8 +452,8 @@ public abstract class AbstractChartView extends View implements Chart {
 
 	protected void onChartDataChange(){
 		chartComputator.resetContentRect();
-		chartRenderer.onChartDataOrSizeChanged();
-		axesRenderer.onChartDataOrSizeChanged();
+		chartRenderer.onChartDataChanged();
+		axesRenderer.onChartDataChanged();
 		ViewCompat.postInvalidateOnAnimation(this);
 	}
 

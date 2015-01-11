@@ -21,10 +21,17 @@ public class ComboChartRenderer extends AbstractChartRenderer {
 	}
 
 	@Override
-	public void onChartDataOrSizeChanged(){
-		super.onChartDataOrSizeChanged();
+	public void onChartSizeChanged(){
 		for (ChartRenderer renderer : renderers) {
-			renderer.onChartDataOrSizeChanged();
+			renderer.onChartSizeChanged();
+		}
+	}
+
+	@Override
+	public void onChartDataChanged(){
+		super.onChartDataChanged();
+		for (ChartRenderer renderer : renderers) {
+			renderer.onChartDataChanged();
 		}
 		onChartViewportChanged();
 	}

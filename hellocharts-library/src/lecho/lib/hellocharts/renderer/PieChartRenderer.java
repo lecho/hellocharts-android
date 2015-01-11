@@ -82,11 +82,13 @@ public class PieChartRenderer extends AbstractChartRenderer {
 	}
 
 	@Override
-	public void onChartDataOrSizeChanged(){
-		super.onChartDataOrSizeChanged();
+	public void onChartSizeChanged(){
 		calculateCircleOval();
-		onChartViewportChanged();
+	}
 
+	@Override
+	public void onChartDataChanged(){
+		super.onChartDataChanged();
 		final PieChartData data = dataProvider.getPieChartData();
 		hasLabelsOutside = data.hasLabelsOutside();
 		hasLabels = data.hasLabels();
@@ -107,6 +109,8 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		centerCircleText2Paint.setTextSize(ChartUtils.sp2px(scaledDensity, data.getCenterText2FontSize()));
 		centerCircleText2Paint.setColor(data.getCenterText2Color());
 		centerCircleText2Paint.getFontMetricsInt(centerCircleText2FontMetrics);
+
+		onChartViewportChanged();
 	}
 
 	@Override

@@ -65,9 +65,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
     }
 
-	@Override
-	public void onChartDataOrSizeChanged(){
-		super.onChartDataOrSizeChanged();
+	public void onChartSizeChanged(){
 		final ChartComputator computator = chart.getChartComputator();
 		final int internalMargin = calculateContentRectInternalMargin();
 		computator.insetContentRectByInternalMargins(internalMargin, internalMargin,
@@ -77,8 +75,17 @@ public class LineChartRenderer extends AbstractChartRenderer {
 					Bitmap.Config.ARGB_8888);
 			softwareCanvas.setBitmap(softwareBitmap);
 		}
+	}
 
+	@Override
+	public void onChartDataChanged(){
+		super.onChartDataChanged();
+		final ChartComputator computator = chart.getChartComputator();
+		final int internalMargin = calculateContentRectInternalMargin();
+		computator.insetContentRectByInternalMargins(internalMargin, internalMargin,
+				internalMargin, internalMargin);
 		baseValue = dataProvider.getLineChartData().getBaseValue();
+
 		onChartViewportChanged();
 	}
 

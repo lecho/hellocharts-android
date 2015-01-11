@@ -67,10 +67,7 @@ public class ChartComputator {
 		contentRectMinusAxesMargins.right = contentRectMinusAxesMargins.right - deltaRight;
 		contentRectMinusAxesMargins.bottom = contentRectMinusAxesMargins.bottom - deltaBottom;
 
-		contentRectMinusAllMargins.left = contentRectMinusAllMargins.left + deltaLeft;
-		contentRectMinusAllMargins.top = contentRectMinusAllMargins.top + deltaTop;
-		contentRectMinusAllMargins.right = contentRectMinusAllMargins.right - deltaRight;
-		contentRectMinusAllMargins.bottom = contentRectMinusAllMargins.bottom - deltaBottom;
+		insetContentRectByInternalMargins(deltaLeft, deltaTop, deltaRight, deltaBottom);
 	}
 
 	public void insetContentRectByInternalMargins(int deltaLeft, int deltaTop, int deltaRight, int deltaBottom) {
