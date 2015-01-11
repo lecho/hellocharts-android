@@ -395,7 +395,7 @@ public class AxesRenderer {
 			viewportMin = visibleViewport.left;
 			viewportMax = visibleViewport.right;
 		}
-		int module = (int) Math.max(1, Math.ceil((axis.getValues().size() * labelDimensionForStepsTab[position]) /
+		int module = (int) Math.max(1, Math.ceil((axis.getValues().size() * labelDimensionForStepsTab[position] * 1.5) /
 				scale));
 		//Reinitialize tab to hold lines coordinates.
 		if (axis.hasLines() && (linesDrawBufferTab[position].length < axis.getValues().size() * 4)) {
