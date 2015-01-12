@@ -44,9 +44,21 @@ public class AxesRenderer {
 	private int axisMargin;
 	private float density;
 	private float scaledDensity;
-	private Paint[] textPaintTab = new Paint[]{new Paint(), new Paint(), new Paint(), new Paint()};
-	private Paint linePaint;
-
+	private Paint[] labelPaintTab = new Paint[]{new Paint(), new Paint(), new Paint(), new Paint()};
+	private Paint[] namePaintTab = new Paint[]{new Paint(), new Paint(), new Paint(), new Paint()};
+	private Paint[] linePaintTab = new Paint[]{new Paint(), new Paint(), new Paint(), new Paint()};
+	private float[] nameBaselineTab = new float[4];
+	private float[] labelBaselineTab = new float[4];
+	private float[] separationLineTab = new float[4];
+	private int[] labelWidthTab = new int[4];
+	private int[] labelTextAscentTab = new int[4];
+	private int[] labelTextDescentTab = new int[4];
+	private int[] labelDimensionForMarginsTab = new int[4];
+	private int[] labelDimensionForStepsTab = new int[4];
+	private int[] tiltedLabelXTranslation = new int[4];
+	private int[] tiltedLabelYTranslation = new int[4];
+	private FontMetricsInt[] fontMetricsTab = new FontMetricsInt[]{new FontMetricsInt(), new FontMetricsInt(),
+			new FontMetricsInt(), new FontMetricsInt()};
 	/**
 	 * Holds formatted axis value label.
 	 */
@@ -84,39 +96,27 @@ public class AxesRenderer {
 	private AxisAutoValues[] autoValuesBufferTab = new AxisAutoValues[]{new AxisAutoValues(),
 			new AxisAutoValues(), new AxisAutoValues(), new AxisAutoValues()};
 
-	private float[] nameBaselineTab = new float[4];
-	private float[] labelBaselineTab = new float[4];
-	private float[] separationLineTab = new float[4];
-	private int[] labelWidthTab = new int[4];
-	private int[] labelTextAscentTab = new int[4];
-	private int[] labelTextDescentTab = new int[4];
-	private int[] labelDimensionForMarginsTab = new int[4];
-	private int[] labelDimensionForStepsTab = new int[4];
-	private int[] tiltedLabelXTranslation = new int[4];
-	private int[] tiltedLabelYTranslation = new int[4];
-	private FontMetricsInt[] fontMetricsTab = new FontMetricsInt[]{new FontMetricsInt(), new FontMetricsInt(),
-			new FontMetricsInt(), new FontMetricsInt()};
-
 	public AxesRenderer(Context context, Chart chart) {
 		this.chart = chart;
 		computator = chart.getChartComputator();
 		density = context.getResources().getDisplayMetrics().density;
 		scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
 		axisMargin = ChartUtils.dp2px(density, DEFAULT_AXIS_MARGIN_DP);
-		linePaint = new Paint();
-		linePaint.setAntiAlias(true);
-		linePaint.setStyle(Paint.Style.STROKE);
-		linePaint.setStrokeWidth(1);
-		for (Paint paint : textPaintTab) {
-			paint.setAntiAlias(true);
+		for (int position = 0; position < 4; ++position) {
+			labelPaintTab[position].setStyle(Paint.Style.FILL);
+			labelPaintTab[position].setAntiAlias(true);
+			namePaintTab[position].setStyle(Paint.Style.FILL);
+			namePaintTab[position].setAntiAlias(true);
+			linePaintTab[position].setStyle(Paint.Style.STROKE);
+			linePaintTab[position].setAntiAlias(true);
 		}
 	}
 
-	public void onChartSizeChanged(){
+	public void onChartSizeChanged() {
 		onChartDataOrSizeChanged();
 	}
 
-	public void onChartDataChanged(){
+	public void onChartDataChanged() {
 		onChartDataOrSizeChanged();
 	}
 
@@ -127,7 +127,7 @@ public class AxesRenderer {
 		initAxis(chart.getChartData().getAxisYRight(), RIGHT);
 	}
 
-	public void resetRenderer(){
+	public void resetRenderer() {
 		this.computator = chart.getChartComputator();
 	}
 
@@ -144,25 +144,51 @@ public class AxesRenderer {
 	}
 
 	private void initAxisAttributes(Axis axis, int position) {
-		Typeface typeface = axis.getTypeface();
-		if (null != typeface) {
-			textPaintTab[position].setTypeface(typeface);
-		}
-
-		textPaintTab[position].setColor(axis.getTextColor());
-		textPaintTab[position].setTextSize(ChartUtils.sp2px(scaledDensity, axis.getTextSize()));
-		textPaintTab[position].getFontMetricsInt(fontMetricsTab[position]);
-
-		labelTextAscentTab[position] = Math.abs(fontMetricsTab[position].ascent);
-		labelTextDescentTab[position] = Math.abs(fontMetricsTab[position].descent);
-		labelWidthTab[position] = (int) textPaintTab[position].measureText(labelWidthChars, 0,
-				axis.getMaxLabelChars());
-
+		initAxisPaints(axis, position);
+		initAxisTextAlignment(axis, position);
 		if (axis.hasTiltedLabels()) {
 			initAxisDimensionForTiltedLabels(position);
 			intiTiltedLabelsTranslation(axis, position);
 		} else {
 			initAxisDimension(position);
+		}
+	}
+
+	private void initAxisPaints(Axis axis, int position) {
+		Typeface typeface = axis.getTypeface();
+		if (null != typeface) {
+			labelPaintTab[position].setTypeface(typeface);
+			namePaintTab[position].setTypeface(typeface);
+		}
+		labelPaintTab[position].setColor(axis.getTextColor());
+		labelPaintTab[position].setTextSize(ChartUtils.sp2px(scaledDensity, axis.getTextSize()));
+		labelPaintTab[position].getFontMetricsInt(fontMetricsTab[position]);
+		namePaintTab[position].setColor(axis.getTextColor());
+		namePaintTab[position].setTextSize(ChartUtils.sp2px(scaledDensity, axis.getTextSize()));
+		linePaintTab[position].setColor(axis.getLineColor());
+
+		labelTextAscentTab[position] = Math.abs(fontMetricsTab[position].ascent);
+		labelTextDescentTab[position] = Math.abs(fontMetricsTab[position].descent);
+		labelWidthTab[position] = (int) labelPaintTab[position].measureText(labelWidthChars, 0,
+				axis.getMaxLabelChars());
+	}
+
+	private void initAxisTextAlignment(Axis axis, int position) {
+		namePaintTab[position].setTextAlign(Align.CENTER);
+		if (TOP == position || BOTTOM == position) {
+			labelPaintTab[position].setTextAlign(Align.CENTER);
+		} else if (LEFT == position) {
+			if (axis.isInside()) {
+				labelPaintTab[position].setTextAlign(Align.LEFT);
+			} else {
+				labelPaintTab[position].setTextAlign(Align.RIGHT);
+			}
+		} else if (RIGHT == position) {
+			if (axis.isInside()) {
+				labelPaintTab[position].setTextAlign(Align.RIGHT);
+			} else {
+				labelPaintTab[position].setTextAlign(Align.LEFT);
+			}
 		}
 	}
 
@@ -331,29 +357,10 @@ public class AxesRenderer {
 	}
 
 	private void prepareAxisToDraw(Axis axis, int position) {
-		prepareAxisTextAlignment(axis, position);
 		if (axis.isAutoGenerated()) {
 			prepareAutoGeneratedAxis(axis, position);
 		} else {
 			prepareCustomAxis(axis, position);
-		}
-	}
-
-	private void prepareAxisTextAlignment(Axis axis, int position) {
-		if (TOP == position || BOTTOM == position) {
-			textPaintTab[position].setTextAlign(Align.CENTER);
-		} else if (LEFT == position) {
-			if (axis.isInside()) {
-				textPaintTab[position].setTextAlign(Align.LEFT);
-			} else {
-				textPaintTab[position].setTextAlign(Align.RIGHT);
-			}
-		} else if (RIGHT == position) {
-			if (axis.isInside()) {
-				textPaintTab[position].setTextAlign(Align.RIGHT);
-			} else {
-				textPaintTab[position].setTextAlign(Align.LEFT);
-			}
 		}
 	}
 
@@ -399,8 +406,8 @@ public class AxesRenderer {
 			viewportMin = visibleViewport.left;
 			viewportMax = visibleViewport.right;
 		}
-		int module = (int) Math.max(1, Math.ceil((axis.getValues().size() * labelDimensionForStepsTab[position] * 1.5) /
-				scale));
+		int module = (int) Math.max(1,
+				Math.ceil((axis.getValues().size() * labelDimensionForStepsTab[position] * 1.5) / scale));
 		//Reinitialize tab to hold lines coordinates.
 		if (axis.hasLines() && (linesDrawBufferTab[position].length < axis.getValues().size() * 4)) {
 			linesDrawBufferTab[position] = new float[axis.getValues().size() * 4];
@@ -525,9 +532,9 @@ public class AxesRenderer {
 			lineY1 = contentRectMargins.top;
 			lineY2 = contentRectMargins.bottom;
 		}
-		// Draw separation line with the same color as axis text.
+		// Draw separation line with the same color as axis labels and name.
 		if (axis.hasSeparationLine()) {
-			canvas.drawLine(separationX1, separationY1, separationX2, separationY2, textPaintTab[position]);
+			canvas.drawLine(separationX1, separationY1, separationX2, separationY2, labelPaintTab[position]);
 		}
 
 		if (axis.hasLines()) {
@@ -543,8 +550,7 @@ public class AxesRenderer {
 				linesDrawBufferTab[position][valueToDrawIndex * 4 + 2] = lineX2;
 				linesDrawBufferTab[position][valueToDrawIndex * 4 + 3] = lineY2;
 			}
-			linePaint.setColor(axis.getLineColor());
-			canvas.drawLines(linesDrawBufferTab[position], 0, valueToDrawIndex * 4, linePaint);
+			canvas.drawLines(linesDrawBufferTab[position], 0, valueToDrawIndex * 4, linePaintTab[position]);
 		}
 	}
 
@@ -580,27 +586,26 @@ public class AxesRenderer {
 				canvas.translate(tiltedLabelXTranslation[position], tiltedLabelYTranslation[position]);
 				canvas.rotate(-45, labelX, labelY);
 				canvas.drawText(labelBuffer, labelBuffer.length - charsNumber, charsNumber, labelX, labelY,
-						textPaintTab[position]);
+						labelPaintTab[position]);
 				canvas.restore();
 			} else {
 				canvas.drawText(labelBuffer, labelBuffer.length - charsNumber, charsNumber, labelX, labelY,
-						textPaintTab[position]);
+						labelPaintTab[position]);
 			}
 		}
 
 		// Drawing axis name
 		final Rect contentRectMargins = computator.getContentRectMinusAxesMargins();
 		if (!TextUtils.isEmpty(axis.getName())) {
-			textPaintTab[position].setTextAlign(Align.CENTER);
 			if (isAxisVertical) {
 				canvas.save();
 				canvas.rotate(-90, contentRectMargins.centerY(), contentRectMargins.centerY());
 				canvas.drawText(axis.getName(), contentRectMargins.centerY(), nameBaselineTab[position],
-						textPaintTab[position]);
+						namePaintTab[position]);
 				canvas.restore();
 			} else {
 				canvas.drawText(axis.getName(), contentRectMargins.centerX(), nameBaselineTab[position],
-						textPaintTab[position]);
+						namePaintTab[position]);
 			}
 		}
 	}
