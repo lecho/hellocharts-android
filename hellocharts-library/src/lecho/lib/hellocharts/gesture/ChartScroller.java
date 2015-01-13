@@ -105,19 +105,17 @@ public class ChartScroller {
 		scrollerStartViewport.set(computator.getCurrentViewport());
 
 		int startX = (int) (surfaceSizeBuffer.x * (scrollerStartViewport.left - computator.getMaximumViewport().left)
-				/ computator
-				.getMaximumViewport().width());
+				/ computator.getMaximumViewport().width());
 		int startY = (int) (surfaceSizeBuffer.y * (computator.getMaximumViewport().top - scrollerStartViewport.top) /
-				computator
-				.getMaximumViewport().height());
+				computator.getMaximumViewport().height());
 
 		// TODO probably should be mScroller.forceFinish but ScrollerCompat doesn't have that method.
 		scroller.abortAnimation();
 
-		scroller.fling(startX, startY, velocityX, velocityY, 0, surfaceSizeBuffer.x
-				- computator.getContentRectMinusAllMargins().width(), 0, surfaceSizeBuffer.y - computator
-				.getContentRectMinusAllMargins().height
-				());
+		final int width = computator.getContentRectMinusAllMargins().width();
+		final int height = computator.getContentRectMinusAllMargins().height();
+		scroller.fling(startX, startY, velocityX, velocityY, 0, surfaceSizeBuffer.x - width + 1, 0,
+				surfaceSizeBuffer.y - height + 1);
 		return true;
 	}
 
