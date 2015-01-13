@@ -196,7 +196,7 @@ public class AxesRenderer {
 		int pythagoreanFromLabelWidth = (int) Math.sqrt(Math.pow(labelWidthTab[position], 2) / 2);
 		int pythagoreanFromAscent = (int) Math.sqrt(Math.pow(labelTextAscentTab[position], 2) / 2);
 		labelDimensionForMarginsTab[position] = pythagoreanFromAscent + pythagoreanFromLabelWidth;
-		labelDimensionForStepsTab[position] = labelDimensionForMarginsTab[position];
+		labelDimensionForStepsTab[position] = Math.round(labelDimensionForMarginsTab[position] * 0.75f);
 	}
 
 	private void initAxisDimension(int position) {
