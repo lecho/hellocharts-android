@@ -30,15 +30,13 @@ Apache License 2.0.
 
 ![](screens/scr-dependency.png)
 
-![](screens/scr-combo.png)
-
-![](screens/scr-column1.png)
-
 ![](screens/scr-preview-column.png)
 
 ![](screens/scr-pie1.png)
 
 ![](screens/scr-bubble1.png)
+
+![](screens/scr-combo.png)
 
 ##Download and Import
 
