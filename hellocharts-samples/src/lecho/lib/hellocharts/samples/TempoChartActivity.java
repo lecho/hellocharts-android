@@ -115,6 +115,7 @@ public class TempoChartActivity extends ActionBarActivity {
 			distanceAxis.setMaxLabelChars(4);
 			distanceAxis.setFormatter(new SimpleAxisValueFormatter().setAppendedText("km".toCharArray()));
 			distanceAxis.setHasLines(true);
+			distanceAxis.setHasTiltedLabels(true);
 			data.setAxisXBottom(distanceAxis);
 
 			// Tempo uses minutes so I can't use auto-generated axis because auto-generation works only for decimal
