@@ -80,7 +80,7 @@ android.libraryVariants
 publishing {
     publications {
         maven(MavenPublication) {
-            artifact "${project.buildDir}/outputs/aar/${project.name}.aar"
+            artifact "${project.buildDir}/outputs/aar/${project.name}-release.aar"
             artifactId project.name
             groupId "lecho.lib.hellocharts"
             version android.defaultConfig.versionName
