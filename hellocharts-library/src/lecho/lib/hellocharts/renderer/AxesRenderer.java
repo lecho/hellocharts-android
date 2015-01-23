@@ -585,12 +585,12 @@ public class AxesRenderer {
 				canvas.save();
 				canvas.translate(tiltedLabelXTranslation[position], tiltedLabelYTranslation[position]);
 				canvas.rotate(-45, labelX, labelY);
-				canvas.drawText(labelBuffer, labelBuffer.length - charsNumber, charsNumber, labelX, labelY,
-						labelPaintTab[position]);
+				drawTextOnCanvas(labelBuffer, labelBuffer.length - charsNumber, charsNumber, labelX, labelY,
+						labelPaintTab[position], canvas);
 				canvas.restore();
 			} else {
-				canvas.drawText(labelBuffer, labelBuffer.length - charsNumber, charsNumber, labelX, labelY,
-						labelPaintTab[position]);
+				drawTextOnCanvas(labelBuffer, labelBuffer.length - charsNumber, charsNumber, labelX, labelY,
+						labelPaintTab[position], canvas);
 			}
 		}
 
@@ -607,6 +607,19 @@ public class AxesRenderer {
 				canvas.drawText(axis.getName(), contentRectMargins.centerX(), nameBaselineTab[position],
 						namePaintTab[position]);
 			}
+		}
+	}
+
+	private void drawTextOnCanvas(char[] labelBuffer, int i, int charsNumber, float labelX, float labelY, Paint paint, Canvas canvas) {
+		Rect bounds = new Rect();
+		String label = String.copyValueOf(labelBuffer, i, charsNumber);
+		String[] lines = label.split("\n");
+
+		int yoff = 0;
+		for (String line : lines) {
+			canvas.drawText(line, labelX, labelY + yoff, paint);
+			paint.getTextBounds(line, 0, line.length(), bounds);
+			yoff += bounds.height() * 1.2;
 		}
 	}
 
