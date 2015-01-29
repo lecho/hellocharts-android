@@ -164,7 +164,7 @@ public class ChartComputator {
 	/**
 	 * Translates viewport distance int pixel distance for X coordinates.
 	 */
-	public float calculateRawDistanceY(float distance) {
+	public float computeRawDistanceY(float distance) {
 		return distance * (contentRectMinusAllMargins.height() / currentViewport.height());
 	}
 

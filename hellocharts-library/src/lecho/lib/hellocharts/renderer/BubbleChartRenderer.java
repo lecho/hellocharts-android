@@ -11,7 +11,6 @@ import lecho.lib.hellocharts.computator.ChartComputator;
 import lecho.lib.hellocharts.formatter.BubbleChartValueFormatter;
 import lecho.lib.hellocharts.model.BubbleChartData;
 import lecho.lib.hellocharts.model.BubbleValue;
-import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.SelectedValue.SelectedValueType;
 import lecho.lib.hellocharts.model.ValueShape;
 import lecho.lib.hellocharts.model.Viewport;
@@ -40,7 +39,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 	/**
 	 * True if bubbleScale = bubbleScaleX so the renderer should used {@link ChartComputator#computeRawDistanceX(float)}
 	 * , if false bubbleScale = bubbleScaleY and renderer should use
-	 * {@link ChartComputator#calculateRawDistanceY(float)}.
+	 * {@link ChartComputator#computeRawDistanceY(float)}.
 	 */
 	private boolean isBubbleScaledByX = true;
 
@@ -164,7 +163,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 			return;
 		}
 		final float pxX = computator.computeRawDistanceX(maxRadius * bubbleScaleX);
-		final float pxY = computator.calculateRawDistanceY(maxRadius * bubbleScaleY);
+		final float pxY = computator.computeRawDistanceY(maxRadius * bubbleScaleY);
 		final float scaleX = computator.getMaximumViewport().width() / contentRect.width();
 		final float scaleY = computator.getMaximumViewport().height() / contentRect.height();
 		float dx = 0;
@@ -248,7 +247,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 			rawRadius = computator.computeRawDistanceX(radius);
 		} else {
 			radius *= bubbleScaleY;
-			rawRadius = computator.calculateRawDistanceY(radius);
+			rawRadius = computator.computeRawDistanceY(radius);
 		}
 
 		if (rawRadius < minRawRadius + touchAdditional) {
