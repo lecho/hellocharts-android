@@ -42,7 +42,7 @@ Apache License 2.0.
 
 ###Eclipse/ADT
 
- - download hellocharts-library-<version>.jar from releases page and copy it into the `libs` folder of your
+ - download hellocharts-library-<version>.jar from [releases page](https://github.com/lecho/hellocharts-android/releases) and copy it into the `libs` folder of your
  application project.
 
  **or**
