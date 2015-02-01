@@ -1,8 +1,8 @@
 <resources>
 
     <style name="AppBaseTheme" parent="Theme.AppCompat.Light">
-        <item name="colorPrimary">@color/holo_orange</item>
-        <item name="colorPrimaryDark">@color/holo_orange_dark</item>        
+        <item name="colorPrimary">@color/holo_blue</item>
+        <item name="colorPrimaryDark">@color/holo_blue_dark</item>
     </style>
 
     <style name="AppTheme" parent="AppBaseTheme"></style>
