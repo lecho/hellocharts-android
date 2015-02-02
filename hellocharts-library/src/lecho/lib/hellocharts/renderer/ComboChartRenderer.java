@@ -14,8 +14,6 @@ public class ComboChartRenderer extends AbstractChartRenderer {
 
 	protected List<ChartRenderer> renderers;
 	protected Viewport unionViewport = new Viewport();
-	protected Rect unionContentRectWithAxesMargins = new Rect();
-	protected Rect unionContentRectWithAllMargins = new Rect();
 
 	public ComboChartRenderer(Context context, Chart chart) {
 		super(context, chart);
