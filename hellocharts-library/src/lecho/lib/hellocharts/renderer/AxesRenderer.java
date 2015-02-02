@@ -555,8 +555,8 @@ public class AxesRenderer {
 	}
 
 	private void drawAxisLabelsAndName(Canvas canvas, Axis axis, int position) {
-		float labelX, labelY, nameX, nameY;
-		labelX = labelY = nameX = nameY = 0;
+		float labelX, labelY;
+		labelX = labelY = 0;
 		boolean isAxisVertical = isAxisVertical(position);
 		if (LEFT == position || RIGHT == position) {
 			labelX = labelBaselineTab[position];
