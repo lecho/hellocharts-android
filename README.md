@@ -6,6 +6,11 @@ Apache License 2.0.
 
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-HelloCharts%20for%20Android-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1068)
 
+<a href="https://scan.coverity.com/projects/4121">
+  <img alt="Coverity Scan Build Status"
+       src="https://scan.coverity.com/projects/4121/badge.svg"/>
+</a>
+
 ##Features
 
  - Line chart(cubic lines, filled lines, scattered points)
