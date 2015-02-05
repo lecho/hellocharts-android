@@ -303,8 +303,8 @@ public class AxesRenderer {
 			} else {
 				labelBaselineTab[position] = computator.getContentRectMinusAxesMargins().bottom + axisMargin
 						+ labelTextAscentTab[position];
-				nameBaselineTab[position] = labelBaselineTab[position] + axisMargin
-						+ labelTextDescentTab[position] + labelDimensionForMarginsTab[position];
+				nameBaselineTab[position] = labelBaselineTab[position] + axisMargin +
+						labelDimensionForMarginsTab[position];
 			}
 			separationLineTab[position] = computator.getContentRectMinusAllMargins().bottom;
 		} else if (TOP == position) {
@@ -316,8 +316,8 @@ public class AxesRenderer {
 			} else {
 				labelBaselineTab[position] = computator.getContentRectMinusAxesMargins().top - axisMargin
 						- labelTextDescentTab[position];
-				nameBaselineTab[position] = labelBaselineTab[position] - axisMargin
-						- labelTextDescentTab[position] - labelDimensionForMarginsTab[position];
+				nameBaselineTab[position] = labelBaselineTab[position] - axisMargin -
+						labelDimensionForMarginsTab[position];
 			}
 			separationLineTab[position] = computator.getContentRectMinusAllMargins().top;
 		} else {
