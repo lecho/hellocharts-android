@@ -38,8 +38,7 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
 	public BubbleChartView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		bubbleChartRenderer = new BubbleChartRenderer(context, this, this);
-		chartRenderer = bubbleChartRenderer;
-		resetRendererAndTouchHandler();
+		setChartRenderer(bubbleChartRenderer);
 		setBubbleChartData(BubbleChartData.generateDummyData());
 	}
 
