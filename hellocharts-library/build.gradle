@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
+apply from: 'https://raw.github.com/chrisbanes/gradle-mvn-push/master/gradle-mvn-push.gradle'
 
 buildscript {
     repositories {
@@ -17,8 +18,8 @@ dependencies {
 
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion Integer.parseInt(project.ANDROID_BUILD_SDK_VERSION)
+    buildToolsVersion project.ANDROID_BUILD_TOOLS_VERSION
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_7
@@ -26,10 +27,10 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 8
-        targetSdkVersion 21
-        versionCode 4
-        versionName '1.4'
+        minSdkVersion Integer.parseInt(project.ANDROID_BUILD_MIN_SDK_VERSION)
+        targetSdkVersion Integer.parseInt(project.ANDROID_BUILD_TARGET_SDK_VERSION)
+        versionCode Integer.parseInt(project.VERSION_CODE)
+        versionName project.VERSION_NAME
     }
 
     sourceSets {
@@ -57,11 +58,6 @@ android {
 
 }
 
-task androidSourcesJar(type: Jar) {
-    classifier = 'sources'
-    from android.sourceSets.main.java.sourceFiles
-}
-
 //Execute "gradle clean jarRelease" to cook jar.
 android.libraryVariants.all { variant ->
     def name = variant.buildType.name
@@ -85,6 +81,7 @@ publishing {
             groupId "lecho.lib.hellocharts"
             version android.defaultConfig.versionName
 
+            // Task androidSourcesJar is provided by gradle-mvn-push.gradle
             artifact androidSourcesJar {
                 classifier "sources"
             }
