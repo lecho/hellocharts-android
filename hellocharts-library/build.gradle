@@ -82,9 +82,9 @@ publishing {
             version android.defaultConfig.versionName
 
             // Task androidSourcesJar is provided by gradle-mvn-push.gradle
-            artifact androidSourcesJar {
-                classifier "sources"
-            }
+            //artifact androidSourcesJar {
+            //    classifier "sources"
+            //}
         }
     }
 

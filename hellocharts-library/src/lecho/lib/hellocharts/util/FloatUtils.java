@@ -92,7 +92,6 @@ public class FloatUtils {
 	/**
 	 * Formats a float value to the given number of decimals. Returns the length of the string. The string begins at
 	 * [endIndex] - [return value] and ends at [endIndex]. It's up to you to check indexes correctness.
-	 * <p/>
 	 * Parameter [endIndex] can be helpful when you want to append some text to formatted value.
 	 *
 	 * @return number of characters of formatted value

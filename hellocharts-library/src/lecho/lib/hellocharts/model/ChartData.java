@@ -65,7 +65,7 @@ public interface ChartData {
 	public void setAxisYRight(Axis axisY);
 
 	/**
-	 * @see #see #setAxisYRight(Axis)
+	 * @see #setAxisYRight(Axis)
 	 */
 	public Axis getAxisYRight();
 

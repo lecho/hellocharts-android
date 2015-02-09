@@ -67,7 +67,6 @@ public class ValueFormatterHelper {
 	 * Formats float value. Result is stored in (output) formattedValue array. Method
 	 * returns number of chars of formatted value. The formatted value starts at index [formattedValue.length -
 	 * charsNumber] and ends at index [formattedValue.length-1].
-	 * <p/>
 	 * Note: If label is not null it will be used as formattedValue instead of float value.
 	 * Note: Parameter defaultDigitsNumber is used only if you didn't change decimalDigintsNumber value using
 	 * method {@link #setDecimalDigitsNumber(int)}.

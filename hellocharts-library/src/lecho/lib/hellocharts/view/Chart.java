@@ -136,7 +136,7 @@ public interface Chart {
 	 * Move/Srcoll viewport to position x,y(that position must be within maximum chart viewport). If possible viewport
 	 * will be centered at this point. Width and height of viewport will not be modified.
 	 * 
-	 * @see #setCurrentViewport(Viewport);
+	 * @see #setCurrentViewport(lecho.lib.hellocharts.model.Viewport)
 	 */
 	public void moveTo(float x, float y);
 
@@ -144,7 +144,7 @@ public interface Chart {
 	 * Animate viewport to position x,y(that position must be within maximum chart viewport). If possible viewport
 	 * will be centered at this point. Width and height of viewport will not be modified.
 	 *
-	 * @see #setCurrentViewport(Viewport);
+	 * @see #setCurrentViewport(lecho.lib.hellocharts.model.Viewport) ;
 	 */
 	public void moveToWithAnimation(float x, float y);
 
@@ -168,7 +168,7 @@ public interface Chart {
 	public float getMaxZoom();
 
 	/**
-	 * Set max zoom value >= 1. Default maximum zoom is 20.
+	 * Set max zoom value. Default maximum zoom is 20.
 	 * 
 	 */
 	public void setMaxZoom(float maxZoom);

@@ -10,7 +10,6 @@ import lecho.lib.hellocharts.view.Chart;
 /**
  * Single column for ColumnChart. One column can be divided into multiple sub-columns(ColumnValues) especially for
  * stacked ColumnChart.
- * <p/>
  * Note: you can set X value for columns or sub-columns, columns are by default indexed from 0 to numOfColumns-1 and
  * column index is used as column X value, so first column has X value 0, second clumn has X value 1 etc.
  * If you want to display AxisValue for given column you should initialize AxisValue with X value of that column.

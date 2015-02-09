@@ -7,8 +7,8 @@ import android.os.Parcelable;
  * Partial copy of android.graphics.Rect but here the top should be greater then the bottom. Viewport holds 4 float
  * coordinates for a chart extremes. The viewport is represented by the coordinates of its 4 edges (left, top, right
  * bottom). These fields can be accessed directly. Use width() and height() to retrieve the viewport's width and height.
- * Note: most methods do not check to see that the coordinates are sorted correctly (i.e. left <= right and bottom <=
- * top).
+ * Note: most methods do not check to see that the coordinates are sorted correctly (i.e. left is less than right and
+ * bottom is less than top).
  * 
  * Viewport implements Parcerable.
  * 
@@ -48,7 +48,7 @@ public class Viewport implements Parcelable {
 
 	/**
 	 * Create a new viewport with the specified coordinates. Note: no range checking is performed, so the caller must
-	 * ensure that left <= right and bottom <= top.
+	 * ensure that left is less than right and bottom is less than top.
 	 * 
 	 * @param left
 	 *            The X coordinate of the left side of the viewport
@@ -84,7 +84,7 @@ public class Viewport implements Parcelable {
 	}
 
 	/**
-	 * Returns true if the viewport is empty (left >= right or bottom >= top)
+	 * Returns true if the viewport is empty {@code left >= right or bottom >= top}
 	 */
 	public final boolean isEmpty() {
 		return left >= right || bottom >= top;
@@ -98,30 +98,32 @@ public class Viewport implements Parcelable {
 	}
 
 	/**
-	 * @return the viewport's width. This does not check for a valid viewport (i.e. left <= right) so the result may be
-	 *         negative.
+	 * @return the viewport's width. This does not check for a valid viewport (i.e. {@code left <= right}) so the
+	 * result may be negative.
 	 */
 	public final float width() {
 		return right - left;
 	}
 
 	/**
-	 * @return the viewport's height. This does not check for a valid viewport (i.e. top <= bottom) so the result may be
-	 *         negative.
+	 * @return the viewport's height. This does not check for a valid viewport (i.e. {@code top <= bottom}) so the
+	 * result may be negative.
 	 */
 	public final float height() {
 		return top - bottom;
 	}
 
 	/**
-	 * @return the horizontal center of the viewport. This does not check for a valid viewport (i.e. left <= right)
+	 * @return the horizontal center of the viewport. This does not check for a valid viewport (i.e. {@code left <=
+	 * right})
 	 */
 	public final float centerX() {
 		return (left + right) * 0.5f;
 	}
 
 	/**
-	 * @return the vertical center of the viewport. This does not check for a valid viewport (i.e. bottom <= top)
+	 * @return the vertical center of the viewport. This does not check for a valid viewport (i.e. {@code bottom <=
+	 * top})
 	 */
 	public final float centerY() {
 		return (top + bottom) * 0.5f;
@@ -129,7 +131,7 @@ public class Viewport implements Parcelable {
 
 	/**
 	 * Set the viewport's coordinates to the specified values. Note: no range checking is performed, so it is up to the
-	 * caller to ensure that left <= right and bottom <= top.
+	 * caller to ensure that {@code left <= right and bottom <= top}.
 	 * 
 	 * @param left
 	 *            The X coordinate of the left side of the viewport
@@ -210,15 +212,15 @@ public class Viewport implements Parcelable {
 
 	/**
 	 * Returns true if (x,y) is inside the viewport. The left and top are considered to be inside, while the right and
-	 * bottom are not. This means that for a x,y to be contained: left <= x < right and bottom <= y < top. An empty
-	 * viewport never contains any point.
+	 * bottom are not. This means that for a x,y to be contained: {@code left <= x < right and bottom <= y < top}. An
+	 * empty viewport never contains any point.
 	 * 
 	 * @param x
 	 *            The X coordinate of the point being tested for containment
 	 * @param y
 	 *            The Y coordinate of the point being tested for containment
-	 * @return true iff (x,y) are contained by the viewport, where containment means left <= x < right and top <= y <
-	 *         bottom
+	 * @return true iff (x,y) are contained by the viewport, where containment means {@code left <= x < right and top <=
+	 * y < bottom}
 	 */
 	public boolean contains(float x, float y) {
 		return left < right && bottom < top // check for empty first

@@ -129,8 +129,8 @@ public class BubbleChartData extends AbstractChartData {
 	}
 
 	/**
-	 * Set bubble scale which is used to adjust bubble size. If you want smaller bubbles set scale <0, 1>, if you want
-	 * bigger bubbles set scale >1, default 1.0f.
+	 * Set bubble scale which is used to adjust bubble size. If you want smaller bubbles set scale {@code <0, 1>},
+	 * if you want bigger bubbles set scale greater than 1, default is 1.0f.
 	 */
 	public void setBubbleScale(float bubbleScale) {
 		this.bubbleScale = bubbleScale;

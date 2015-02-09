@@ -209,7 +209,7 @@ public class Axis {
 	}
 
 	/**
-	 * @see {{@link #setInside(boolean)}
+	 * @see #setInside(boolean)
 	 */
 	public boolean isInside() {
 		return isInside;
