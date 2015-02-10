@@ -13,7 +13,7 @@ buildscript {
 
 dependencies {
     //compile fileTree(dir: 'libs', include: '*.jar')
-    compile 'com.android.support:support-v4:21.0.+'
+    compile 'com.android.support:support-v4:21.0.3'
 }
 
 
@@ -77,9 +77,9 @@ publishing {
     publications {
         maven(MavenPublication) {
             artifact "${project.buildDir}/outputs/aar/${project.name}-release.aar"
-            artifactId project.name
-            groupId "lecho.lib.hellocharts"
-            version android.defaultConfig.versionName
+            artifactId = POM_ARTIFACT_ID
+            groupId = GROUP
+            version = VERSION_NAME
 
             // Task androidSourcesJar is provided by gradle-mvn-push.gradle
             //artifact androidSourcesJar {
