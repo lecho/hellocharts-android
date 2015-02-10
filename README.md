@@ -74,8 +74,13 @@ Apache License 2.0.
   repository configured in build.gradle(you need to modify repository url and credentials in build.gradle file). Add
   dependency:
  ```groovy
-     compile 'lecho.lib.hellocharts:hellocharts-library:1.1@aar'
-     compile 'com.android.support:support-v4:21.0.+'
+     repositories {
+        mavenLocal()
+     }
+     
+     dependencies{
+        compile 'com.github.lecho:hellocharts-library:<version>@aar'
+     }
  ```
 
 ##Usage
