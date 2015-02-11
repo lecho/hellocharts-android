@@ -5,6 +5,7 @@ Works best when hardware acceleration is available, so API 14+(Android 4.0) is r
 Apache License 2.0.
 
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-HelloCharts%20for%20Android-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1068)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.lecho/hellocharts-library/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.lecho/hellocharts-library)
 
 <a href="https://scan.coverity.com/projects/4121">
   <img alt="Coverity Scan Build Status"
@@ -45,43 +46,19 @@ Apache License 2.0.
 
 ##Download and Import
 
-###Eclipse/ADT
-
- - download hellocharts-library-<version>.jar from [releases page](https://github.com/lecho/hellocharts-android/releases) and copy it into the `libs` folder of your
- application project.
-
- **or**
-
- - download/clone repository and import hellocharts-library project into your workspace: `File -> Import -> Android ->
- Existing Android Code` and select hellocharts-library directory. Right click on application project `Properties ->
- Android -> Add` and select hellocharts library project.
-
 ###Android Studio/Gradle
 
- You will need to install Build-tools 21.0.2 and Android Support Repository(from Android SDK Manager).
-
- - download/clone repository and import hellocharts-library as module: `File -> Import Module` and select
- hellocharts-library directory. Add dependency:
+ - Library is available on jcenter/Maven Central, you just need to add dependency:
+ 
  ```groovy
-     compile project(':hellocharts-library')
+	dependencies{
+ 		compile 'com.github.lecho:hellocharts-library:<library_version>@aar'
+	}
  ```
+ 
+###Eclipse/ADT
 
- **or**
-
- - download/clone repository and publish library artifact into your local or remote repository. Go to
- hellocharts-library directory and execute `gradle clean build publishToMavenLocal` to publish to maven local
-  repository. Go to hellocharts-library directory and execute `gradle clean build publish` to publish to other
-  repository configured in build.gradle(you need to modify repository url and credentials in build.gradle file). Add
-  dependency:
- ```groovy
-     repositories {
-        mavenLocal()
-     }
-     
-     dependencies{
-        compile 'com.github.lecho:hellocharts-library:<version>@aar'
-     }
- ```
+ - download hellocharts-library-<version>.jar from [releases page](https://github.com/lecho/hellocharts-android/releases) and copy it into the `libs` folder of your application project.
 
 ##Usage
 
