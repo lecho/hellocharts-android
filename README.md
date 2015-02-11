@@ -6,7 +6,6 @@ Apache License 2.0.
 
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-HelloCharts%20for%20Android-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1068)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.lecho/hellocharts-library/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.lecho/hellocharts-library)
-
 <a href="https://scan.coverity.com/projects/4121">
   <img alt="Coverity Scan Build Status"
        src="https://scan.coverity.com/projects/4121/badge.svg"/>
@@ -46,9 +45,9 @@ Apache License 2.0.
 
 ##Download and Import
 
-###Android Studio/Gradle
+####Android Studio/Gradle
 
- - Library is available on jcenter/Maven Central, you just need to add dependency:
+ - Library is available on jCenter/Maven Central, you just need to add dependency:
  
  ```groovy
 	dependencies{
@@ -56,7 +55,7 @@ Apache License 2.0.
 	}
  ```
  
-###Eclipse/ADT
+####Eclipse/ADT
 
  - download hellocharts-library-<version>.jar from [releases page](https://github.com/lecho/hellocharts-android/releases) and copy it into the `libs` folder of your application project.
 
