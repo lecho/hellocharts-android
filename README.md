@@ -47,7 +47,7 @@ Apache License 2.0.
 
 ####Android Studio/Gradle
 
- - Library is available on jCenter/Maven Central, you just need to add dependency:
+ - library is available in jCenter/Maven Central, you just need to add dependency:
  
  ```groovy
 	dependencies{
@@ -57,7 +57,7 @@ Apache License 2.0.
  
 ####Eclipse/ADT
 
- - download hellocharts-library-<version>.jar from [releases page](https://github.com/lecho/hellocharts-android/releases) and copy it into the `libs` folder of your application project.
+ - download `hellocharts-library-<library_version>.jar` from [releases page](https://github.com/lecho/hellocharts-android/releases) and copy it into the `libs` folder of your application project.
 
 ##Usage
 
