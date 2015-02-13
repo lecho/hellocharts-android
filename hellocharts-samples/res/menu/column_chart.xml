@@ -25,7 +25,7 @@
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_toggle_axes"
-        android:title="Toglge axes"
+        android:title="Toggle axes"
         app:showAsAction="never"/>
     <item
         android:id="@+id/action_toggle_axes_names"
