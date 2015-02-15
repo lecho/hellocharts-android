@@ -610,17 +610,21 @@ public class AxesRenderer {
 		}
 	}
 
-	private void drawTextOnCanvas(char[] labelBuffer, int i, int charsNumber, float labelX, float labelY, Paint paint, Canvas canvas) {
+	private void drawTextOnCanvas(char[] labelBuffer, int index, int charsNumber, float labelX, float labelY, Paint paint, Canvas canvas) {
 		Rect bounds = new Rect();
-		String label = String.copyValueOf(labelBuffer, i, charsNumber);
-		String[] lines = label.split("\n");
 
-		int yoff = 0;
-		for (String line : lines) {
-			canvas.drawText(line, labelX, labelY + yoff, paint);
-			paint.getTextBounds(line, 0, line.length(), bounds);
-			yoff += bounds.height() * 1.2;
+		int yOffset = 0;
+		int startLineIndex = index;
+		int i;
+		for (i = index ; i < charsNumber + index ; i++) {
+			if (labelBuffer[i] == '\n') {
+				canvas.drawText(labelBuffer, startLineIndex, i - startLineIndex, labelX, labelY + yOffset, paint);
+				paint.getTextBounds(labelBuffer, startLineIndex, i - startLineIndex, bounds);
+				yOffset += bounds.height() * 1.2;
+				startLineIndex = i + 1;
+			}
 		}
+		canvas.drawText(labelBuffer, startLineIndex, i - startLineIndex, labelX, labelY + yOffset, paint);
 	}
 
 	private boolean isAxisVertical(int position) {
@@ -632,5 +636,4 @@ public class AxesRenderer {
 			throw new IllegalArgumentException("Invalid axis position " + position);
 		}
 	}
-
 }
