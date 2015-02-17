@@ -202,6 +202,8 @@ public class LineChartActivity extends ActionBarActivity {
 			final Viewport v = new Viewport(chart.getMaximumViewport());
 			v.bottom = 0;
 			v.top = 100;
+			v.left = 0;
+			v.right = numberOfPoints -1;
 			chart.setMaximumViewport(v);
 			chart.setCurrentViewport(v);
 		}

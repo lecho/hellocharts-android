@@ -130,7 +130,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		final LineChartData data = dataProvider.getLineChartData();
 		int lineIndex = 0;
 		for (Line line : data.getLines()) {
-			if (line.hasPoints()) {
+			if (checkIfShouldDrawPoints(line)) {
 				drawPoints(canvas, line, lineIndex, MODE_DRAW);
 			}
 			++lineIndex;
@@ -139,6 +139,10 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			// Redraw touched point to bring it to the front
 			highlightPoints(canvas);
 		}
+	}
+
+	private boolean checkIfShouldDrawPoints(Line line) {
+		return line.hasPoints() || line.getValues().size() == 1;
 	}
 
 	@Override
@@ -190,7 +194,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		int contentAreaMargin = 0;
 		final LineChartData data = dataProvider.getLineChartData();
 		for (Line line : data.getLines()) {
-			if (line.hasPoints()) {
+			if (checkIfShouldDrawPoints(line)) {
 				int margin = line.getPointRadius() + DEFAULT_TOUCH_TOLERANCE_MARGIN_DP;
 				if (margin > contentAreaMargin) {
 					contentAreaMargin = margin;
