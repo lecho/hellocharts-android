@@ -113,12 +113,23 @@ public class SliceValue {
 		return this;
 	}
 
+	@Deprecated
 	public char[] getLabel() {
 		return label;
 	}
 
+	public char[] getLabelAsChars() {
+		return label;
+	}
+
+	@Deprecated
 	public SliceValue setLabel(char[] label) {
 		this.label = label;
+		return this;
+	}
+
+	public SliceValue setLabel(String label) {
+		this.label = label.toCharArray();
 		return this;
 	}
 

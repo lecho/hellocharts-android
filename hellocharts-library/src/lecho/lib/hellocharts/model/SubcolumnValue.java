@@ -83,12 +83,23 @@ public class SubcolumnValue {
 		return darkenColor;
 	}
 
+	@Deprecated
 	public char[] getLabel() {
 		return label;
 	}
 
+	public char[] getLabelAsChars() {
+		return label;
+	}
+
+	@Deprecated
 	public SubcolumnValue setLabel(char[] label) {
 		this.label = label;
+		return this;
+	}
+
+	public SubcolumnValue setLabel(String label) {
+		this.label = label.toCharArray();
 		return this;
 	}
 

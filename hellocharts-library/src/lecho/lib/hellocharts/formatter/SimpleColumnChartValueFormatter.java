@@ -17,7 +17,7 @@ public class SimpleColumnChartValueFormatter implements ColumnChartValueFormatte
 
 	@Override
 	public int formatChartValue(char[] formattedValue, SubcolumnValue value) {
-		return valueFormatterHelper.formatFloatValueWithPrependedAndAppendedText(formattedValue, value.getValue(), value.getLabel());
+		return valueFormatterHelper.formatFloatValueWithPrependedAndAppendedText(formattedValue, value.getValue(), value.getLabelAsChars());
 	}
 
 	public int getDecimalDigitsNumber() {

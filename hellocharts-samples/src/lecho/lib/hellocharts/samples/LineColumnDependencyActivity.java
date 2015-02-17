@@ -88,7 +88,7 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 					values.add(new SubcolumnValue((float) Math.random() * 50f + 5, ChartUtils.pickColor()));
 				}
 
-				axisValues.add(new AxisValue(i, months[i].toCharArray()));
+				axisValues.add(new AxisValue(i).setLabel(months[i]));
 
 				columns.add(new Column(values).setHasLabelsOnlyForSelected(true));
 			}
@@ -133,7 +133,7 @@ public class LineColumnDependencyActivity extends ActionBarActivity {
 			List<PointValue> values = new ArrayList<PointValue>();
 			for (int i = 0; i < numValues; ++i) {
 				values.add(new PointValue(i, 0));
-				axisValues.add(new AxisValue(i, days[i].toCharArray()));
+				axisValues.add(new AxisValue(i).setLabel(days[i]));
 			}
 
 			Line line = new Line(values);

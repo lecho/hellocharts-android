@@ -148,7 +148,7 @@ public class Axis {
 		List<AxisValue> values = new ArrayList<AxisValue>();
 		int index = 0;
 		for (float value : axisValues) {
-			AxisValue axisValue = new AxisValue(value, axisValuesLabels.get(index).toCharArray());
+			AxisValue axisValue = new AxisValue(value).setLabel(axisValuesLabels.get(index));
 			values.add(axisValue);
 			++index;
 		}

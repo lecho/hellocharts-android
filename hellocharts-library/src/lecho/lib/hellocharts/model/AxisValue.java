@@ -5,7 +5,7 @@ import java.util.Arrays;
 /**
  * Single axis value, use it to manually set axis labels position. You can use label attribute to display text instead
  * of number but value formatter implementation have to handle it.
- * 
+ *
  */
 public class AxisValue {
 	private float value;
@@ -15,6 +15,7 @@ public class AxisValue {
 		setValue(value);
 	}
 
+	@Deprecated
 	public AxisValue(float value, char[] label) {
 		this.value = value;
 		this.label = label;
@@ -34,17 +35,33 @@ public class AxisValue {
 		return this;
 	}
 
+	@Deprecated
 	public char[] getLabel() {
+		return label;
+	}
+
+	public char[] getLabelAsChars(){
 		return label;
 	}
 
 	/**
 	 * Set custom label for this axis value.
-	 * 
+	 *
 	 * @param label
 	 */
+	@Deprecated
 	public AxisValue setLabel(char[] label) {
 		this.label = label;
+		return this;
+	}
+
+	/**
+	 * Set custom label for this axis value.
+	 *
+	 * @param label
+	 */
+	public AxisValue setLabel(String label) {
+		this.label = label.toCharArray();
 		return this;
 	}
 

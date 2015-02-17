@@ -125,7 +125,7 @@ public class TempoChartActivity extends ActionBarActivity {
 			for (float i = 0; i < tempoRange; i += 0.25f) {
 				// I'am translating float to minutes because I don't have data in minutes, if You store some time data
 				// you may skip translation.
-				axisValues.add(new AxisValue(i, formatMinutes(tempoRange - i)));
+				axisValues.add(new AxisValue(i).setLabel(formatMinutes(tempoRange - i)));
 			}
 
 			Axis tempoAxis = new Axis(axisValues).setName("Tempo [min/km]").setHasLines(true).setMaxLabelChars(4)
@@ -150,7 +150,7 @@ public class TempoChartActivity extends ActionBarActivity {
 
 		}
 
-		private char[] formatMinutes(float value) {
+		private String formatMinutes(float value) {
 			StringBuilder sb = new StringBuilder();
 
 			// translate value to seconds, for example
@@ -163,7 +163,7 @@ public class TempoChartActivity extends ActionBarActivity {
 				sb.append('0');
 			}
 			sb.append(String.valueOf(seconds));
-			return sb.toString().toCharArray();
+			return sb.toString();
 		}
 
 		/**

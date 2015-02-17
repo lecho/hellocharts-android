@@ -18,7 +18,7 @@ public class SimpleAxisValueFormatter implements AxisValueFormatter {
 	@Override
 	public int formatValueForManualAxis(char[] formattedValue, AxisValue axisValue) {
 		final int charsNumber = valueFormatterHelper.formatFloatValueWithPrependedAndAppendedText(formattedValue,
-				axisValue.getValue(), axisValue.getLabel());
+				axisValue.getValue(), axisValue.getLabelAsChars());
 		return charsNumber;
 	}
 

@@ -69,12 +69,23 @@ public class PointValue {
 		return this.y;
 	}
 
+	@Deprecated
 	public char[] getLabel() {
 		return label;
 	}
 
+	public char[] getLabelAsChars() {
+		return label;
+	}
+
+	@Deprecated
 	public PointValue setLabel(char[] label) {
 		this.label = label;
+		return this;
+	}
+
+	public PointValue setLabel(String label) {
+		this.label = label.toCharArray();
 		return this;
 	}
 

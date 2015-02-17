@@ -127,12 +127,23 @@ public class BubbleValue {
 		return this;
 	}
 
+	@Deprecated
 	public char[] getLabel() {
 		return label;
 	}
 
+	public char[] getLabelAsChars() {
+		return label;
+	}
+
+	@Deprecated
 	public BubbleValue setLabel(char[] label) {
 		this.label = label;
+		return this;
+	}
+
+	public BubbleValue setLabel(String label) {
+		this.label = label.toCharArray();
 		return this;
 	}
 

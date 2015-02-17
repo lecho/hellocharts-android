@@ -17,7 +17,7 @@ public class SimpleLineChartValueFormatter implements LineChartValueFormatter {
 
 	@Override
 	public int formatChartValue(char[] formattedValue, PointValue value) {
-		return valueFormatterHelper.formatFloatValueWithPrependedAndAppendedText(formattedValue, value.getY(), value.getLabel());
+		return valueFormatterHelper.formatFloatValueWithPrependedAndAppendedText(formattedValue, value.getY(), value.getLabelAsChars());
 	}
 
 	public int getDecimalDigitsNumber() {

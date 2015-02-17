@@ -18,7 +18,7 @@ public class SimplePieChartValueFormatter implements PieChartValueFormatter {
 
 	@Override
 	public int formatChartValue(char[] formattedValue, SliceValue value) {
-		return valueFormatterHelper.formatFloatValueWithPrependedAndAppendedText(formattedValue, value.getValue(), value.getLabel());
+		return valueFormatterHelper.formatFloatValueWithPrependedAndAppendedText(formattedValue, value.getValue(), value.getLabelAsChars());
 	}
 
 	public int getDecimalDigitsNumber() {
