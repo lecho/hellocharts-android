@@ -120,16 +120,21 @@ public class PieChartRenderer extends AbstractChartRenderer {
 
 	@Override
 	public void draw(Canvas canvas) {
-		drawSlices(canvas, MODE_DRAW);
+        drawSlices(canvas, MODE_DRAW);
+        if (hasCenterCircle) {
+            drawCenterCircle(canvas);
+        }
+        drawLabels(canvas, MODE_DRAW);
 
 		if (isTouched()) {
-			drawSlices(canvas, MODE_HIGHLIGHT);
-		}
+            //Redraw in highlight mode:(
+            drawSlices(canvas, MODE_HIGHLIGHT);
+            if (hasCenterCircle) {
+                drawCenterCircle(canvas);
+            }
+            drawLabels(canvas, MODE_HIGHLIGHT);
 
-		if (hasCenterCircle) {
-			drawCenterCircle(canvas);
-		}
-
+        }
 	}
 
 	@Override
@@ -227,6 +232,25 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		}
 	}
 
+    public void drawLabels(Canvas canvas, int mode){
+        final PieChartData data = dataProvider.getPieChartData();
+        final float sliceScale = 360f / maxSum;
+        float lastAngle = rotation;
+        for (SliceValue sliceValue : data.getValues()) {
+            final float angle = Math.abs(sliceValue.getValue()) * sliceScale;
+            if (MODE_HIGHLIGHT == mode) {
+                if (hasLabels || hasLabelsOnlyForSelected) {
+                    drawLabel(canvas, sliceValue, lastAngle, angle);
+                }
+            } else {
+                if (hasLabels) {
+                    drawLabel(canvas, sliceValue, lastAngle, angle);
+                }
+            }
+            lastAngle += angle;
+        }
+    }
+
 	/**
 	 * Method draws single slice from lastAngle to lastAngle+angle, if mode = {@link #MODE_HIGHLIGHT} slice will be
 	 * darken
@@ -246,15 +270,9 @@ public class PieChartRenderer extends AbstractChartRenderer {
 			drawCircleOval.inset(-touchAdditional, -touchAdditional);
 			slicePaint.setColor(sliceValue.getDarkenColor());
 			canvas.drawArc(drawCircleOval, lastAngle, angle, true, slicePaint);
-			if (hasLabels || hasLabelsOnlyForSelected) {
-				drawLabel(canvas, sliceValue);
-			}
 		} else {
 			slicePaint.setColor(sliceValue.getColor());
 			canvas.drawArc(drawCircleOval, lastAngle, angle, true, slicePaint);
-			if (hasLabels) {
-				drawLabel(canvas, sliceValue);
-			}
 		}
 	}
 
@@ -265,7 +283,11 @@ public class PieChartRenderer extends AbstractChartRenderer {
 		drawSlice(canvas, sliceValue, lastAngle, angle, MODE_HIGHLIGHT);
 	}
 
-	private void drawLabel(Canvas canvas, SliceValue sliceValue) {
+	private void drawLabel(Canvas canvas, SliceValue sliceValue, float lastAngle, float angle) {
+        sliceVector.set((float) (Math.cos(Math.toRadians(lastAngle + angle / 2))),
+                (float) (Math.sin(Math.toRadians(lastAngle + angle / 2))));
+        normalizeVector(sliceVector);
+
 		final int numChars = valueFormatter.formatChartValue(labelBuffer, sliceValue);
 
 		if (numChars == 0) {
