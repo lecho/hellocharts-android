@@ -31,7 +31,7 @@ public abstract class ChartUtils {
 
 	public static int dp2px(float density, int dp) {
 		if (dp == 0) {
-			return 1;
+			return 0;
 		}
 		return (int) (dp * density + 0.5f);
 
@@ -42,6 +42,9 @@ public abstract class ChartUtils {
 	}
 
 	public static int sp2px(float scaledDensity, int sp) {
+        if(sp == 0){
+            return 0;
+        }
 		return (int) (sp * scaledDensity + 0.5f);
 	}
 
