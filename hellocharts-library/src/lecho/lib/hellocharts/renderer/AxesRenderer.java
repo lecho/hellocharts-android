@@ -415,8 +415,11 @@ public class AxesRenderer {
 		//Reinitialize tabs to hold all raw values to draw.
 		if (rawValuesTab[position].length < axis.getValues().size()) {
 			rawValuesTab[position] = new float[axis.getValues().size()];
-			valuesToDrawTab[position] = new AxisValue[axis.getValues().size()];
 		}
+        //Reinitialize tabs to hold all raw values to draw.
+        if (valuesToDrawTab[position].length < axis.getValues().size()) {
+            valuesToDrawTab[position] = new AxisValue[axis.getValues().size()];
+        }
 
 		float rawValue;
 		int valueIndex = 0;
@@ -470,8 +473,10 @@ public class AxesRenderer {
 		//Reinitialize tabs to hold all raw and auto values.
 		if (rawValuesTab[position].length < autoValuesBufferTab[position].valuesNumber) {
 			rawValuesTab[position] = new float[autoValuesBufferTab[position].valuesNumber];
-			autoValuesToDrawTab[position] = new float[autoValuesBufferTab[position].valuesNumber];
 		}
+        if (autoValuesToDrawTab[position].length < autoValuesBufferTab[position].valuesNumber) {
+            autoValuesToDrawTab[position] = new float[autoValuesBufferTab[position].valuesNumber];
+        }
 
 		float rawValue;
 		int valueToDrawIndex = 0;
