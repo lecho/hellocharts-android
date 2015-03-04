@@ -590,12 +590,12 @@ public class AxesRenderer {
 				canvas.save();
 				canvas.translate(tiltedLabelXTranslation[position], tiltedLabelYTranslation[position]);
 				canvas.rotate(-45, labelX, labelY);
-				canvas.drawText(labelBuffer, labelBuffer.length - charsNumber, charsNumber, labelX, labelY,
-						labelPaintTab[position]);
+				drawTextOnCanvas(labelBuffer, labelBuffer.length - charsNumber, charsNumber, labelX, labelY,
+						labelPaintTab[position], canvas);
 				canvas.restore();
 			} else {
-				canvas.drawText(labelBuffer, labelBuffer.length - charsNumber, charsNumber, labelX, labelY,
-						labelPaintTab[position]);
+				drawTextOnCanvas(labelBuffer, labelBuffer.length - charsNumber, charsNumber, labelX, labelY,
+						labelPaintTab[position], canvas);
 			}
 		}
 
@@ -615,6 +615,23 @@ public class AxesRenderer {
 		}
 	}
 
+	private void drawTextOnCanvas(char[] labelBuffer, int index, int charsNumber, float labelX, float labelY, Paint paint, Canvas canvas) {
+		Rect bounds = new Rect();
+
+		int yOffset = 0;
+		int startLineIndex = index;
+		int i;
+		for (i = index ; i < charsNumber + index ; i++) {
+			if (labelBuffer[i] == '\n') {
+				canvas.drawText(labelBuffer, startLineIndex, i - startLineIndex, labelX, labelY + yOffset, paint);
+				paint.getTextBounds(labelBuffer, startLineIndex, i - startLineIndex, bounds);
+				yOffset += bounds.height() * 1.2;
+				startLineIndex = i + 1;
+			}
+		}
+		canvas.drawText(labelBuffer, startLineIndex, i - startLineIndex, labelX, labelY + yOffset, paint);
+	}
+
 	private boolean isAxisVertical(int position) {
 		if (LEFT == position || RIGHT == position) {
 			return true;
@@ -624,5 +641,4 @@ public class AxesRenderer {
 			throw new IllegalArgumentException("Invalid axis position " + position);
 		}
 	}
-
 }
