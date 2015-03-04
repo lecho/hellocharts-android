@@ -51,7 +51,6 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 	protected int labelMargin;
 	protected boolean isValueLabelBackgroundEnabled;
 	protected boolean isValueLabelBackgroundAuto;
-	protected int valueLabelBackgroundColor;
 
 	public AbstractChartRenderer(Context context, Chart chart) {
 		this.density = context.getResources().getDisplayMetrics().density;
@@ -86,13 +85,13 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 			labelPaint.setTypeface(typeface);
 		}
 
+        labelPaint.setColor(data.getValueLabelTextColor());
 		labelPaint.setTextSize(ChartUtils.sp2px(scaledDensity, data.getValueLabelTextSize()));
 		labelPaint.getFontMetricsInt(fontMetrics);
 
-		this.isValueLabelBackgroundEnabled = data.isValueLabelBackgroundEnabled();
-		this.isValueLabelBackgroundAuto = data.isValueLabelBackgroundAuto();
-		this.valueLabelBackgroundColor = data.getValueLabelBackgroundColor();
-		this.labelBackgroundPaint.setColor(valueLabelBackgroundColor);
+        this.isValueLabelBackgroundEnabled = data.isValueLabelBackgroundEnabled();
+        this.isValueLabelBackgroundAuto = data.isValueLabelBackgroundAuto();
+        this.labelBackgroundPaint.setColor(data.getValueLabelBackgroundColor());
 
 		// Important - clear selection when data changed.
 		selectedValue.clear();
