@@ -1,23 +1,24 @@
 package lecho.lib.hellocharts.renderer;
 
+import android.content.Context;
+
 import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
 import lecho.lib.hellocharts.provider.LineChartDataProvider;
 import lecho.lib.hellocharts.view.Chart;
-import android.content.Context;
 
 public class ComboLineColumnChartRenderer extends ComboChartRenderer {
 
-	private ColumnChartRenderer columnChartRenderer;
-	private LineChartRenderer lineChartRenderer;
+    private ColumnChartRenderer columnChartRenderer;
+    private LineChartRenderer lineChartRenderer;
 
-	public ComboLineColumnChartRenderer(Context context, Chart chart, ColumnChartDataProvider columnChartDataProvider,
-			LineChartDataProvider lineChartDataProvider) {
-		super(context, chart);
+    public ComboLineColumnChartRenderer(Context context, Chart chart, ColumnChartDataProvider columnChartDataProvider,
+                                        LineChartDataProvider lineChartDataProvider) {
+        super(context, chart);
 
-		columnChartRenderer = new ColumnChartRenderer(context, chart, columnChartDataProvider);
-		lineChartRenderer = new LineChartRenderer(context, chart, lineChartDataProvider);
+        columnChartRenderer = new ColumnChartRenderer(context, chart, columnChartDataProvider);
+        lineChartRenderer = new LineChartRenderer(context, chart, lineChartDataProvider);
 
-		renderers.add(columnChartRenderer);
-		renderers.add(lineChartRenderer);
-	}
+        renderers.add(columnChartRenderer);
+        renderers.add(lineChartRenderer);
+    }
 }

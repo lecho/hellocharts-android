@@ -1,62 +1,63 @@
 package lecho.lib.hellocharts.renderer;
 
+import android.graphics.Canvas;
+
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.view.Chart;
-
-import android.content.Context;
-import android.graphics.Canvas;
 
 /**
  * Interface for all chart renderer.
  */
 public interface ChartRenderer {
 
-	public void onChartSizeChanged();
-	public void onChartDataChanged();
-	public void onChartViewportChanged();
-	public void resetRenderer();
+    public void onChartSizeChanged();
 
-	/**
-	 * Draw chart data.
-	 */
-	public void draw(Canvas canvas);
+    public void onChartDataChanged();
 
-	/**
-	 * Draw chart data that should not be clipped to contentRect area.
-	 */
-	public void drawUnclipped(Canvas canvas);
+    public void onChartViewportChanged();
 
-	/**
-	 * Checks if given pixel coordinates corresponds to any chart value. If yes return true and set selectedValue, if
-	 * not selectedValue should be *cleared* and method should return false.
-	 */
-	public boolean checkTouch(float touchX, float touchY);
+    public void resetRenderer();
 
-	/**
-	 * Returns true if there is value selected.
-	 */
-	public boolean isTouched();
+    /**
+     * Draw chart data.
+     */
+    public void draw(Canvas canvas);
 
-	/**
-	 * Clear value selection.
-	 */
-	public void clearTouch();
+    /**
+     * Draw chart data that should not be clipped to contentRect area.
+     */
+    public void drawUnclipped(Canvas canvas);
 
-	public void setMaximumViewport(Viewport maxViewport);
+    /**
+     * Checks if given pixel coordinates corresponds to any chart value. If yes return true and set selectedValue, if
+     * not selectedValue should be *cleared* and method should return false.
+     */
+    public boolean checkTouch(float touchX, float touchY);
 
-	public Viewport getMaximumViewport();
+    /**
+     * Returns true if there is value selected.
+     */
+    public boolean isTouched();
 
-	public void setCurrentViewport(Viewport viewport);
+    /**
+     * Clear value selection.
+     */
+    public void clearTouch();
 
-	public Viewport getCurrentViewport();
+    public void setMaximumViewport(Viewport maxViewport);
 
-	public boolean isViewportCalculationEnabled();
+    public Viewport getMaximumViewport();
 
-	public void setViewportCalculationEnabled(boolean isEnabled);
+    public void setCurrentViewport(Viewport viewport);
 
-	public void selectValue(SelectedValue selectedValue);
+    public Viewport getCurrentViewport();
 
-	public SelectedValue getSelectedValue();
+    public boolean isViewportCalculationEnabled();
+
+    public void setViewportCalculationEnabled(boolean isEnabled);
+
+    public void selectValue(SelectedValue selectedValue);
+
+    public SelectedValue getSelectedValue();
 
 }

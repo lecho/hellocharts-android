@@ -6,93 +6,91 @@ import lecho.lib.hellocharts.view.Chart;
 
 /**
  * Single point coordinates, used for LineChartData.
- * 
  */
 public class PointValue {
 
-	private float x;
-	private float y;
-	private float originX;
-	private float originY;
-	private float diffX;
-	private float diffY;
-	private char[] label;
+    private float x;
+    private float y;
+    private float originX;
+    private float originY;
+    private float diffX;
+    private float diffY;
+    private char[] label;
 
-	public PointValue() {
-		set(0, 0);
-	}
+    public PointValue() {
+        set(0, 0);
+    }
 
-	public PointValue(float x, float y) {
-		set(x, y);
-	}
+    public PointValue(float x, float y) {
+        set(x, y);
+    }
 
-	public PointValue(PointValue pointValue) {
-		set(pointValue.x, pointValue.y);
-		this.label = pointValue.label;
-	}
+    public PointValue(PointValue pointValue) {
+        set(pointValue.x, pointValue.y);
+        this.label = pointValue.label;
+    }
 
-	public void update(float scale) {
-		x = originX + diffX * scale;
-		y = originY + diffY * scale;
-	}
+    public void update(float scale) {
+        x = originX + diffX * scale;
+        y = originY + diffY * scale;
+    }
 
-	public void finish() {
-		set(originX + diffX, originY + diffY);
-	}
+    public void finish() {
+        set(originX + diffX, originY + diffY);
+    }
 
-	public PointValue set(float x, float y) {
-		this.x = x;
-		this.y = y;
-		this.originX = x;
-		this.originY = y;
-		this.diffX = 0;
-		this.diffY = 0;
-		return this;
-	}
+    public PointValue set(float x, float y) {
+        this.x = x;
+        this.y = y;
+        this.originX = x;
+        this.originY = y;
+        this.diffX = 0;
+        this.diffY = 0;
+        return this;
+    }
 
-	/**
-	 * Set target values that should be reached when data animation finish then call {@link Chart#startDataAnimation()}
-	 *
-	 */
-	public PointValue setTarget(float targetX, float targetY) {
-		set(x, y);
-		this.diffX = targetX - originX;
-		this.diffY = targetY - originY;
-		return this;
-	}
+    /**
+     * Set target values that should be reached when data animation finish then call {@link Chart#startDataAnimation()}
+     */
+    public PointValue setTarget(float targetX, float targetY) {
+        set(x, y);
+        this.diffX = targetX - originX;
+        this.diffY = targetY - originY;
+        return this;
+    }
 
-	public float getX() {
-		return this.x;
-	}
+    public float getX() {
+        return this.x;
+    }
 
-	public float getY() {
-		return this.y;
-	}
+    public float getY() {
+        return this.y;
+    }
 
-	@Deprecated
-	public char[] getLabel() {
-		return label;
-	}
+    @Deprecated
+    public char[] getLabel() {
+        return label;
+    }
 
-	public char[] getLabelAsChars() {
-		return label;
-	}
+    public char[] getLabelAsChars() {
+        return label;
+    }
 
-	@Deprecated
-	public PointValue setLabel(char[] label) {
-		this.label = label;
-		return this;
-	}
+    @Deprecated
+    public PointValue setLabel(char[] label) {
+        this.label = label;
+        return this;
+    }
 
-	public PointValue setLabel(String label) {
-		this.label = label.toCharArray();
-		return this;
-	}
+    public PointValue setLabel(String label) {
+        this.label = label.toCharArray();
+        return this;
+    }
 
-	@Override
-	public String toString() {
-		return "PointValue [x=" + x + ", y=" + y + "]";
-	}
+    @Override
+    public String toString() {
+        return "PointValue [x=" + x + ", y=" + y + "]";
+    }
 
     @Override
     public boolean equals(Object o) {

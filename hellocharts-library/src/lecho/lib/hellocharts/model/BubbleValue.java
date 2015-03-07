@@ -7,150 +7,166 @@ import lecho.lib.hellocharts.view.Chart;
 
 /**
  * Single value drawn as bubble on BubbleChart.
- * 
  */
 public class BubbleValue {
 
-	/** Current X value. */
-	private float x;
-	/** Current Y value. */
-	private float y;
-	/** Current Z value , third bubble value interpreted as bubble area. */
-	private float z;
+    /**
+     * Current X value.
+     */
+    private float x;
+    /**
+     * Current Y value.
+     */
+    private float y;
+    /**
+     * Current Z value , third bubble value interpreted as bubble area.
+     */
+    private float z;
 
-	/** Origin X value, used during value animation. */
-	private float originX;
-	/** Origin Y value, used during value animation. */
-	private float originY;
-	/** Origin Z value, used during value animation. */
-	private float originZ;
+    /**
+     * Origin X value, used during value animation.
+     */
+    private float originX;
+    /**
+     * Origin Y value, used during value animation.
+     */
+    private float originY;
+    /**
+     * Origin Z value, used during value animation.
+     */
+    private float originZ;
 
-	/** Difference between originX value and target X value. */
-	private float diffX;
+    /**
+     * Difference between originX value and target X value.
+     */
+    private float diffX;
 
-	/** Difference between originX value and target X value. */
-	private float diffY;
+    /**
+     * Difference between originX value and target X value.
+     */
+    private float diffY;
 
-	/** Difference between originX value and target X value. */
-	private float diffZ;
-	private int color = ChartUtils.DEFAULT_COLOR;
-	private int darkenColor = ChartUtils.DEFAULT_DARKEN_COLOR;
-	private ValueShape shape = ValueShape.CIRCLE;
-	private char[] label;
+    /**
+     * Difference between originX value and target X value.
+     */
+    private float diffZ;
+    private int color = ChartUtils.DEFAULT_COLOR;
+    private int darkenColor = ChartUtils.DEFAULT_DARKEN_COLOR;
+    private ValueShape shape = ValueShape.CIRCLE;
+    private char[] label;
 
-	public BubbleValue() {
-		set(0, 0, 0);
-	}
+    public BubbleValue() {
+        set(0, 0, 0);
+    }
 
-	public BubbleValue(float x, float y, float z) {
-		set(x, y, z);
-	}
+    public BubbleValue(float x, float y, float z) {
+        set(x, y, z);
+    }
 
-	public BubbleValue(float x, float y, float z, int color) {
-		set(x, y, z);
-		setColor(color);
-	}
+    public BubbleValue(float x, float y, float z, int color) {
+        set(x, y, z);
+        setColor(color);
+    }
 
-	public BubbleValue(BubbleValue bubbleValue) {
-		set(bubbleValue.x, bubbleValue.y, bubbleValue.z);
-		setColor(bubbleValue.color);
-		this.label = bubbleValue.label;
-	}
+    public BubbleValue(BubbleValue bubbleValue) {
+        set(bubbleValue.x, bubbleValue.y, bubbleValue.z);
+        setColor(bubbleValue.color);
+        this.label = bubbleValue.label;
+    }
 
-	public void update(float scale) {
-		x = originX + diffX * scale;
-		y = originY + diffY * scale;
-		z = originZ + diffZ * scale;
-	}
+    public void update(float scale) {
+        x = originX + diffX * scale;
+        y = originY + diffY * scale;
+        z = originZ + diffZ * scale;
+    }
 
-	public void finish() {
-		set(originX + diffX, originY + diffY, originZ + diffZ);
-	}
+    public void finish() {
+        set(originX + diffX, originY + diffY, originZ + diffZ);
+    }
 
-	public BubbleValue set(float x, float y, float z) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		this.originX = x;
-		this.originY = y;
-		this.originZ = z;
-		this.diffX = 0;
-		this.diffY = 0;
-		this.diffZ = 0;
-		return this;
-	}
+    public BubbleValue set(float x, float y, float z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.originX = x;
+        this.originY = y;
+        this.originZ = z;
+        this.diffX = 0;
+        this.diffY = 0;
+        this.diffZ = 0;
+        return this;
+    }
 
-	/**
-	 * Set target values that should be reached when data animation finish then call {@link Chart#startDataAnimation()}
-     *
-	 */
-	public BubbleValue setTarget(float targetX, float targetY, float targetZ) {
-		set(x, y, z);
-		this.diffX = targetX - originX;
-		this.diffY = targetY - originY;
-		this.diffZ = targetZ - originZ;
-		return this;
-	}
+    /**
+     * Set target values that should be reached when data animation finish then call {@link Chart#startDataAnimation()}
+     */
+    public BubbleValue setTarget(float targetX, float targetY, float targetZ) {
+        set(x, y, z);
+        this.diffX = targetX - originX;
+        this.diffY = targetY - originY;
+        this.diffZ = targetZ - originZ;
+        return this;
+    }
 
-	public float getX() {
-		return this.x;
-	}
+    public float getX() {
+        return this.x;
+    }
 
-	public float getY() {
-		return this.y;
-	}
+    public float getY() {
+        return this.y;
+    }
 
-	public float getZ() {
-		return this.z;
-	}
+    public float getZ() {
+        return this.z;
+    }
 
-	public int getColor() {
-		return color;
-	}
+    public int getColor() {
+        return color;
+    }
 
-	public BubbleValue setColor(int color) {
-		this.color = color;
-		this.darkenColor = ChartUtils.darkenColor(color);
-		return this;
-	}
+    public BubbleValue setColor(int color) {
+        this.color = color;
+        this.darkenColor = ChartUtils.darkenColor(color);
+        return this;
+    }
 
-	public int getDarkenColor() {
-		return darkenColor;
-	}
+    public int getDarkenColor() {
+        return darkenColor;
+    }
 
-	public ValueShape getShape() {
-		return shape;
-	}
+    public ValueShape getShape() {
+        return shape;
+    }
 
-	public BubbleValue setShape(ValueShape shape) {
-		this.shape = shape;
-		return this;
-	}
+    public BubbleValue setShape(ValueShape shape) {
+        this.shape = shape;
+        return this;
+    }
 
-	@Deprecated
-	public char[] getLabel() {
-		return label;
-	}
+    @Deprecated
+    public char[] getLabel() {
+        return label;
+    }
 
-	public char[] getLabelAsChars() {
-		return label;
-	}
+    public char[] getLabelAsChars() {
+        return label;
+    }
 
-	@Deprecated
-	public BubbleValue setLabel(char[] label) {
-		this.label = label;
-		return this;
-	}
+    @Deprecated
+    public BubbleValue setLabel(char[] label) {
+        this.label = label;
+        return this;
+    }
 
-	public BubbleValue setLabel(String label) {
-		this.label = label.toCharArray();
-		return this;
-	}
+    public BubbleValue setLabel(String label) {
+        this.label = label.toCharArray();
+        return this;
+    }
 
-	@Override
-	public String toString() {
-		return "BubbleValue [x=" + x + ", y=" + y + ", z=" + z + "]";
-	}
+    @Override
+    public String toString() {
+        return "BubbleValue [x=" + x + ", y=" + y + ", z=" + z + "]";
+    }
 
     @Override
     public boolean equals(Object o) {

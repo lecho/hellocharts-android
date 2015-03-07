@@ -4,5 +4,5 @@ import lecho.lib.hellocharts.model.BubbleValue;
 
 public interface BubbleChartValueFormatter {
 
-	public int formatChartValue(char[] formattedValue, BubbleValue value);
+    public int formatChartValue(char[] formattedValue, BubbleValue value);
 }

@@ -4,8 +4,8 @@ import lecho.lib.hellocharts.model.ColumnChartData;
 
 public interface ColumnChartDataProvider {
 
-	public ColumnChartData getColumnChartData();
+    public ColumnChartData getColumnChartData();
 
-	public void setColumnChartData(ColumnChartData data);
+    public void setColumnChartData(ColumnChartData data);
 
 }

@@ -4,8 +4,8 @@ import lecho.lib.hellocharts.model.BubbleChartData;
 
 public interface BubbleChartDataProvider {
 
-	public BubbleChartData getBubbleChartData();
+    public BubbleChartData getBubbleChartData();
 
-	public void setBubbleChartData(BubbleChartData data);
+    public void setBubbleChartData(BubbleChartData data);
 
 }

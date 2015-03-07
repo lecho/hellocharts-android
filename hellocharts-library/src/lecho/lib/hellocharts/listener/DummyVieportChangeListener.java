@@ -4,8 +4,8 @@ import lecho.lib.hellocharts.model.Viewport;
 
 public class DummyVieportChangeListener implements ViewportChangeListener {
 
-	@Override
-	public void onViewportChanged(Viewport viewport) {
-		// Do nothing
-	}
+    @Override
+    public void onViewportChanged(Viewport viewport) {
+        // Do nothing
+    }
 }

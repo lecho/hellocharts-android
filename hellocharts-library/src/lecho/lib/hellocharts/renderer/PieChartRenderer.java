@@ -248,7 +248,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
             final float angle = Math.abs(sliceValue.getValue()) * sliceScale;
             if (isTouched() && selectedValue.getFirstIndex() == sliceIndex) {
                 drawSlice(canvas, sliceValue, lastAngle, angle, MODE_HIGHLIGHT);
-            }else{
+            } else {
                 drawSlice(canvas, sliceValue, lastAngle, angle, MODE_DRAW);
             }
             lastAngle += angle;
