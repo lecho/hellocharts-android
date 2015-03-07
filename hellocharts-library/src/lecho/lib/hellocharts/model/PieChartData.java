@@ -18,15 +18,17 @@ public class PieChartData extends AbstractChartData {
 	public static final int DEFAULT_CENTER_TEXT1_SIZE_SP = 42;
 	public static final int DEFAULT_CENTER_TEXT2_SIZE_SP = 16;
 	public static final float DEFAULT_CENTER_CIRCLE_SCALE = 0.6f;
+    private static final int DEFAULT_SLICE_SPACING_DP = 2;
 
 	private PieChartValueFormatter formatter = new SimplePieChartValueFormatter();
 	private boolean hasLabels = false;
 	private boolean hasLabelsOnlyForSelected = false;
 	private boolean hasLabelsOutside = false;
+    private int slicesSpacing = DEFAULT_SLICE_SPACING_DP;
 
 	private boolean hasCenterCircle = false;
-	private int centerCircleColor = Color.WHITE;
-	private float centerCircleScale = 0.6f;
+	private int centerCircleColor = Color.TRANSPARENT;
+	private float centerCircleScale = DEFAULT_CENTER_CIRCLE_SCALE;
 
 	private int centerText1Color = Color.BLACK;
 	private int centerText1FontSize = DEFAULT_CENTER_TEXT1_SIZE_SP;
@@ -161,64 +163,72 @@ public class PieChartData extends AbstractChartData {
 	 * should also change chart fill ration using {@link PieChartView#setCircleFillRatio(float)}. This flag is used only
 	 * if you also set hasLabels or hasLabelsOnlyForSelected flags.
 	 */
-	public void setHasLabelsOutside(boolean hasLabelsOutside) {
+	public PieChartData setHasLabelsOutside(boolean hasLabelsOutside) {
 		this.hasLabelsOutside = hasLabelsOutside;
+        return this;
 	}
 
 	public boolean hasCenterCircle() {
 		return hasCenterCircle;
 	}
 
-	public void setHasCenterCircle(boolean hasCenterCircle) {
+	public PieChartData setHasCenterCircle(boolean hasCenterCircle) {
 		this.hasCenterCircle = hasCenterCircle;
+        return this;
 	}
 
 	public int getCenterCircleColor() {
 		return centerCircleColor;
 	}
 
-	public void setCenterCircleColor(int centerCircleColor) {
+	public PieChartData setCenterCircleColor(int centerCircleColor) {
 		this.centerCircleColor = centerCircleColor;
+        return this;
 	}
 
 	public float getCenterCircleScale() {
 		return centerCircleScale;
 	}
 
-	public void setCenterCircleScale(float centerCircleScale) {
+	public PieChartData setCenterCircleScale(float centerCircleScale) {
 		this.centerCircleScale = centerCircleScale;
+        return this;
 	}
 
 	public int getCenterText1Color() {
 		return centerText1Color;
 	}
 
-	public void setCenterText1Color(int centerText1Color) {
+	public PieChartData setCenterText1Color(int centerText1Color) {
 		this.centerText1Color = centerText1Color;
+        return this;
 	}
 
 	public int getCenterText1FontSize() {
 		return centerText1FontSize;
 	}
 
-	public void setCenterText1FontSize(int centerText1FontSize) {
+	public PieChartData setCenterText1FontSize(int centerText1FontSize) {
 		this.centerText1FontSize = centerText1FontSize;
+        return this;
 	}
 
 	public Typeface getCenterText1Typeface() {
 		return centerText1Typeface;
 	}
 
-	public void setCenterText1Typeface(Typeface text1Typeface) {
+	public PieChartData setCenterText1Typeface(Typeface text1Typeface) {
 		this.centerText1Typeface = text1Typeface;
+        return this;
 	}
 
 	public String getCenterText1() {
 		return centerText1;
 	}
 
-	public void setCenterText1(String centerText1) {
+	public PieChartData setCenterText1(String centerText1) {
 		this.centerText1 = centerText1;
+        return this;
 	}
 
 	public String getCenterText2() {
@@ -228,33 +238,46 @@ public class PieChartData extends AbstractChartData {
 	/**
 	 * Note that centerText2 will be drawn only if centerText1 is not empty/null.
 	 */
-	public void setCenterText2(String centerText2) {
+	public PieChartData setCenterText2(String centerText2) {
 		this.centerText2 = centerText2;
+        return this;
 	}
 
 	public int getCenterText2Color() {
 		return centerText2Color;
 	}
 
-	public void setCenterText2Color(int centerText2Color) {
+	public PieChartData setCenterText2Color(int centerText2Color) {
 		this.centerText2Color = centerText2Color;
+        return this;
 	}
 
 	public int getCenterText2FontSize() {
 		return centerText2FontSize;
 	}
 
-	public void setCenterText2FontSize(int centerText2FontSize) {
+	public PieChartData setCenterText2FontSize(int centerText2FontSize) {
 		this.centerText2FontSize = centerText2FontSize;
+        return this;
 	}
 
 	public Typeface getCenterText2Typeface() {
 		return centerText2Typeface;
 	}
 
-	public void setCenterText2Typeface(Typeface text2Typeface) {
+	public PieChartData setCenterText2Typeface(Typeface text2Typeface) {
 		this.centerText2Typeface = text2Typeface;
+        return this;
 	}
+
+    public int getSlicesSpacing() {
+        return slicesSpacing;
+    }
+
+    public PieChartData setSlicesSpacing(int sliceSpacing) {
+        this.slicesSpacing = sliceSpacing;
+        return this;
+    }
 
 	public PieChartValueFormatter getFormatter() {
 		return formatter;
@@ -264,7 +287,7 @@ public class PieChartData extends AbstractChartData {
 		if (null != formatter) {
 			this.formatter = formatter;
 		}
-		return this;
+        return this;
 	}
 
 	public static PieChartData generateDummyData() {

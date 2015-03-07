@@ -27,6 +27,7 @@ public class SliceValue {
 	/** Darken color used to draw label background and give touch feedback. */
 	private int darkenColor = ChartUtils.DEFAULT_DARKEN_COLOR;
 
+    @Deprecated
 	/** Spacing between this slice and its neighbors. */
 	private int sliceSpacing = DEFAULT_SLICE_SPACING_DP;
 
@@ -104,10 +105,12 @@ public class SliceValue {
 		return darkenColor;
 	}
 
+    @Deprecated
 	public int getSliceSpacing() {
 		return sliceSpacing;
 	}
 
+    @Deprecated
 	public SliceValue setSliceSpacing(int sliceSpacing) {
 		this.sliceSpacing = sliceSpacing;
 		return this;

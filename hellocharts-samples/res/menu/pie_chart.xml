@@ -12,10 +12,6 @@
         android:title="Explode/Implode chart"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/action_single_arc_separation"
-        android:title="Toggle single arc separation"
-        app:showAsAction="never"/>
-    <item
         android:id="@+id/action_center_circle"
         android:title="Center circle"
         app:showAsAction="never"/>

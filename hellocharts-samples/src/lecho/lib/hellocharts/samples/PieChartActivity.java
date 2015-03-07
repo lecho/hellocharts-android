@@ -46,8 +46,7 @@ public class PieChartActivity extends ActionBarActivity {
 		private boolean hasCenterCircle = false;
 		private boolean hasCenterText1 = false;
 		private boolean hasCenterText2 = false;
-		private boolean isExploaded = false;
-		private boolean hasArcSeparated = false;
+		private boolean isExploded = false;
 		private boolean hasLabelForSelected = false;
 
 		public PlaceholderFragment() {
@@ -82,10 +81,6 @@ public class PieChartActivity extends ActionBarActivity {
 			}
 			if (id == R.id.action_explode) {
 				explodeChart();
-				return true;
-			}
-			if (id == R.id.action_single_arc_separation) {
-				separateSingleArc();
 				return true;
 			}
 			if (id == R.id.action_center_circle) {
@@ -151,8 +146,7 @@ public class PieChartActivity extends ActionBarActivity {
 			hasCenterCircle = false;
 			hasCenterText1 = false;
 			hasCenterText2 = false;
-			isExploaded = false;
-			hasArcSeparated = false;
+			isExploded = false;
 			hasLabelForSelected = false;
 		}
 
@@ -162,15 +156,6 @@ public class PieChartActivity extends ActionBarActivity {
 			List<SliceValue> values = new ArrayList<SliceValue>();
 			for (int i = 0; i < numValues; ++i) {
 				SliceValue sliceValue = new SliceValue((float) Math.random() * 30 + 15, ChartUtils.pickColor());
-
-				if (isExploaded) {
-					sliceValue.setSliceSpacing(24);
-				}
-
-				if (hasArcSeparated && i == 0) {
-					sliceValue.setSliceSpacing(32);
-				}
-
 				values.add(sliceValue);
 			}
 
@@ -180,7 +165,11 @@ public class PieChartActivity extends ActionBarActivity {
 			data.setHasLabelsOutside(hasLabelsOutside);
 			data.setHasCenterCircle(hasCenterCircle);
 
-			if (hasCenterText1) {
+            if (isExploded) {
+                data.setSlicesSpacing(24);
+            }
+
+            if (hasCenterText1) {
 				data.setCenterText1("Hello!");
 
 				// Get roboto-italic font.
@@ -206,17 +195,9 @@ public class PieChartActivity extends ActionBarActivity {
 		}
 
 		private void explodeChart() {
-			isExploaded = !isExploaded;
+			isExploded = !isExploded;
 			generateData();
 
-		}
-
-		private void separateSingleArc() {
-			hasArcSeparated = !hasArcSeparated;
-			if (hasArcSeparated) {
-				isExploaded = false;
-			}
-			generateData();
 		}
 
 		private void toggleLabelsOutside() {
