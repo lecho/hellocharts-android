@@ -215,9 +215,7 @@ public interface Chart {
 
     /**
      * Set maximum viewport. If you set bigger maximum viewport data will be more concentrate and there will be more
-     * empty spaces on sides.
-     * <p/>
-     * Note. MaxViewport have to be set after chartData has been set.
+     * empty spaces on sides. Note. MaxViewport have to be set after chartData has been set.
      */
     public void setMaximumViewport(Viewport maxViewport);
 
@@ -229,23 +227,17 @@ public interface Chart {
     public Viewport getCurrentViewport();
 
     /**
-     * Sets current viewport.
-     * <p/>
-     * Note. viewport have to be set after chartData has been set.
+     * Sets current viewport. Note. viewport have to be set after chartData has been set.
      */
     public void setCurrentViewport(Viewport targetViewport);
 
     /**
-     * Sets current viewport with animation.
-     * <p/>
-     * Note. viewport have to be set after chartData has been set.
+     * Sets current viewport with animation. Note. viewport have to be set after chartData has been set.
      */
     public void setCurrentViewportWithAnimation(Viewport targetViewport);
 
     /**
-     * Sets current viewport with animation.
-     * <p/>
-     * Note. viewport have to be set after chartData has been set.
+     * Sets current viewport with animation. Note. viewport have to be set after chartData has been set.
      */
     public void setCurrentViewportWithAnimation(Viewport targetViewport, long duration);
 
