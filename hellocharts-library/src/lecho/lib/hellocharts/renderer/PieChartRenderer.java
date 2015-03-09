@@ -258,6 +258,10 @@ public class PieChartRenderer extends AbstractChartRenderer {
 
     private void drawSeparationLines(Canvas canvas) {
         final PieChartData data = dataProvider.getPieChartData();
+        if(data.getValues().size() < 2){
+            //No need for separation lines for 0 or 1 slices.
+            return;
+        }
         final float sliceScale = 360f / maxSum;
         float lastAngle = rotation;
         final float circleRadius = originCircleOval.width() / 2f;
