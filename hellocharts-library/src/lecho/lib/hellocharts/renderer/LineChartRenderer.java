@@ -368,39 +368,21 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		{
             Path diamond = new Path();
 
-			float leftPointX = rawX + pointRadius;
-			float rightPointX = rawX - pointRadius;
+            float leftPointX = rawX - pointRadius;
+            float leftPointY = rawY;
+            float rightPointY = rawY;
+            float rightPointX = rawX + pointRadius;
+            float topPointY = rawY + pointRadius;
+            float topPointX = rawX;
+            float bottomPointY = rawY - pointRadius;
+            float bottomPointX = rawX;
 
-			float offset = ((rightPointX - leftPointX) / 2);
 
-			float rightPointY = rawY - pointRadius+ offset;
-			float leftPointY = rightPointY;
-
-			float topPointY = leftPointY + offset;
-			float bottomPointY = leftPointY - offset;
-			float topAndBottomPointX = leftPointX + offset;
-
-            diamond.moveTo(leftPointX, leftPointY);
-
-			/**
-			 * First line: left to top.
-			 */
-            diamond.lineTo(topAndBottomPointX, topPointY);
-
-			/**
-			 * Second line: top to right.
-			 */
+            diamond.moveTo(topPointX, topPointY);
             diamond.lineTo(rightPointX, rightPointY);
-
-			/**
-			 * Third line: right to bottom.
-			 */
-            diamond.lineTo(topAndBottomPointX, bottomPointY);
-
-			/**
-			 * Fourth line: bottom to left.
-			 */
+            diamond.lineTo(bottomPointX, bottomPointY);
             diamond.lineTo(leftPointX, leftPointY);
+            diamond.lineTo(topPointX, topPointY);
             diamond.close();
 
             canvas.drawPath(diamond, pointPaint);
