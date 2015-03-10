@@ -364,6 +364,46 @@ public class LineChartRenderer extends AbstractChartRenderer {
                     pointPaint);
         } else if (ValueShape.CIRCLE.equals(line.getShape())) {
             canvas.drawCircle(rawX, rawY, pointRadius, pointPaint);
+        }else if (ValueShape.DIAMOND.equals(line.getShape()))
+		{
+            Path diamond = new Path();
+
+			float leftPointX = rawX + pointRadius;
+			float rightPointX = rawX - pointRadius;
+
+			float offset = ((rightPointX - leftPointX) / 2);
+
+			float rightPointY = rawY - pointRadius+ offset;
+			float leftPointY = rightPointY;
+
+			float topPointY = leftPointY + offset;
+			float bottomPointY = leftPointY - offset;
+			float topAndBottomPointX = leftPointX + offset;
+
+            diamond.moveTo(leftPointX, leftPointY);
+
+			/**
+			 * First line: left to top.
+			 */
+            diamond.lineTo(topAndBottomPointX, topPointY);
+
+			/**
+			 * Second line: top to right.
+			 */
+            diamond.lineTo(rightPointX, rightPointY);
+
+			/**
+			 * Third line: right to bottom.
+			 */
+            diamond.lineTo(topAndBottomPointX, bottomPointY);
+
+			/**
+			 * Fourth line: bottom to left.
+			 */
+            diamond.lineTo(leftPointX, leftPointY);
+            diamond.close();
+
+            canvas.drawPath(diamond, pointPaint);
         } else {
             throw new IllegalArgumentException("Invalid point shape: " + line.getShape());
         }
