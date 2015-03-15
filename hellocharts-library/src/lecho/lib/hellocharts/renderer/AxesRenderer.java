@@ -396,15 +396,23 @@ public class AxesRenderer {
         final Viewport visibleViewport = computator.getVisibleViewport();
         final Rect contentRect = computator.getContentRectMinusAllMargins();
         boolean isAxisVertical = isAxisVertical(position);
-        float scale, viewportMin, viewportMax;
+        float viewportMin, viewportMax;
+        float scale = 1;
         if (isAxisVertical) {
-            scale = contentRect.height() * (maxViewport.height() / visibleViewport.height());
+            if (maxViewport.height() > 0 && visibleViewport.height() > 0) {
+                scale = contentRect.height() * (maxViewport.height() / visibleViewport.height());
+            }
             viewportMin = visibleViewport.bottom;
             viewportMax = visibleViewport.top;
         } else {
-            scale = contentRect.width() * (maxViewport.width() / visibleViewport.width());
+            if (maxViewport.width() > 0 && visibleViewport.width() > 0) {
+                scale = contentRect.width() * (maxViewport.width() / visibleViewport.width());
+            }
             viewportMin = visibleViewport.left;
             viewportMax = visibleViewport.right;
+        }
+        if(scale == 0){
+            scale = 1;
         }
         int module = (int) Math.max(1,
                 Math.ceil((axis.getValues().size() * labelDimensionForStepsTab[position] * 1.5) / scale));
