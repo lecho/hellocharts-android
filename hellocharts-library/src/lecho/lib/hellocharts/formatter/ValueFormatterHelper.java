@@ -1,5 +1,7 @@
 package lecho.lib.hellocharts.formatter;
 
+import android.util.Log;
+
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
@@ -7,7 +9,7 @@ import lecho.lib.hellocharts.util.FloatUtils;
 
 public class ValueFormatterHelper {
     public static final int DEFAULT_DIGITS_NUMBER = 0;
-
+    private static final String TAG = "ValueFormatterHelper";
     private int decimalDigitsNumber = Integer.MIN_VALUE;
     private char[] appendedText = new char[0];
     private char[] prependedText = new char[0];
@@ -75,8 +77,13 @@ public class ValueFormatterHelper {
         if (null != label) {
             // If custom label is not null use only name characters as formatted value.
             // Copy label into formatted value array.
-            System.arraycopy(label, 0, formattedValue, formattedValue.length - label.length, label.length);
-            return label.length;
+            int labelLength = label.length;
+            if (labelLength > formattedValue.length) {
+                Log.w(TAG, "Label length is larger than buffer size(64chars), some chars will be skipped!");
+                labelLength = formattedValue.length;
+            }
+            System.arraycopy(label, 0, formattedValue, formattedValue.length - labelLength, labelLength);
+            return labelLength;
         }
 
         final int appliedDigitsNumber = getAppliedDecimalDigitsNumber(defaultDigitsNumber);

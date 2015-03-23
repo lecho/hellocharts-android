@@ -46,7 +46,7 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
     protected float density;
     protected float scaledDensity;
     protected SelectedValue selectedValue = new SelectedValue();
-    protected char[] labelBuffer = new char[32];
+    protected char[] labelBuffer = new char[64];
     protected int labelOffset;
     protected int labelMargin;
     protected boolean isValueLabelBackgroundEnabled;
