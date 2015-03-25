@@ -36,6 +36,10 @@
         android:title="Square shape"
         app:showAsAction="never"/>
     <item
+        android:id="@+id/action_shape_diamond"
+        android:title="Diamond shape"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/action_toggle_axes"
         android:title="Toggle axes"
         app:showAsAction="never"/>

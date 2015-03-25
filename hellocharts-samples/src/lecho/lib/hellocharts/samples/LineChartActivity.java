@@ -124,9 +124,13 @@ public class LineChartActivity extends ActionBarActivity {
 				return true;
 			}
 			if (id == R.id.action_shape_square) {
-				setSquares();
-				return true;
-			}
+                setSquares();
+                return true;
+            }
+            if (id == R.id.action_shape_diamond) {
+                setDiamonds();
+                return true;
+            }
 			if (id == R.id.action_toggle_labels) {
 				toggleLabels();
 				return true;
@@ -347,6 +351,12 @@ public class LineChartActivity extends ActionBarActivity {
 
 			generateData();
 		}
+
+        private void setDiamonds() {
+            shape = ValueShape.DIAMOND;
+
+            generateData();
+        }
 
 		private void toggleLabels() {
 			hasLabels = !hasLabels;
