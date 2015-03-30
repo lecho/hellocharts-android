@@ -7,13 +7,13 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.android.tools.build:gradle:1.1.3'
     }
 }
 
 dependencies {
     //compile fileTree(dir: 'libs', include: '*.jar')
-    compile 'com.android.support:support-v4:21.0.3'
+    compile 'com.android.support:support-v4:22.0.0'
 }
 
 

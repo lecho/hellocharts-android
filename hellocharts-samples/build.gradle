@@ -3,8 +3,8 @@ apply plugin: 'android'
 dependencies {
     //compile fileTree(dir: 'libs', include: '*.jar')
     compile project(':hellocharts-library')
-    compile 'com.android.support:support-v4:21.0.+'
-    compile 'com.android.support:appcompat-v7:21.0.+'
+    compile 'com.android.support:support-v4:22.0.0'
+    compile 'com.android.support:appcompat-v7:22.0.0'
 }
 
 android {
