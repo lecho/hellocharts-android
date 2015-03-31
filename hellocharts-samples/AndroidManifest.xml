@@ -22,6 +22,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+	    <activity
+		    android:name=".AutomaticZoomListChartActivity"
+		    android:label="@string/title_activity_automatic_zoom_list_chart" >
+	    </activity>
         <activity
             android:name=".LineChartActivity"
             android:label="@string/title_activity_line_chart" >

@@ -146,6 +146,11 @@ public class MainActivity extends ActionBarActivity {
 				intent = new Intent(getActivity(), ViewPagerChartsActivity.class);
 				startActivity(intent);
 				break;
+			case 12:
+				// List chart activity with automatic zoom
+				intent = new Intent(getActivity(), AutomaticZoomListChartActivity.class);
+				startActivity(intent);
+				break;
 			default:
 				break;
 			}
@@ -178,6 +183,8 @@ public class MainActivity extends ActionBarActivity {
 			list.add(new ChartSampleDescription("ViewPager with Charts",
 					"Interactive charts within ViewPager. Each chart can be zoom/scroll except pie chart.",
 					ChartType.OTHER));
+			list.add(new ChartSampleDescription("List chart with automatic zoom",
+					"Interactive charts within ListView. Each chart can be scroll but the zoom is automatically calculated based on the length of labels.", ChartType.LINE_CHART));
 
 			return list;
 		}

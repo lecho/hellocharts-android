@@ -46,7 +46,7 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 	protected float density;
 	protected float scaledDensity;
 	protected SelectedValue selectedValue = new SelectedValue();
-	protected char[] labelBuffer = new char[32];
+	protected char[] labelBuffer = new char[64];
 	protected int labelOffset;
 	protected int labelMargin;
 	protected boolean isValueLabelBackgroundEnabled;
@@ -92,6 +92,7 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 		this.isValueLabelBackgroundEnabled = data.isValueLabelBackgroundEnabled();
 		this.isValueLabelBackgroundAuto = data.isValueLabelBackgroundAuto();
 		this.valueLabelBackgroundColor = data.getValueLabelBackgroundColor();
+		this.labelPaint.setColor(data.getValueLabelTextColor());
 		this.labelBackgroundPaint.setColor(valueLabelBackgroundColor);
 
 		// Important - clear selection when data changed.
@@ -114,15 +115,19 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 			}
 
 			canvas.drawRect(labelBackgroundRect, labelBackgroundPaint);
-
-			textX = labelBackgroundRect.left + labelMargin;
-			textY = labelBackgroundRect.bottom - labelMargin;
-		} else {
-			textX = labelBackgroundRect.left;
-			textY = labelBackgroundRect.bottom;
 		}
 
+		// This is to make the text center to the dot, otherwise when the label background is
+		// disabled the label appears on the left.
+		textX = labelBackgroundRect.left + labelMargin;
+		textY = labelBackgroundRect.bottom - labelMargin;
+
 		canvas.drawText(labelBuffer, startIndex, numChars, textX, textY, labelPaint);
+	}
+
+	@Override
+	public Paint getLabelPaint() {
+		return new Paint(labelPaint);
 	}
 
 	@Override

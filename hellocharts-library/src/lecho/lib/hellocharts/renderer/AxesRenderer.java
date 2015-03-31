@@ -36,8 +36,11 @@ public class AxesRenderer {
 	 * Used to measure label width. If label has mas 5 characters only 5 first characters of this array are used to
 	 * measure text width.
 	 */
-	private static final char[] labelWidthChars = new char[]{'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
-			'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'};
+	private static final char[] labelWidthChars = new char[]{
+			'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+			'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+			'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
+			'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'};
 
 	private Chart chart;
 	private ChartComputator computator;
@@ -62,7 +65,7 @@ public class AxesRenderer {
 	/**
 	 * Holds formatted axis value label.
 	 */
-	private char[] labelBuffer = new char[32];
+	private char[] labelBuffer = new char[64];
 
 	/**
 	 * Holds number of values that should be drown for each axis.

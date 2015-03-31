@@ -41,6 +41,7 @@ public abstract class AbstractChartView extends View implements Chart {
 	protected boolean isInteractive = true;
 	protected boolean isContainerScrollEnabled = false;
 	protected ContainerScrollType containerScrollType;
+	private SizeChangeListener onSizeChangeListener;
 
 	public AbstractChartView(Context context) {
 		this(context, null, 0);
@@ -77,6 +78,16 @@ public abstract class AbstractChartView extends View implements Chart {
 				getPaddingBottom());
 		chartRenderer.onChartSizeChanged();
 		axesRenderer.onChartSizeChanged();
+		if (onSizeChangeListener != null) onSizeChangeListener.onSizeChange();
+	}
+
+	public void setOnSizeChangeListener(SizeChangeListener onSizeChangeListener) {
+		this.onSizeChangeListener = onSizeChangeListener;
+	}
+
+	public interface SizeChangeListener {
+
+		public void onSizeChange();
 	}
 
 	@Override

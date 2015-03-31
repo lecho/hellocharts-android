@@ -45,6 +45,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
 	private Bitmap softwareBitmap;
 	private Canvas softwareCanvas = new Canvas();
 	private Viewport tempMaximumViewport = new Viewport();
+	private boolean isLabelAutoPositionEnabled = true;
+	private boolean isDrawPointOnTopOfAxis = true;
 
 	public LineChartRenderer(Context context, Chart chart, LineChartDataProvider dataProvider) {
 		super(context, chart);
@@ -123,10 +125,31 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		if (null != softwareBitmap) {
 			canvas.drawBitmap(softwareBitmap, 0, 0, null);
 		}
+
+		int lineIndex = 0;
+		for (Line line : data.getLines()) {
+			if (checkIfShouldDrawPoints(line)) {
+				drawPoints(canvas, line, lineIndex, MODE_DRAW);
+			}
+			++lineIndex;
+		}
+		if (isTouched()) {
+			// Redraw touched point to bring it to the front
+			highlightPoints(canvas);
+		}
+		if (!isDrawPointOnTopOfAxis) {
+			drawPoint(canvas);
+		}
 	}
 
 	@Override
 	public void drawUnclipped(Canvas canvas) {
+		if (isDrawPointOnTopOfAxis) {
+			drawPoint(canvas);
+		}
+	}
+
+	private void drawPoint(Canvas canvas) {
 		final LineChartData data = dataProvider.getLineChartData();
 		int lineIndex = 0;
 		for (Line line : data.getLines()) {
@@ -385,6 +408,14 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		}
 	}
 
+	public boolean isLabelAutoPositionEnabled() {
+		return isLabelAutoPositionEnabled;
+	}
+
+	public void setIsLabelAutopositionEnabled(boolean isLabelAutopositionEnabled) {
+		this.isLabelAutoPositionEnabled = isLabelAutopositionEnabled;
+	}
+
 	private void drawLabel(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY, float offset) {
 		final Rect contentRect = computator.getContentRectMinusAllMargins();
 		final int numChars = line.getFormatter().formatChartValue(labelBuffer, pointValue);
@@ -417,13 +448,16 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			top = rawY - offset - labelHeight - labelMargin * 2;
 			bottom = rawY - offset;
 		}
-		if (left < contentRect.left) {
-			left = rawX;
-			right = rawX + labelWidth + labelMargin * 2;
-		}
-		if (right > contentRect.right) {
-			left = rawX - labelWidth - labelMargin * 2;
-			right = rawX;
+
+		if (isLabelAutoPositionEnabled) {
+			if (left < contentRect.left) {
+				left = rawX;
+				right = rawX + labelWidth + labelMargin * 2;
+			}
+			if (right > contentRect.right) {
+				left = rawX - labelWidth - labelMargin * 2;
+				right = rawX;
+			}
 		}
 
 		labelBackgroundRect.set(left, top, right, bottom);
@@ -462,4 +496,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 		return Math.pow(diffX, 2) + Math.pow(diffY, 2) <= 2 * Math.pow(radius, 2);
 	}
 
+	public void setDrawPointOnTopOfAxis(boolean drawPointOnTopOfAxis) {
+		this.isDrawPointOnTopOfAxis = drawPointOnTopOfAxis;
+	}
 }
