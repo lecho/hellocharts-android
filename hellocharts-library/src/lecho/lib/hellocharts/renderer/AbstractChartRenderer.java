@@ -117,8 +117,8 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 			canvas.drawRect(labelBackgroundRect, labelBackgroundPaint);
 		}
 
-		// This is to make the text center to the dot, otherwise when the label background is
-		// disabled the label appears on the left.
+		// This is to make the label text centered to the value point, otherwise when the label
+		// background is disabled the label appears on the left and it doesn't look good.
 		textX = labelBackgroundRect.left + labelMargin;
 		textY = labelBackgroundRect.bottom - labelMargin;
 

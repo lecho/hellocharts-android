@@ -126,17 +126,6 @@ public class LineChartRenderer extends AbstractChartRenderer {
 			canvas.drawBitmap(softwareBitmap, 0, 0, null);
 		}
 
-		int lineIndex = 0;
-		for (Line line : data.getLines()) {
-			if (checkIfShouldDrawPoints(line)) {
-				drawPoints(canvas, line, lineIndex, MODE_DRAW);
-			}
-			++lineIndex;
-		}
-		if (isTouched()) {
-			// Redraw touched point to bring it to the front
-			highlightPoints(canvas);
-		}
 		if (!isDrawPointOnTopOfAxis) {
 			drawPoint(canvas);
 		}
