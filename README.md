@@ -5,11 +5,13 @@ Works best when hardware acceleration is available, so API 14+(Android 4.0) is r
 Apache License 2.0.
 
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-HelloCharts%20for%20Android-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1068)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.lecho/hellocharts-library/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.lecho/hellocharts-library)
 <a href="https://scan.coverity.com/projects/4121">
   <img alt="Coverity Scan Build Status"
        src="https://scan.coverity.com/projects/4121/badge.svg"/>
 </a>
+
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.lecho/hellocharts-library/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.lecho/hellocharts-library)
+[![Release](https://img.shields.io/github/release/lecho/hellocharts-android.svg?label=JitPack.io)](https://jitpack.io/#lecho/hellocharts-android)
 
 ##Features
 
