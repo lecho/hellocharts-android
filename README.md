@@ -9,7 +9,6 @@ Apache License 2.0.
   <img alt="Coverity Scan Build Status"
        src="https://scan.coverity.com/projects/4121/badge.svg"/>
 </a>
-
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.lecho/hellocharts-library/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.lecho/hellocharts-library)
 [![Release](https://img.shields.io/github/release/lecho/hellocharts-android.svg?label=JitPack.io)](https://jitpack.io/#lecho/hellocharts-android)
 
