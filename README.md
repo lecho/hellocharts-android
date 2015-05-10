@@ -48,17 +48,32 @@ Apache License 2.0.
 
 ####Android Studio/Gradle
 
- - library is available in jCenter/Maven Central, you just need to add dependency:
+ - Maven Central/jCenter, add dependency to your `build.gradle`:
  
  ```groovy
 	dependencies{
- 		compile 'com.github.lecho:hellocharts-library:<library_version>@aar'
+ 		compile 'com.github.lecho:hellocharts-library:1.5.4@aar'
 	}
+ ```
+ 
+ - JitPack.io, add `jitpack.io` repositiory and dependency to your `build.gradle`:
+ 
+ ```groovy
+    repositories {
+        maven {
+            url "https://jitpack.io"
+        }
+    }
+	
+    dependencies {
+        compile 'com.github.lecho:hellocharts-android:v1.5.4'
+    }
  ```
  
 ####Eclipse/ADT
 
- - download `hellocharts-library-<library_version>.jar` from [releases page](https://github.com/lecho/hellocharts-android/releases) and copy it into the `libs` folder of your application project.
+ - Download the latest [release jar file](https://github.com/lecho/hellocharts-android/releases).
+ - Copy `hellocharts-library-<version>.jar` into the `libs` folder of your application project.
 
 ##Usage
 
