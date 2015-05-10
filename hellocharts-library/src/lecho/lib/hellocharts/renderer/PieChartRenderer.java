@@ -262,10 +262,14 @@ public class PieChartRenderer extends AbstractChartRenderer {
             //No need for separation lines for 0 or 1 slices.
             return;
         }
+        final int sliceSpacing = ChartUtils.dp2px(density, data.getSlicesSpacing());
+        if (sliceSpacing < 1) {
+            //No need for separation lines
+            return;
+        }
         final float sliceScale = 360f / maxSum;
         float lastAngle = rotation;
         final float circleRadius = originCircleOval.width() / 2f;
-        final int sliceSpacing = ChartUtils.dp2px(density, data.getSlicesSpacing());
         separationLinesPaint.setStrokeWidth(sliceSpacing);
         for (SliceValue sliceValue : data.getValues()) {
             final float angle = Math.abs(sliceValue.getValue()) * sliceScale;
@@ -277,9 +281,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
             float x1 = sliceVector.x * (circleRadius + touchAdditional) + originCircleOval.centerX();
             float y1 = sliceVector.y * (circleRadius + touchAdditional) + originCircleOval.centerY();
 
-            if(sliceSpacing > 0) {
-                canvas.drawLine(originCircleOval.centerX(), originCircleOval.centerY(), x1, y1, separationLinesPaint);
-            }
+            canvas.drawLine(originCircleOval.centerX(), originCircleOval.centerY(), x1, y1, separationLinesPaint);
 
             lastAngle += angle;
         }
