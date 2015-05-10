@@ -277,7 +277,9 @@ public class PieChartRenderer extends AbstractChartRenderer {
             float x1 = sliceVector.x * (circleRadius + touchAdditional) + originCircleOval.centerX();
             float y1 = sliceVector.y * (circleRadius + touchAdditional) + originCircleOval.centerY();
 
-            canvas.drawLine(originCircleOval.centerX(), originCircleOval.centerY(), x1, y1, separationLinesPaint);
+            if(sliceSpacing > 0) {
+                canvas.drawLine(originCircleOval.centerX(), originCircleOval.centerY(), x1, y1, separationLinesPaint);
+            }
 
             lastAngle += angle;
         }
