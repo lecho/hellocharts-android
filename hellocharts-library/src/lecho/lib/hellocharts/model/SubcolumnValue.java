@@ -88,6 +88,11 @@ public class SubcolumnValue {
         return label;
     }
 
+    public SubcolumnValue setLabel(String label) {
+        this.label = label.toCharArray();
+        return this;
+    }
+
     public char[] getLabelAsChars() {
         return label;
     }
@@ -95,11 +100,6 @@ public class SubcolumnValue {
     @Deprecated
     public SubcolumnValue setLabel(char[] label) {
         this.label = label;
-        return this;
-    }
-
-    public SubcolumnValue setLabel(String label) {
-        this.label = label.toCharArray();
         return this;
     }
 

@@ -185,7 +185,8 @@ public interface Chart {
     public void setZoomLevel(float x, float y, float zoomLevel);
 
     /**
-     * Programatically zoom chart to given point(viewport point) with animation. Call this method after chart data had been set.
+     * Programatically zoom chart to given point(viewport point) with animation. Call this method after chart data
+     * had been set.
      *
      * @param x         x within chart maximum viewport
      * @param y         y within chart maximum viewport

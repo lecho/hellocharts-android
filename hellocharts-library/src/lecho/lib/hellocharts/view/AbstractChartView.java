@@ -376,21 +376,13 @@ public abstract class AbstractChartView extends View implements Chart {
     }
 
     @Override
-    public void setMaximumViewport(Viewport maxViewport) {
-        chartRenderer.setMaximumViewport(maxViewport);
-        ViewCompat.postInvalidateOnAnimation(this);
-    }
-
-    @Override
     public Viewport getMaximumViewport() {
         return chartRenderer.getMaximumViewport();
     }
 
     @Override
-    public void setCurrentViewport(Viewport targetViewport) {
-        if (null != targetViewport) {
-            chartRenderer.setCurrentViewport(targetViewport);
-        }
+    public void setMaximumViewport(Viewport maxViewport) {
+        chartRenderer.setMaximumViewport(maxViewport);
         ViewCompat.postInvalidateOnAnimation(this);
     }
 
@@ -415,6 +407,14 @@ public abstract class AbstractChartView extends View implements Chart {
     @Override
     public Viewport getCurrentViewport() {
         return getChartRenderer().getCurrentViewport();
+    }
+
+    @Override
+    public void setCurrentViewport(Viewport targetViewport) {
+        if (null != targetViewport) {
+            chartRenderer.setCurrentViewport(targetViewport);
+        }
+        ViewCompat.postInvalidateOnAnimation(this);
     }
 
     @Override

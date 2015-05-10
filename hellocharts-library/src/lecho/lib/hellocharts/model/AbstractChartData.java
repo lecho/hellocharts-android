@@ -64,18 +64,13 @@ public abstract class AbstractChartData implements ChartData {
     }
 
     @Override
-    public void setAxisXBottom(Axis axisX) {
-        this.axisXBottom = axisX;
-    }
-
-    @Override
     public Axis getAxisXBottom() {
         return axisXBottom;
     }
 
     @Override
-    public void setAxisYLeft(Axis axisY) {
-        this.axisYLeft = axisY;
+    public void setAxisXBottom(Axis axisX) {
+        this.axisXBottom = axisX;
     }
 
     @Override
@@ -84,8 +79,8 @@ public abstract class AbstractChartData implements ChartData {
     }
 
     @Override
-    public void setAxisXTop(Axis axisX) {
-        this.axisXTop = axisX;
+    public void setAxisYLeft(Axis axisY) {
+        this.axisYLeft = axisY;
     }
 
     @Override
@@ -94,13 +89,18 @@ public abstract class AbstractChartData implements ChartData {
     }
 
     @Override
-    public void setAxisYRight(Axis axisY) {
-        this.axisYRight = axisY;
+    public void setAxisXTop(Axis axisX) {
+        this.axisXTop = axisX;
     }
 
     @Override
     public Axis getAxisYRight() {
         return axisYRight;
+    }
+
+    @Override
+    public void setAxisYRight(Axis axisY) {
+        this.axisYRight = axisY;
     }
 
     @Override

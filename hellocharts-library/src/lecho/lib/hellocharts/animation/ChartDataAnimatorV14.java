@@ -10,8 +10,8 @@ import lecho.lib.hellocharts.view.Chart;
 
 @SuppressLint("NewApi")
 public class ChartDataAnimatorV14 implements ChartDataAnimator, AnimatorListener, AnimatorUpdateListener {
-    private ValueAnimator animator;
     private final Chart chart;
+    private ValueAnimator animator;
     private ChartAnimationListener animationListener = new DummyChartAnimationListener();
 
     public ChartDataAnimatorV14(Chart chart) {

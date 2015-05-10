@@ -25,6 +25,13 @@ public class ComboLineColumnChartData extends AbstractChartData {
         setLineChartData(new LineChartData(data.getLineChartData()));
     }
 
+    public static ComboLineColumnChartData generateDummyData() {
+        ComboLineColumnChartData data = new ComboLineColumnChartData();
+        data.setColumnChartData(ColumnChartData.generateDummyData());
+        data.setLineChartData(LineChartData.generateDummyData());
+        return data;
+    }
+
     @Override
     public void update(float scale) {
         columnChartData.update(scale);
@@ -59,13 +66,6 @@ public class ComboLineColumnChartData extends AbstractChartData {
         } else {
             this.lineChartData = lineChartData;
         }
-    }
-
-    public static ComboLineColumnChartData generateDummyData() {
-        ComboLineColumnChartData data = new ComboLineColumnChartData();
-        data.setColumnChartData(ColumnChartData.generateDummyData());
-        data.setLineChartData(LineChartData.generateDummyData());
-        return data;
     }
 
 }

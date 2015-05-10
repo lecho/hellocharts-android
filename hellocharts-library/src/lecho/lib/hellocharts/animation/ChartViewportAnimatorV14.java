@@ -11,8 +11,8 @@ import lecho.lib.hellocharts.view.Chart;
 
 @SuppressLint("NewApi")
 public class ChartViewportAnimatorV14 implements ChartViewportAnimator, AnimatorListener, AnimatorUpdateListener {
-    private ValueAnimator animator;
     private final Chart chart;
+    private ValueAnimator animator;
     private Viewport startViewport = new Viewport();
     private Viewport targetViewport = new Viewport();
     private Viewport newViewport = new Viewport();

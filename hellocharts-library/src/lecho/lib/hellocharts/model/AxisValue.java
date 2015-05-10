@@ -39,6 +39,16 @@ public class AxisValue {
         return label;
     }
 
+    /**
+     * Set custom label for this axis value.
+     *
+     * @param label
+     */
+    public AxisValue setLabel(String label) {
+        this.label = label.toCharArray();
+        return this;
+    }
+
     public char[] getLabelAsChars() {
         return label;
     }
@@ -51,16 +61,6 @@ public class AxisValue {
     @Deprecated
     public AxisValue setLabel(char[] label) {
         this.label = label;
-        return this;
-    }
-
-    /**
-     * Set custom label for this axis value.
-     *
-     * @param label
-     */
-    public AxisValue setLabel(String label) {
-        this.label = label.toCharArray();
         return this;
     }
 

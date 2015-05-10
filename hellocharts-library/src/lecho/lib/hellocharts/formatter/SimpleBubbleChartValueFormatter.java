@@ -18,7 +18,8 @@ public class SimpleBubbleChartValueFormatter implements BubbleChartValueFormatte
 
     @Override
     public int formatChartValue(char[] formattedValue, BubbleValue value) {
-        return valueFormatterHelper.formatFloatValueWithPrependedAndAppendedText(formattedValue, value.getZ(), value.getLabelAsChars());
+        return valueFormatterHelper.formatFloatValueWithPrependedAndAppendedText(formattedValue, value.getZ(), value
+                .getLabelAsChars());
     }
 
     public int getDecimalDigitsNumber() {

@@ -4,14 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Data model for column chart. Note: you can set X value for columns or sub-columns, columns are by default indexed from 0 to numOfColumns-1 and
+ * Data model for column chart. Note: you can set X value for columns or sub-columns, columns are by default indexed
+ * from 0 to numOfColumns-1 and
  * column index is used as column X value, so first column has X value 0, second clumn has X value 1 etc.
  * If you want to display AxisValue for given column you should initialize AxisValue with X value of that column.
  */
 public class ColumnChartData extends AbstractChartData {
     public static final float DEFAULT_FILL_RATIO = 0.75f;
-    private float fillRatio = DEFAULT_FILL_RATIO;
     public static final float DEFAULT_BASE_VALUE = 0.0f;
+    private float fillRatio = DEFAULT_FILL_RATIO;
     private float baseValue = DEFAULT_BASE_VALUE;
     private List<Column> columns = new ArrayList<Column>();
     private boolean isStacked = false;

@@ -144,7 +144,8 @@ public class FloatUtils {
      *
      * @param start     The minimum extreme (e.g. the left edge) for the axis.
      * @param stop      The maximum extreme (e.g. the right edge) for the axis.
-     * @param steps     The ideal number of stops to create. This should be based on available screen space; the more space
+     * @param steps     The ideal number of stops to create. This should be based on available screen space; the more
+     *                  space
      *                  there is, the more stops should be shown.
      * @param outValues The destination {@link AxisAutoValues} object to populate.
      */

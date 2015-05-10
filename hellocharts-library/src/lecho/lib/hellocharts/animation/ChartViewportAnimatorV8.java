@@ -20,13 +20,6 @@ public class ChartViewportAnimatorV8 implements ChartViewportAnimator {
     private Viewport newViewport = new Viewport();
     private long duration;
     private ChartAnimationListener animationListener = new DummyChartAnimationListener();
-
-    public ChartViewportAnimatorV8(Chart chart) {
-        this.chart = chart;
-        this.duration = FAST_ANIMATION_DURATION;
-        this.handler = new Handler();
-    }
-
     private final Runnable runnable = new Runnable() {
 
         @Override
@@ -51,6 +44,12 @@ public class ChartViewportAnimatorV8 implements ChartViewportAnimator {
             handler.postDelayed(this, 16);
         }
     };
+
+    public ChartViewportAnimatorV8(Chart chart) {
+        this.chart = chart;
+        this.duration = FAST_ANIMATION_DURATION;
+        this.handler = new Handler();
+    }
 
     @Override
     public void startAnimation(Viewport startViewport, Viewport targetViewport) {

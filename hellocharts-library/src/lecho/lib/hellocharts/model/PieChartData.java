@@ -16,12 +16,12 @@ import lecho.lib.hellocharts.view.PieChartView;
  */
 public class PieChartData extends AbstractChartData {
     public static final int DEFAULT_CENTER_TEXT1_SIZE_SP = 42;
-    private int centerText1FontSize = DEFAULT_CENTER_TEXT1_SIZE_SP;
     public static final int DEFAULT_CENTER_TEXT2_SIZE_SP = 16;
-    private int centerText2FontSize = DEFAULT_CENTER_TEXT2_SIZE_SP;
     public static final float DEFAULT_CENTER_CIRCLE_SCALE = 0.6f;
-    private float centerCircleScale = DEFAULT_CENTER_CIRCLE_SCALE;
     private static final int DEFAULT_SLICE_SPACING_DP = 2;
+    private int centerText1FontSize = DEFAULT_CENTER_TEXT1_SIZE_SP;
+    private int centerText2FontSize = DEFAULT_CENTER_TEXT2_SIZE_SP;
+    private float centerCircleScale = DEFAULT_CENTER_CIRCLE_SCALE;
     private int slicesSpacing = DEFAULT_SLICE_SPACING_DP;
     private PieChartValueFormatter formatter = new SimplePieChartValueFormatter();
     private boolean hasLabels = false;

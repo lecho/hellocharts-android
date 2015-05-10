@@ -73,7 +73,8 @@ public class ValueFormatterHelper {
      * Note: Parameter defaultDigitsNumber is used only if you didn't change decimalDigintsNumber value using
      * method {@link #setDecimalDigitsNumber(int)}.
      */
-    public int formatFloatValueWithPrependedAndAppendedText(char[] formattedValue, float value, int defaultDigitsNumber, char[] label) {
+    public int formatFloatValueWithPrependedAndAppendedText(char[] formattedValue, float value, int
+            defaultDigitsNumber, char[] label) {
         if (null != label) {
             // If custom label is not null use only name characters as formatted value.
             // Copy label into formatted value array.
@@ -103,12 +104,14 @@ public class ValueFormatterHelper {
     /**
      * @see #formatFloatValueWithPrependedAndAppendedText(char[], float, int, char[])
      */
-    public int formatFloatValueWithPrependedAndAppendedText(char[] formattedValue, float value, int defaultDigitsNumber) {
+    public int formatFloatValueWithPrependedAndAppendedText(char[] formattedValue, float value, int
+            defaultDigitsNumber) {
         return formatFloatValueWithPrependedAndAppendedText(formattedValue, value, defaultDigitsNumber, null);
     }
 
     public int formatFloatValue(char[] formattedValue, float value, int decimalDigitsNumber) {
-        return FloatUtils.formatFloat(formattedValue, value, formattedValue.length - appendedText.length, decimalDigitsNumber,
+        return FloatUtils.formatFloat(formattedValue, value, formattedValue.length - appendedText.length,
+                decimalDigitsNumber,
                 decimalSeparator);
     }
 
@@ -129,7 +132,8 @@ public class ValueFormatterHelper {
     public int getAppliedDecimalDigitsNumber(int defaultDigitsNumber) {
         final int appliedDecimalDigitsNumber;
         if (decimalDigitsNumber < 0) {
-            //When decimalDigitsNumber < 0 that means that user didn't set that value and defaultDigitsNumber should be used.
+            //When decimalDigitsNumber < 0 that means that user didn't set that value and defaultDigitsNumber should
+            // be used.
             appliedDecimalDigitsNumber = defaultDigitsNumber;
         } else {
             appliedDecimalDigitsNumber = decimalDigitsNumber;

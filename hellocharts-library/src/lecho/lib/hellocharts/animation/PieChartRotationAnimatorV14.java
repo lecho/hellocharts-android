@@ -10,8 +10,8 @@ import lecho.lib.hellocharts.view.PieChartView;
 
 @SuppressLint("NewApi")
 public class PieChartRotationAnimatorV14 implements PieChartRotationAnimator, AnimatorListener, AnimatorUpdateListener {
-    private ValueAnimator animator;
     private final PieChartView chart;
+    private ValueAnimator animator;
     private float startRotation = 0;
     private float targetRotation = 0;
     private ChartAnimationListener animationListener = new DummyChartAnimationListener();

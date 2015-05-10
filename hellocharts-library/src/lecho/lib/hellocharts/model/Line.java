@@ -77,16 +77,16 @@ public class Line {
         }
     }
 
+    public List<PointValue> getValues() {
+        return this.values;
+    }
+
     public void setValues(List<PointValue> values) {
         if (null == values) {
             this.values = new ArrayList<PointValue>();
         } else {
             this.values = values;
         }
-    }
-
-    public List<PointValue> getValues() {
-        return this.values;
     }
 
     public int getColor() {

@@ -102,7 +102,8 @@ public class PieChartTouchHandler extends ChartTouchHandler {
                 final RectF circleOval = pieChart.getCircleOval();
                 final float centerX = circleOval.centerX();
                 final float centerY = circleOval.centerY();
-                float scrollTheta = vectorToScalarScroll(distanceX, distanceY, e2.getX() - centerX, e2.getY() - centerY);
+                float scrollTheta = vectorToScalarScroll(distanceX, distanceY, e2.getX() - centerX, e2.getY() -
+                        centerY);
                 pieChart.setChartRotation(pieChart.getChartRotation() - (int) scrollTheta / FLING_VELOCITY_DOWNSCALE,
                         false);
                 return true;
@@ -118,7 +119,8 @@ public class PieChartTouchHandler extends ChartTouchHandler {
                 final RectF circleOval = pieChart.getCircleOval();
                 final float centerX = circleOval.centerX();
                 final float centerY = circleOval.centerY();
-                float scrollTheta = vectorToScalarScroll(velocityX, velocityY, e2.getX() - centerX, e2.getY() - centerY);
+                float scrollTheta = vectorToScalarScroll(velocityX, velocityY, e2.getX() - centerX, e2.getY() -
+                        centerY);
                 scroller.abortAnimation();
                 scroller.fling(0, (int) pieChart.getChartRotation(), 0, (int) scrollTheta / FLING_VELOCITY_DOWNSCALE,
                         0, 0, Integer.MIN_VALUE, Integer.MAX_VALUE);

@@ -44,6 +44,19 @@ public class BubbleChartData extends AbstractChartData {
         }
     }
 
+    public static BubbleChartData generateDummyData() {
+        final int numValues = 4;
+        BubbleChartData data = new BubbleChartData();
+        List<BubbleValue> values = new ArrayList<BubbleValue>(numValues);
+        values.add(new BubbleValue(0, 20, 15000));
+        values.add(new BubbleValue(3, 22, 20000));
+        values.add(new BubbleValue(5, 25, 5000));
+        values.add(new BubbleValue(7, 30, 30000));
+        values.add(new BubbleValue(11, 22, 10));
+        data.setValues(values);
+        return data;
+    }
+
     @Override
     public void update(float scale) {
         for (BubbleValue value : values) {
@@ -145,18 +158,5 @@ public class BubbleChartData extends AbstractChartData {
             this.formatter = formatter;
         }
         return this;
-    }
-
-    public static BubbleChartData generateDummyData() {
-        final int numValues = 4;
-        BubbleChartData data = new BubbleChartData();
-        List<BubbleValue> values = new ArrayList<BubbleValue>(numValues);
-        values.add(new BubbleValue(0, 20, 15000));
-        values.add(new BubbleValue(3, 22, 20000));
-        values.add(new BubbleValue(5, 25, 5000));
-        values.add(new BubbleValue(7, 30, 30000));
-        values.add(new BubbleValue(11, 22, 10));
-        data.setValues(values);
-        return data;
     }
 }

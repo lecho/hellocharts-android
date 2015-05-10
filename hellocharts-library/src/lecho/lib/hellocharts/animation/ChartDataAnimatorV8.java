@@ -9,13 +9,12 @@ import lecho.lib.hellocharts.view.Chart;
 
 public class ChartDataAnimatorV8 implements ChartDataAnimator {
 
-    long start;
-    boolean isAnimationStarted = false;
-    long duration;
     final Chart chart;
     final Handler handler;
     final Interpolator interpolator = new AccelerateDecelerateInterpolator();
-    private ChartAnimationListener animationListener = new DummyChartAnimationListener();
+    long start;
+    boolean isAnimationStarted = false;
+    long duration;
     private final Runnable runnable = new Runnable() {
 
         @Override
@@ -33,6 +32,7 @@ public class ChartDataAnimatorV8 implements ChartDataAnimator {
 
         }
     };
+    private ChartAnimationListener animationListener = new DummyChartAnimationListener();
 
     public ChartDataAnimatorV8(Chart chart) {
         this.chart = chart;

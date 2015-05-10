@@ -30,7 +30,8 @@ public class ComboLineColumnChartView extends AbstractChartView implements Combo
     protected ComboLineColumnChartData data;
     protected ColumnChartDataProvider columnChartDataProvider = new ComboColumnChartDataProvider();
     protected LineChartDataProvider lineChartDataProvider = new ComboLineChartDataProvider();
-    protected ComboLineColumnChartOnValueSelectListener onValueTouchListener = new DummyCompoLineColumnChartOnValueSelectListener();
+    protected ComboLineColumnChartOnValueSelectListener onValueTouchListener = new
+            DummyCompoLineColumnChartOnValueSelectListener();
 
     public ComboLineColumnChartView(Context context) {
         this(context, null, 0);
@@ -42,7 +43,8 @@ public class ComboLineColumnChartView extends AbstractChartView implements Combo
 
     public ComboLineColumnChartView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        setChartRenderer(new ComboLineColumnChartRenderer(context, this, columnChartDataProvider, lineChartDataProvider));
+        setChartRenderer(new ComboLineColumnChartRenderer(context, this, columnChartDataProvider,
+                lineChartDataProvider));
         setComboLineColumnChartData(ComboLineColumnChartData.generateDummyData());
     }
 

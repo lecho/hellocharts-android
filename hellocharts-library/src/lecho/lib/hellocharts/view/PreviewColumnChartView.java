@@ -40,6 +40,10 @@ public class PreviewColumnChartView extends ColumnChartView {
         setColumnChartData(ColumnChartData.generateDummyData());
     }
 
+    public int getPreviewColor() {
+        return previewChartRenderer.getPreviewColor();
+    }
+
     public void setPreviewColor(int color) {
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "Changing preview area color");
@@ -47,10 +51,6 @@ public class PreviewColumnChartView extends ColumnChartView {
 
         previewChartRenderer.setPreviewColor(color);
         ViewCompat.postInvalidateOnAnimation(this);
-    }
-
-    public int getPreviewColor() {
-        return previewChartRenderer.getPreviewColor();
     }
 
 }

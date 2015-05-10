@@ -9,14 +9,14 @@ import lecho.lib.hellocharts.view.PieChartView;
 
 public class PieChartRotationAnimatorV8 implements PieChartRotationAnimator {
 
-    long start;
-    boolean isAnimationStarted = false;
     final PieChartView chart;
-    private float startRotation = 0;
-    private float targetRotation = 0;
     final long duration;
     final Handler handler;
     final Interpolator interpolator = new AccelerateDecelerateInterpolator();
+    long start;
+    boolean isAnimationStarted = false;
+    private float startRotation = 0;
+    private float targetRotation = 0;
     private ChartAnimationListener animationListener = new DummyChartAnimationListener();
     private final Runnable runnable = new Runnable() {
 

@@ -44,13 +44,13 @@ public interface ChartRenderer {
      */
     public void clearTouch();
 
-    public void setMaximumViewport(Viewport maxViewport);
-
     public Viewport getMaximumViewport();
 
-    public void setCurrentViewport(Viewport viewport);
+    public void setMaximumViewport(Viewport maxViewport);
 
     public Viewport getCurrentViewport();
+
+    public void setCurrentViewport(Viewport viewport);
 
     public boolean isViewportCalculationEnabled();
 

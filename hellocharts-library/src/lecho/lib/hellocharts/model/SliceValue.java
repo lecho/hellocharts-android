@@ -125,6 +125,12 @@ public class SliceValue {
         return label;
     }
 
+    @Deprecated
+    public SliceValue setLabel(char[] label) {
+        this.label = label;
+        return this;
+    }
+
     public SliceValue setLabel(String label) {
         this.label = label.toCharArray();
         return this;
@@ -132,12 +138,6 @@ public class SliceValue {
 
     public char[] getLabelAsChars() {
         return label;
-    }
-
-    @Deprecated
-    public SliceValue setLabel(char[] label) {
-        this.label = label;
-        return this;
     }
 
     @Override

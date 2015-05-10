@@ -31,12 +31,12 @@ import lecho.lib.hellocharts.view.Chart;
 public class PieChartRenderer extends AbstractChartRenderer {
     private static final float MAX_WIDTH_HEIGHT = 100f;
     private static final int DEFAULT_START_ROTATION = 45;
-    private int rotation = DEFAULT_START_ROTATION;
     private static final float DEFAULT_LABEL_INSIDE_RADIUS_FACTOR = 0.7f;
     private static final float DEFAULT_LABEL_OUTSIDE_RADIUS_FACTOR = 1.0f;
     private static final int DEFAULT_TOUCH_ADDITIONAL_DP = 8;
     private static final int MODE_DRAW = 0;
     private static final int MODE_HIGHLIGHT = 1;
+    private int rotation = DEFAULT_START_ROTATION;
     private PieChartDataProvider dataProvider;
     private Paint slicePaint = new Paint();
     private float maxSum;
@@ -258,7 +258,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
 
     private void drawSeparationLines(Canvas canvas) {
         final PieChartData data = dataProvider.getPieChartData();
-        if(data.getValues().size() < 2){
+        if (data.getValues().size() < 2) {
             //No need for separation lines for 0 or 1 slices.
             return;
         }

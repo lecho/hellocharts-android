@@ -12,6 +12,10 @@ import android.os.Parcelable;
  */
 public class Viewport implements Parcelable {
 
+    public float left;
+    public float top;
+    public float right;
+    public float bottom;
     public static final Parcelable.Creator<Viewport> CREATOR = new Parcelable.Creator<Viewport>() {
         /**
          * Return a new viewport from the data in the specified parcel.
@@ -29,10 +33,6 @@ public class Viewport implements Parcelable {
             return new Viewport[size];
         }
     };
-    public float left;
-    public float top;
-    public float right;
-    public float bottom;
 
     /**
      * Create a new empty Viewport. All coordinates are initialized to 0.

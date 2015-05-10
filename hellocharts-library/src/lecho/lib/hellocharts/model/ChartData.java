@@ -20,6 +20,11 @@ public interface ChartData {
     public void finish();
 
     /**
+     * @see #setAxisXBottom(Axis)
+     */
+    public Axis getAxisXBottom();
+
+    /**
      * Set horizontal axis at the bottom of the chart. Pass null to remove that axis.
      *
      * @param axisX
@@ -27,9 +32,9 @@ public interface ChartData {
     public void setAxisXBottom(Axis axisX);
 
     /**
-     * @see #setAxisXBottom(Axis)
+     * @see #setAxisYLeft(Axis)
      */
-    public Axis getAxisXBottom();
+    public Axis getAxisYLeft();
 
     /**
      * Set vertical axis on the left of the chart. Pass null to remove that axis.
@@ -39,9 +44,9 @@ public interface ChartData {
     public void setAxisYLeft(Axis axisY);
 
     /**
-     * @see #setAxisYLeft(Axis)
+     * @see #setAxisXTop(Axis)
      */
-    public Axis getAxisYLeft();
+    public Axis getAxisXTop();
 
     /**
      * Set horizontal axis at the top of the chart. Pass null to remove that axis.
@@ -51,9 +56,9 @@ public interface ChartData {
     public void setAxisXTop(Axis axisX);
 
     /**
-     * @see #setAxisXTop(Axis)
+     * @see #setAxisYRight(Axis)
      */
-    public Axis getAxisXTop();
+    public Axis getAxisYRight();
 
     /**
      * Set vertical axis on the right of the chart. Pass null to remove that axis.
@@ -61,11 +66,6 @@ public interface ChartData {
      * @param axisY
      */
     public void setAxisYRight(Axis axisY);
-
-    /**
-     * @see #setAxisYRight(Axis)
-     */
-    public Axis getAxisYRight();
 
     /**
      * Returns color used to draw value label text.

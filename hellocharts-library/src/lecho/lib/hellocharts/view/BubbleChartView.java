@@ -43,6 +43,11 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
     }
 
     @Override
+    public BubbleChartData getBubbleChartData() {
+        return data;
+    }
+
+    @Override
     public void setBubbleChartData(BubbleChartData data) {
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "Setting data for BubbleChartView");
@@ -55,11 +60,6 @@ public class BubbleChartView extends AbstractChartView implements BubbleChartDat
         }
 
         super.onChartDataChange();
-    }
-
-    @Override
-    public BubbleChartData getBubbleChartData() {
-        return data;
     }
 
     @Override

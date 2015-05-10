@@ -40,6 +40,10 @@ public class PreviewLineChartView extends LineChartView {
         setLineChartData(LineChartData.generateDummyData());
     }
 
+    public int getPreviewColor() {
+        return previewChartRenderer.getPreviewColor();
+    }
+
     public void setPreviewColor(int color) {
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "Changing preview area color");
@@ -47,10 +51,6 @@ public class PreviewLineChartView extends LineChartView {
 
         previewChartRenderer.setPreviewColor(color);
         ViewCompat.postInvalidateOnAnimation(this);
-    }
-
-    public int getPreviewColor() {
-        return previewChartRenderer.getPreviewColor();
     }
 
 }

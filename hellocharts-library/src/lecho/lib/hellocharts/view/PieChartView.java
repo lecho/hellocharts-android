@@ -59,6 +59,11 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
     }
 
     @Override
+    public PieChartData getPieChartData() {
+        return data;
+    }
+
+    @Override
     public void setPieChartData(PieChartData data) {
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "Setting data for ColumnChartView");
@@ -71,11 +76,6 @@ public class PieChartView extends AbstractChartView implements PieChartDataProvi
         }
 
         super.onChartDataChange();
-    }
-
-    @Override
-    public PieChartData getPieChartData() {
-        return data;
     }
 
     @Override
