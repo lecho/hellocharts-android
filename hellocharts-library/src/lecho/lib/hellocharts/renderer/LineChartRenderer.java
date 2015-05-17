@@ -114,6 +114,8 @@ public class LineChartRenderer extends AbstractChartRenderer {
             if (line.hasLines()) {
                 if (line.isCubic()) {
                     drawSmoothPath(drawCanvas, line);
+                } else if (line.isSquare()) {
+                    drawSquarePath(drawCanvas, line);
                 } else {
                     drawPath(drawCanvas, line);
                 }
@@ -223,6 +225,38 @@ public class LineChartRenderer extends AbstractChartRenderer {
             } else {
                 path.lineTo(rawX, rawY);
             }
+
+            ++valueIndex;
+
+        }
+
+        canvas.drawPath(path, linePaint);
+
+        if (line.isFilled()) {
+            drawArea(canvas, line);
+        }
+
+        path.reset();
+    }
+
+    private void drawSquarePath(Canvas canvas, final Line line) {
+        prepareLinePaint(line);
+
+        int valueIndex = 0;
+        float previousRawY = 0;
+        for (PointValue pointValue : line.getValues()) {
+
+            final float rawX = computator.computeRawX(pointValue.getX());
+            final float rawY = computator.computeRawY(pointValue.getY());
+
+            if (valueIndex == 0) {
+                path.moveTo(rawX, rawY);
+            } else {
+                path.lineTo(rawX, previousRawY);
+                path.lineTo(rawX, rawY);
+            }
+
+            previousRawY = rawY;
 
             ++valueIndex;
 
