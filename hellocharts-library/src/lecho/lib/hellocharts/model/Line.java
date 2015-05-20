@@ -55,6 +55,7 @@ public class Line {
         this.hasLines = line.hasLines;
         this.hasLabels = line.hasLabels;
         this.hasLabelsOnlyForSelected = line.hasLabelsOnlyForSelected;
+        this.isSquare = line.isSquare;
         this.isCubic = line.isCubic;
         this.isFilled = line.isFilled;
         this.shape = line.shape;
