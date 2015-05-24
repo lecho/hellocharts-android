@@ -44,13 +44,10 @@ public class AxisValue {
      *
      * @param label
      */
-    public AxisValue setLabel(String label) {
-        this.label = label.toCharArray();
+    @Deprecated
+    public AxisValue setLabel(char[] label) {
+        this.label = label;
         return this;
-    }
-
-    public char[] getLabelAsChars() {
-        return label;
     }
 
     /**
@@ -58,10 +55,13 @@ public class AxisValue {
      *
      * @param label
      */
-    @Deprecated
-    public AxisValue setLabel(char[] label) {
-        this.label = label;
+    public AxisValue setLabel(String label) {
+        this.label = label.toCharArray();
         return this;
+    }
+
+    public char[] getLabelAsChars() {
+        return label;
     }
 
     @Override

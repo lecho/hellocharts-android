@@ -72,6 +72,12 @@ public class PointValue {
         return label;
     }
 
+    @Deprecated
+    public PointValue setLabel(char[] label) {
+        this.label = label;
+        return this;
+    }
+
     public PointValue setLabel(String label) {
         this.label = label.toCharArray();
         return this;
@@ -79,12 +85,6 @@ public class PointValue {
 
     public char[] getLabelAsChars() {
         return label;
-    }
-
-    @Deprecated
-    public PointValue setLabel(char[] label) {
-        this.label = label;
-        return this;
     }
 
     @Override

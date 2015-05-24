@@ -148,6 +148,12 @@ public class BubbleValue {
         return label;
     }
 
+    @Deprecated
+    public BubbleValue setLabel(char[] label) {
+        this.label = label;
+        return this;
+    }
+
     public BubbleValue setLabel(String label) {
         this.label = label.toCharArray();
         return this;
@@ -155,12 +161,6 @@ public class BubbleValue {
 
     public char[] getLabelAsChars() {
         return label;
-    }
-
-    @Deprecated
-    public BubbleValue setLabel(char[] label) {
-        this.label = label;
-        return this;
     }
 
     @Override

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="lecho.lib.hellocharts"
-    android:versionCode="10"
-    android:versionName="1.5.5" >
+<manifest package="lecho.lib.hellocharts"
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          android:versionCode="10"
+          android:versionName="1.5.5">
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="22" />
+        android:targetSdkVersion="22"/>
 
 </manifest>

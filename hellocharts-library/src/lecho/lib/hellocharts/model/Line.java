@@ -202,7 +202,7 @@ public class Line {
 
     public Line setCubic(boolean isCubic) {
         this.isCubic = isCubic;
-        if(isSquare)
+        if (isSquare)
             setSquare(false);
         return this;
     }
@@ -213,7 +213,7 @@ public class Line {
 
     public Line setSquare(boolean isSquare) {
         this.isSquare = isSquare;
-        if(isCubic)
+        if (isCubic)
             setCubic(false);
         return this;
     }
