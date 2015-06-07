@@ -18,7 +18,9 @@ import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
 import lecho.lib.hellocharts.provider.ComboLineColumnChartDataProvider;
 import lecho.lib.hellocharts.provider.LineChartDataProvider;
+import lecho.lib.hellocharts.renderer.ColumnChartRenderer;
 import lecho.lib.hellocharts.renderer.ComboLineColumnChartRenderer;
+import lecho.lib.hellocharts.renderer.LineChartRenderer;
 
 /**
  * ComboChart, supports ColumnChart combined with LineChart. Lines are always drawn on top.
@@ -109,6 +111,14 @@ public class ComboLineColumnChartView extends AbstractChartView implements Combo
         if (null != touchListener) {
             this.onValueTouchListener = touchListener;
         }
+    }
+
+    public void setColumnChartRenderer(Context context, ColumnChartRenderer columnChartRenderer){
+        setChartRenderer(new ComboLineColumnChartRenderer(context, this , columnChartRenderer, lineChartDataProvider));
+    }
+
+    public void setLineChartRenderer(Context context, LineChartRenderer lineChartRenderer){
+        setChartRenderer(new ComboLineColumnChartRenderer(context, this, columnChartDataProvider, lineChartRenderer));
     }
 
     private class ComboLineChartDataProvider implements LineChartDataProvider {
