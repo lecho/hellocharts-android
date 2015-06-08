@@ -13,12 +13,28 @@ public class ComboLineColumnChartRenderer extends ComboChartRenderer {
 
     public ComboLineColumnChartRenderer(Context context, Chart chart, ColumnChartDataProvider columnChartDataProvider,
                                         LineChartDataProvider lineChartDataProvider) {
+        this(context, chart, new ColumnChartRenderer(context, chart, columnChartDataProvider),
+                new LineChartRenderer(context, chart, lineChartDataProvider));
+    }
+
+    public ComboLineColumnChartRenderer(Context context, Chart chart, ColumnChartRenderer columnChartRenderer,
+                                        LineChartDataProvider lineChartDataProvider) {
+        this(context, chart, columnChartRenderer, new LineChartRenderer(context, chart, lineChartDataProvider));
+    }
+
+    public ComboLineColumnChartRenderer(Context context, Chart chart, ColumnChartDataProvider columnChartDataProvider,
+                                        LineChartRenderer lineChartRenderer) {
+        this(context, chart, new ColumnChartRenderer(context, chart, columnChartDataProvider), lineChartRenderer);
+    }
+
+    public ComboLineColumnChartRenderer(Context context, Chart chart, ColumnChartRenderer columnChartRenderer,
+                                        LineChartRenderer lineChartRenderer) {
         super(context, chart);
 
-        columnChartRenderer = new ColumnChartRenderer(context, chart, columnChartDataProvider);
-        lineChartRenderer = new LineChartRenderer(context, chart, lineChartDataProvider);
+        this.columnChartRenderer = columnChartRenderer;
+        this.lineChartRenderer = lineChartRenderer;
 
-        renderers.add(columnChartRenderer);
-        renderers.add(lineChartRenderer);
+        renderers.add(this.columnChartRenderer);
+        renderers.add(this.lineChartRenderer);
     }
 }
