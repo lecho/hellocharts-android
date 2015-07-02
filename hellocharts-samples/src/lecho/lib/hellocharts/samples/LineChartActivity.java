@@ -60,6 +60,7 @@ public class LineChartActivity extends ActionBarActivity {
         private boolean hasLabels = false;
         private boolean isCubic = false;
         private boolean hasLabelForSelected = false;
+        private boolean pointsHaveDifferentColor;
 
         public PlaceholderFragment() {
         }
@@ -117,6 +118,10 @@ public class LineChartActivity extends ActionBarActivity {
             }
             if (id == R.id.action_toggle_area) {
                 toggleFilled();
+                return true;
+            }
+            if (id == R.id.action_point_color) {
+                togglePointColor();
                 return true;
             }
             if (id == R.id.action_shape_circles) {
@@ -196,6 +201,7 @@ public class LineChartActivity extends ActionBarActivity {
             hasLabels = false;
             isCubic = false;
             hasLabelForSelected = false;
+            pointsHaveDifferentColor = false;
 
             chart.setValueSelectionEnabled(hasLabelForSelected);
             resetViewport();
@@ -231,6 +237,9 @@ public class LineChartActivity extends ActionBarActivity {
                 line.setHasLabelsOnlyForSelected(hasLabelForSelected);
                 line.setHasLines(hasLines);
                 line.setHasPoints(hasPoints);
+                if (pointsHaveDifferentColor){
+                    line.setPointColor(ChartUtils.COLORS[(i + 1) % ChartUtils.COLORS.length]);
+                }
                 lines.add(line);
             }
 
@@ -336,6 +345,12 @@ public class LineChartActivity extends ActionBarActivity {
 
         private void toggleFilled() {
             isFilled = !isFilled;
+
+            generateData();
+        }
+
+        private void togglePointColor() {
+            pointsHaveDifferentColor = !pointsHaveDifferentColor;
 
             generateData();
         }

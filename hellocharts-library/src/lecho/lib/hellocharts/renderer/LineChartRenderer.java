@@ -366,7 +366,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
     // may cause problems in the future with
     // implementing point styles.
     private void drawPoints(Canvas canvas, Line line, int lineIndex, int mode) {
-        pointPaint.setColor(line.getColor());
+        pointPaint.setColor(line.getPointColor());
         int valueIndex = 0;
         for (PointValue pointValue : line.getValues()) {
             int pointRadius = ChartUtils.dp2px(density, line.getPointRadius());
