@@ -28,6 +28,10 @@
         android:title="Toggle area"
         app:showAsAction="never"/>
     <item
+        android:id="@+id/action_point_color"
+        android:title="Toggle Point Color"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/action_shape_circles"
         android:title="Circle shape"
         app:showAsAction="never"/>
