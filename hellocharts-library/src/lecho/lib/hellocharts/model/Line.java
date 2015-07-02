@@ -100,12 +100,14 @@ public class Line {
 
     public Line setColor(int color) {
         this.color = color;
-        this.darkenColor = ChartUtils.darkenColor(color);
+        if (pointColor == UNINITIALIZED) {
+            this.darkenColor = ChartUtils.darkenColor(color);
+        }
         return this;
     }
 
     public int getPointColor() {
-        if(pointColor == UNINITIALIZED){
+        if (pointColor == UNINITIALIZED) {
             return color;
         } else {
             return pointColor;
@@ -114,6 +116,11 @@ public class Line {
 
     public Line setPointColor(int pointColor) {
         this.pointColor = pointColor;
+        if (pointColor == UNINITIALIZED) {
+            this.darkenColor = ChartUtils.darkenColor(color);
+        } else {
+            this.darkenColor = ChartUtils.darkenColor(pointColor);
+        }
         return this;
     }
 
@@ -218,7 +225,7 @@ public class Line {
 
     public Line setCubic(boolean isCubic) {
         this.isCubic = isCubic;
-        if(isSquare)
+        if (isSquare)
             setSquare(false);
         return this;
     }
@@ -229,7 +236,7 @@ public class Line {
 
     public Line setSquare(boolean isSquare) {
         this.isSquare = isSquare;
-        if(isCubic)
+        if (isCubic)
             setCubic(false);
         return this;
     }
