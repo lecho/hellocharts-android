@@ -262,7 +262,7 @@ public abstract class AbstractChartView extends View implements Chart {
             left = Math.max(maxViewport.left, Math.min(left, maxViewport.right - width));
             top = Math.max(maxViewport.bottom + height, Math.min(top, maxViewport.top));
 
-            scrollViewport.set(left, top, left + height, top - height);
+            scrollViewport.set(left, top, left + width, top - height);
         }
 
         return scrollViewport;
