@@ -2,6 +2,10 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 apply from: 'https://raw.github.com/chrisbanes/gradle-mvn-push/master/gradle-mvn-push.gradle'
 
+//To upload to maven central
+//http://zserge.com/blog/gradle-maven-publish.html
+//gradle uploadArchives
+
 buildscript {
     repositories {
         mavenCentral()
