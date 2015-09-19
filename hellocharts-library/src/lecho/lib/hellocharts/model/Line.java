@@ -20,6 +20,8 @@ public class Line {
     public static final int UNINITIALIZED = 0;
     private int color = ChartUtils.DEFAULT_COLOR;
     private int pointColor = UNINITIALIZED;
+    private int pointStrokeColor = ChartUtils.DEFAULT_COLOR;
+    private int pointStrokeWidth = DEFAULT_LINE_STROKE_WIDTH_DP;
     private int darkenColor = ChartUtils.DEFAULT_DARKEN_COLOR;
     /**
      * Transparency of area when line is filled. *
@@ -54,6 +56,7 @@ public class Line {
         this.areaTransparency = line.areaTransparency;
         this.strokeWidth = line.strokeWidth;
         this.pointRadius = line.pointRadius;
+
         this.hasPoints = line.hasPoints;
         this.hasLines = line.hasLines;
         this.hasLabels = line.hasLabels;
@@ -291,5 +294,21 @@ public class Line {
             this.formatter = formatter;
         }
         return this;
+    }
+
+    public int getPointStrokeColor() {
+        return pointStrokeColor;
+    }
+
+    public void setPointStrokeColor(int pointStrokeColor) {
+        this.pointStrokeColor = pointStrokeColor;
+    }
+
+    public int getPointStrokeWidth() {
+        return pointStrokeWidth;
+    }
+
+    public void setPointStrokeWidth(int pointStrokeWidth) {
+        this.pointStrokeWidth = pointStrokeWidth;
     }
 }

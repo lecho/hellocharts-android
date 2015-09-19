@@ -1,5 +1,6 @@
 package lecho.lib.hellocharts.samples;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -182,6 +183,10 @@ public class ComboLineColumnChartActivity extends ActionBarActivity {
                 line.setHasLabels(hasLabels);
                 line.setHasLines(hasLines);
                 line.setHasPoints(hasPoints);
+                line.setFilled(false);
+                line.setPointRadius(4);
+                line.setPointColor(Color.WHITE);
+                line.setPointStrokeColor(ChartUtils.COLORS[i]);
                 lines.add(line);
             }
 

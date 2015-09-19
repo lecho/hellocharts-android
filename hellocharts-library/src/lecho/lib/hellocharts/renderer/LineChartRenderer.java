@@ -397,7 +397,21 @@ public class LineChartRenderer extends AbstractChartRenderer {
             canvas.drawRect(rawX - pointRadius, rawY - pointRadius, rawX + pointRadius, rawY + pointRadius,
                     pointPaint);
         } else if (ValueShape.CIRCLE.equals(line.getShape())) {
-            canvas.drawCircle(rawX, rawY, pointRadius, pointPaint);
+            if (line.getPointColor() == line.getPointStrokeColor()) {
+                canvas.drawCircle(rawX, rawY, pointRadius, pointPaint);  // draw fill circle;
+            } else {
+                // draw hollow circle with stroke;
+                Paint tempPointPaint = new Paint();
+                tempPointPaint.setAntiAlias(true);
+                tempPointPaint.setStyle(Paint.Style.STROKE);
+                tempPointPaint.setColor(line.getPointStrokeColor());
+                tempPointPaint.setPathEffect(line.getPathEffect());
+                int strokeWidth = ChartUtils.dp2px(density, line.getPointStrokeWidth());
+                tempPointPaint.setStrokeWidth(strokeWidth);
+                canvas.drawCircle(rawX, rawY, pointRadius, pointPaint); // fill
+                canvas.drawCircle(rawX, rawY, pointRadius, tempPointPaint); // stroke;
+            }
+
         } else if (ValueShape.DIAMOND.equals(line.getShape())) {
             canvas.save();
             canvas.rotate(45, rawX, rawY);
