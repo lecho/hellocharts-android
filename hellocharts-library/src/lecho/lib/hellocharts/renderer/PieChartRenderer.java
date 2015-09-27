@@ -291,10 +291,13 @@ public class PieChartRenderer extends AbstractChartRenderer {
         final PieChartData data = dataProvider.getPieChartData();
         final float sliceScale = 360f / maxSum;
         float lastAngle = rotation;
+        int sliceIndex = 0;
         for (SliceValue sliceValue : data.getValues()) {
             final float angle = Math.abs(sliceValue.getValue()) * sliceScale;
             if (isTouched()) {
-                if (hasLabels || hasLabelsOnlyForSelected) {
+                if (hasLabels) {
+                    drawLabel(canvas, sliceValue, lastAngle, angle);
+                } else if (hasLabelsOnlyForSelected && selectedValue.getFirstIndex() == sliceIndex) {
                     drawLabel(canvas, sliceValue, lastAngle, angle);
                 }
             } else {
@@ -303,6 +306,7 @@ public class PieChartRenderer extends AbstractChartRenderer {
                 }
             }
             lastAngle += angle;
+            ++sliceIndex;
         }
     }
 
