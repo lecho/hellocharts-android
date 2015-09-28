@@ -143,7 +143,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
         }
     }
 
-    private boolean checkIfShouldDrawPoints(Line line) {
+    protected boolean checkIfShouldDrawPoints(Line line) {
         return line.hasPoints() || line.getValues().size() == 1;
     }
 
@@ -170,7 +170,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
         return isTouched();
     }
 
-    private void calculateMaxViewport() {
+    protected void calculateMaxViewport() {
         tempMaximumViewport.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
         LineChartData data = dataProvider.getLineChartData();
 
@@ -194,7 +194,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
         }
     }
 
-    private int calculateContentRectInternalMargin() {
+    protected int calculateContentRectInternalMargin() {
         int contentAreaMargin = 0;
         final LineChartData data = dataProvider.getLineChartData();
         for (Line line : data.getLines()) {
@@ -211,7 +211,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
     /**
      * Draws lines, uses path for drawing filled area on software canvas. Line is drawn with canvas.drawLines() method.
      */
-    private void drawPath(Canvas canvas, final Line line) {
+    protected void drawPath(Canvas canvas, final Line line) {
         prepareLinePaint(line);
 
         int valueIndex = 0;
@@ -239,7 +239,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
         path.reset();
     }
 
-    private void drawSquarePath(Canvas canvas, final Line line) {
+    protected void drawSquarePath(Canvas canvas, final Line line) {
         prepareLinePaint(line);
 
         int valueIndex = 0;
@@ -271,7 +271,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
         path.reset();
     }
 
-    private void drawSmoothPath(Canvas canvas, final Line line) {
+    protected void drawSmoothPath(Canvas canvas, final Line line) {
         prepareLinePaint(line);
 
         final int lineSize = line.getValues().size();
@@ -356,7 +356,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
         path.reset();
     }
 
-    private void prepareLinePaint(final Line line) {
+    protected void prepareLinePaint(final Line line) {
         linePaint.setStrokeWidth(ChartUtils.dp2px(density, line.getStrokeWidth()));
         linePaint.setColor(line.getColor());
         linePaint.setPathEffect(line.getPathEffect());
@@ -365,7 +365,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
     // TODO Drawing points can be done in the same loop as drawing lines but it
     // may cause problems in the future with
     // implementing point styles.
-    private void drawPoints(Canvas canvas, Line line, int lineIndex, int mode) {
+    protected void drawPoints(Canvas canvas, Line line, int lineIndex, int mode) {
         pointPaint.setColor(line.getPointColor());
         int valueIndex = 0;
         for (PointValue pointValue : line.getValues()) {
@@ -391,7 +391,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
         }
     }
 
-    private void drawPoint(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY,
+    protected void drawPoint(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY,
                            float pointRadius) {
         if (ValueShape.SQUARE.equals(line.getShape())) {
             canvas.drawRect(rawX - pointRadius, rawY - pointRadius, rawX + pointRadius, rawY + pointRadius,
@@ -409,13 +409,13 @@ public class LineChartRenderer extends AbstractChartRenderer {
         }
     }
 
-    private void highlightPoints(Canvas canvas) {
+    protected void highlightPoints(Canvas canvas) {
         int lineIndex = selectedValue.getFirstIndex();
         Line line = dataProvider.getLineChartData().getLines().get(lineIndex);
         drawPoints(canvas, line, lineIndex, MODE_HIGHLIGHT);
     }
 
-    private void highlightPoint(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY, int lineIndex,
+    protected void highlightPoint(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY, int lineIndex,
                                 int valueIndex) {
         if (selectedValue.getFirstIndex() == lineIndex && selectedValue.getSecondIndex() == valueIndex) {
             int pointRadius = ChartUtils.dp2px(density, line.getPointRadius());
@@ -427,7 +427,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
         }
     }
 
-    private void drawLabel(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY, float offset) {
+    protected void drawLabel(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY, float offset) {
         final Rect contentRect = computator.getContentRectMinusAllMargins();
         final int numChars = line.getFormatter().formatChartValue(labelBuffer, pointValue);
         if (numChars == 0) {
@@ -473,7 +473,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
                 line.getDarkenColor());
     }
 
-    private void drawArea(Canvas canvas, Line line) {
+    protected void drawArea(Canvas canvas, Line line) {
         final int lineSize = line.getValues().size();
         if (lineSize < 2) {
             //No point to draw area for one point or empty line.
@@ -498,7 +498,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
         linePaint.setStyle(Paint.Style.STROKE);
     }
 
-    private boolean isInArea(float x, float y, float touchX, float touchY, float radius) {
+    protected boolean isInArea(float x, float y, float touchX, float touchY, float radius) {
         float diffX = touchX - x;
         float diffY = touchY - y;
         return Math.pow(diffX, 2) + Math.pow(diffY, 2) <= 2 * Math.pow(radius, 2);

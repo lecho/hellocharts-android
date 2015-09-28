@@ -182,14 +182,14 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
         computator.setCurrentViewport(currentViewport);
     }
 
-    private void drawBubbles(Canvas canvas) {
+    protected void drawBubbles(Canvas canvas) {
         final BubbleChartData data = dataProvider.getBubbleChartData();
         for (BubbleValue bubbleValue : data.getValues()) {
             drawBubble(canvas, bubbleValue);
         }
     }
 
-    private void drawBubble(Canvas canvas, BubbleValue bubbleValue) {
+    protected void drawBubble(Canvas canvas, BubbleValue bubbleValue) {
         float rawRadius = processBubble(bubbleValue, bubbleCenter);
         // Not touched bubbles are a little smaller than touched to give user touch feedback.
         rawRadius -= touchAdditional;
@@ -199,7 +199,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 
     }
 
-    private void drawBubbleShapeAndLabel(Canvas canvas, BubbleValue bubbleValue, float rawRadius, int mode) {
+    protected void drawBubbleShapeAndLabel(Canvas canvas, BubbleValue bubbleValue, float rawRadius, int mode) {
         if (ValueShape.SQUARE.equals(bubbleValue.getShape())) {
             canvas.drawRect(bubbleRect, bubblePaint);
         } else if (ValueShape.CIRCLE.equals(bubbleValue.getShape())) {
@@ -221,13 +221,13 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
         }
     }
 
-    private void highlightBubbles(Canvas canvas) {
+    protected void highlightBubbles(Canvas canvas) {
         final BubbleChartData data = dataProvider.getBubbleChartData();
         BubbleValue bubbleValue = data.getValues().get(selectedValue.getFirstIndex());
         highlightBubble(canvas, bubbleValue);
     }
 
-    private void highlightBubble(Canvas canvas, BubbleValue bubbleValue) {
+    protected void highlightBubble(Canvas canvas, BubbleValue bubbleValue) {
         float rawRadius = processBubble(bubbleValue, bubbleCenter);
         bubblePaint.setColor(bubbleValue.getDarkenColor());
         drawBubbleShapeAndLabel(canvas, bubbleValue, rawRadius, MODE_HIGHLIGHT);
@@ -237,7 +237,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
      * Calculate bubble radius and center x and y coordinates. Center x and x will be stored in point parameter, radius
      * will be returned as float value.
      */
-    private float processBubble(BubbleValue bubbleValue, PointF point) {
+    protected float processBubble(BubbleValue bubbleValue, PointF point) {
         final float rawX = computator.computeRawX(bubbleValue.getX());
         final float rawY = computator.computeRawY(bubbleValue.getY());
         float radius = (float) Math.sqrt(Math.abs(bubbleValue.getZ()) / Math.PI);
@@ -261,7 +261,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
         return rawRadius;
     }
 
-    private void drawLabel(Canvas canvas, BubbleValue bubbleValue, float rawX, float rawY) {
+    protected void drawLabel(Canvas canvas, BubbleValue bubbleValue, float rawX, float rawY) {
         final Rect contentRect = computator.getContentRectMinusAllMargins();
         final int numChars = valueFormatter.formatChartValue(labelBuffer, bubbleValue);
 
@@ -300,7 +300,7 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
 
     }
 
-    private void calculateMaxViewport() {
+    protected void calculateMaxViewport() {
         float maxZ = Float.MIN_VALUE;
         tempMaximumViewport.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
         BubbleChartData data = dataProvider.getBubbleChartData();
