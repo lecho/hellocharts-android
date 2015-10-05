@@ -119,7 +119,7 @@ Every chart view can be defined in layout xml file:
     values.add(new PointValue(3, 4));
 
     //In most cased you can call data model methods in builder-pattern-like manner.
-    Line line = new Line(values).setColor(Color.Blue).setCubic(true);
+    Line line = new Line(values).setColor(Color.BLUE).setCubic(true);
     List<Line> lines = new ArrayList<Line>();
     lines.add(line);
 
