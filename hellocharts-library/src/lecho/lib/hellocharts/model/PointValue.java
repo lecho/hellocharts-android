@@ -8,6 +8,7 @@ import lecho.lib.hellocharts.view.Chart;
  * Single point coordinates, used for LineChartData.
  */
 public class PointValue {
+    public static final int UNINITIALIZED = 0;
 
     private float x;
     private float y;
@@ -16,6 +17,16 @@ public class PointValue {
     private float diffX;
     private float diffY;
     private char[] label;
+    private int color = UNINITIALIZED;
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
 
     public PointValue() {
         set(0, 0);
