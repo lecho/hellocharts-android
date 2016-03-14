@@ -73,12 +73,12 @@ public class LineChartActivity extends ActionBarActivity {
             chart = (LineChartView) rootView.findViewById(R.id.chart);
             chart.setOnValueTouchListener(new ValueTouchListener());
 
-            // Generate some randome values.
+            // Generate some random values.
             generateValues();
 
             generateData();
 
-            // Disable viewpirt recalculations, see toggleCubic() method for more info.
+            // Disable viewport recalculations, see toggleCubic() method for more info.
             chart.setViewportCalculationEnabled(false);
 
             resetViewport();
