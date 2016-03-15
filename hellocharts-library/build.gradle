@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
 apply from: 'https://raw.github.com/chrisbanes/gradle-mvn-push/master/gradle-mvn-push.gradle'
 
 //To upload to maven central
@@ -60,6 +61,22 @@ android {
         abortOnError false
     }
 
+}
+
+bintray {
+    user = BINTRAY_USER
+    key = BINTRAY_API_KEY
+    publications = ['maven']
+    publish = true
+    pkg {
+        repo = 'maven'
+        name = POM_ARTIFACT_ID
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/gudatcomputers/hellocharts-android'
+        version {
+            name = VERSION_NAME
+        }
+    }
 }
 
 //Execute "gradle clean jarRelease" to cook jar.
