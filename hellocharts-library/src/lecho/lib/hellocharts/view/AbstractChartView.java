@@ -483,6 +483,14 @@ public abstract class AbstractChartView extends View implements Chart {
         this.touchHandler.resetTouchHandler();
     }
 
+    /**
+     * When embedded in a ViewPager, this will be called in order to know if we can scroll.
+     * If this returns true, the ViewPager will ignore the drag so that we can scroll our content.
+     * If this return false, the ViewPager will assume we won't be able to scroll and will consume the drag
+     *
+     * @param direction Amount of pixels being scrolled (x axis)
+     * @return true if the chart can be scrolled (ie. zoomed and not against the edge of the chart)
+     */
     @Override
     public boolean canScrollHorizontally(int direction) {
         if (getZoomLevel() <= 1.0) {
