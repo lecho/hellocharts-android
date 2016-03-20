@@ -483,4 +483,17 @@ public abstract class AbstractChartView extends View implements Chart {
         this.touchHandler.resetTouchHandler();
     }
 
+    @Override
+    public boolean canScrollHorizontally(int direction) {
+        if (getZoomLevel() <= 1.0) {
+            return false;
+        }
+        final Viewport currentViewport = getCurrentViewport();
+        final Viewport maximumViewport = getMaximumViewport();
+        if (direction < 0) {
+            return currentViewport.left > maximumViewport.left;
+        } else {
+            return currentViewport.right < maximumViewport.right;
+        }
+    }
 }
