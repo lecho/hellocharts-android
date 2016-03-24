@@ -7,6 +7,7 @@ import android.util.Log;
 import lecho.lib.hellocharts.BuildConfig;
 import lecho.lib.hellocharts.listener.ColumnChartOnValueSelectListener;
 import lecho.lib.hellocharts.listener.DummyColumnChartOnValueSelectListener;
+import lecho.lib.hellocharts.model.ChartData;
 import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.SelectedValue;
 import lecho.lib.hellocharts.model.SubcolumnValue;
@@ -59,7 +60,7 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
     }
 
     @Override
-    public ColumnChartData getChartData() {
+    public ChartData getChartData() {
         return data;
     }
 
