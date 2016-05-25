@@ -1,5 +1,6 @@
 package lecho.lib.hellocharts.samples;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -237,6 +238,8 @@ public class LineChartActivity extends ActionBarActivity {
                 line.setHasLabelsOnlyForSelected(hasLabelForSelected);
                 line.setHasLines(hasLines);
                 line.setHasPoints(hasPoints);
+                line.setPointColor(Color.WHITE);
+                line.setPointStrokeColor(ChartUtils.COLORS[i]);
                 if (pointsHaveDifferentColor){
                     line.setPointColor(ChartUtils.COLORS[(i + 1) % ChartUtils.COLORS.length]);
                 }
