@@ -16,6 +16,7 @@ public class PointValue {
     private float diffX;
     private float diffY;
     private char[] label;
+    private int color;
 
     public PointValue() {
         set(0, 0);
@@ -23,6 +24,11 @@ public class PointValue {
 
     public PointValue(float x, float y) {
         set(x, y);
+    }
+    
+    public PointValue(float x, float y, int color){
+        this(x,y);
+        this.color = color;
     }
 
     public PointValue(PointValue pointValue) {
@@ -33,6 +39,14 @@ public class PointValue {
     public void update(float scale) {
         x = originX + diffX * scale;
         y = originY + diffY * scale;
+    }
+    
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
     }
 
     public void finish() {
