@@ -166,9 +166,9 @@ public class Axis {
     public List<AxisValue> getValues() {
         //Copy and transfer to ensure that other value logic stays intact
         if (isReversed) {
-            ArrayList<AxisValue> copy = new ArrayList<AxisValue>();
-            Collections.copy(copy, values);
-            Collections.reverse(copy);
+            ArrayList<AxisValue> copy = new ArrayList<>();
+            for (int i = values.size() - 1; i >= 0; i--)
+                copy.add(values.get(i));
             return copy;
         }
         return values;
