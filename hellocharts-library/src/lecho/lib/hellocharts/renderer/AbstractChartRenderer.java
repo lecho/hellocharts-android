@@ -113,13 +113,9 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
             }
 
             canvas.drawRect(labelBackgroundRect, labelBackgroundPaint);
-
-            textX = labelBackgroundRect.left + labelMargin;
-            textY = labelBackgroundRect.bottom - labelMargin;
-        } else {
-            textX = labelBackgroundRect.left;
-            textY = labelBackgroundRect.bottom;
         }
+        textX = labelBackgroundRect.left + labelMargin;
+        textY = labelBackgroundRect.bottom - labelMargin;
 
         canvas.drawText(labelBuffer, startIndex, numChars, textX, textY, labelPaint);
     }
