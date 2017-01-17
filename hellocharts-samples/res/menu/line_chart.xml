@@ -20,6 +20,10 @@
         android:title="Toggle points"
         app:showAsAction="never"/>
     <item
+        android:id="@+id/action_toggle_gradient"
+        android:title="Toggle gradient"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/action_toggle_cubic"
         android:title="Toggle Cubic curve"
         app:showAsAction="never"/>

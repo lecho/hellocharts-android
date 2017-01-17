@@ -61,6 +61,7 @@ public class LineChartActivity extends ActionBarActivity {
         private boolean isCubic = false;
         private boolean hasLabelForSelected = false;
         private boolean pointsHaveDifferentColor;
+        private boolean hasGradientToTransparent = false;
 
         public PlaceholderFragment() {
         }
@@ -110,6 +111,10 @@ public class LineChartActivity extends ActionBarActivity {
             }
             if (id == R.id.action_toggle_points) {
                 togglePoints();
+                return true;
+            }
+            if (id == R.id.action_toggle_gradient) {
+                toggleGradient();
                 return true;
             }
             if (id == R.id.action_toggle_cubic) {
@@ -237,6 +242,7 @@ public class LineChartActivity extends ActionBarActivity {
                 line.setHasLabelsOnlyForSelected(hasLabelForSelected);
                 line.setHasLines(hasLines);
                 line.setHasPoints(hasPoints);
+                line.setHasGradientToTransparent(hasGradientToTransparent);
                 if (pointsHaveDifferentColor){
                     line.setPointColor(ChartUtils.COLORS[(i + 1) % ChartUtils.COLORS.length]);
                 }
@@ -287,6 +293,12 @@ public class LineChartActivity extends ActionBarActivity {
 
         private void togglePoints() {
             hasPoints = !hasPoints;
+
+            generateData();
+        }
+
+        private void toggleGradient() {
+            hasGradientToTransparent = !hasGradientToTransparent;
 
             generateData();
         }

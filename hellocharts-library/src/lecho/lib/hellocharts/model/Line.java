@@ -27,6 +27,7 @@ public class Line {
     private int areaTransparency = DEFAULT_AREA_TRANSPARENCY;
     private int strokeWidth = DEFAULT_LINE_STROKE_WIDTH_DP;
     private int pointRadius = DEFAULT_POINT_RADIUS_DP;
+    private boolean hasGradientToTransparent = false;
     private boolean hasPoints = true;
     private boolean hasLines = true;
     private boolean hasLabels = false;
@@ -54,6 +55,7 @@ public class Line {
         this.areaTransparency = line.areaTransparency;
         this.strokeWidth = line.strokeWidth;
         this.pointRadius = line.pointRadius;
+        this.hasGradientToTransparent = line.hasGradientToTransparent;
         this.hasPoints = line.hasPoints;
         this.hasLines = line.hasLines;
         this.hasLabels = line.hasLabels;
@@ -216,6 +218,15 @@ public class Line {
      */
     public Line setPointRadius(int pointRadius) {
         this.pointRadius = pointRadius;
+        return this;
+    }
+
+    public boolean getGradientToTransparent() {
+        return hasGradientToTransparent;
+    }
+
+    public Line setHasGradientToTransparent(boolean hasGradientToTransparent) {
+        this.hasGradientToTransparent = hasGradientToTransparent;
         return this;
     }
 
