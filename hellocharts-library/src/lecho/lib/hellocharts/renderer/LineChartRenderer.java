@@ -4,11 +4,13 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Paint.Cap;
 import android.graphics.Path;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
+import android.graphics.Shader;
 
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
@@ -360,6 +362,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
         linePaint.setStrokeWidth(ChartUtils.dp2px(density, line.getStrokeWidth()));
         linePaint.setColor(line.getColor());
         linePaint.setPathEffect(line.getPathEffect());
+        linePaint.setShader(null);
     }
 
     // TODO Drawing points can be done in the same loop as drawing lines but it
@@ -494,6 +497,10 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
         linePaint.setStyle(Paint.Style.FILL);
         linePaint.setAlpha(line.getAreaTransparency());
+        linePaint.setShader(line.getGradientToTransparent() ?
+                new LinearGradient(0, 0, 0, canvas.getHeight(), line.getColor(),
+                        line.getColor() & 0x00ffffff, Shader.TileMode.MIRROR) :
+                null);
         canvas.drawPath(path, linePaint);
         linePaint.setStyle(Paint.Style.STROKE);
     }
