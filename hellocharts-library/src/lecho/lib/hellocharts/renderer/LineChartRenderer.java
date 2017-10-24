@@ -88,10 +88,14 @@ public class LineChartRenderer extends AbstractChartRenderer {
         onChartViewportChanged();
     }
 
-    @Override
     public void onChartViewportChanged() {
+        onChartViewportChanged(1);
+    }
+
+    @Override
+    public void onChartViewportChanged(float scale) {
         if (isViewportCalculationEnabled) {
-            calculateMaxViewport();
+            calculateMaxViewport(scale);
             computator.setMaxViewport(tempMaximumViewport);
             computator.setCurrentViewport(computator.getMaximumViewport());
         }
@@ -172,27 +176,30 @@ public class LineChartRenderer extends AbstractChartRenderer {
         return isTouched();
     }
 
-    private void calculateMaxViewport() {
-        tempMaximumViewport.set(Float.MAX_VALUE, Float.MIN_VALUE, Float.MIN_VALUE, Float.MAX_VALUE);
+    /**
+     by setting the tempMaximumViewport after the new points of the viewport are calculated,
+     it doesn't cause the small movement in the viewport directly before animating the horizontal axis
+     */
+    private void calculateMaxViewport(float scale) {
         LineChartData data = dataProvider.getLineChartData();
-
+        float maxX = Float.MIN_VALUE, maxY = Float.MIN_VALUE, minX = Float.MAX_VALUE, minY = Float.MAX_VALUE;
         for (Line line : data.getLines()) {
             // Calculate max and min for viewport.
             for (PointValue pointValue : line.getValues()) {
-                if (pointValue.getX() < tempMaximumViewport.left) {
-                    tempMaximumViewport.left = pointValue.getX();
-                }
-                if (pointValue.getX() > tempMaximumViewport.right) {
-                    tempMaximumViewport.right = pointValue.getX();
-                }
-                if (pointValue.getY() < tempMaximumViewport.bottom) {
-                    tempMaximumViewport.bottom = pointValue.getY();
-                }
-                if (pointValue.getY() > tempMaximumViewport.top) {
-                    tempMaximumViewport.top = pointValue.getY();
-                }
-
+                maxX = pointValue.getX() > maxX ? pointValue.getX() : maxX;
+                maxY = pointValue.getY() > maxY ? pointValue.getY() : maxY;
+                minX = pointValue.getX() < minX ? pointValue.getX() : minX;
+                minY = pointValue.getY() < minY ? pointValue.getY() : minY;
             }
+        }
+        tempMaximumViewport.set(minX, maxY, maxX, minY);
+        data.setNewDataSize();
+        int diff = data.getNewDataSize() - data.getLastDataSize();
+        float scaleFactor;
+        if (diff != 0 ) {
+            scaleFactor = diff > 0 ? 1.1f : 1.0f;
+            tempMaximumViewport.right -= diff;
+            tempMaximumViewport.right += diff * scaleFactor * scale;
         }
     }
 

@@ -16,6 +16,8 @@ public interface ChartRenderer {
 
     public void onChartViewportChanged();
 
+    public void onChartViewportChanged(float scale);
+
     public void resetRenderer();
 
     /**
