@@ -4,7 +4,7 @@ apply from: 'https://raw.github.com/chrisbanes/gradle-mvn-push/master/gradle-mvn
 
 //To upload to maven central
 //http://zserge.com/blog/gradle-maven-publish.html
-//gradle uploadArchives
+// gradle uploadArchives
 
 buildscript {
     repositories {
@@ -60,6 +60,7 @@ android {
         abortOnError false
     }
 
+    buildToolsVersion '26.0.2'
 }
 
 //Execute "gradle clean jarRelease" to cook jar.
