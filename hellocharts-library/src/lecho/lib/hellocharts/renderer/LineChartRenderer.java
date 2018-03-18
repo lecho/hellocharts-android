@@ -396,6 +396,7 @@ public class LineChartRenderer extends AbstractChartRenderer {
 
     private void drawPoint(Canvas canvas, Line line, PointValue pointValue, float rawX, float rawY,
                            float pointRadius) {
+        pointPaint.setColor(pointValue.getColor());
         if (ValueShape.SQUARE.equals(line.getShape())) {
             canvas.drawRect(rawX - pointRadius, rawY - pointRadius, rawX + pointRadius, rawY + pointRadius,
                     pointPaint);
