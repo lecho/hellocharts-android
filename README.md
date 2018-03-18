@@ -1,4 +1,4 @@
-#HelloCharts for Android
+# HelloCharts for Android
 
 Charting library for Android compatible with API 8+(Android 2.2).
 Works best when hardware acceleration is available, so API 14+(Android 4.0) is recommended.
@@ -12,7 +12,7 @@ Apache License 2.0.
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.lecho/hellocharts-library/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.lecho/hellocharts-library)
 [![Release](https://img.shields.io/github/release/lecho/hellocharts-android.svg?label=JitPack.io)](https://jitpack.io/#lecho/hellocharts-android)
 
-##Features
+## Features
 
  - Line chart(cubic lines, filled lines, scattered points)
  - Column chart(grouped, stacked, negative values)
@@ -24,7 +24,7 @@ Apache License 2.0.
  - Custom and auto-generated axes(top, bottom, left, right, inside)
  - Animations
 
-##Screens and Demos
+## Screens and Demos
 
  - Code of a demo application is in `hellocharts-samples` directory, requires appcompat v21. 
  - The **demo app** is also ready for download on [**Google Play**](https://play.google.com/store/apps/details?id=lecho.lib.hellocharts.samples).  
@@ -44,9 +44,9 @@ Apache License 2.0.
 
 ![](screens/scr-combo.png)
 
-##Download and Import
+## Download and Import
 
-####Android Studio/Gradle
+#### Android Studio/Gradle
 
  - Maven Central/jCenter, add dependency to your `build.gradle`:
  
@@ -70,12 +70,12 @@ Apache License 2.0.
     }
  ```
  
-####Eclipse/ADT
+#### Eclipse/ADT
 
  - Download the latest [release jar file](https://github.com/lecho/hellocharts-android/releases).
  - Copy `hellocharts-library-<version>.jar` into the `libs` folder of your application project.
 
-##Usage
+## Usage
 
 Every chart view can be defined in layout xml file:
 
@@ -135,11 +135,11 @@ Every chart view can be defined in layout xml file:
  chart data. You can safely modify copy in other threads and pass it to `set*ChartData()` method later.
 
 
-##Contributing
+## Contributing
 
 Yes:) If you found a bug, have an idea how to improve library or have a question, please create new issue or comment existing one. If you would like to contribute code fork the repository and send a pull request.
 
-#License
+# License
 
 	HelloCharts	
     Copyright 2014 Leszek Wach
