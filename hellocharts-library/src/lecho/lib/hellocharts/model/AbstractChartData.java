@@ -18,6 +18,8 @@ public abstract class AbstractChartData implements ChartData {
     protected int valueLabelTextSize = DEFAULT_TEXT_SIZE_SP;
     protected Typeface valueLabelTypeface;
 
+    protected int lastDataSize, newDataSize;
+
     /**
      * If true each value label will have background rectangle
      */
@@ -161,6 +163,18 @@ public abstract class AbstractChartData implements ChartData {
     @Override
     public void setValueLabelBackgroundColor(int valueLabelBackgroundColor) {
         this.valueLabelBackgroundColor = valueLabelBackgroundColor;
+    }
+
+    public int getLastDataSize() {
+        return lastDataSize;
+    }
+
+    public int getNewDataSize() {
+        return newDataSize;
+    }
+
+    public void finish() {
+        lastDataSize = newDataSize;
     }
 
 }

@@ -18,6 +18,7 @@ public class LineChartData extends AbstractChartData {
 
     public LineChartData(List<Line> lines) {
         setLines(lines);
+        setLastDataSize();
     }
 
     /**
@@ -30,6 +31,7 @@ public class LineChartData extends AbstractChartData {
         for (Line line : data.lines) {
             this.lines.add(new Line(line));
         }
+        setLastDataSize();
     }
 
     public static LineChartData generateDummyData() {
@@ -59,6 +61,7 @@ public class LineChartData extends AbstractChartData {
         for (Line line : lines) {
             line.finish();
         }
+        super.finish();
     }
 
     public List<Line> getLines() {
@@ -71,6 +74,7 @@ public class LineChartData extends AbstractChartData {
         } else {
             this.lines = lines;
         }
+        setLastDataSize();
         return this;
     }
 
@@ -88,5 +92,21 @@ public class LineChartData extends AbstractChartData {
     public LineChartData setBaseValue(float baseValue) {
         this.baseValue = baseValue;
         return this;
+    }
+
+    public void setLastDataSize() {
+        int size = 0;
+        for (Line line : lines) {
+            size = line.getValues().size() > size ? line.getValues().size() : size;
+        }
+        lastDataSize = size;
+    }
+
+    public void setNewDataSize() {
+        int size = 0;
+        for (Line line : lines) {
+            size = line.getValues().size() > size ? line.getValues().size() : size;
+        }
+        newDataSize = size;
     }
 }

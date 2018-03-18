@@ -22,6 +22,7 @@ public class ColumnChartData extends AbstractChartData {
 
     public ColumnChartData(List<Column> columns) {
         setColumns(columns);
+        setLastDataSize();
     }
 
     /**
@@ -35,6 +36,7 @@ public class ColumnChartData extends AbstractChartData {
         for (Column column : data.columns) {
             this.columns.add(new Column(column));
         }
+        setLastDataSize();
     }
 
     public static ColumnChartData generateDummyData() {
@@ -67,6 +69,7 @@ public class ColumnChartData extends AbstractChartData {
         for (Column column : columns) {
             column.finish();
         }
+        super.finish();
     }
 
     public List<Column> getColumns() {
@@ -79,6 +82,7 @@ public class ColumnChartData extends AbstractChartData {
         } else {
             this.columns = columns;
         }
+        setLastDataSize();
         return this;
     }
 
@@ -132,6 +136,14 @@ public class ColumnChartData extends AbstractChartData {
     public ColumnChartData setBaseValue(float baseValue) {
         this.baseValue = baseValue;
         return this;
+    }
+
+    public void setLastDataSize() {
+        lastDataSize = columns.size();
+    }
+
+    public int setNewDataSize() {
+        return newDataSize = columns.size();
     }
 
 }

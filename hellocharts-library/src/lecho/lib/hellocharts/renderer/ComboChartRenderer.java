@@ -37,10 +37,15 @@ public class ComboChartRenderer extends AbstractChartRenderer {
 
     @Override
     public void onChartViewportChanged() {
+        onChartViewportChanged(1);
+    }
+
+    @Override
+    public void onChartViewportChanged(float scale) {
         if (isViewportCalculationEnabled) {
             int rendererIndex = 0;
             for (ChartRenderer renderer : renderers) {
-                renderer.onChartViewportChanged();
+                renderer.onChartViewportChanged(scale);
                 if (rendererIndex == 0) {
                     unionViewport.set(renderer.getMaximumViewport());
                 } else {

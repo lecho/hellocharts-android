@@ -87,8 +87,13 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 
     @Override
     public void onChartViewportChanged() {
+        onChartViewportChanged(1);
+    }
+
+    @Override
+    public void onChartViewportChanged(float scale) {
         if (isViewportCalculationEnabled) {
-            calculateMaxViewport();
+            calculateMaxViewport(scale);
             computator.setMaxViewport(tempMaximumViewport);
             computator.setCurrentViewport(computator.getMaximumViewport());
         }
@@ -125,12 +130,14 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
         return isTouched();
     }
 
-    private void calculateMaxViewport() {
+    private void calculateMaxViewport(float scale) {
         final ColumnChartData data = dataProvider.getColumnChartData();
+        int diff = data.setNewDataSize() - data.getLastDataSize();
+        float right = (data.getNewDataSize() - diff) + diff * scale - 0.5f;
         // Column chart always has X values from 0 to numColumns-1, to add some margin on the left and right I added
         // extra 0.5 to the each side, that margins will be negative scaled according to number of columns, so for more
         // columns there will be less margin.
-        tempMaximumViewport.set(-0.5f, baseValue, data.getColumns().size() - 0.5f, baseValue);
+        tempMaximumViewport.set(-0.5f, baseValue, right, baseValue);
         if (data.isStacked()) {
             calculateMaxViewportForStacked(data);
         } else {

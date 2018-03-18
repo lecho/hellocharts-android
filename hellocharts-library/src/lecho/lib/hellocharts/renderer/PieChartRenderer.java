@@ -133,6 +133,11 @@ public class PieChartRenderer extends AbstractChartRenderer {
 
     @Override
     public void onChartViewportChanged() {
+        onChartViewportChanged(1);
+    }
+
+    @Override
+    public void onChartViewportChanged(float scale) {
         if (isViewportCalculationEnabled) {
             calculateMaxViewport();
             computator.setMaxViewport(tempMaximumViewport);
