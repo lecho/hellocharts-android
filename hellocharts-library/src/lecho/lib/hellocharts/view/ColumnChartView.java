@@ -14,7 +14,7 @@ import lecho.lib.hellocharts.provider.ColumnChartDataProvider;
 import lecho.lib.hellocharts.renderer.ColumnChartRenderer;
 
 /**
- * ColumnChart/BarChart, supports subcolumns, stacked collumns and negative values.
+ * ColumnChart/BarChart, supports subcolumns, stacked columns, horizontal mode, and negative values.
  *
  * @author Leszek Wach
  */
