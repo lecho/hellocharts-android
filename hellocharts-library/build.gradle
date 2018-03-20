@@ -1,19 +1,16 @@
+import com.android.builder.core.BuilderConstants
+
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 apply from: 'https://raw.github.com/chrisbanes/gradle-mvn-push/master/gradle-mvn-push.gradle'
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:1.1.3'
-    }
-}
+//To upload to maven central
+//http://zserge.com/blog/gradle-maven-publish.html
+//gradle uploadArchives
 
 dependencies {
     //compile fileTree(dir: 'libs', include: '*.jar')
-    compile 'com.android.support:support-v4:22.0.0'
+    implementation 'com.android.support:support-v4:27.1.0'
 }
 
 
@@ -61,13 +58,13 @@ android {
 //Execute "gradle clean jarRelease" to cook jar.
 android.libraryVariants.all { variant ->
     def name = variant.buildType.name
-    if (name.equals(com.android.builder.core.BuilderConstants.DEBUG)) {
-        return; // Skip debug builds.
+    if (name == BuilderConstants.DEBUG) {
+        return // Skip debug builds.
     }
     def task = project.tasks.create "jar${name.capitalize()}", Jar
     task.dependsOn variant.javaCompile
     task.from variant.javaCompile.destinationDir
-    artifacts.add('archives', task);
+    artifacts.add('archives', task)
 }
 
 // To publish to maven local execute "gradle clean build publishToMavenLocal"
