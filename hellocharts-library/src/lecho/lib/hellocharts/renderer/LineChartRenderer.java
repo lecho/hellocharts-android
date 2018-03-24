@@ -217,15 +217,21 @@ public class LineChartRenderer extends AbstractChartRenderer {
         prepareLinePaint(line);
 
         int valueIndex = 0;
+        boolean invalidYValue = false;
         for (PointValue pointValue : line.getValues()) {
 
             final float rawX = computator.computeRawX(pointValue.getX());
             final float rawY = computator.computeRawY(pointValue.getY());
 
-            if (valueIndex == 0) {
-                path.moveTo(rawX, rawY);
-            } else {
-                path.lineTo(rawX, rawY);
+            if (Float.isNaN(rawY))
+                invalidYValue = true;
+            else {
+                if (valueIndex == 0 || invalidYValue) {
+                    path.moveTo(rawX, rawY);
+                } else {
+                    path.lineTo(rawX, rawY);
+                }
+                invalidYValue = false;
             }
 
             ++valueIndex;
@@ -245,17 +251,19 @@ public class LineChartRenderer extends AbstractChartRenderer {
         prepareLinePaint(line);
 
         int valueIndex = 0;
-        float previousRawY = 0;
+        float previousRawY = Float.NaN;
         for (PointValue pointValue : line.getValues()) {
 
             final float rawX = computator.computeRawX(pointValue.getX());
             final float rawY = computator.computeRawY(pointValue.getY());
 
-            if (valueIndex == 0) {
-                path.moveTo(rawX, rawY);
-            } else {
-                path.lineTo(rawX, previousRawY);
-                path.lineTo(rawX, rawY);
+            if (! Float.isNaN(rawY)) {
+                if (Float.isNaN(previousRawY)) {
+                    path.moveTo(rawX, rawY);
+                } else {
+                    path.lineTo(rawX, previousRawY);
+                    path.lineTo(rawX, rawY);
+                }
             }
 
             previousRawY = rawY;
