@@ -16,6 +16,7 @@ public class ColumnChartData extends AbstractChartData {
     private float baseValue = DEFAULT_BASE_VALUE;
     private List<Column> columns = new ArrayList<Column>();
     private boolean isStacked = false;
+    private boolean isHorizontal = true;
 
     public ColumnChartData() {
     }
@@ -97,6 +98,21 @@ public class ColumnChartData extends AbstractChartData {
         return this;
     }
 
+    public boolean isHorizontal() {
+        return isHorizontal;
+    }
+
+    /**
+     * Set true if you want a horizontal column chart.
+     *
+     * @param isHorizontal
+     * @return
+     */
+    public ColumnChartData setHorizontal(boolean isHorizontal) {
+        this.isHorizontal = isHorizontal;
+        return this;
+    }
+
     public float getFillRatio() {
         return fillRatio;
     }
@@ -134,4 +150,39 @@ public class ColumnChartData extends AbstractChartData {
         return this;
     }
 
+    @Override
+    public Axis getAxisXTop() {
+        if (isHorizontal)
+            return super.getAxisYRight();
+        return super.getAxisXTop();
+    }
+
+    @Override
+    public Axis getAxisXBottom() {
+        if (isHorizontal)
+            return super.getAxisYLeft();
+        return super.getAxisXBottom();
+    }
+
+    @Override
+    public Axis getAxisYLeft() {
+        if (isHorizontal) {
+            Axis x = super.getAxisXBottom();
+            if (x != null)
+                x.setIsReversed(true);
+            return x;
+        }
+        return super.getAxisYLeft();
+    }
+
+    @Override
+    public Axis getAxisYRight() {
+        if (isHorizontal) {
+            Axis x = super.getAxisXTop();
+            if (x != null)
+                x.setIsReversed(true);
+            return x;
+        }
+        return super.getAxisYRight();
+    }
 }

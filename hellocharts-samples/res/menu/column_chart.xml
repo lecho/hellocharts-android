@@ -32,6 +32,10 @@
         android:title="Toggle axes names"
         app:showAsAction="never"/>
     <item
+        android:id="@+id/action_toggle_horizontal_data"
+        android:title="Toggle horizontal"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/action_toggle_labels"
         android:title="Toggle labels"
         app:showAsAction="never"/>

@@ -52,6 +52,7 @@ public class ColumnChartActivity extends ActionBarActivity {
         private boolean hasAxesNames = true;
         private boolean hasLabels = false;
         private boolean hasLabelForSelected = false;
+        private boolean horizontalData = false;
         private int dataType = DEFAULT_DATA;
 
         public PlaceholderFragment() {
@@ -114,6 +115,10 @@ public class ColumnChartActivity extends ActionBarActivity {
             }
             if (id == R.id.action_toggle_axes_names) {
                 toggleAxesNames();
+                return true;
+            }
+            if (id == R.id.action_toggle_horizontal_data) {
+                toggleHorizontal();
                 return true;
             }
             if (id == R.id.action_animate) {
@@ -179,6 +184,7 @@ public class ColumnChartActivity extends ActionBarActivity {
             }
 
             data = new ColumnChartData(columns);
+            data.setHorizontal(horizontalData);
 
             if (hasAxes) {
                 Axis axisX = new Axis();
@@ -221,6 +227,7 @@ public class ColumnChartActivity extends ActionBarActivity {
             }
 
             data = new ColumnChartData(columns);
+            data.setHorizontal(horizontalData);
 
             if (hasAxes) {
                 Axis axisX = new Axis();
@@ -263,6 +270,7 @@ public class ColumnChartActivity extends ActionBarActivity {
             }
 
             data = new ColumnChartData(columns);
+            data.setHorizontal(horizontalData);
 
             // Set stacked flag.
             data.setStacked(true);
@@ -306,6 +314,7 @@ public class ColumnChartActivity extends ActionBarActivity {
             }
 
             data = new ColumnChartData(columns);
+            data.setHorizontal(horizontalData);
 
             if (hasAxes) {
                 Axis axisX = new Axis();
@@ -346,6 +355,7 @@ public class ColumnChartActivity extends ActionBarActivity {
             }
 
             data = new ColumnChartData(columns);
+            data.setHorizontal(horizontalData);
 
             // Set stacked flag.
             data.setStacked(true);
@@ -425,6 +435,12 @@ public class ColumnChartActivity extends ActionBarActivity {
 
         private void toggleAxesNames() {
             hasAxesNames = !hasAxesNames;
+
+            generateData();
+        }
+
+        private void toggleHorizontal() {
+            horizontalData = !horizontalData;
 
             generateData();
         }
