@@ -87,7 +87,6 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
     }
 
     public void setSubcolumnSpacing(int subcolumnSpacing) {
-        if(subcolumnSpacing < 0) subcolumnSpacing = 0;
         ((ColumnChartRenderer) chartRenderer).setSubcolumnSpacing(subcolumnSpacing);
     }
 

@@ -64,7 +64,6 @@ public class ColumnChartActivity extends ActionBarActivity {
 
             chart = (ColumnChartView) rootView.findViewById(R.id.chart);
             chart.setOnValueTouchListener(new ValueTouchListener());
-
             generateData();
 
             return rootView;
