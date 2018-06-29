@@ -2,6 +2,7 @@ package lecho.lib.hellocharts.renderer;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Cap;
 import android.graphics.PointF;
@@ -23,6 +24,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
     public static final int DEFAULT_SUBCOLUMN_SPACING_DP = 1;
     public static final int DEFAULT_COLUMN_TOUCH_ADDITIONAL_WIDTH_DP = 4;
     public static final int MAX_SUBCOLUMN_SPACING_DP = 20;
+    public static final int BORDER_SIZE = 3;
 
     private static final int MODE_DRAW = 0;
     private static final int MODE_CHECK_TOUCH = 1;
@@ -58,6 +60,10 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
     private float fillRatio;
 
     private float baseValue;
+
+    private boolean hasBorders = false;
+
+    private int bordersColor = Color.parseColor("#FFFFFF");
 
     private Viewport tempMaximumViewport = new Viewport();
 
@@ -226,10 +232,17 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
                 break;
             }
             final float rawY = computator.computeRawY(columnValue.getValue());
-            calculateRectToDraw(columnValue, subcolumnRawX, subcolumnRawX + subcolumnWidth, baseRawY, rawY);
+            calculateRectToDraw(columnValue, subcolumnRawX, subcolumnRawX + subcolumnWidth, baseRawY, rawY, BORDER_SIZE);
             switch (mode) {
                 case MODE_DRAW:
-                    drawSubcolumn(canvas, column, columnValue, false);
+                    if(hasBorders) {
+                        columnPaint.setColor(bordersColor);
+                        drawSubcolumn(canvas, column, columnValue, false);
+                        columnPaint.setColor(columnValue.getColor());
+                        calculateRectToDraw(columnValue, subcolumnRawX, subcolumnRawX + subcolumnWidth, baseRawY, rawY, 0);
+                        drawSubcolumn(canvas, column, columnValue, false);
+                    } else
+                        drawSubcolumn(canvas, column, columnValue, false);
                     break;
                 case MODE_HIGHLIGHT:
                     highlightSubcolumn(canvas, column, columnValue, valueIndex, false);
@@ -299,7 +312,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
             }
             final float rawBaseY = computator.computeRawY(subcolumnBaseValue);
             final float rawY = computator.computeRawY(subcolumnBaseValue + columnValue.getValue());
-            calculateRectToDraw(columnValue, rawX - halfColumnWidth, rawX + halfColumnWidth, rawBaseY, rawY);
+            calculateRectToDraw(columnValue, rawX - halfColumnWidth, rawX + halfColumnWidth, rawBaseY, rawY, 0);
             switch (mode) {
                 case MODE_DRAW:
                     drawSubcolumn(canvas, column, columnValue, true);
@@ -354,16 +367,16 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
         return columnWidth;
     }
 
-    private void calculateRectToDraw(SubcolumnValue columnValue, float left, float right, float rawBaseY, float rawY) {
+    private void calculateRectToDraw(SubcolumnValue columnValue, float left, float right, float rawBaseY, float rawY, float border) {
         // Calculate rect that will be drawn as column, subcolumn or label background.
-        drawRect.left = left;
-        drawRect.right = right;
+        drawRect.left = left - border;
+        drawRect.right = right + border;
         if (columnValue.getValue() >= baseValue) {
-            drawRect.top = rawY;
-            drawRect.bottom = rawBaseY - subcolumnSpacing;
+            drawRect.top = rawY - border;
+            drawRect.bottom = rawBaseY - subcolumnSpacing + border;
         } else {
-            drawRect.bottom = rawY;
-            drawRect.top = rawBaseY + subcolumnSpacing;
+            drawRect.bottom = rawY + border;
+            drawRect.top = rawBaseY + subcolumnSpacing - border;
         }
     }
 
@@ -429,6 +442,19 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
         this.subcolumnSpacing = subcolumnSpacing;
     }
 
+    public boolean hasBorders() {
+        return hasBorders;
+    }
 
+    public void setBorders(boolean hasBorders) {
+        this.hasBorders = hasBorders;
+    }
 
+    public int getBordersColor() {
+        return bordersColor;
+    }
+
+    public void setBordersColor(int bordersColor) {
+        this.bordersColor = bordersColor;
+    }
 }

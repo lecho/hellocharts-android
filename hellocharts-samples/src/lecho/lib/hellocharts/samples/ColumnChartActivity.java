@@ -1,5 +1,6 @@
 package lecho.lib.hellocharts.samples;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -64,6 +65,9 @@ public class ColumnChartActivity extends ActionBarActivity {
 
             chart = (ColumnChartView) rootView.findViewById(R.id.chart);
             chart.setOnValueTouchListener(new ValueTouchListener());
+            chart.setBorders(true);
+            chart.setBordersColor(Color.parseColor("#009fff"));
+            chart.setSubcolumnSpacing(-10);
             generateData();
 
             return rootView;

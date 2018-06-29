@@ -90,4 +90,12 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
         ((ColumnChartRenderer) chartRenderer).setSubcolumnSpacing(subcolumnSpacing);
     }
 
+    public void setBorders(boolean hasBorders){
+        ((ColumnChartRenderer) chartRenderer).setBorders(hasBorders);
+    }
+
+    public void setBordersColor(int id){
+        ((ColumnChartRenderer) chartRenderer).setBordersColor(id);
+    }
+
 }
