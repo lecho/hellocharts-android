@@ -232,10 +232,11 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
                 break;
             }
             final float rawY = computator.computeRawY(columnValue.getValue());
-            calculateRectToDraw(columnValue, subcolumnRawX, subcolumnRawX + subcolumnWidth, baseRawY, rawY, BORDER_SIZE);
+            calculateRectToDraw(columnValue, subcolumnRawX, subcolumnRawX + subcolumnWidth, baseRawY, rawY, 0);
             switch (mode) {
                 case MODE_DRAW:
                     if(hasBorders) {
+                        calculateRectToDraw(columnValue, subcolumnRawX, subcolumnRawX + subcolumnWidth, baseRawY, rawY, BORDER_SIZE);
                         columnPaint.setColor(bordersColor);
                         drawSubcolumn(canvas, column, columnValue, false);
                         columnPaint.setColor(columnValue.getColor());
@@ -315,7 +316,15 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
             calculateRectToDraw(columnValue, rawX - halfColumnWidth, rawX + halfColumnWidth, rawBaseY, rawY, 0);
             switch (mode) {
                 case MODE_DRAW:
-                    drawSubcolumn(canvas, column, columnValue, true);
+                    if(hasBorders) {
+                        calculateRectToDraw(columnValue, rawX - halfColumnWidth, rawX + halfColumnWidth, rawBaseY, rawY, BORDER_SIZE);
+                        columnPaint.setColor(bordersColor);
+                        drawSubcolumn(canvas, column, columnValue, true);
+                        columnPaint.setColor(columnValue.getColor());
+                        calculateRectToDraw(columnValue, rawX - halfColumnWidth, rawX + halfColumnWidth, rawBaseY, rawY, 0);
+                        drawSubcolumn(canvas, column, columnValue, true);
+                    } else
+                        drawSubcolumn(canvas, column, columnValue, true);
                     break;
                 case MODE_HIGHLIGHT:
                     highlightSubcolumn(canvas, column, columnValue, valueIndex, true);
