@@ -22,6 +22,7 @@ import lecho.lib.hellocharts.view.Chart;
 public class ColumnChartRenderer extends AbstractChartRenderer {
     public static final int DEFAULT_SUBCOLUMN_SPACING_DP = 1;
     public static final int DEFAULT_COLUMN_TOUCH_ADDITIONAL_WIDTH_DP = 4;
+    public static final int MAX_SUBCOLUMN_SPACING_DP = 20;
 
     private static final int MODE_DRAW = 0;
     private static final int MODE_CHECK_TOUCH = 1;
@@ -418,5 +419,16 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
                 columnValue.getDarkenColor());
 
     }
+
+    public int getSubcolumnSpacing() {
+        return subcolumnSpacing;
+    }
+
+    public void setSubcolumnSpacing(int subcolumnSpacing) {
+        if(subcolumnSpacing > MAX_SUBCOLUMN_SPACING_DP) subcolumnSpacing = MAX_SUBCOLUMN_SPACING_DP;
+        this.subcolumnSpacing = subcolumnSpacing;
+    }
+
+
 
 }
