@@ -6,7 +6,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Cap;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
@@ -29,6 +32,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
     private static final int MODE_DRAW = 0;
     private static final int MODE_CHECK_TOUCH = 1;
     private static final int MODE_HIGHLIGHT = 2;
+    private static final float PICTURE_RATIO = 0.7f; //Picture will occupy 70% of the column
 
     private ColumnChartDataProvider dataProvider;
 
@@ -343,9 +347,30 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
 
     private void drawSubcolumn(Canvas canvas, Column column, SubcolumnValue columnValue, boolean isStacked) {
         canvas.drawRect(drawRect, columnPaint);
+        Drawable picture = columnValue.getPicture();
+        if(picture != null) {
+            picture.setBounds(findDrawableBounds(column));
+            picture.draw(canvas);
+        }
         if (column.hasLabels()) {
             drawLabel(canvas, column, columnValue, isStacked, labelOffset);
         }
+    }
+
+    private Rect findDrawableBounds(Column column){
+        Rect r = new Rect();
+        Rect drawRectI = new Rect();
+        drawRect.round(drawRectI);
+        if(subcolumnSpacing < 0 && column.getValues().size() > 1) drawRectI.right += subcolumnSpacing;
+        int imageSize = (int) (drawRectI.width() * PICTURE_RATIO);
+        int spacing = (drawRectI.width() - imageSize)/2;
+        r.left = spacing + drawRectI.left;
+        r.top = drawRectI.bottom - spacing - imageSize;
+        r.bottom = drawRectI.bottom - spacing;
+        r.right = r.left + imageSize;
+        Log.d("ColumnChartRender drawR", drawRect.toString());
+        Log.d("ColumnChartRender r", r.toString());
+        return r;
     }
 
     private void highlightSubcolumn(Canvas canvas, Column column, SubcolumnValue columnValue, int valueIndex,

@@ -1,5 +1,7 @@
 package lecho.lib.hellocharts.model;
 
+import android.graphics.drawable.Drawable;
+
 import java.util.Arrays;
 
 import lecho.lib.hellocharts.util.ChartUtils;
@@ -16,6 +18,7 @@ public class SubcolumnValue {
     private int color = ChartUtils.DEFAULT_COLOR;
     private int darkenColor = ChartUtils.DEFAULT_DARKEN_COLOR;
     private char[] label;
+    private Drawable picture;
 
     public SubcolumnValue() {
         setValue(0);
@@ -30,6 +33,13 @@ public class SubcolumnValue {
         // point and targetPoint have to be different objects
         setValue(value);
         setColor(color);
+    }
+
+    public SubcolumnValue(float value, int color, Drawable picture) {
+        // point and targetPoint have to be different objects
+        setValue(value);
+        setColor(color);
+        setPicture(picture);
     }
 
     public SubcolumnValue(SubcolumnValue columnValue) {
@@ -133,6 +143,15 @@ public class SubcolumnValue {
         result = 31 * result + color;
         result = 31 * result + darkenColor;
         result = 31 * result + (label != null ? Arrays.hashCode(label) : 0);
+        result = 31 * result + (picture != null ? picture.hashCode() : 0);
         return result;
+    }
+
+    public Drawable getPicture() {
+        return picture;
+    }
+
+    public void setPicture(Drawable picture) {
+        this.picture = picture;
     }
 }
