@@ -98,4 +98,8 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
         ((ColumnChartRenderer) chartRenderer).setBordersColor(id);
     }
 
+    public void setTouchable(boolean touchable){
+        ((ColumnChartRenderer) chartRenderer).setTouchable(touchable);
+    }
+
 }

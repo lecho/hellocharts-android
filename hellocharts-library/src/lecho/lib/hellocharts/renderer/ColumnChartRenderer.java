@@ -37,7 +37,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
     private ColumnChartDataProvider dataProvider;
 
     /**
-     * Additional width for hightlighted column, used to give tauch feedback.
+     * Additional width for highlighted column, used to give touch feedback.
      */
     private int touchAdditionalWidth;
 
@@ -368,8 +368,6 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
         r.top = drawRectI.bottom - spacing - imageSize;
         r.bottom = drawRectI.bottom - spacing;
         r.right = r.left + imageSize;
-        Log.d("ColumnChartRender drawR", drawRect.toString());
-        Log.d("ColumnChartRender r", r.toString());
         return r;
     }
 
