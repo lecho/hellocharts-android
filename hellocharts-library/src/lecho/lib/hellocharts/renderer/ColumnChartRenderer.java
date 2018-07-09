@@ -9,7 +9,6 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 
 import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
@@ -231,6 +230,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
         float subcolumnRawX = rawX - halfColumnWidth;
         int valueIndex = 0;
         for (SubcolumnValue columnValue : column.getValues()) {
+            subcolumnWidth *= columnValue.getSubcolumnWidhtRatio();
             columnPaint.setColor(columnValue.getColor());
             if (subcolumnRawX > rawX + halfColumnWidth) {
                 break;
@@ -262,6 +262,7 @@ public class ColumnChartRenderer extends AbstractChartRenderer {
             }
             subcolumnRawX += subcolumnWidth + subcolumnSpacing;
             ++valueIndex;
+            subcolumnWidth /= columnValue.getSubcolumnWidhtRatio();
         }
     }
 

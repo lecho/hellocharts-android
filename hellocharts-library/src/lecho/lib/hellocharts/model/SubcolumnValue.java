@@ -19,6 +19,7 @@ public class SubcolumnValue {
     private int darkenColor = ChartUtils.DEFAULT_DARKEN_COLOR;
     private char[] label;
     private Drawable picture;
+    private float subcolumnWidhtRatio = 1; // 1 means that the subcolumn widht equals the other, 0.5 means that the widht is the half of the others
 
     public SubcolumnValue() {
         setValue(0);
@@ -42,9 +43,19 @@ public class SubcolumnValue {
         setPicture(picture);
     }
 
+    public SubcolumnValue(float value, int color, Drawable picture, float subcolumnWidhtRatio) {
+        // point and targetPoint have to be different objects
+        setValue(value);
+        setColor(color);
+        setPicture(picture);
+        setSubcolumnWidhtRatio(subcolumnWidhtRatio);
+    }
+
     public SubcolumnValue(SubcolumnValue columnValue) {
         setValue(columnValue.value);
         setColor(columnValue.color);
+        setPicture(columnValue.picture);
+        setSubcolumnWidhtRatio(subcolumnWidhtRatio);
         this.label = columnValue.label;
     }
 
@@ -153,5 +164,13 @@ public class SubcolumnValue {
 
     public void setPicture(Drawable picture) {
         this.picture = picture;
+    }
+
+    public float getSubcolumnWidhtRatio() {
+        return subcolumnWidhtRatio;
+    }
+
+    public void setSubcolumnWidhtRatio(float subcolumnWidhtRatio) {
+        this.subcolumnWidhtRatio = subcolumnWidhtRatio;
     }
 }
