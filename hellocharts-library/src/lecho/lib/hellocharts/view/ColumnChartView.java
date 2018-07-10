@@ -85,4 +85,21 @@ public class ColumnChartView extends AbstractChartView implements ColumnChartDat
             this.onValueTouchListener = touchListener;
         }
     }
+
+    public void setSubcolumnSpacing(int subcolumnSpacing) {
+        ((ColumnChartRenderer) chartRenderer).setSubcolumnSpacing(subcolumnSpacing);
+    }
+
+    public void setBorders(boolean hasBorders){
+        ((ColumnChartRenderer) chartRenderer).setBorders(hasBorders);
+    }
+
+    public void setBordersColor(int id){
+        ((ColumnChartRenderer) chartRenderer).setBordersColor(id);
+    }
+
+    public void setTouchable(boolean touchable){
+        ((ColumnChartRenderer) chartRenderer).setTouchable(touchable);
+    }
+
 }

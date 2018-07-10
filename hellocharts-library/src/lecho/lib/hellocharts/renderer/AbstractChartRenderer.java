@@ -51,6 +51,7 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
     protected int labelMargin;
     protected boolean isValueLabelBackgroundEnabled;
     protected boolean isValueLabelBackgroundAuto;
+    protected boolean touchable = true;
 
     public AbstractChartRenderer(Context context, Chart chart) {
         this.density = context.getResources().getDisplayMetrics().density;
@@ -126,7 +127,7 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
 
     @Override
     public boolean isTouched() {
-        return selectedValue.isSet();
+        return selectedValue.isSet() && touchable;
     }
 
     @Override
@@ -176,5 +177,13 @@ public abstract class AbstractChartRenderer implements ChartRenderer {
     @Override
     public SelectedValue getSelectedValue() {
         return selectedValue;
+    }
+
+    public boolean isTouchable() {
+        return touchable;
+    }
+
+    public void setTouchable(boolean touchable) {
+        this.touchable = touchable;
     }
 }
