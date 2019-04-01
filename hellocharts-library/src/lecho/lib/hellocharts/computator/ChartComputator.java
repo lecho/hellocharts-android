@@ -150,7 +150,11 @@ public class ChartComputator {
     public float computeRawY(float valueY) {
         final float pixelOffset = (valueY - currentViewport.bottom) * (contentRectMinusAllMargins.height() /
                 currentViewport.height());
-        return contentRectMinusAllMargins.bottom - pixelOffset;
+        if(Float.isNaN(pixelOffset)){ // if currentViewport.height() == 0  for example the line inLineChart is not visiable.
+            return contentRectMinusAllMargins.bottom
+        }else{
+            return contentRectMinusAllMargins.bottom - pixelOffset;
+        }
     }
 
     /**
