@@ -104,6 +104,8 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
             calculateMaxViewport();
             computator.setMaxViewport(tempMaximumViewport);
             computator.setCurrentViewport(computator.getMaximumViewport());
+        }else{
+            calculateBubbleScale();
         }
     }
 
@@ -348,4 +350,44 @@ public class BubbleChartRenderer extends AbstractChartRenderer {
         minRawRadius = ChartUtils.dp2px(density, dataProvider.getBubbleChartData().getMinBubbleRadius());
     }
 
+    // Sets the bubble scale when the viewport is manually defined and isn't being calculated
+    private void calculateBubbleScale(){
+        float maxZ = Float.MIN_VALUE;
+        BubbleChartData data = dataProvider.getBubbleChartData();
+        for (BubbleValue bubbleValue : data.getValues()) {
+            if (Math.abs(bubbleValue.getZ()) > maxZ) {
+                maxZ = Math.abs(bubbleValue.getZ());
+            }
+        }
+
+        // Set the temporary viewport values using the already defined viewport values
+        tempMaximumViewport.set(getMaximumViewport().left,
+                getMaximumViewport().top,
+                getMaximumViewport().right,
+                getMaximumViewport().bottom);
+
+        maxRadius = (float) Math.sqrt(maxZ / Math.PI);
+
+        // Number 4 is determined by trials and errors method, no magic behind it:).
+        bubbleScaleX = tempMaximumViewport.width() / (maxRadius * 4);
+        if (bubbleScaleX == 0) {
+            // case for 0 viewport width.
+            bubbleScaleX = 1;
+        }
+
+        bubbleScaleY = tempMaximumViewport.height() / (maxRadius * 4);
+        if (bubbleScaleY == 0) {
+            // case for 0 viewport height.
+            bubbleScaleY = 1;
+        }
+
+        // For cases when user sets different than 1 bubble scale in BubbleChartData.
+        bubbleScaleX *= data.getBubbleScale();
+        bubbleScaleY *= data.getBubbleScale();
+
+        // Prevent cutting of bubbles on the edges of chart area.
+        tempMaximumViewport.inset(-maxRadius * bubbleScaleX, -maxRadius * bubbleScaleY);
+
+        minRawRadius = ChartUtils.dp2px(density, dataProvider.getBubbleChartData().getMinBubbleRadius());
+    }
 }
